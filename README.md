@@ -4,6 +4,8 @@ Ext JS and CakePHP.
 
 1. What is Bancha?
 ------------------
+Bancha is cool!
+
 
 2. Installation
 ---------------
