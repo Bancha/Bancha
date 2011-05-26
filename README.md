@@ -6,7 +6,6 @@ What is Bancha?
 ---------------
 
 
-
 Installation
 ------------
 

@@ -22,7 +22,7 @@
  *
  * @package bancha.libs
  */
-class BanchaDispatcher
+class BanchaDispatcherTest
 {
 
 	/**
