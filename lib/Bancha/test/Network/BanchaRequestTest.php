@@ -12,38 +12,32 @@
  *
  * @package bancha.libs
  */
-require_once 'BanchaRequest.php';
-require_once 'PHPUnit.php';
 
-class BanchaRequestTest extends PHPUnit_TestCase
+set_include_path(dirname(__FILE__) . '/../../lib' . PATH_SEPARATOR . get_include_path());
+
+require_once 'C:/Users/Kung/Bancha/lib/Bancha/src/Network/BanchaRequest.php';
+
+class BanchaRequestTest extends PHPUnit_Framework_TestCase
 {
-    // contains the object handle of the string class
-    var $abc;
+    
 
-    // constructor of the test suite
-    function StringTest($name) {
-       $this->PHPUnit_TestCase($name);
-    }
-
-    // called before the test functions will be executed
-    // this function is defined in PHPUnit_TestCase and overwritten
-    // here
-    function setUp() {
-        // create a new instance of String with the
-        // string 'abc'
-        $this->abc = new String("abc");
-    }
-
-    // called after the test functions are executed
-    // this function is defined in PHPUnit_TestCase and overwritten
-    // here
-    function tearDown() {
-        // delete your instance
-        unset($this->abc);
-    }
-
-    // test the toString function
+    // test the getRequest function
     function testgetRequest() {
+    	
+    	// creating fake ext direct req
+    	// extreq: {"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"rpc","tid":1}
+    	$_POST = '{"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"rpc","tid":1}';
+        // create a new instance of Bancharequest
+        $banchaRequest = new BanchaRequest();
+    	$requests = $banchaRequest->getRequests();
+    	
+    	// This only tests one element Json
+    	$this->assertEquals($requests["action"], "create");
+    	
+    	//TODO: SCHLEIFE
+    	
+    	// delete your instance
+        
     }
 }
 
