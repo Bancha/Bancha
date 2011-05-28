@@ -18,7 +18,7 @@ if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
 App::uses('BanchaBehavior', 'Bancha');
-require_once(dirname(dirname(__FILE__)) . DS . 'models.php');
+//require_once(dirname(dirname(__FILE__)) . DS . 'models.php');
 
 
 /**
