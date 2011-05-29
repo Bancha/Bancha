@@ -7,15 +7,14 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+App::uses('BanchaRequest', 'Bancha');
+
 /**
  * BanchaRequestTest
  *
  * @package bancha.libs
  */
-require_once 'BanchaRequest.php';
-require_once 'PHPUnit.php';
-
-class BanchaRequestTest extends PHPUnit_TestCase
+class BanchaRequestTest extends CakeTestCase
 {
     // contains the object handle of the string class
     var $abc;
