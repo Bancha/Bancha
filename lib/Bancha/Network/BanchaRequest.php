@@ -42,20 +42,25 @@ class BanchaRequest // TODO: maybe: extends CakeRequest
 		   executed.
 		*/
 		$requests = array();
-		$json_data = '{"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"rpc","tid":1}';
+		 
+		$json_data = $_POST;
 		$data = json_decode($json_data, true);
 		// check ob nur 1 request ist
-		if (count($data) == 1) { 
+		if ($data["action"] != null) { 
 			$data = array($data); 
-		}
+		} 
 		
- 		//$_POST = $data[0];
- 		for ($i=0; $i < count($data); $i++) {
-			$requests[$i] = new CakeRequest();
-			foreach ($data[$i] as $key => $wert) {
-				$requests[$i]->data($key, $wert);
+ 		//print_r($data);
+ 		
+ 		if(count($data) > 0) {
+	 		for ($i=0; $i < count($data); $i++) {
+	 			$_POST = $data[$i];
+				$requests[$i] = new CakeRequest();
+				foreach ($data[$i] as $key => $wert) {
+					$requests[$i]->data($key, $wert);
+				}
 			}
-		}
+ 		}
 		return $requests;
 		 
 		//$temp = array('action' => 'create');
