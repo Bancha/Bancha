@@ -7,14 +7,15 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+App::uses('BanchaRequest', 'Bancha');
+
 /**
  * BanchaRequestTest
  *
  * @package bancha.libs
  */
-require_once 'BanchaRequest.php';
 
-class BanchaRequestTest extends CakeTestCase 
+class BanchaRequestTest extends CakeTestCase
 {
     // test the getRequest function
     function testgetRequest() {
