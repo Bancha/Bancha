@@ -25,14 +25,6 @@ class BanchaDispatcher
 	 */
 	public function dispatch(BanchaRequest $requests)
 	{
-		// TODO: Actually implement BanchaDispatcher::dispatch()
-		/* This is only some demo code. The idea of this method is that it receives a BanchaRequest object which
-		   can contain multiple requests. The getRequests() method of BanchaRequest parses these multiple requests and
-		   returns a CakeRequest object for every request. Therefore this method does only need to invoke the
-		   Dispatcher (BanchaDispatcher::dispatch()) for every CakeRequest object. It is very import that the
-		   $additionalParameters array does contain the 'return' value. Then Cakes default Dispatcher does return the
-		   response instead of sending it to the client.
-		*/
 		$responses = array();
 		foreach ($requests->getRequests() as $request)
 		{
