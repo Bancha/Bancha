@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * BanchaDispatcherTest file.
+ *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
@@ -17,43 +19,51 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
+
+set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
+require_once 'Routing/BanchaDispatcher.php';
+
 /**
- * BanchaDispatcher
- *
  * @package bancha.libs
  */
-class BanchaDispatcherTest
+class BanchaDispatcherTest extends CakeTestCase
 {
-
-	/**
-	 * Dispatches a BanchaRequest object.
-	 *
-	 * @param BanchaRequest $requests A BanchaRequest can contain multiple CakeRequest objects.
-	 * @return boolean Success
-	 */
-	public function dispatch(BanchaRequest $requests, array $additionalParams = array())
+	
+	public function testDispatch()
 	{
-		// TODO: Actually implement BanchaDispatcher::dispatch()
-		/* This is only some demo code. The idea of this method is that it receives a BanchaRequest object which
-		   can contain multiple requests. The getRequests() method of BanchaRequest parses these multiple requests and
-		   returns a CakeRequest object for every request. Therefore this method does only need to invoke the
-		   Dispatcher (BanchaDispatcher::dispatch()) for every CakeRequest object. It is very import that the
-		   $additionalParameters array does contain the 'return' value. Then Cakes default Dispatcher does return the
-		   response instead of sending it to the client.
-		*/
-		$dispatcher = new BanchaSingleDispatcher();
-		// $responses = array();
-		$response = new BanchaResponse();
-		foreach ($requests->getRequests() as $request)
-		{
-			// Call dispatcher for the given CakeRequest.
-			$response->addResponse($dispatcher->dispatch($request, array('return' => true)));
-		}
-		// TODO: combine responses
-		if (isset($additionalParams['return'])) {
-			return $response->body();
-		}
-		$response->send();
+		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
+		$banchaRequest->expects($this->any())
+					  ->method('getRequests')
+					  ->will($this->returnValue(array(
+						new CakeRequest('/my/testaction1'),
+						new CakeRequest('/my/testaction2')
+					  )));
+		
+		$dispatcher = new BanchaDispatcher();
+		$responses = $dispatcher->dispatch($banchaRequest);
+		$this->assertEquals('Hello World!', $responses[0]);
+		$this->assertEquals('foobar', $responses[1]);
 	}
-
+	
 }
+
+/**
+ * MyController class
+ *
+ * @package       bancha.tests.cases
+ */
+class MyController extends AppController {
+	
+	public function testaction1()
+	{
+		return 'Hello World!';
+	}
+	
+	public function testaction2()
+	{
+		return 'foobar';
+	}
+	
+}
+

@@ -7,6 +7,8 @@
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
+App::uses('Dispatcher', 'Routing');
+
 /**
  * BanchaDispatcher
  *
@@ -31,12 +33,14 @@ class BanchaDispatcher
 		   $additionalParameters array does contain the 'return' value. Then Cakes default Dispatcher does return the
 		   response instead of sending it to the client.
 		*/
-		$dispatcher = new BanchaSingleDispatcher();
+		$responses = array();
 		foreach ($requests->getRequests() as $request)
 		{
 			// Call dispatcher for the given CakeRequest.
-			$response = $dispatcher->dispatch($request, array('return' => true));
+			$dispatcher = new Dispatcher();
+			$responses[] = $dispatcher->dispatch($request, array('return' => true));
 		}
+		return $responses;
 	}
 
 }
