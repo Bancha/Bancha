@@ -19,7 +19,7 @@ App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
 App::uses('Bancha', 'plugins');
 //App::uses('Bancha', 'Behavior');
-require_once(dirname(dirname(__FILE__)) . DS . '/Model/models.php');
+require_once(dirname(dirname(__FILE__)) . DS . 'Model' . DS . 'models.php');
 
 
 /**
@@ -38,9 +38,9 @@ class BanchaBehaviorTest extends CakeTestCase {
 		), true);
 */
 		App::build(array(
-			'plugins' => array(  'plugins/Bancha/Model/Behavior/'), true));
+			'plugins' => array(  'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' . DS ), true));
 		App::objects('plugins', null, false);
-		App::build(array('Model/Behavior' => array('/home/judas/workspace/cakephp/plugins/Bancha/Model/Behavior/')), App::RESET);
+		App::build(array('Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)), App::RESET);
 	}
 
 /**
