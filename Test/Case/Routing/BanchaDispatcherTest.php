@@ -42,6 +42,8 @@ class BanchaDispatcherTest extends CakeTestCase
 		
 		$dispatcher = new BanchaDispatcher();
 		$responses = $dispatcher->dispatch($banchaRequest);
+		
+		// TODO: Test against the generated BanchaResponse object instead the plain responses.
 		$this->assertEquals('Hello World!', $responses[0]);
 		$this->assertEquals('foobar', $responses[1]);
 	}

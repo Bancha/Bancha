@@ -18,10 +18,11 @@ class BanchaDispatcher
 {
 
 	/**
-	 * Dispatches a BanchaRequest object.
+	 * Dispatches a BanchaRequest object. It uses the standard CakePHP dispatcher to dispatch the single CakeRequest
+	 * objects returned by BanchaRequest.
 	 *
 	 * @param BanchaRequest $requests A BanchaRequest can contain multiple CakeRequest objects.
-	 * @return boolean Success
+	 * @return array Array where every element is the response of a single request.
 	 */
 	public function dispatch(BanchaRequest $requests)
 	{
@@ -32,6 +33,8 @@ class BanchaDispatcher
 			$dispatcher = new Dispatcher();
 			$responses[] = $dispatcher->dispatch($request, array('return' => true));
 		}
+		
+		// TODO: Generate and send a BanchaResponse.
 		return $responses;
 	}
 
