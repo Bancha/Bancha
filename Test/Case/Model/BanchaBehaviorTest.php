@@ -15,7 +15,7 @@ if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 	define('CAKEPHP_UNIT_TEST_EXECUTION', 1);
 }
 
-App::uses('Model', 'Model');
+//App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
 App::uses('Bancha', 'plugins');
 //App::uses('Bancha', 'Behavior');
@@ -74,8 +74,9 @@ class BanchaBehaviorTest extends CakeTestCase {
 		$TestModel->Behaviors->load('Bancha',array('Model'));
 		
 		#execute function
-		$translateModel = $TestModel->Behaviors->Bancha->extractBanchaMetaData();
+		$ExtJSdata = $TestModel->Behaviors->Bancha->extractBanchaMetaData();
 		
+		print_r($ExtJSdata);
 		#do the assertions
 		//$this->assertEqual($translateModel->name, 'I18nModel');
 		//$this->assertEqual($translateModel->useTable, 'another_i18n');

@@ -65,15 +65,10 @@ class BanchaBehavior extends ModelBehavior {
 		 *	binary 			blob
 		 *	boolean 		tinyint(1)
 		 */
-		$fields = $this->$model->getColumnTypes();
-
+		
+		$fields = $this->model->getColumnTypes();
 		$validations = $this->getValidations();
-
-		//TODO format should be like
-		$associations = $model->getAssociated();
-		// $model->getAssociated(); = ???? TODO
-		// $associations =  
-
+		$associations = $this->model->getAssociated();
 		$sorters = $this->getSorters();
 
 		$ExtMetaData = array (
@@ -100,7 +95,7 @@ class BanchaBehavior extends ModelBehavior {
 		}
 		$cols = array();
 		foreach ($columns as $field => $values) {
-			array_push($cols, array( 'type' => 'length', 'name' => $cols[$field], 'max' => $values['length']));
+			array_push($cols, array( 'type' => 'length', 'name' => $field, 'max' => $values['length']));
 		}
 		return $cols;
 	}
@@ -114,9 +109,9 @@ class BanchaBehavior extends ModelBehavior {
 	private function getSorters() {
 		// TODO which kind of arrays/strings does CakePHP return?
 		$sorters = array();
-		if ( is_array($model->order) ) {			
+		if ( is_array($this->model->order) ) {			
 			// var $order = array("Model.field" => "asc", "Model.field2" => "DESC");
-			foreach($model->order as $key => $value) {
+			foreach($this->model->order as $key => $value) {
 				array_push($sorters, array( 'property' => strtok($key, '.'), 'direction' => $value));
 			}
 		} else {

@@ -8,6 +8,7 @@
  */
 
 App::uses('BanchaRequest', 'Bancha');
+App::import('Lib','Bancha.Bancha.Network');
 
 /**
  * BanchaRequestTest
