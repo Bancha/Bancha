@@ -13,37 +13,18 @@
  * @package bancha.libs
  */
 require_once 'BanchaRequest.php';
-require_once 'PHPUnit.php';
 
-class BanchaRequestTest extends PHPUnit_TestCase
+class BanchaRequestTest extends CakeTestCase 
 {
-    // contains the object handle of the string class
-    var $abc;
-
-    // constructor of the test suite
-    function StringTest($name) {
-       $this->PHPUnit_TestCase($name);
-    }
-
-    // called before the test functions will be executed
-    // this function is defined in PHPUnit_TestCase and overwritten
-    // here
-    function setUp() {
-        // create a new instance of String with the
-        // string 'abc'
-        $this->abc = new String("abc");
-    }
-
-    // called after the test functions are executed
-    // this function is defined in PHPUnit_TestCase and overwritten
-    // here
-    function tearDown() {
-        // delete your instance
-        unset($this->abc);
-    }
-
-    // test the toString function
+    // test the getRequest function
     function testgetRequest() {
+
+    	$banchaRequest = new BanchaRequest();
+    	$request = $banchaRequest->getRequest();
+
+    	for($i=0; $i<count($request); $i++) {
+    		$this->assertEquals($request[$i]["action"], "create");
+    	}
     }
 }
 
