@@ -2,7 +2,8 @@
 
 set_include_path(dirname(__FILE__) . '/../../lib' . PATH_SEPARATOR . get_include_path());
 
-include_once 'C:\Users\Kung\Desktop\Eclipse Workspace\InformatikPraktikum2\cakephp\lib\Cake\Network\CakeRequest.php';
+App::uses('CakeRequest', 'Network');
+//include_once 'C:\Users\Kung\Desktop\Eclipse Workspace\InformatikPraktikum2\cakephp\lib\Cake\Network\CakeRequest.php';
 /**
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer

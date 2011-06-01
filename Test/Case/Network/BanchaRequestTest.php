@@ -7,13 +7,13 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-<<<<<<< HEAD
 App::uses('BanchaRequest', 'Bancha');
 App::import('Lib','Bancha.Bancha.Network');
-=======
-echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
->>>>>>> 0d2346a6d1500c51139463239f2e0b0e6467931e
 
+echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
+
+
+//TODO: Unnötig ??
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Network/BanchaRequest.php';
 /**
