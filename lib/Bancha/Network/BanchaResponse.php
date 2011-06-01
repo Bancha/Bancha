@@ -22,9 +22,16 @@
  *
  * @package bancha.libs
  */
+// TODO: into Technical Documentation
+// Doku über CRUD / was man serverseitig machen muss, damit es in cake funktioniert.
+// wie sol cake developer programmieren, damit es funktioniert (für stores zu unterstützen)
+
+// clientseitig: Create // serverseitig soll es add() heißen (auch exception etc.) (muss halt geparst werden ...)
+// destroy -> delete, gibt true oder false zurück, update -> edit, update der records oder exception, read -> index (flo fragen)
+
 class BanchaResponse extends CakeResponse
 {
-	
+	// TODO: Beachten, als was der Response hineinkommt (Object / String->fehler?)
 	public function addResponse(CakeResponse $response)
 	{
 		// TODO: implement
@@ -34,5 +41,5 @@ class BanchaResponse extends CakeResponse
 	{
 		// TODO: implement (??, maybe overwrite variables)
 	}
-	
+	// TODO: EXCEPTIONS BEHANDELN
 }
