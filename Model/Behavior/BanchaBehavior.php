@@ -36,9 +36,9 @@ class BanchaBehavior extends ModelBehavior {
 		// $this->schema = $Model->schema();
 		// types: string, int, float, boolean, data
 		
-		// TODO: alla $cakeValidations = $model->validation;
 		// e.g. {name:'name', type:'string', defaultValue:'', persist:false} // persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
+		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
 
 		/**
 		 * Stores the original schema from the model because it is protected
@@ -66,9 +66,13 @@ class BanchaBehavior extends ModelBehavior {
 		 *	boolean 		tinyint(1)
 		 */
 		
-		$fields = $this->model->getColumnTypes();
+		//$fields = $this->model->getColumnTypes();
+		//$associations = $this->model->getAssociated();
+		
+		
+		$fields = $this->getColumnTypes();
 		$validations = $this->getValidations();
-		$associations = $this->model->getAssociated();
+		$associations = $this->getAssociated();
 		$sorters = $this->getSorters();
 
 		$ExtMetaData = array (
@@ -79,6 +83,51 @@ class BanchaBehavior extends ModelBehavior {
 		);
 
 		return $ExtMetaData;
+	}
+	
+	/**
+	 * Return the Associations as ExtJS-Assoc Model
+	 * should look like this: 
+	
+		'Post', {
+		    fields: ['id', 'user_id', 'title', 'body'],
+		 
+		    belongsTo: 'User',
+		    hasMany: 'Comments'
+		}
+			 
+	 */
+	
+	private function getAssociated() {
+		$assocs = $this->model->getAssociated();
+		$return = array();
+		foreach ($assocs as $field => $value) {
+			array_push($return, array ($value => $field));
+		}
+		return $return;
+	}
+	
+	/**
+	 * return the model columns as ExtJS Fields
+	 * 
+	 * should look like 
+	 * 
+		'User', {
+			fields: [
+		        {name: 'id', type: 'int'},
+		        {name: 'name', type: 'string'}
+		    ]
+		}
+			
+	 */
+	
+	private function getColumnTypes() {
+		$columns = $this->model->getColumnTypes();
+		$cols = array();
+		foreach ($columns as $field => $values) {
+				array_push($cols, array( 'name' => $field, 'type' => $values));
+		}
+		return $cols;
 	}
 
 	/**
