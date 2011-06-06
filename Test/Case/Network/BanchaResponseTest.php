@@ -33,4 +33,5 @@ class BanchaResponseTest extends CakeTestCase
 	function testSend() {
 		
 	}
+}
 ?>
