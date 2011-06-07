@@ -8,14 +8,16 @@
  */
 
 App::uses('BanchaResponse', 'Bancha');
+App::uses('CakeResponse', 'Network');
+
 App::import('Lib','Bancha.Bancha.Network');
 
-echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
 
 // TODO: UNNÖTIG?
 
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Network/BanchaResponse.php';
+
 /**
  * BanchaRequestTest
  *
@@ -24,13 +26,35 @@ require_once 'Network/BanchaResponse.php';
 
 class BanchaResponseTest extends CakeTestCase
 {
-    // TODO: test the addResponse function
-    function testaddResponse() {
+    function testaddResponseNoSuccess() {
+    	$banchaResponse = new BanchaResponse();
+    	/* CakeResponse: @param array $options list of parameters to setup the response. Possible values are:
+ 			*	- body: the rensonse text that should be sent to the client
+ 			*	- status: the HTTP status code to respond with
+ 			*	- type: a complete mime-type string or an extension mapepd in this class
+ 			*	- charset: the charset for the response body
+ 		*/
+    	$banchaResponse->addResponse(new CakeResponse(
+    								array('body' => "test", 'status' => "201", 'type' => 'c', 'charset' => "UTF-8")));
     	
+    	$firstResponse = $banchaResponse->responses[0];
+    	
+    	$this->assertEquals($firstResponse['success'], false);
+    }
+	
+    function testaddResponseSuccess() {
+    	$banchaResponse = new BanchaResponse();
+    	$banchaResponse->addResponse(new CakeResponse(
+    								array('body' => "test", 'status' => "200", 'type' => 'c', 'charset' => "UTF-8")));
+    	
+    	$firstResponse = $banchaResponse->responses[0];
+    	
+    	$this->assertEquals($firstResponse['success'], true);
     }
     
 	// TODO: test the send function
 	function testSend() {
 		
 	}
+}
 ?>
