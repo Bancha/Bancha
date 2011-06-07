@@ -27,29 +27,23 @@ App::uses('CakeResponse', 'Network');
 class BanchaResponse extends CakeResponse
 {
 	public $responses = array();
-	// TODO: eventuell Konstruktor überschreiben ? sinnvoll?
-	// TODO: EXCEPTIONS BEHANDELN
-	// TODO: Beachten, als was der Response hineinkommt (Object / String->fehler?)
+	// TODO: EXCEPTIONS
 	public function addResponse(CakeResponse $response)
 	{			
-		// überprüfen, welchen statuscode der response hat 
+		// check statusCode of response 
 		if ($response->statusCode() != "200") {
 			$response = array(
 			    "success" => false,
 			    "message" => $this->_statusCodes[$response->statusCode()],
-			    "data" => $response
+			    "data" => $response->body()
 			);	
 		} else {
 			$response = array(
 			    "success" => true,
 			    "message" => $this->_statusCodes[$response->statusCode()],
-			    "data" => $response
+			    "data" => $response->body()
 			);
 		}
-		// TODO: CakeResponse umformen in ExtJs fähiger
-		// Cakephp: array mit fields (key value)
-		// ExtJs: Spalten sind eine liste von arrays, jedes array beginnt mit key name -> und value den spaltennamen.
-		// herausfinden, was extjs wirklich haben will und so pushen.
 		
 		array_push($this->responses, $response);
 	}
@@ -70,5 +64,23 @@ class BanchaResponse extends CakeResponse
 			//$this->_sendHeader($header, $value);
 		//}
 		return $this->responses;
+	}
+	
+	public function useSend(BanchaResponse $response) {
+		
+		foreach ($response->responses as $value) {
+			
+			echo '{"sample":'.json_encode($value).'}';
+			
+			// TODO: transform CakeResponse into ExtJs JSON
+			// Cakephp: array with fields (key value)
+			// ExtJs: Columns are a list of arrays, each array begins with key name -> and value of the columnname
+			// check what ext wants and push it
+			// ----> JSON ENCODE
+			
+			$cakeResponse = new CakeResponse(array('body' => json_encode($value), 'status' => "200", 'type' => 'json', 'charset' => "UTF-8"));
+			$cakeResponse->send($cakeResponse);
+			
+		}
 	}
 }
