@@ -13,7 +13,7 @@ App::uses('CakeResponse', 'Network');
 App::import('Lib','Bancha.Bancha.Network');
 
 
-// TODO: UNNÖTIG?
+// TODO: kill, because not necessary?
 
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Network/BanchaResponse.php';
@@ -59,4 +59,5 @@ class BanchaResponseTest extends CakeTestCase
 		
 	}
 }
+
 ?>
