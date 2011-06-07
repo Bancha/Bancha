@@ -40,7 +40,7 @@ class BanchaResponseTest extends CakeTestCase
     	$firstResponse = $banchaResponse->responses[0];
     	
     	$this->assertEquals($firstResponse['success'], false);
-    	$this->assertEquals($firstResponse['body'], "test");
+    	$this->assertEquals($firstResponse['data'], "test");
     }
 	
     function testaddResponseSuccess() {
@@ -51,7 +51,7 @@ class BanchaResponseTest extends CakeTestCase
     	$firstResponse = $banchaResponse->responses[0];
     	
     	$this->assertEquals($firstResponse['success'], true);
-    	$this->assertEquals($firstResponse['body'], "test1");
+    	$this->assertEquals($firstResponse['data'], "test1");
     }
     
 	// TODO: test the send function
