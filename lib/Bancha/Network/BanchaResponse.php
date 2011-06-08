@@ -50,19 +50,10 @@ class BanchaResponse extends CakeResponse
 	
 	public function getResponses()
 	{
-		// TODO: implement (??, maybe overwrite variables)
 		if (isset($this->_headers['Location']) && $this->_status === 200) {
 			$this->statusCode(302);
 		}
 		
-		//$codeMessage = $this->_statusCodes[$this->_status];
-		
-		//$this->_sendHeader("{$this->_protocol} {$this->_status} {$codeMessage}");
-		//$this->_sendHeader('Content-Type', "{$this->_contentType}; charset={$this->_charset}");
-
-		//foreach ($this->_headers as $header => $value) {
-			//$this->_sendHeader($header, $value);
-		//}
 		return $this->responses;
 	}
 	
@@ -72,11 +63,10 @@ class BanchaResponse extends CakeResponse
 			
 			echo '{"sample":'.json_encode($value).'}';
 			
-			// TODO: transform CakeResponse into ExtJs JSON
+			// transform CakeResponse into ExtJs JSON
 			// Cakephp: array with fields (key value)
 			// ExtJs: Columns are a list of arrays, each array begins with key name -> and value of the columnname
-			// check what ext wants and push it
-			// ----> JSON ENCODE
+			// check what ext wants and push it with JSON ENCODE
 			
 			$cakeResponse = new CakeResponse(array('body' => json_encode($value), 'status' => "200", 'type' => 'json', 'charset' => "UTF-8"));
 			$cakeResponse->send($cakeResponse);
