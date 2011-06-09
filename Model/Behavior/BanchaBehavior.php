@@ -32,20 +32,10 @@ class BanchaBehavior extends ModelBehavior {
  * @return array all the metadata as array
  */
 	function extractBanchaMetaData() {
-		// $this->schema = $Model->schema();
-		// types: string, int, float, boolean, data
 		
-		// e.g. {name:'name', type:'string', defaultValue:'', persist:false} // persist is for generated values true
+		//TODO persist: persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
 		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
-
-		/**
-		 * Stores the original schema from the model because it is protected
-		 *
-		 * @var Model.schema
-		 */
-
-		// $this->$schema = $model->schema();
 
 		$ExtMetaData = array();
 
@@ -64,9 +54,6 @@ class BanchaBehavior extends ModelBehavior {
 		 *	binary 			blob
 		 *	boolean 		tinyint(1)
 		 */
-		
-		//$fields = $this->model->getColumnTypes();
-		//$associations = $this->model->getAssociated();
 		
 		
 		$fields = $this->getColumnTypes();
@@ -148,23 +135,17 @@ class BanchaBehavior extends ModelBehavior {
  * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
  */
 	private function getSorters() {
-		// TODO which kind of arrays/strings does CakePHP return?
+		// TODO TechDocu: only arrays are allowed as $order
 		$sorters = array();
 		if ( is_array($this->model->order) ) {			
-			// var $order = array("Model.field" => "asc", "Model.field2" => "DESC");
 			foreach($this->model->order as $key => $value) {
-				array_push($sorters, array( 'property' => strtok($key, '.'), 'direction' => $value));
+				$token = strtok($key, ".");
+				$key = strtok(".");
+				array_push($sorters, array( 'property' => $key, 'direction' => $value));
 			}
 		} else {
-			/* all possible ways to express this property
-			 1. var $order = "field"
-			 2. var $order = "Model.field";
-			 3. var $order = "Model.field asc";
-			 4. var $order = "Model.field ASC";
-			 5. var $order = "Model.field DESC";
-			 */
+			//debug("model->order is not an array");
 		}
-		// $sorters = { property: 'name', direction: 'ASC' };
 		return $sorters;
 	}
 
