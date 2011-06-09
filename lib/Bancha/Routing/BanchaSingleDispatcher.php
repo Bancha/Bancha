@@ -1,0 +1,62 @@
+<?php
+/**
+ * @copyright     Copyright 2011 Bancha Project
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v1.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ */
+
+App::uses('Dispatcher', 'Routing');
+
+/**
+ * BanchaSingleDispatcher
+ *
+ * @package bancha.libs
+ */
+class BanchaSingleDispatcher extends Dispatcher {
+
+/**
+ * Initializes the components and models a controller will be using.
+ * Triggers the controller action, and invokes the rendering if Controller::$autoRender is true and echo's the output.
+ * Otherwise the return value of the controller action are returned.
+ *
+ * Works like {@see Dispatcher::_invoke()} but returns the full response instead the body only.
+ *
+ * @param Controller $controller Controller to invoke
+ * @param CakeRequest $request The request object to invoke the controller for.
+ * @return string CakeResponse object or void.
+ * @throws MissingActionException when the action being called is missing.
+ */
+	protected function _invoke(Controller $controller, CakeRequest $request) {
+		$controller->constructClasses();
+		$controller->startupProcess();
+
+		$methods = array_flip($controller->methods);
+
+		if (!isset($methods[$request->params['action']])) {
+			if ($controller->scaffold !== false) {
+				return new Scaffold($controller, $request);
+			}
+			throw new MissingActionException(array(
+				'controller' => Inflector::camelize($request->params['controller']) . "Controller",
+				'action' => $request->params['action']
+			));
+		}
+		$result = call_user_func_array(array(&$controller, $request->params['action']), $request->params['pass']);
+		$response = $controller->getResponse();
+
+		if ($controller->autoRender) {
+			$controller->render();
+		} elseif ($response->body() === null) {
+			$response->body($result);
+		}
+		$controller->shutdownProcess();
+
+		if (isset($request->params['return'])) {
+			return $response;
+		}
+		$response->send();
+	}
+
+}

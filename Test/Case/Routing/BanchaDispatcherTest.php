@@ -21,6 +21,8 @@
 
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Routing/BanchaDispatcher.php';
+require_once 'Routing/BanchaSingleDispatcher.php';
+require_once 'Network/BanchaResponse.php';
 
 /**
  * @package bancha.libs
@@ -37,11 +39,10 @@ class BanchaDispatcherTest extends CakeTestCase {
 					  )));
 		
 		$dispatcher = new BanchaDispatcher();
-		$responses = $dispatcher->dispatch($banchaRequest);
+		$responses = json_decode($dispatcher->dispatch($banchaRequest)->send());
 		
-		// TODO: Test against the generated BanchaResponse object instead the plain responses.
-		$this->assertEquals('Hello World!', $responses[0]);
-		$this->assertEquals('foobar', $responses[1]);
+		$this->assertEquals('Hello World', $responses[0]['body']['text']);
+		$this->assertEquals('foobar', $responses[1]['body']['text']);
 	}
 	
 }
@@ -54,11 +55,11 @@ class BanchaDispatcherTest extends CakeTestCase {
 class MyController extends AppController {
 	
 	public function testaction1() {
-		return 'Hello World!';
+		return array('text' => 'Hello World!');
 	}
 	
 	public function testaction2() {
-		return 'foobar';
+		return array('text' => 'foobar');
 	}
 	
 }

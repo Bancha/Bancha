@@ -27,7 +27,8 @@ App::uses('CakeResponse', 'Network');
 
 class BanchaResponse extends CakeResponse {
 	
-	public $responses = array();
+	/** @var array */
+	protected $responses = array();
 
 	public function addResponse(CakeResponse $response) {
 		// TODO: EXCEPTIONS
@@ -47,6 +48,8 @@ class BanchaResponse extends CakeResponse {
 		}
 		
 		array_push($this->responses, $response);
+		
+		return $this;
 	}
 	
 	public function getResponses() {
@@ -57,8 +60,8 @@ class BanchaResponse extends CakeResponse {
 		return $this->responses;
 	}
 	
-	public function useSend(BanchaResponse $response) {
-		foreach ($response->responses as $value) {
+	public function send() {
+		foreach ($this->responses as $value) {
 			// echo '{"sample":'.json_encode($value).'}';
 			
 			// transform CakeResponse into ExtJs JSON

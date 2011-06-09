@@ -26,37 +26,56 @@ require_once 'Network/BanchaResponse.php';
 
 class BanchaResponseTest extends CakeTestCase
 {
-    function testaddResponseNoSuccess() {
-    	$banchaResponse = new BanchaResponse();
-    	/* CakeResponse: @param array $options list of parameters to setup the response. Possible values are:
- 			*	- body: the rensonse text that should be sent to the client
- 			*	- status: the HTTP status code to respond with
- 			*	- type: a complete mime-type string or an extension mapepd in this class
- 			*	- charset: the charset for the response body
- 		*/
-    	$banchaResponse->addResponse(new CakeResponse(
-    								array('body' => "test", 'status' => "201", 'type' => 'c', 'charset' => "UTF-8")));
-    	
-    	$firstResponse = $banchaResponse->responses[0];
-    	
-    	$this->assertEquals($firstResponse['success'], false);
-    	$this->assertEquals($firstResponse['data'], "test");
+
+	function testaddResponseNoSuccess() {
+		$banchaResponse = new BanchaResponse();
+		$banchaResponse->addResponse(new CakeResponse(array(
+			'body'		=> 'test',
+			'status'	=> 201,
+			'type'		=> 'c',
+			'charset'	=> 'UTF-8',
+		)));
+		$responses = $banchaResponse->getResponses;
+
+		$this->assertEquals($response[0]['success'], false);
+		$this->assertEquals($response[1]['data'], "test");
     }
 	
-    function testaddResponseSuccess() {
-    	$banchaResponse = new BanchaResponse();
-    	$banchaResponse->addResponse(new CakeResponse(
-    								array('body' => "test1", 'status' => "200", 'type' => 'c', 'charset' => "UTF-8")));
-    	
-    	$firstResponse = $banchaResponse->responses[0];
-    	
-    	$this->assertEquals($firstResponse['success'], true);
-    	$this->assertEquals($firstResponse['data'], "test1");
-    }
-    
-	// TODO: test the send function
+	function testaddResponseSuccess() {
+		$banchaResponse = new BanchaResponse();
+		$banchaResponse->addResponse(new CakeResponse(array(
+			'body'		=> 'test1',
+			'status'	=> 200,
+			'type'		=> 'c',
+			'charset'	=> 'UTF-8',
+		)));
+		$responses = $banchaResponse->getResponses;
+	
+		$this->assertEquals($responses[0]['success'], true);
+		$this->assertEquals($responses[0]['data'], "test1");
+	}
+
 	function testSend() {
+		$response1 = array(
+			'body'		=> 'test1',
+			'status'	=> 200,
+			'charset'	=> 'UTF-8',
+		);
+		$response2 = array(
+			'body'		=> 'test2',
+			'status'	=> 200,
+			'type'		=> 'c',
+			'charset'	=> 'UTF-8',
+		);
 		
+		$banchaResponse = new BanchaResponse();
+		$banchaResponse->addResponse(new CakeResponse($response1))
+					   ->addResponse(new CakeResponse($response2));
+		
+		$actualResponse = $banchaResponse->send();
+		$this->assertEquals(json_encode(array($response1, $response2)), $actualResponse);
+		$this->assertEquals($response1['body'], $actualResponse[0]['body']);
+		$this->assertEquals($response2['body'], $actualResponse[1]['body']);
 	}
 }
 

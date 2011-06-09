@@ -25,15 +25,13 @@ class BanchaDispatcher {
  */
 	public function dispatch(BanchaRequest $requests) {
 		// TODO: Parameter to define if the response should be returned or echoed.
-		$responses = array();
+		$response = new BanchaResponse();
 		foreach ($requests->getRequests() as $request) {
 			// Call dispatcher for the given CakeRequest.
-			$dispatcher = new Dispatcher();
-			$responses[] = $dispatcher->dispatch($request, array('return' => true));
+			$dispatcher = new BanchaSingleDispatcher();
+			$response->addResponse($dispatcher->dispatch($request, array('return' => true)));
 		}
-		
-		// TODO: Generate and send a BanchaResponse.
-		return $responses;
+		return $response;
 	}
 
 }
