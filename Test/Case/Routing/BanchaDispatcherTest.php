@@ -19,19 +19,15 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
-
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Routing/BanchaDispatcher.php';
 
 /**
  * @package bancha.libs
  */
-class BanchaDispatcherTest extends CakeTestCase
-{
+class BanchaDispatcherTest extends CakeTestCase {
 	
-	public function testDispatch()
-	{
+	public function testDispatch() {
 		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
 		$banchaRequest->expects($this->any())
 					  ->method('getRequests')
@@ -57,13 +53,11 @@ class BanchaDispatcherTest extends CakeTestCase
  */
 class MyController extends AppController {
 	
-	public function testaction1()
-	{
+	public function testaction1() {
 		return 'Hello World!';
 	}
 	
-	public function testaction2()
-	{
+	public function testaction2() {
 		return 'foobar';
 	}
 	

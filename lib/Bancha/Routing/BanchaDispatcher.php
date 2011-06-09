@@ -14,21 +14,19 @@ App::uses('Dispatcher', 'Routing');
  *
  * @package bancha.libs
  */
-class BanchaDispatcher
-{
+class BanchaDispatcher {
 
-	/**
-	 * Dispatches a BanchaRequest object. It uses the standard CakePHP dispatcher to dispatch the single CakeRequest
-	 * objects returned by BanchaRequest.
-	 *
-	 * @param BanchaRequest $requests A BanchaRequest can contain multiple CakeRequest objects.
-	 * @return array Array where every element is the response of a single request.
-	 */
-	public function dispatch(BanchaRequest $requests)
-	{
+/**
+ * Dispatches a BanchaRequest object. It uses the standard CakePHP dispatcher to dispatch the single CakeRequest
+ * objects returned by BanchaRequest.
+ *
+ * @param BanchaRequest $requests A BanchaRequest can contain multiple CakeRequest objects.
+ * @return array Array where every element is the response of a single request.
+ */
+	public function dispatch(BanchaRequest $requests) {
+		// TODO: Parameter to define if the response should be returned or echoed.
 		$responses = array();
-		foreach ($requests->getRequests() as $request)
-		{
+		foreach ($requests->getRequests() as $request) {
 			// Call dispatcher for the given CakeRequest.
 			$dispatcher = new Dispatcher();
 			$responses[] = $dispatcher->dispatch($request, array('return' => true));
