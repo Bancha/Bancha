@@ -82,6 +82,8 @@ class BanchaController extends BanchaAppController {
 		}
 		/**
 		 * loop through the Controllers and adds the apropriate methods
+		 * 
+		 * TODO implement scaffolding;
 		 */
 
 		foreach($banchaModels as $cont) {

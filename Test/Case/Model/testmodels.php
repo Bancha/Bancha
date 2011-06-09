@@ -17,7 +17,7 @@ class TestUser extends CakeTestModel {
  */
 	public $name = 'User';
 	
-	public $useTable = 'users';
+	public $useTable = false;
 	
 	/** order property
 	 * 
@@ -147,9 +147,23 @@ class TestUser extends CakeTestModel {
 
 class TestUserOrder extends CakeTestModel {
 	public $name = 'User';
-	public $useTable = 'users';
-	
+	public $useTable = false; //users
 	public $order = array('name.order' => 'ASC');
+
+/**
+ * schema property
+ *
+ * @var array
+ * @access protected
+ */
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
+		'title' => array('type' => 'string', 'null' => '', 'default' => '', 'length' => '255'),
+		'body' => array('type' => 'string', 'null' => '1', 'default' => '', 'length' => ''),
+		'number' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
+		'created' => array('type' => 'date', 'null' => '1', 'default' => '', 'length' => ''),
+		'modified' => array('type' => 'datetime', 'null' => '1', 'default' => '', 'length' => null)
+	);
 }
 	
 
@@ -163,7 +177,13 @@ class TestUserRelationships extends CakeTestModel {
  */
 	public $name = 'User';
 	
-	public $useTable = 'users';
+/**
+ * useTable property
+ *
+ * @var bool false
+ * @access public
+ */
+	public $useTable = false;
 	
 	//public $hasOne = NULL;
 	
@@ -187,7 +207,20 @@ class TestUserRelationships extends CakeTestModel {
 			'counterQuery' => ''
 		)
 	);
-	
+	/**
+ * schema property
+ *
+ * @var array
+ * @access protected
+ */
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
+		'title' => array('type' => 'string', 'null' => '', 'default' => '', 'length' => '255'),
+		'body' => array('type' => 'string', 'null' => '1', 'default' => '', 'length' => ''),
+		'number' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
+		'created' => array('type' => 'date', 'null' => '1', 'default' => '', 'length' => ''),
+		'modified' => array('type' => 'datetime', 'null' => '1', 'default' => '', 'length' => null)
+	);
 	//public $hasMany = array('Device' => array('order' => array('Device.id' => 'ASC')));
 }
 
