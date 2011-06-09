@@ -33,7 +33,7 @@ class BanchaBehaviorTest extends CakeTestCase {
 	 * @var unknown_type
 	 */
 	
-	var $fixtures = array( 'UserTest' ); 
+	//var $fixtures = array( 'UserTest' ); 
 /**
  * Sets the plugins folder for this test
  *
