@@ -1,5 +1,4 @@
 <?php
-App::uses('CakeResponse', 'Network');
 /**
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -18,25 +17,27 @@ App::uses('CakeResponse', 'Network');
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+App::uses('CakeResponse', 'Network');
+
 /**
  * BanchaResponse
  *
  * @package bancha.libs
  */
 
-class BanchaResponse extends CakeResponse
-{
+class BanchaResponse extends CakeResponse {
+	
 	public $responses = array();
-	// TODO: EXCEPTIONS
-	public function addResponse(CakeResponse $response)
-	{			
+
+	public function addResponse(CakeResponse $response) {
+		// TODO: EXCEPTIONS
 		// check statusCode of response 
 		if ($response->statusCode() != "200") {
 			$response = array(
 			    "success" => false,
 			    "message" => $this->_statusCodes[$response->statusCode()],
 			    "data" => $response->body()
-			);	
+			);
 		} else {
 			$response = array(
 			    "success" => true,
@@ -48,39 +49,31 @@ class BanchaResponse extends CakeResponse
 		array_push($this->responses, $response);
 	}
 	
-	public function getResponses()
-	{
-		// TODO: implement (??, maybe overwrite variables)
+	public function getResponses() {
 		if (isset($this->_headers['Location']) && $this->_status === 200) {
 			$this->statusCode(302);
 		}
 		
-		//$codeMessage = $this->_statusCodes[$this->_status];
-		
-		//$this->_sendHeader("{$this->_protocol} {$this->_status} {$codeMessage}");
-		//$this->_sendHeader('Content-Type', "{$this->_contentType}; charset={$this->_charset}");
-
-		//foreach ($this->_headers as $header => $value) {
-			//$this->_sendHeader($header, $value);
-		//}
 		return $this->responses;
 	}
 	
 	public function useSend(BanchaResponse $response) {
-		
 		foreach ($response->responses as $value) {
+			// echo '{"sample":'.json_encode($value).'}';
 			
-			echo '{"sample":'.json_encode($value).'}';
-			
-			// TODO: transform CakeResponse into ExtJs JSON
+			// transform CakeResponse into ExtJs JSON
 			// Cakephp: array with fields (key value)
 			// ExtJs: Columns are a list of arrays, each array begins with key name -> and value of the columnname
-			// check what ext wants and push it
-			// ----> JSON ENCODE
+			// check what ext wants and push it with JSON ENCODE
 			
-			$cakeResponse = new CakeResponse(array('body' => json_encode($value), 'status' => "200", 'type' => 'json', 'charset' => "UTF-8"));
+			$cakeResponse = new CakeResponse(array(
+				'body'		=> json_encode($value),
+				'status'	=> "200",
+				'type'		=> 'json',
+				'charset'	=> "UTF-8")
+			);
 			$cakeResponse->send($cakeResponse);
-			
 		}
 	}
+
 }

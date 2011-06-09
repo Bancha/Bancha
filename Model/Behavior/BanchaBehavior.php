@@ -8,16 +8,15 @@ class BanchaBehavior extends ModelBehavior {
 	private $schema;
 	private $model;
 
-	/**
-	 *  TODO doku
-	 *
-	 * @param object $Model instance of model
-	 * @param array $config array of configuration settings.
-	 * @return void
-	 * @access public
-	 */
+/**
+ *  TODO doku
+ *
+ * @param object $Model instance of model
+ * @param array $config array of configuration settings.
+ * @return void
+ * @access public
+ */
 	function setup(&$Model, $config = array()) {
-
 		if(is_string($config)) {
 			// TODO in array form umwandeln
 		}
@@ -26,12 +25,12 @@ class BanchaBehavior extends ModelBehavior {
 		$this->actionIsAllowed = $config;
 	}
 
-	/**
-	 * Extracts all metadata which should be shared with the ExtJS frontend
-	 *
-	 * @param AppModel $model
-	 * @return array all the metadata as array
-	 */
+/**
+ * Extracts all metadata which should be shared with the ExtJS frontend
+ *
+ * @param AppModel $model
+ * @return array all the metadata as array
+ */
 	function extractBanchaMetaData() {
 		
 		//TODO persist: persist is for generated values true
@@ -72,19 +71,16 @@ class BanchaBehavior extends ModelBehavior {
 		return $ExtMetaData;
 	}
 	
-	/**
-	 * Return the Associations as ExtJS-Assoc Model
-	 * should look like this: 
-	
-		'Post', {
-		    fields: ['id', 'user_id', 'title', 'body'],
-		 
-		    belongsTo: 'User',
-		    hasMany: 'Comments'
-		}
-			 
-	 */
-	
+/**
+ * Return the Associations as ExtJS-Assoc Model
+ * should look like this: 
+ *
+ * 'Post', {
+ *     fields: ['id', 'user_id', 'title', 'body'],
+ *	   belongsTo: 'User',
+ *	   hasMany: 'Comments'
+ *	}
+ */
 	private function getAssociated() {
 		$assocs = $this->model->getAssociated();
 		$return = array();
@@ -94,20 +90,18 @@ class BanchaBehavior extends ModelBehavior {
 		return $return;
 	}
 	
-	/**
-	 * return the model columns as ExtJS Fields
-	 * 
-	 * should look like 
-	 * 
-		'User', {
-			fields: [
-		        {name: 'id', type: 'int'},
-		        {name: 'name', type: 'string'}
-		    ]
-		}
-			
-	 */
-	
+/**
+ * return the model columns as ExtJS Fields
+ * 
+ * should look like 
+ * 
+ * 'User', {
+ *   fields: [
+ *     {name: 'id', type: 'int'},
+ *     {name: 'name', type: 'string'}
+ *   ]
+ * }
+ */
 	private function getColumnTypes() {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
@@ -117,13 +111,12 @@ class BanchaBehavior extends ModelBehavior {
 		return $cols;
 	}
 
-	/**
-	 * Returns an ExtJS formated array of field names, validation types and constraints.
-	 * atm only the max length constraint is retrived
-	 *
-	 * @return array ExtJS formated {type, name, max}
-	 */
-
+/**
+ * Returns an ExtJS formated array of field names, validation types and constraints.
+ * atm only the max length constraint is retrived
+ *
+ * @return array ExtJS formated {type, name, max}
+ */
 	private function getValidations() {
 		$columns = $this->schema;
 		if (empty($columns)) {
@@ -136,12 +129,11 @@ class BanchaBehavior extends ModelBehavior {
 		return $cols;
 	}
 
-	/**
-	 * Returns an ExtJS formated array describing sortable fields
-	 *
-	 * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
-	 */
-
+/**
+ * Returns an ExtJS formated array describing sortable fields
+ *
+ * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
+ */
 	private function getSorters() {
 		// TODO TechDocu: only arrays are allowed as $order
 		$sorters = array();
@@ -156,5 +148,5 @@ class BanchaBehavior extends ModelBehavior {
 		}
 		return $sorters;
 	}
+
 }
-?>
