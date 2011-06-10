@@ -24,7 +24,7 @@ App::uses('CakeRequest', 'Network');
  *
  * @package bancha.libs
  */
-class BanchaRequest {
+class BanchaRequestTransformer {
 
 /**
  * Returns an array of CakeRequest objects.

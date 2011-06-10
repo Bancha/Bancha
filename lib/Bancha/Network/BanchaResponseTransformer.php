@@ -25,7 +25,7 @@ App::uses('CakeResponse', 'Network');
  * @package bancha.libs
  */
 
-class BanchaResponse {
+class BanchaResponseTransformer {
 	
 	/** @var array */
 	protected $responses = array();
@@ -34,7 +34,7 @@ class BanchaResponse {
  * Adds a new CakeResponse object to the response transformer.
  *
  * @param CakeResponse $response 
- * @return BanchaResponse
+ * @return BanchaResponseTransformer
  */
 	public function addResponse(CakeResponse $response) {
 		// TODO: EXCEPTIONS

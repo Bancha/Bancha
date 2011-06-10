@@ -26,8 +26,8 @@ class BanchaDispatcher {
  * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
  * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
  */
-	public function dispatch(BanchaRequest $requests, $additionalParams = array()) {
-		$transformer = new BanchaResponse();
+	public function dispatch(BanchaRequestTransformer $requests, $additionalParams = array()) {
+		$transformer = new BanchaResponseTransformer();
 		
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {

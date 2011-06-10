@@ -22,7 +22,7 @@
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Routing/BanchaDispatcher.php';
 require_once 'Routing/BanchaSingleDispatcher.php';
-require_once 'Network/BanchaResponse.php';
+require_once 'Network/BanchaResponseTransformer.php';
 
 /**
  * @package bancha.libs
@@ -39,7 +39,7 @@ class BanchaDispatcherTest extends CakeTestCase {
  *
  */
 	public function testDispatchWithReturn() {
-		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
+		$banchaRequest = $this->getMock('BanchaRequestTransformer', array('getRequests'));
 		$banchaRequest->expects($this->any())
 					  ->method('getRequests')
 					  ->will($this->returnValue(array(
@@ -61,7 +61,7 @@ class BanchaDispatcherTest extends CakeTestCase {
  */
 	public function testDispatchWithoutReturn()
 	{
-		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
+		$banchaRequest = $this->getMock('BanchaRequestTransformer', array('getRequests'));
 		$banchaRequest->expects($this->any())
 					  ->method('getRequests')
 					  ->will($this->returnValue(array(

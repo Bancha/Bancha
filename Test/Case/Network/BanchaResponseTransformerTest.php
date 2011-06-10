@@ -16,7 +16,7 @@ App::import('Lib','Bancha.Bancha.Network');
 // TODO: kill, because not necessary?
 
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Network/BanchaResponse.php';
+require_once 'Network/BanchaResponseTransformer.php';
 
 /**
  * BanchaRequestTest
@@ -78,11 +78,11 @@ class BanchaResponseTest extends CakeTestCase
 			'data'		=> 'test1',
 		);
 		
-		$banchaResponse = new BanchaResponse();
-		$banchaResponse->addResponse(new CakeResponse($response1))
-					   ->addResponse(new CakeResponse($response2));
+		$transformer = new BanchaResponseTransformer();
+		$transformer->addResponse(new CakeResponse($response1))
+					->addResponse(new CakeResponse($response2));
 		
-		$actualResponse = $banchaResponse->getResponses()->body();
+		$actualResponse = $transformer->getResponses()->body();
 		// var_dump(json_decode($actualResponse->body()));
 		$this->assertEquals(json_encode(array($expectedResponse1, $expectedResponse2)), $actualResponse);
 		
