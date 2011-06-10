@@ -31,6 +31,8 @@ class UserFixture extends CakeTestFixture {
  * @access public
  */
 	public $name = 'User';
+	
+	public $table = false;
 
 /**
  * fields property
