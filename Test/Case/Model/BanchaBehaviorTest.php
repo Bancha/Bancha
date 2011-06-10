@@ -42,7 +42,7 @@ class BanchaBehaviorTest extends CakeTestCase {
 	public function setUp() {
 		//App::build(array('plugins' => array( 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' . DS ), true));
 		//App::objects('plugins', null, false);
-		//App::build(array('Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)), App::RESET);
+		App::build(array('Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)), App::RESET);
 	}
 
 /**
