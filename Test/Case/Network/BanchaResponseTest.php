@@ -27,55 +27,68 @@ require_once 'Network/BanchaResponse.php';
 class BanchaResponseTest extends CakeTestCase
 {
 
-	function testaddResponseNoSuccess() {
-		$banchaResponse = new BanchaResponse();
-		$banchaResponse->addResponse(new CakeResponse(array(
-			'body'		=> 'test',
-			'status'	=> 201,
-			'type'		=> 'c',
-			'charset'	=> 'UTF-8',
-		)));
-		$responses = $banchaResponse->getResponses;
+	// function testaddResponseNoSuccess() {
+	// 	$banchaResponse = new BanchaResponse();
+	// 	$banchaResponse->addResponse(new CakeResponse(array(
+	// 		'body'		=> 'test',
+	// 		'status'	=> 201,
+	// 		'type'		=> 'c',
+	// 		'charset'	=> 'UTF-8',
+	// 	)));
+	// 	$responses = $banchaResponse->getResponses;
+	// 
+	// 	$this->assertEquals($response[0]['success'], false);
+	// 	$this->assertEquals($response[1]['data'], "test");
+	//     }
+	// 
+	// function testaddResponseSuccess() {
+	// 	$banchaResponse = new BanchaResponse();
+	// 	$banchaResponse->addResponse(new CakeResponse(array(
+	// 		'body'		=> 'test1',
+	// 		'status'	=> 200,
+	// 		'type'		=> 'c',
+	// 		'charset'	=> 'UTF-8',
+	// 	)));
+	// 	$responses = $banchaResponse->getResponses();
+	// 
+	// 	$this->assertEquals($responses[0]['success'], true);
+	// 	$this->assertEquals($responses[0]['data'], "test1");
+	// }
 
-		$this->assertEquals($response[0]['success'], false);
-		$this->assertEquals($response[1]['data'], "test");
-    }
-	
-	function testaddResponseSuccess() {
-		$banchaResponse = new BanchaResponse();
-		$banchaResponse->addResponse(new CakeResponse(array(
-			'body'		=> 'test1',
-			'status'	=> 200,
-			'type'		=> 'c',
-			'charset'	=> 'UTF-8',
-		)));
-		$responses = $banchaResponse->getResponses;
-	
-		$this->assertEquals($responses[0]['success'], true);
-		$this->assertEquals($responses[0]['data'], "test1");
-	}
-
-	function testSend() {
+	function testGetResponses() {
 		$response1 = array(
+			'success'	=> true,
+			'message'	=> 200,
 			'body'		=> 'test1',
-			'status'	=> 200,
-			'charset'	=> 'UTF-8',
 		);
 		$response2 = array(
-			'body'		=> 'test2',
-			'status'	=> 200,
-			'type'		=> 'c',
-			'charset'	=> 'UTF-8',
+			'success'	=> true,
+			'message'	=> 200,
+			'body'		=> 'test1',
+		);
+		
+		$expectedResponse1 = array(
+			'success'	=> true,
+			'message'	=> 200,
+			'data'		=> 'test1',
+		);
+		$expectedResponse2 = array(
+			'success'	=> true,
+			'message'	=> 200,
+			'data'		=> 'test1',
 		);
 		
 		$banchaResponse = new BanchaResponse();
 		$banchaResponse->addResponse(new CakeResponse($response1))
 					   ->addResponse(new CakeResponse($response2));
 		
-		$actualResponse = $banchaResponse->send();
-		$this->assertEquals(json_encode(array($response1, $response2)), $actualResponse);
-		$this->assertEquals($response1['body'], $actualResponse[0]['body']);
-		$this->assertEquals($response2['body'], $actualResponse[1]['body']);
+		$actualResponse = $banchaResponse->getResponses()->body();
+		// var_dump(json_decode($actualResponse->body()));
+		$this->assertEquals(json_encode(array($expectedResponse1, $expectedResponse2)), $actualResponse);
+		
+		$actualResponse = json_decode($actualResponse);
+		$this->assertEquals($expectedResponse1['data'], $actualResponse[0]->data);
+		$this->assertEquals($expectedResponse2['data'], $actualResponse[1]->data);
 	}
 }
 

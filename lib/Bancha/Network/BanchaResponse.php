@@ -25,24 +25,30 @@ App::uses('CakeResponse', 'Network');
  * @package bancha.libs
  */
 
-class BanchaResponse extends CakeResponse {
+class BanchaResponse {
 	
 	/** @var array */
 	protected $responses = array();
 
+/**
+ * Adds a new CakeResponse object to the response transformer.
+ *
+ * @param CakeResponse $response 
+ * @return BanchaResponse
+ */
 	public function addResponse(CakeResponse $response) {
 		// TODO: EXCEPTIONS
 		// check statusCode of response 
 		if ($response->statusCode() != "200") {
 			$response = array(
 			    "success" => false,
-			    "message" => $this->_statusCodes[$response->statusCode()],
+			    "message" => $response->statusCode(),
 			    "data" => $response->body()
 			);
 		} else {
 			$response = array(
 			    "success" => true,
-			    "message" => $this->_statusCodes[$response->statusCode()],
+			    "message" => $response->statusCode(),
 			    "data" => $response->body()
 			);
 		}
@@ -52,31 +58,23 @@ class BanchaResponse extends CakeResponse {
 		return $this;
 	}
 	
+/**
+ * Combines all CakeResponses into a single response and transforms it into JSON.
+ *
+ * @return CakeResponse
+ */
 	public function getResponses() {
-		if (isset($this->_headers['Location']) && $this->_status === 200) {
-			$this->statusCode(302);
+		$responses = array();
+		foreach ($this->responses as $singleResponse)
+		{
+			$responses[] = $singleResponse;
 		}
-		
-		return $this->responses;
-	}
-	
-	public function send() {
-		foreach ($this->responses as $value) {
-			// echo '{"sample":'.json_encode($value).'}';
-			
-			// transform CakeResponse into ExtJs JSON
-			// Cakephp: array with fields (key value)
-			// ExtJs: Columns are a list of arrays, each array begins with key name -> and value of the columnname
-			// check what ext wants and push it with JSON ENCODE
-			
-			$cakeResponse = new CakeResponse(array(
-				'body'		=> json_encode($value),
-				'status'	=> "200",
-				'type'		=> 'json',
-				'charset'	=> "UTF-8")
-			);
-			$cakeResponse->send($cakeResponse);
-		}
+		return new CakeResponse(array(
+			'body'			=> json_encode($responses),
+			'status'		=> 200,
+			'type'			=> 'json',
+			'charset'		=> 'utf-8',
+		));
 	}
 
 }

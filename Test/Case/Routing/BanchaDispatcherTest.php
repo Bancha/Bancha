@@ -29,7 +29,16 @@ require_once 'Network/BanchaResponse.php';
  */
 class BanchaDispatcherTest extends CakeTestCase {
 	
-	public function testDispatch() {
+/**
+ * Tests the dispatch() method of BanchaDispatcher with the 'return'-option. Thus dispatch() doesn't send the response
+ * to the browser but returns it instead. We are able to mock the BanchaRequest object, but we are not able to mock
+ * the other objects used by the Dispatcher. Especially we need to provide an actual controller class. MyController is
+ * defined at the bottom of this file.
+ *
+ * This tests dispatches two actions and tests if the expected content is available in the combined response.
+ *
+ */
+	public function testDispatchWithReturn() {
 		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
 		$banchaRequest->expects($this->any())
 					  ->method('getRequests')
@@ -39,10 +48,35 @@ class BanchaDispatcherTest extends CakeTestCase {
 					  )));
 		
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch($banchaRequest)->send());
+		$responses = json_decode($dispatcher->dispatch($banchaRequest, array('return' => true)));
 		
-		$this->assertEquals('Hello World', $responses[0]['body']['text']);
-		$this->assertEquals('foobar', $responses[1]['body']['text']);
+		$this->assertEquals('Hello World!', $responses[0]->data->text);
+		$this->assertEquals('foobar', $responses[1]->data->text);
+	}
+	
+/**
+ * Tests the dispatch() method of BanchaDispatcher without the 'return'-option. Thus dispatch() sends the response
+ * directly to the browser. We need to capture the output to test it.
+ *
+ */
+	public function testDispatchWithoutReturn()
+	{
+		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
+		$banchaRequest->expects($this->any())
+					  ->method('getRequests')
+					  ->will($this->returnValue(array(
+						new CakeRequest('/my/testaction1'),
+						new CakeRequest('/my/testaction2')
+					  )));
+		
+		$dispatcher = new BanchaDispatcher();
+		ob_start(); // capture output, because we want to test without return
+		$dispatcher->dispatch($banchaRequest);
+		$responses = json_decode(ob_get_contents());
+		ob_end_clean();
+		
+		$this->assertEquals('Hello World!', $responses[0]->data->text);
+		$this->assertEquals('foobar', $responses[1]->data->text);
 	}
 	
 }
@@ -63,4 +97,3 @@ class MyController extends AppController {
 	}
 	
 }
-
