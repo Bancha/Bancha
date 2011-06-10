@@ -17,17 +17,17 @@ App::uses('Dispatcher', 'Routing');
 class BanchaDispatcher {
 
 /**
- * Dispatches a BanchaRequest object. It uses the standard CakePHP dispatcher to dispatch the single CakeRequest
- * objects returned by BanchaRequest. Further it uses BanchaResponse to transform the responses into a single
- * CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the response is
- * returned instead of directly sent to the browser.
+ * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
+ * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
+ * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
+ * response is returned instead of directly sent to the browser.
  *
- * @param BanchaRequest $requests A BanchaRequest can contain multiple CakeRequest objects.
+ * @param BanchaRequestCollection $requests A BanchaRequestCollection can contain multiple CakeRequest objects.
  * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
  * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
  */
-	public function dispatch(BanchaRequestTransformer $requests, $additionalParams = array()) {
-		$transformer = new BanchaResponseTransformer();
+	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
+		$transformer = new BanchaResponseCollection();
 		
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {

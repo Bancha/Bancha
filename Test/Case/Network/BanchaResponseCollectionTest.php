@@ -7,7 +7,7 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-App::uses('BanchaResponse', 'Bancha');
+App::uses('BanchaResponseCollection', 'Bancha');
 App::uses('CakeResponse', 'Network');
 
 App::import('Lib','Bancha.Bancha.Network');
@@ -16,7 +16,7 @@ App::import('Lib','Bancha.Bancha.Network');
 // TODO: kill, because not necessary?
 
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Network/BanchaResponseTransformer.php';
+require_once 'Network/BanchaResponseCollection.php';
 
 /**
  * BanchaRequestTest
@@ -24,7 +24,7 @@ require_once 'Network/BanchaResponseTransformer.php';
  * @package bancha.libs
  */
 
-class BanchaResponseTest extends CakeTestCase
+class BanchaResponseCollectionTest extends CakeTestCase
 {
 
 	// function testaddResponseNoSuccess() {
@@ -78,7 +78,7 @@ class BanchaResponseTest extends CakeTestCase
 			'data'		=> 'test1',
 		);
 		
-		$transformer = new BanchaResponseTransformer();
+		$transformer = new BanchaResponseCollection();
 		$transformer->addResponse(new CakeResponse($response1))
 					->addResponse(new CakeResponse($response2));
 		

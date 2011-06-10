@@ -7,7 +7,7 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-App::uses('BanchaRequest', 'Bancha');
+App::uses('BanchaRequestCollection', 'Bancha');
 App::import('Lib','Bancha.Bancha.Network');
 
 echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
@@ -15,22 +15,21 @@ echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
 
 //TODO: Unnötig ??
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Network/BanchaRequestTransformer.php';
+require_once 'Network/BanchaRequestCollection.php';
 /**
- * BanchaRequestTest
+ * BanchaRequestCollectionTest
  *
  * @package bancha.libs
  */
-
-class BanchaRequestTransformerTest extends CakeTestCase
+class BanchaRequestCollectionTest extends CakeTestCase
 {
     // test the getRequest function
     function testgetRequest() {
     	
 		$_POST = '{"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"rpc","tid":1}';
 							  
-		$banchaRequest = new BanchaRequestTransformer();
-    	$request = $banchaRequest->getRequests();
+		$collection = new BanchaRequestCollection();
+    	$request = $collection->getRequests();
     	
     	//echo "responses:";
     	//print_r($request);
@@ -46,8 +45,8 @@ class BanchaRequestTransformerTest extends CakeTestCase
 	    	// TODO: test with more requests
 			$_POST = '{"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"rpc","tid":1}';
 								  
-			$banchaRequest = new BanchaRequestTransformer();
-	    	$request = $banchaRequest->getRequests();
+			$collection = new BanchaRequestCollection();
+	    	$request = $collection->getRequests();
 	    	
 	    	//echo "responses:";
 	    	//print_r($request);

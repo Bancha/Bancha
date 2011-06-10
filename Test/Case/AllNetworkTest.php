@@ -36,8 +36,8 @@ class AllNetworkTest extends PHPUnit_Framework_TestSuite {
 		$suite = new CakeTestSuite('Network classes');
 
 		$path = dirname(__FILE__) . DS . 'Network';
-		$suite->addTestFile($path . DS . 'BanchaRequestTransformerTest.php');
-		$suite->addTestFile($path . DS . 'BanchaResponseTransformerTest.php');
+		$suite->addTestFile($path . DS . 'BanchaRequestCollectionTest.php');
+		$suite->addTestFile($path . DS . 'BanchaResponseCollectionTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;
