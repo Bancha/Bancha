@@ -43,14 +43,19 @@ class BanchaRequestCollection {
 		$json_data = $_POST;
 		$data = json_decode($json_data, true);
 		// check ob nur 1 request ist
-		if ($data["action"] != null) {
+		if ($data['action'] != null) {
 			$data = array($data); 
 		} 
 		
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
 				$_POST = $data[$i];
-				$requests[$i] = new CakeRequest();
+				$url = null;
+				if (isset($_POST['url']))
+				{
+					$url = $_POST['url'];
+				}
+				$requests[$i] = new CakeRequest($url);
 				foreach ($data[$i] as $key => $value) {
 					$requests[$i]->data($key, $value);
 				}
@@ -58,5 +63,5 @@ class BanchaRequestCollection {
  		}
 		return $requests;
 	}
-
+	
 }

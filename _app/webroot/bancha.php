@@ -84,5 +84,5 @@
 		return;
 	} else {
 		$Dispatcher = new BanchaDispatcher();
-		$Dispatcher->dispatch(new BanchaRequest());
+		$Dispatcher->dispatch(new BanchaRequestCollection());
 	}
