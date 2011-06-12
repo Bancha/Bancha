@@ -41,9 +41,10 @@ class BanchaRequestCollection {
 		$requests = array();
 		 
 		$json_data = $_POST;
+		
 		$data = json_decode($json_data, true);
 		// check ob nur 1 request ist
-		if ($data['action'] != null) {
+		if (count($data) == 1) {
 			$data = array($data); 
 		} 
 		
