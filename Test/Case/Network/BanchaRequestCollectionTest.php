@@ -42,8 +42,8 @@ class BanchaRequestCollectionTest extends CakeTestCase
     }
     
 	function testgetRequests() {
-	    	// TODO: test with more requests
-			$_POST = '{"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"rpc","tid":1}';
+			$_POST = '{"action":"create","method":"getRequests","data":[{"page":1,"start":0,"limit":25,"sort":[{"property":"name","direction":"ASC"}]}],"type":"json","tid":1}, 
+					{"action":"update","method":"getRequests","data":[{"page":1,"start":0,"limit":10,"sort":[{"property":"name","direction":"ASC"}]}],"type":"json","tid":2}';
 								  
 			$collection = new BanchaRequestCollection();
 	    	$request = $collection->getRequests();
@@ -52,9 +52,8 @@ class BanchaRequestCollectionTest extends CakeTestCase
 	    	//print_r($request);
 	    	
 			if (count($request) > 0) {
-		    	for($i=0; $i<count($request); $i++) {
-		    		$this->assertEquals($request[$i]["data"]["action"], "create");
-		    	}
+				$this->assertEquals($request[0]["data"]["action"], "create");
+				$this->assertEquals($request[1]["data"]["action"], "update");
 			}
 	    }
 	}
