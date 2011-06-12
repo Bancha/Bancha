@@ -44,7 +44,7 @@ class BanchaRequestCollection {
 		
 		$data = json_decode($json_data, true);
 		// check ob nur 1 request ist
-		if (count($data) == 1) {
+		if (count($data['tid']) == 1) {
 			$data = array($data); 
 		} 
 		
