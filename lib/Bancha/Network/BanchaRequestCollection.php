@@ -18,6 +18,7 @@
  */
 
 App::uses('CakeRequest', 'Network');
+App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
 
 /**
  * BanchaRequestCollection
@@ -25,6 +26,19 @@ App::uses('CakeRequest', 'Network');
  * @package bancha.libs
  */
 class BanchaRequestCollection {
+	
+	/** @var string */
+	protected $rawPostData;
+	
+	/**
+	 * Constructor.
+	 *
+	 * @param string $rawPostData Content of $HTTP_RAW_POST_DATA
+	 */
+	public function __construct($rawPostData)
+	{
+		$this->rawPostData = $rawPostData;
+	}
 
 /**
  * Returns an array of CakeRequest objects.
@@ -40,27 +54,34 @@ class BanchaRequestCollection {
 		*/
 		$requests = array();
 		 
-		$data = json_decode($HTTP_RAW_POST_DATA, true);
-		// TODO: check ob nur 1 request ist -> so nicht möglich
-		if (count($data) > 1) {
+		$data = json_decode($this->rawPostData, true);
+		// TODO: improve detection (not perfect, but should it should be correct in most cases.)
+		if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
 			$data = array($data); 
 		} 
 		
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
-				$_POST = $data[$i];
-				$url = null;
-				if (isset($_POST['url']))
-				{
-					$url = $_POST['url'];
-				}
+				$converter = new ArrayConverter($data[$i]);
+				$url = $converter->removeElement('url');
+				$converter->renameElement('action', 'controller')
+						  ->renameElement('method', 'action')
+						  ->changeValue('action', 'create', 'add')
+						  ->changeValue('action', 'update', 'edit')
+						  ->changeValue('action', 'destroy', 'delete')
+						  ->changeValue('action', 'read', 'index');
+				$data[$i] = $converter->getArray();
 				$requests[$i] = new CakeRequest($url);
-				foreach ($data[$i] as $key => $value) {
-					$requests[$i]->data($key, $value);
+				$requests[$i]['controller'] = $data[$i]['controller'];
+				$requests[$i]['action']		= $data[$i]['action'];
+				if (isset($data[$i]['data'])) {
+					foreach ($data[$i]['data'] as $key => $value) {
+						$requests[$i]->data($key, $value);
+					}
 				}
 			}
  		}
 		return $requests;
 	}
-	
+
 }

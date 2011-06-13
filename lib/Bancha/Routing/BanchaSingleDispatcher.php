@@ -43,7 +43,7 @@ class BanchaSingleDispatcher extends Dispatcher {
 				'action' => $request->params['action']
 			));
 		}
-		$result = call_user_func_array(array(&$controller, $request->params['action']), $request->params['pass']);
+		$result = call_user_func_array(array(&$controller, $request->params['action']), array());
 		$response = $controller->getResponse();
 
 		if ($controller->autoRender) {
@@ -57,6 +57,22 @@ class BanchaSingleDispatcher extends Dispatcher {
 			return $response;
 		}
 		$response->send();
+	}
+	
+	/**
+	 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
+	 * applies the routeas.
+	 *
+	 * @param CakeRequest $request CakeRequest object to mine for parameter information.
+	 * @param array $additionalParams An array of additional parameters to set to the request.
+	 *   Useful when Object::requestAction() is involved
+	 * @return CakeRequest The request object with routing params set.
+	 */
+	public function parseParams(CakeRequest $request, $additionalParams = array()) {
+		if (!empty($additionalParams)) {
+			$request->addParams($additionalParams);
+		}
+		return $request;
 	}
 
 }

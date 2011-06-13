@@ -14,9 +14,6 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Kung Wong <kung.wong@gmail.com>
  */
 
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
@@ -32,48 +29,68 @@ class BanchaCrudTest extends CakeTestCase {
 	
 	public function testAdd()
 	{
-		$_POST = json_encode(array(
-			'url'		=> '/test/create',
-			'action'	=> 'add',
+		$rawPostData = json_encode(array(
+			'action'		=> 'test',
+			'method'		=> 'create',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array('page' => 1, 'limit' => 10)
 		));
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(new BanchaRequestCollection(), array('return' => true)));
-		
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+
 		$this->assertEquals(42, $responses[0]->data->id);
 	}
 	
 	public function testEdit()
 	{
-		$_POST = json_encode(array(
-			'url'		=> '/test/update',
-			'action'	=> 'edit',
+		$rawPostData = json_encode(array(
+			'action'		=> 'test',
+			'method'		=> 'update',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> null
 		));
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(new BanchaRequestCollection(), array('return' => true)));
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
 		
 		$this->assertEquals(42, $responses[0]->data->id);
 	}
 	
 	public function testDelete()
 	{
-		$_POST = json_encode(array(
-			'url'		=> '/test/destroy',
-			'action'	=> 'delete',
+		$rawPostData = json_encode(array(
+			'action'		=> 'test',
+			'method'		=> 'destroy',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> null
 		));
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(new BanchaRequestCollection(), array('return' => true)));
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
 		
 		$this->assertEquals(42, $responses[0]->data->id);
 	}
 	
 	public function testIndex()
 	{
-		$_POST = json_encode(array(
-			'url'		=> '/test/read',
-			'action'	=> 'index',
+		$rawPostData = json_encode(array(
+			'action'		=> 'test',
+			'method'		=> 'read',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> null
 		));
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(new BanchaRequestCollection(), array('return' => true)));
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
 		
 		$this->assertEquals(42, $responses[0]->data->id);
 	}
@@ -83,26 +100,22 @@ class BanchaCrudTest extends CakeTestCase {
 class TestController extends AppController
 {
 
-	// TODO: rename to add()
-	public function create()
+	public function add()
 	{
 		return array('id' => 42);
 	}
 
-	// TODO: rename to update()
-	public function update()
+	public function edit()
 	{
 		return array('id' => 42);
 	}
 
-	// TODO: rename to destroy
-	public function destroy()
+	public function delete()
 	{
 		return array('id' => 42);
 	}
 
-	// TODO: rename to read
-	public function read()
+	public function index()
 	{
 		return array('id' => 42);
 	}

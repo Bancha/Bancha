@@ -22,6 +22,7 @@
 set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
 require_once 'Routing/BanchaDispatcher.php';
 require_once 'Routing/BanchaSingleDispatcher.php';
+require_once 'Network/BanchaRequestCollection.php';
 require_once 'Network/BanchaResponseCollection.php';
 
 /**
@@ -39,16 +40,27 @@ class BanchaDispatcherTest extends CakeTestCase {
  *
  */
 	public function testDispatchWithReturn() {
-		$banchaRequest = $this->getMock('BanchaRequestCollection', array('getRequests'));
-		$banchaRequest->expects($this->any())
-					  ->method('getRequests')
-					  ->will($this->returnValue(array(
-						new CakeRequest('/my/testaction1'),
-						new CakeRequest('/my/testaction2')
-					  )));
+		$rawPostData = array(
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction1',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 1,
+			),
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction2',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 2,
+			)
+		);
+
+		$collection = new BanchaRequestCollection(json_encode($rawPostData));
 		
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch($banchaRequest, array('return' => true)));
+		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
 		
 		$this->assertEquals('Hello World!', $responses[0]->data->text);
 		$this->assertEquals('foobar', $responses[1]->data->text);
@@ -61,17 +73,28 @@ class BanchaDispatcherTest extends CakeTestCase {
  */
 	public function testDispatchWithoutReturn()
 	{
-		$banchaRequest = $this->getMock('BanchaRequestCollection', array('getRequests'));
-		$banchaRequest->expects($this->any())
-					  ->method('getRequests')
-					  ->will($this->returnValue(array(
-						new CakeRequest('/my/testaction1'),
-						new CakeRequest('/my/testaction2')
-					  )));
+		$rawPostData = array(
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction1',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 1,
+			),
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction2',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 2,
+			)
+		);
+
+		$collection = new BanchaRequestCollection(json_encode($rawPostData));
 		
 		$dispatcher = new BanchaDispatcher();
 		ob_start(); // capture output, because we want to test without return
-		$dispatcher->dispatch($banchaRequest);
+		$dispatcher->dispatch($collection);
 		$responses = json_decode(ob_get_contents());
 		ob_end_clean();
 		
