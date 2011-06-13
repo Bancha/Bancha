@@ -7,15 +7,8 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-App::uses('BanchaRequestCollection', 'Bancha');
-App::import('Lib','Bancha.Bancha.Network');
+App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
-echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
-
-
-//TODO: Unnötig ??
-set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Network/BanchaRequestCollection.php';
 /**
  * BanchaRequestCollectionTest
  *

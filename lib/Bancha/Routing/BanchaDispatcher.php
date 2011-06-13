@@ -8,6 +8,8 @@
  */
 
 App::uses('Dispatcher', 'Routing');
+App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
+App::uses('BanchaSingleDispatcher', 'Bancha.Bancha/Routing');
 
 /**
  * BanchaDispatcher

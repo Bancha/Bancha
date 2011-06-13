@@ -7,16 +7,7 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-App::uses('BanchaResponseCollection', 'Bancha');
-App::uses('CakeResponse', 'Network');
-
-App::import('Lib','Bancha.Bancha.Network');
-
-
-// TODO: kill, because not necessary?
-
-set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Network/BanchaResponseCollection.php';
+App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
 
 /**
  * BanchaRequestTest

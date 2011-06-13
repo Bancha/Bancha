@@ -1,26 +1,26 @@
 <?php
 /**
- * BanchaBehaviorTest file
+ * BanchaBehaviorTest file.
  *
- * PHP 5
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     ???
- * @link          ???
- * @package       plugin.Bancha.Test.Model.Behavior
- * @since         Banche v 0.1
- * @license       GPLv3
+ * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v1.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
+
 if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 	define('CAKEPHP_UNIT_TEST_EXECUTION', 1);
 }
 
-/***** ????? *****/
-//App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
-//App::uses('plugin', 'Bancha');
-//App::uses('Bancha', 'Behavior');
-require_once(dirname(dirname(__FILE__)) . DS . 'Model' . DS . 'testmodels.php');  //here we get the testModel
+require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the testModel
 
 
 /**
@@ -42,7 +42,10 @@ class BanchaBehaviorTest extends CakeTestCase {
 	public function setUp() {
 		//App::build(array('plugins' => array( 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' . DS ), true));
 		//App::objects('plugins', null, false);
-		App::build(array('Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)), App::RESET);
+		App::build(array(
+			'Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)),
+			App::RESET
+		);
 	}
 
 /**
@@ -177,7 +180,7 @@ class BanchaBehaviorTest extends CakeTestCase {
 
 /**
  * unused
-
+ *
  * Tests that BanchaBehavior::extractMetaData() throws an exception on wrong somethinng
  *
  * @return void

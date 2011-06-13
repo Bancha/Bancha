@@ -7,8 +7,8 @@
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
-set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Utility/ArrayConverter.php';
+App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
+
 /**
  * ArrayConverterTest
  *

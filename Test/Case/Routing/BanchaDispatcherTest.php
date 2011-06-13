@@ -14,16 +14,10 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Routing/BanchaDispatcher.php';
-require_once 'Routing/BanchaSingleDispatcher.php';
-require_once 'Network/BanchaRequestCollection.php';
-require_once 'Network/BanchaResponseCollection.php';
+App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
+App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
  * @package bancha.libs

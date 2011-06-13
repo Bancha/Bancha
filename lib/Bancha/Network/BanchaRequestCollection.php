@@ -46,15 +46,9 @@ class BanchaRequestCollection {
  * @return array Array with CakeRequest objects.
  */
 	public function getRequests() {
-		// TODO: Implement BanchaRequestCollection::getRequest()
-		/* The idea of this method is to somehow iterate/parse the request from Ext JS and create a CakeRequest object.
-		   BanchaDispatcher::dispatch() will take the array of CakeRequest objects returned by this method and call
-		   Dispatcher::dispatch() for every CakeRequest object. Thus the default CakePHP dispatching process is
-		   executed.
-		*/
 		$requests = array();
-		 
 		$data = json_decode($this->rawPostData, true);
+		
 		// TODO: improve detection (not perfect, but should it should be correct in most cases.)
 		if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
 			$data = array($data); 
