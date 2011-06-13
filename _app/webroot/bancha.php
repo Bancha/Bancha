@@ -84,5 +84,5 @@
 		return;
 	} else {
 		$Dispatcher = new BanchaDispatcher();
-		$Dispatcher->dispatch(new BanchaRequestCollection());
+		$Dispatcher->dispatch(new BanchaRequestCollection($HTTP_RAW_POST_DATA));
 	}
