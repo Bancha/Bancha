@@ -40,10 +40,8 @@ class BanchaRequestCollection {
 		*/
 		$requests = array();
 		 
-		$json_data = $_POST;
-		
-		$data = json_decode($json_data, true);
-		// TODO: check ob nur 1 request ist -> so nicht möglich
+		$data = json_decode($HTTP_RAW_POST_DATA, true);
+		// TODO: check ob nur 1 request ist -> so nicht mÃ¶glich
 		if (count($data) > 1) {
 			$data = array($data); 
 		} 
