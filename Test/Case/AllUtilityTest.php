@@ -15,6 +15,7 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
+
 /**
  * AllUtiltiyTest class
  *

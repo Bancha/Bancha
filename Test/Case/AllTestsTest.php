@@ -18,6 +18,7 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Kung Wong <kung.wong@gmail.com>
  */
+
 /**
  * AllBehaviorsTest class
  *

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * BanchaDispatcherTest file.
  *
@@ -20,6 +19,8 @@ App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
+ * BanchaDispatcherTest
+ *
  * @package bancha.libs
  */
 class BanchaDispatcherTest extends CakeTestCase {

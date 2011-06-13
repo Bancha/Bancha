@@ -12,8 +12,6 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
- * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
@@ -24,10 +22,9 @@ App::uses('CakeResponse', 'Network');
  *
  * @package bancha.libs
  */
-
 class BanchaResponseCollection {
 	
-	/** @var array */
+/** @var array */
 	protected $responses = array();
 
 /**

@@ -16,13 +16,15 @@
  *
  * @copyright     Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @copyright	  Copyright 2011, Bancha Project (http://banchaproject.org)
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @link          http://cakephp.org CakePHP(tm) Project
  * @link 		  http://banchaproject.org Bancha Project
- * @package       cake
- * @subpackage    cake.app.webroot
+ * @package       bancha
+ * @subpackage    bancha.app.webroot
  * @since         CakePHP(tm) v 0.2.9
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
 /**
  * Use the DS to separate the directories in other defines
  */

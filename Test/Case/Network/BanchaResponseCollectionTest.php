@@ -1,9 +1,18 @@
 <?php
 /**
- * @copyright     Copyright 2011 Bancha Project
+ * BanchaCrudTest file.
+ *
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
@@ -14,37 +23,8 @@ App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
  *
  * @package bancha.libs
  */
-
 class BanchaResponseCollectionTest extends CakeTestCase
 {
-
-	// function testaddResponseNoSuccess() {
-	// 	$banchaResponse = new BanchaResponse();
-	// 	$banchaResponse->addResponse(new CakeResponse(array(
-	// 		'body'		=> 'test',
-	// 		'status'	=> 201,
-	// 		'type'		=> 'c',
-	// 		'charset'	=> 'UTF-8',
-	// 	)));
-	// 	$responses = $banchaResponse->getResponses;
-	// 
-	// 	$this->assertEquals($response[0]['success'], false);
-	// 	$this->assertEquals($response[1]['data'], "test");
-	//     }
-	// 
-	// function testaddResponseSuccess() {
-	// 	$banchaResponse = new BanchaResponse();
-	// 	$banchaResponse->addResponse(new CakeResponse(array(
-	// 		'body'		=> 'test1',
-	// 		'status'	=> 200,
-	// 		'type'		=> 'c',
-	// 		'charset'	=> 'UTF-8',
-	// 	)));
-	// 	$responses = $banchaResponse->getResponses();
-	// 
-	// 	$this->assertEquals($responses[0]['success'], true);
-	// 	$this->assertEquals($responses[0]['data'], "test1");
-	// }
 
 	function testGetResponses() {
 		$response1 = array(
@@ -69,12 +49,11 @@ class BanchaResponseCollectionTest extends CakeTestCase
 			'data'		=> 'test1',
 		);
 		
-		$transformer = new BanchaResponseCollection();
-		$transformer->addResponse(new CakeResponse($response1))
-					->addResponse(new CakeResponse($response2));
+		$collection = new BanchaResponseCollection();
+		$collection->addResponse(new CakeResponse($response1))
+				   ->addResponse(new CakeResponse($response2));
 		
-		$actualResponse = $transformer->getResponses()->body();
-		// var_dump(json_decode($actualResponse->body()));
+		$actualResponse = $collection->getResponses()->body();
 		$this->assertEquals(json_encode(array($expectedResponse1, $expectedResponse2)), $actualResponse);
 		
 		$actualResponse = json_decode($actualResponse);
@@ -82,5 +61,3 @@ class BanchaResponseCollectionTest extends CakeTestCase
 		$this->assertEquals($expectedResponse2['data'], $actualResponse[1]->data);
 	}
 }
-
-?>
