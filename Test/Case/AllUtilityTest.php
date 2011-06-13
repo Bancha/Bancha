@@ -1,6 +1,6 @@
 <?php
 /**
- * AllBehaviorsTest file
+ * AllRoutingTest file
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -14,32 +14,21 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Kung Wong <kung.wong@gmail.com>
  */
 /**
- * AllBehaviorsTest class
+ * AllUtiltiyTest class
  *
  * This test group will run all test in the Bancha/Test/Cases/Model/Behaviours directory
  *
  * @package       bancha.tests.groups
  */
-class AllTestsTest extends PHPUnit_Framework_TestSuite {
+class AllUtiltiyTest extends PHPUnit_Framework_TestSuite {
 
-/**
- * Suite define the tests for this suite
- *
- * @return void
- */
 	public static function suite() {
-		$suite = new CakeTestSuite('All Tests');
+		$suite = new CakeTestSuite('Utility classes');
 
-		$path = dirname(__FILE__) . DS;
-		$suite->addTestFile($path . 'AllBehaviorsTest.php');
-		$suite->addTestFile($path . 'AllRoutingTest.php');
-		$suite->addTestFile($path . 'AllNetworkTest.php');
-		$suite->addTestFile($path . 'AllUtilityTest.php');
+		$path = dirname(__FILE__) . DS . 'Utility';
+		$suite->addTestFile($path . DS . 'ArrayConverterTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;
