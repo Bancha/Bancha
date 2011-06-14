@@ -28,11 +28,15 @@ class BanchaCrudTest extends CakeTestCase {
 	public function testAdd()
 	{
 		$rawPostData = json_encode(array(
-			'action'		=> 'test',
+			'action'		=> 'Articles',
 			'method'		=> 'create',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array('page' => 1, 'limit' => 10)
+			'data'			=> array(
+				'title'			=> 'Hello World',
+				'published'		=> false,
+				'user_id'		=> 1,
+			),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
@@ -40,16 +44,22 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 
 		$this->assertEquals(42, $responses[0]->data->id);
+		$this->assertEquals('Hello World', $responses[0]->data->title);
+		$this->assertEquals(false, $responses[0]->data->published);
+		$this->assertEquals(1, $responses[0]->data->user_id);
 	}
 	
 	public function testEdit()
 	{
 		$rawPostData = json_encode(array(
-			'action'		=> 'test',
+			'action'		=> 'Articles',
 			'method'		=> 'update',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> null
+			'data'			=> array(
+				'id'			=> 42,
+				'published'		=> true,
+			),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
@@ -57,12 +67,15 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 		
 		$this->assertEquals(42, $responses[0]->data->id);
+		$this->assertEquals('Hello World', $responses[0]->data->title);
+		$this->assertEquals(true, $responses[0]->data->published);
+		$this->assertEquals(1, $responses[0]->data->user_id);
 	}
 	
 	public function testDelete()
 	{
 		$rawPostData = json_encode(array(
-			'action'		=> 'test',
+			'action'		=> 'Articles',
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -73,13 +86,13 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(42, $responses[0]->data->id);
+		$this->assertEquals(array(), $responses[0]->data);
 	}
 	
 	public function testIndex()
 	{
 		$rawPostData = json_encode(array(
-			'action'		=> 'test',
+			'action'		=> 'Articles',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -90,33 +103,115 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(42, $responses[0]->data->id);
+		$this->assertEquals(42, $responses[0]->data[0]->id);
+		$this->assertEquals(43, $responses[0]->data[1]->id);
+	}
+	
+	public function testView()
+	{
+		$rawPostData = json_encode(array(
+			'action'		=> 'Articles',
+			'method'		=> 'read',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array('id' => 42)
+		));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		$this->assertEquals(42, $responses[0]->data[0]->id);
+		$this->assertEquals('Hello World', $responses[0]->data[0]->title);
+		$this->assertEquals(true, $responses[0]->data[0]->published);
+		$this->assertEquals(1, $responses[0]->data[0]->user_id);
 	}
 	
 }
 
-class TestController extends AppController
-{
+/**
+ * Articles Controller
+ *
+ */
+class ArticlesController extends AppController {
 
-	public function add()
-	{
-		return array('id' => 42);
+
+/**
+ * index method
+ *
+ * @return void
+ */
+	public function index() {
+		return array(
+			array(
+				'id'		=> 42,
+				'title'		=> 'Hello World',
+				'published'	=> true,
+				'user_id'	=> 1,
+			),
+			array(
+				'id'		=> 43,
+				'title'		=> 'Foo Bar',
+				'published'	=> false,
+				'user_id'	=> 1,
+			),
+		);
 	}
 
-	public function edit()
-	{
-		return array('id' => 42);
+/**
+ * view method
+ *
+ * @param string $id
+ * @return void
+ */
+	public function view($id = null) {
+		return array(
+			array(
+				'id'		=> $id,
+				'title'		=> 'Hello World',
+				'published'	=> true,
+				'user_id'	=> 1,
+			)
+		);
 	}
 
-	public function delete()
-	{
-		return array('id' => 42);
+/**
+ * add method
+ *
+ * @return void
+ */
+	public function add() {
+		return array(
+			'id'		=> 42,
+			'title'		=> 'Hello World',
+			'published'	=> false,
+			'user_id'	=> 1,
+		);
 	}
 
-	public function index()
-	{
-		return array('id' => 42);
+/**
+ * edit method
+ *
+ * @param string $id
+ * @return void
+ */
+	public function edit($id = null) {
+		return array(
+			'id'		=> $id,
+			'title'		=> 'Hello World',
+			'published'	=> true,
+			'user_id'	=> 1,
+		);
 	}
 
+/**
+ * delete method
+ *
+ * @param string $id
+ * @return void
+ */
+	public function delete($id = null) {
+		return array();
+	}
 }
 

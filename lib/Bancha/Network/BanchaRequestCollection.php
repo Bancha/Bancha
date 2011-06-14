@@ -64,9 +64,19 @@ class BanchaRequestCollection {
 						  ->changeValue('action', 'destroy', 'delete')
 						  ->changeValue('action', 'read', 'index');
 				$data[$i] = $converter->getArray();
+				
+				$pass = array();
+				if ('edit' == $data[$i]['action'] || 'delete' == $data[$i]['action'] || 'view' == $data[$i]['action'])
+				{
+					$pass['id'] = $data[$i]['data']['id'];
+					unset($data[$i]['data']['id']);
+				}
+				
 				$requests[$i] = new CakeRequest($url);
 				$requests[$i]['controller'] = $data[$i]['controller'];
 				$requests[$i]['action']		= $data[$i]['action'];
+				$requests[$i]['named']		= null;
+				$requests[$i]['pass']		= $pass;
 				if (isset($data[$i]['data'])) {
 					foreach ($data[$i]['data'] as $key => $value) {
 						$requests[$i]->data($key, $value);
