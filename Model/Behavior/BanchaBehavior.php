@@ -57,7 +57,6 @@ class BanchaBehavior extends ModelBehavior {
 		
 		
 		$fields = $this->getColumnTypes();
-		if(array)
 		$validations = $this->getValidations();
 		$associations = $this->getAssociated();
 		$sorters = $this->getSorters();
