@@ -96,7 +96,16 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> null
+			'data'			=> array(
+				'start'			=> 4,
+				'limit'			=> 2,
+				'sort'			=> array(
+					array(
+						'property'	=> 'title',
+						'direction'	=> 'ASC',
+					)
+				),
+			),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
@@ -142,6 +151,11 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function index() {
+		$paging = $this->request['paging']['Articles'];
+		if (2 != $paging['page'] || 2 != $paging['limit'] || 'asc' != $paging['order']['Articles.title'])
+		{
+			return array();
+		}
 		return array(
 			array(
 				'id'		=> 42,
