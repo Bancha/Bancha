@@ -39,14 +39,14 @@ class BanchaDispatcherTest extends CakeTestCase {
 			array(
 				'action'	=> 'My',
 				'method'	=> 'testaction1',
-				'data'		=> null,
+				'data'		=> array(),
 				'type'		=> 'rpc',
 				'tid'		=> 1,
 			),
 			array(
 				'action'	=> 'My',
 				'method'	=> 'testaction2',
-				'data'		=> null,
+				'data'		=> array(),
 				'type'		=> 'rpc',
 				'tid'		=> 2,
 			)

@@ -18,6 +18,7 @@
 
 App::uses('CakeRequest', 'Network');
 App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
+App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 
 /**
  * BanchaRequestCollection
@@ -55,78 +56,17 @@ class BanchaRequestCollection {
 		
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
-				$converter = new ArrayConverter($data[$i]);
-				$url = $converter->removeElement('url');
-				$converter->renameElement('action', 'controller')
-						  ->renameElement('method', 'action')
-						  ->changeValue('action', 'create', 'add')
-						  ->changeValue('action', 'update', 'edit')
-						  ->changeValue('action', 'destroy', 'delete')
-						  ->changeValue('action', 'read', 'index');
-				$data[$i] = $converter->getArray();
+				$transformer = new BanchaRequestTransformer($data[$i]);
 				
-				// if action == index && isset(id) --> view action
-				if ('index' == $data[$i]['action'] && isset($data[$i]['data']['id']))
-				{
-					$data[$i]['action'] = 'view';
-				}
-				
-				$pass = array();
-				if ('edit' == $data[$i]['action'] || 'delete' == $data[$i]['action'] || 'view' == $data[$i]['action'])
-				{
-					$pass['id'] = $data[$i]['data']['id'];
-					unset($data[$i]['data']['id']);
-				}
-				
-				// build pagination
-				$controller = $data[$i]['controller'];
-				$page = 1;
-				if (isset($data[$i]['data']['page']))
-				{
-					$page = $data[$i]['data']['page'];
-					unset($data[$i]['data']['page']);
-				}
-				else if (isset($data[$i]['data']['start']) && isset($data[$i]['data']['limit']))
-				{
-					$page = floor($data[$i]['data']['start'] / $data[$i]['data']['limit']);
-					unset($data[$i]['data']['start']);
-				}
-				$limit = 25;
-				if (isset($data[$i]['data']['limit']))
-				{
-					$limit = $data[$i]['data']['limit'];
-					unset($data[$i]['data']['limit']);
-				}
-				$order = array();
-				if (isset($data[$i]['data']['sort']))
-				{
-					foreach ($data[$i]['data']['sort'] as $sortOption)
-					{
-						if (isset($sortOption['property']) && isset($sortOption['direction']))
-						{
-							$order[$controller . '.' . $sortOption['property']] = strtolower($sortOption['direction']);
-						}
-					}
-					unset($data[$i]['data']['sort']);
-				}
-				$pagination = array(
-					$controller		=> array(
-						'page'			=> $page,
-						'limit'			=> $limit,
-						'order'			=> $order,
-					),
-				);
-				
-				$requests[$i] = new CakeRequest($url);
-				$requests[$i]['controller'] = $data[$i]['controller'];
-				$requests[$i]['action']		= $data[$i]['action'];
+				$requests[$i] = new CakeRequest($transformer->getUrl());
+				$requests[$i]['controller'] = $transformer->getController();
+				$requests[$i]['action']		= $transformer->getAction();
 				$requests[$i]['named']		= null;
-				$requests[$i]['pass']		= $pass;
-				$requests[$i]['paging'] = $pagination;
-				if (isset($data[$i]['data'])) {
-					foreach ($data[$i]['data'] as $key => $value) {
-						$requests[$i]->data($key, $value);
-					}
+				$requests[$i]['pass']		= $transformer->getPassParams();
+				$requests[$i]['paging']		= $transformer->getPaging();
+				
+				foreach ($transformer->getCleanedDataArray() as $key => $value) {
+					$requests[$i]->data($key, $value);
 				}
 			}
  		}
