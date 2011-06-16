@@ -61,7 +61,7 @@ class BanchaRequestCollection {
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				$requests[$i]['controller'] = $transformer->getController();
 				$requests[$i]['action']		= $transformer->getAction();
-				$requests[$i]['named']		= null;
+				$requests[$i]['named']		= array();
 				$requests[$i]['pass']		= $transformer->getPassParams();
 				$requests[$i]['paging']		= $transformer->getPaging();
 				

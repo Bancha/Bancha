@@ -30,23 +30,33 @@ class BanchaRequestCollectionTest extends CakeTestCase
  * into CakePHP syntax (controller + action).
  *
  */
-	function testgetRequests() {
-		$rawPostData = array(
+	function testGetRequests() {
+		// We need to provide a request which looks like an actual Ext JS request in JSON syntax.
+		// It is notated as a PHP array and transformed into JSON because it is easier to read that way.
+		$rawPostData = json_encode(array(
 			'action'	=> 'Test',
 			'method'	=> 'create',
 			'data'		=> null,
 			'type'		=> 'rpc',
 			'tid'		=> 1,
-		);
+		));
 
-		$collection = new BanchaRequestCollection(json_encode($rawPostData));
+		// Create a new request collection and parse the requests by calling getRequests().
+		$collection = new BanchaRequestCollection($rawPostData);
 		$requests = $collection->getRequests();
 		
+		// This should generate 1 CakeRequest object packed in an array.
 		$this->assertEquals(1, count($requests));
+		$this->assertThat($requests[0], $this->isInstanceOf('CakeRequest'));
 		// action -> controller
 		$this->assertEquals($requests[0]['controller'], 'Test');
 		// method -> actio AND "create" -> "add"
 		$this->assertEquals($requests[0]['action'], 'add');
+		
+		// Cake has some special params like paginate, pass and named. Assure that these are there.
+		$this->assertTrue(isset($requests[0]['pass']));
+		$this->assertTrue(isset($requests[0]['paging']));
+		$this->assertTrue(isset($requests[0]['named']));
 	}
 
 /**
@@ -54,8 +64,10 @@ class BanchaRequestCollectionTest extends CakeTestCase
  * method/action.
  *
  */
-	function testgetRequestsMultiple() {
-		$rawPostData = array(
+	function testGetRequestsMultiple() {
+		// Again, the Ext JS request is notated in PHP syntax and transformed into JSON because it is easier to read
+		// this way.
+		$rawPostData = json_encode(array(
 			array(
 				'action'	=> 'Test',
 				'method'	=> 'create',
@@ -70,152 +82,22 @@ class BanchaRequestCollectionTest extends CakeTestCase
 				'type'		=> 'rpc',
 				'tid'		=> 2,
 			),
-		);
+		));
 
-		$collection = new BanchaRequestCollection(json_encode($rawPostData));
+		$collection = new BanchaRequestCollection($rawPostData);
 		$requests = $collection->getRequests();
 		
+		// Two requests should result in an array that contains 2 CakeRequest objects.
 		$this->assertEquals(2, count($requests));
+		$this->assertThat($requests[0], $this->isInstanceOf('CakeRequest'));
+		$this->assertThat($requests[1], $this->isInstanceOf('CakeRequest'));
+		
 		// action -> controller
 		$this->assertEquals($requests[0]['controller'], 'Test');
 		$this->assertEquals($requests[1]['controller'], 'Test');
 		// method -> action AND "create" -> "add" / "update" -> "edit"
 		$this->assertEquals($requests[0]['action'], 'add');
 		$this->assertEquals($requests[1]['action'], 'edit');
-	}
-
-/**
- * Ext JS action names (create, update, destroy, read) needs to be transformed into CakePHP action names
- * (add, edit, delete, view, index).
- *
- * @dataProvider getRequestsActionConverterProvider
- */
-	public function testGetRequestsActionConverter($extAction, $extData, $cakeAction)
-	{
-		$rawPostData = array(
-			'action'	=> 'Test',
-			'method'	=> $extAction,
-			'data'		=> $extData,
-			'type'		=> 'rpc',
-			'tid'		=> 1,
-		);
-
-		$collection = new BanchaRequestCollection(json_encode($rawPostData));
-		$requests = $collection->getRequests();
-		
-		$this->assertEquals($requests[0]['action'], $cakeAction);
-	}
-	
-/**
- * When the action is update/edit, destroy/delete, read/view than the ID needs to be added to the 'pass' array.
- *
- */
-	public function testGetRequestsPassId()
-	{
-		foreach (array('update', 'destroy', 'read') as $action)
-		{
-			$rawPostData = array(
-				'action'	=> 'Test',
-				'method'	=> $action,
-				'data'		=> array('id' => 42),
-				'type'		=> 'rpc',
-				'tid'		=> 1,
-			);
-
-			$collection = new BanchaRequestCollection(json_encode($rawPostData));
-			$requests = $collection->getRequests();
-
-			$this->assertEquals($requests[0]['pass']['id'], 42);
-		}
-	}
-
-/**
- * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with 
- * page, limit and order. The sort in Ext looks like [property: X, direction: Y], in Cake like [Controller.X => Y].
- *
- * @dataProvider getRequestsPaginationDataProvider
- */	
-	public function testGetRequestsPagination($extData, $cakePaginate)
-	{
-		$rawPostData = array(
-			'action'	=> 'Test',
-			'method'	=> 'read',
-			'data'		=> $extData,
-			'type'		=> 'rpc',
-			'tid'		=> 1,
-		);
-
-		$collection = new BanchaRequestCollection(json_encode($rawPostData));
-		$requests = $collection->getRequests();
-		
-		$this->assertEquals($requests[0]['paging']['Test']['page'], $cakePaginate['page']);
-		$this->assertEquals($requests[0]['paging']['Test']['limit'], $cakePaginate['limit']);
-		$this->assertEquals($requests[0]['paging']['Test']['order'], $cakePaginate['order']);
-	}
-	
-/**
- * Data provider for testGetRequestsActionConverter().
- *
- */
-	public function getRequestsActionConverterProvider()
-	{
-		return array(
-			array('create', array(), 'add'),
-			array('update', array('id' => 1), 'edit'),
-			array('destroy', array('id' => 1), 'delete'),
-			array('read', array('id' => 1), 'view'),
-			array('read', array(), 'index'),
-		);
-	}
-
-/**
- * Data provider for testGetRequestsPagination().
- *
- */
-	public function getRequestsPaginationDataProvider()
-	{
-		return array(
-			// Default values
-			array(
-				array(),
-				array(
-					'page'		=> 1,
-					'limit'		=> 25,
-					'order'		=> array(),
-				),
-			),
-			array(
-				array(
-					'page'		=> 2,
-					'limit'		=> 10,
-					'sort'		=> array(
-						array(
-							'property'		=> 'title',
-							'direction'		=> 'ASC',
-						),
-					),
-				),
-				array(
-					'page'		=> 2,
-					'limit'		=> 10,
-					'order'		=> array(
-						'Test.title'	=> 'asc',
-					),
-				),
-			),
-			// page = start / limit
-			array(
-				array(
-					'start'		=> 10,
-					'limit'		=> 5,
-				),
-				array(
-					'page'		=> 2,
-					'limit'		=> 5,
-					'order'		=> array(),
-				),
-			),
-		);
 	}
 
 }
