@@ -58,6 +58,8 @@ class BanchaRequestCollection {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
 				
+				$_SERVER['REQUEST_METHOD'] = 'POST';
+				
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				$requests[$i]['controller'] = $transformer->getController();
 				$requests[$i]['action']		= $transformer->getAction();

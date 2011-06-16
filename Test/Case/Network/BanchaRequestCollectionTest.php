@@ -48,6 +48,10 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		// This should generate 1 CakeRequest object packed in an array.
 		$this->assertEquals(1, count($requests));
 		$this->assertThat($requests[0], $this->isInstanceOf('CakeRequest'));
+		
+		// All requests should be POST requests
+		$this->assertTrue($requests[0]->is('post'));
+		
 		// action -> controller
 		$this->assertEquals($requests[0]['controller'], 'Test');
 		// method -> actio AND "create" -> "add"
@@ -91,6 +95,10 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		$this->assertEquals(2, count($requests));
 		$this->assertThat($requests[0], $this->isInstanceOf('CakeRequest'));
 		$this->assertThat($requests[1], $this->isInstanceOf('CakeRequest'));
+		
+		// All requests should be POST requests
+		$this->assertTrue($requests[0]->is('post'));
+		$this->assertTrue($requests[1]->is('post'));
 		
 		// action -> controller
 		$this->assertEquals($requests[0]['controller'], 'Test');
