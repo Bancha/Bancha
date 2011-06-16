@@ -25,8 +25,20 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
  */
 class BanchaCrudTest extends CakeTestCase {
 	
-	public function testAdd()
-	{
+	public function setUp() {
+		parent::setUp();
+	}
+	
+	function tearDown() {
+		parent::tearDown();
+		ClassRegistry::flush();
+	}
+	
+/**
+ * Tests the 'add' CRUD operation using the full CakePHP stack.
+ *
+ */
+	public function testAdd() {
 		$rawPostData = json_encode(array(
 			'action'		=> 'Articles',
 			'method'		=> 'create',
@@ -34,6 +46,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array(
 				'title'			=> 'Hello World',
+				'body'			=> 'foobar',
 				'published'		=> false,
 				'user_id'		=> 1,
 			),
@@ -43,21 +56,31 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
-		$this->assertEquals(42, $responses[0]->data->id);
+		$this->assertNotNull($responses[0]->data->id);
 		$this->assertEquals('Hello World', $responses[0]->data->title);
 		$this->assertEquals(false, $responses[0]->data->published);
 		$this->assertEquals(1, $responses[0]->data->user_id);
+		
+		// Clean up operations: delete article
+		$article = new Article();
+		$article->id = $responses[0]->data->id;
+		$article->delete();
 	}
 	
-	public function testEdit()
-	{
+	public function testEdit() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+		
 		$rawPostData = json_encode(array(
 			'action'		=> 'Articles',
 			'method'		=> 'update',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(
-				'id'			=> 42,
+				'id'			=> $article->id,
+				'title'			=> 'foobar',
 				'published'		=> true,
 			),
 		));
@@ -66,20 +89,27 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(42, $responses[0]->data->id);
-		$this->assertEquals('Hello World', $responses[0]->data->title);
+		$this->assertEquals($article->id, $responses[0]->data->id);
+		$this->assertEquals('foobar', $responses[0]->data->title);
 		$this->assertEquals(true, $responses[0]->data->published);
-		$this->assertEquals(1, $responses[0]->data->user_id);
+		
+		// Clean up operations: delete article
+		$article->delete();
 	}
 	
-	public function testDelete()
-	{
+	public function testDelete() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+		
+		// Let's begin with the real test.
 		$rawPostData = json_encode(array(
 			'action'		=> 'Articles',
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> null
+			'data'			=> array('id' => $article->id)
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
@@ -89,51 +119,68 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(array(), $responses[0]->data);
 	}
 	
-	public function testIndex()
-	{
+	public function testIndex() {
+		// Preparation: create articles
+		$article1 = new Article();
+		$article1->create();
+		$article1->save(array('title' => 'foo'));
+		$article2 = new Article();
+		$article2->create();
+		$article2->save(array('title' => 'bar'));
+		$article3 = new Article();
+		$article3->create();
+		$article3->save(array('title' => 'foobar'));
+		$article4 = new Article();
+		$article4->create();
+		$article4->save(array('title' => 'hello world'));
+		
 		$rawPostData = json_encode(array(
 			'action'		=> 'Articles',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(
-				'start'			=> 4,
-				'limit'			=> 2,
-				'sort'			=> array(
-					array(
-						'property'	=> 'title',
-						'direction'	=> 'ASC',
-					)
-				),
-			),
+			'data'			=> array(),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(42, $responses[0]->data[0]->id);
-		$this->assertEquals(43, $responses[0]->data[1]->id);
+		$this->assertEquals($article1->id, $responses[0]->data[0]->id);
+		$this->assertEquals($article2->id, $responses[0]->data[1]->id);
+		$this->assertEquals($article3->id, $responses[0]->data[2]->id);
+		$this->assertEquals($article4->id, $responses[0]->data[3]->id);
+		
+		// Clean up operations: delete articles
+		$article1->delete();
+		$article2->delete();
+		$article3->delete();
+		$article4->delete();
 	}
 	
-	public function testView()
-	{
+	public function testView() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+		
 		$rawPostData = json_encode(array(
 			'action'		=> 'Articles',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array('id' => 42)
+			'data'			=> array('id' => $article->id)
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(42, $responses[0]->data[0]->id);
-		$this->assertEquals('Hello World', $responses[0]->data[0]->title);
-		$this->assertEquals(true, $responses[0]->data[0]->published);
-		$this->assertEquals(1, $responses[0]->data[0]->user_id);
+		$this->assertEquals($article->id, $responses[0]->data[0]->id);
+		$this->assertEquals('foo', $responses[0]->data[0]->title);
+		
+		// Clean up operations: delete article
+		$article->delete();
 	}
 	
 }
@@ -151,25 +198,13 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function index() {
-		$paging = $this->request['paging']['Articles'];
-		if (2 != $paging['page'] || 2 != $paging['limit'] || 'asc' != $paging['order']['Articles.title'])
+		$this->Article->recursive = 0;
+		$data = $this->paginate();
+		foreach ($data as $i => $element)
 		{
-			return array();
+			$data[$i] = $element['Article'];
 		}
-		return array(
-			array(
-				'id'		=> 42,
-				'title'		=> 'Hello World',
-				'published'	=> true,
-				'user_id'	=> 1,
-			),
-			array(
-				'id'		=> 43,
-				'title'		=> 'Foo Bar',
-				'published'	=> false,
-				'user_id'	=> 1,
-			),
-		);
+		return $data;
 	}
 
 /**
@@ -179,14 +214,12 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function view($id = null) {
-		return array(
-			array(
-				'id'		=> $id,
-				'title'		=> 'Hello World',
-				'published'	=> true,
-				'user_id'	=> 1,
-			)
-		);
+		$this->Article->id = $id;
+		if (!$this->Article->exists()) {
+			throw new NotFoundException(__('Invalid article'));
+		}
+		$data = $this->Article->read(null, $id);
+		return array($data['Article']);
 	}
 
 /**
@@ -195,12 +228,14 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function add() {
-		return array(
-			'id'		=> 42,
-			'title'		=> 'Hello World',
-			'published'	=> false,
-			'user_id'	=> 1,
-		);
+		if ($this->request->is('post')) {
+			$this->Article->create();
+			if ($data = $this->Article->save($this->request->data)) {
+				$data['Article']['id'] = $this->Article->id;
+				return $data['Article'];
+			} else {
+			}
+		}
 	}
 
 /**
@@ -210,12 +245,18 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function edit($id = null) {
-		return array(
-			'id'		=> $id,
-			'title'		=> 'Hello World',
-			'published'	=> true,
-			'user_id'	=> 1,
-		);
+		$this->Article->id = $id;
+		if (!$this->Article->exists()) {
+			throw new NotFoundException(__('Invalid article'));
+		}
+		if ($this->request->is('post') || $this->request->is('put')) {
+			if ($data = $this->Article->save($this->request->data)) {
+				$data['Article']['id'] = $id;
+				return $data['Article'];
+			} else {
+			}
+		} else {
+		}
 	}
 
 /**
@@ -225,7 +266,17 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function delete($id = null) {
-		return array();
+		if (!$this->request->is('post')) {
+			throw new MethodNotAllowedException();
+		}
+		$this->Article->id = $id;
+		if (!$this->Article->exists()) {
+			throw new NotFoundException(__('Invalid article'));
+		}
+		if ($this->Article->delete()) {
+			return array();
+		}
 	}
+
 }
 

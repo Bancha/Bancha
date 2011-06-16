@@ -13,6 +13,7 @@
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
+App::uses('Inflector', 'Utility');
 App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
 
 /**
@@ -184,7 +185,7 @@ class BanchaRequestTransformer {
 			unset($this->data['data']['sort']);
 		}
 		$this->paginate = array(
-			$this->getController() => array(
+			Inflector::singularize($this->getController()) => array(
 						'page'			=> $page,
 						'limit'			=> $limit,
 						'order'			=> $order,
