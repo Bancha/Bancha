@@ -24,6 +24,10 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 class BanchaRequestTransformerTest extends CakeTestCase
 {
 	
+/**
+ * In the Ext JS request the name of the controller is stored as "action". We need to transform this.
+ *
+ */
 	public function testGetController()
 	{
 		$transformer = new BanchaRequestTransformer(array(
@@ -34,6 +38,15 @@ class BanchaRequestTransformerTest extends CakeTestCase
 	}
 	
 /**
+ * First the name of action is stored in the "method" property in the Ext JS request, second Ext JS use different names
+ * for CRUD operations. We need to transform them.
+ * Ext JS -> CakePHP
+ * - create -> add
+ * - update -> edit
+ * - destroy -> delete
+ * - read -> view (if an ID is provided in the Data array).
+ * - read -> index (if no ID is provided in the Data array).
+ *
  * @dataProvider getActionProvider
  */
 	public function testGetAction($extAction, $extData, $cakeAction)
@@ -46,6 +59,11 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals($cakeAction, $transformer->getAction());
 	}
 	
+/**
+ * If the Ext JS request contains an URL, we need to extract is from the request, because we need to pass it to the
+ * Constructor of CakeRequest.
+ *
+ */
 	public function testGetUrl()
 	{
 		$transformer = new BanchaRequestTransformer(array(
@@ -55,6 +73,12 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals('/test/action', $transformer->getUrl());
 	}
 	
+/**
+ * There are some params which are passed directly to the action method inside the controller. CakePHP stores them in
+ * the 'pass' array inside the request. For the CRUD operations the only 'pass' parameter is 'id'. Therefore we extract
+ * it from the normal data array and add it to the pass array.
+ *
+ */
 	public function testGetPassParams()
 	{
 		$transformer = new BanchaRequestTransformer(array(
@@ -85,6 +109,12 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals($paging['Test']['order'], $cakePaginate['order']);
 	}
 	
+/**
+ * The data array (which represent POST parameters) in CakePHP only contains the actual data values but not the special
+ * parameters. Thus we need to clean the data array from action, controller, paginate and pass parameters. We therefore
+ * use the methods described and tested above.
+ *
+ */
 	public function testGetCleanedDataArray()
 	{
 		$data = array(
@@ -112,6 +142,10 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals('bar', $data['foo']);
 	}
 	
+/**
+ * Provides the action names from Ext JS and CakePHP for use in testGetAction().
+ *
+ */
 	public function getActionProvider()
 	{
 		return array(
