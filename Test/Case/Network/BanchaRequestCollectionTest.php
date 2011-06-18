@@ -59,7 +59,6 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
 		$this->assertTrue(isset($requests[0]['pass']));
-		$this->assertTrue(isset($requests[0]['paging']));
 		$this->assertTrue(isset($requests[0]['named']));
 	}
 

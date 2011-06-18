@@ -139,17 +139,18 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(),
+			'data'			=> array(
+				'limit'			=> 2
+			),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
+		$this->assertEquals(2, count($responses[0]->data));
 		$this->assertEquals($article1->id, $responses[0]->data[0]->id);
 		$this->assertEquals($article2->id, $responses[0]->data[1]->id);
-		$this->assertEquals($article3->id, $responses[0]->data[2]->id);
-		$this->assertEquals($article4->id, $responses[0]->data[3]->id);
 		
 		// Clean up operations: delete articles
 		$article1->delete();

@@ -104,9 +104,9 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$transformer = new BanchaRequestTransformer($data);
 		$paging = $transformer->getPaging();
 
-		$this->assertEquals($paging['Test']['page'], $cakePaginate['page']);
-		$this->assertEquals($paging['Test']['limit'], $cakePaginate['limit']);
-		$this->assertEquals($paging['Test']['order'], $cakePaginate['order']);
+		$this->assertEquals($paging['page'], $cakePaginate['page']);
+		$this->assertEquals($paging['limit'], $cakePaginate['limit']);
+		$this->assertEquals($paging['order'], $cakePaginate['order']);
 	}
 	
 /**

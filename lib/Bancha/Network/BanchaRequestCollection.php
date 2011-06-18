@@ -63,9 +63,8 @@ class BanchaRequestCollection {
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				$requests[$i]['controller'] = $transformer->getController();
 				$requests[$i]['action']		= $transformer->getAction();
-				$requests[$i]['named']		= array();
+				$requests[$i]['named']		= $transformer->getPaging();
 				$requests[$i]['pass']		= $transformer->getPassParams();
-				$requests[$i]['paging']		= $transformer->getPaging();
 				
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);

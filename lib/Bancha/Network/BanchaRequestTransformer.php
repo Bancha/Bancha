@@ -185,11 +185,9 @@ class BanchaRequestTransformer {
 			unset($this->data['data']['sort']);
 		}
 		$this->paginate = array(
-			Inflector::singularize($this->getController()) => array(
-						'page'			=> $page,
-						'limit'			=> $limit,
-						'order'			=> $order,
-			),
+			'page'			=> $page,
+			'limit'			=> $limit,
+			'order'			=> $order,
 		);
 		return $this->paginate;
 	}
