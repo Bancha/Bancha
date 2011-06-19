@@ -10,7 +10,7 @@
 
 ExtTest = {
     /*
-     * inits ext-specific code, should be executed after YUITest is loaded
+     * inits ext-specific code, should be executed after YUITest is present
      */
     init: function() {
         // errors should result in failures
@@ -25,37 +25,26 @@ ExtTest = {
      * helper method for creating a mock object which behaves like a proxy
      */
     mock: {
+		DirectStub: {
+	        /**
+	         * define a new expected method an dan args array or an string 'rpc'
+           	 */
+	        expectRPC: function(object, method, /*Optional*/firstArg) {
+				var Y = YUITest;
+				Y.Mock.expect(object, {
+		            method: method,
+		            args: [
+                    	firstArg || Y.Mock.Value.Object,
+		                Y.Mock.Value.Function,
+		                Y.Mock.Value.Object
+		            ]                      
+		        });
+	        }
+		},
         Proxy: function() {
         
             var Y = YUITest,
-                mockProxy = {
-                /**
-                 * override with additional functionality
-                 */
-                expect: function(method) {
-
-                    // proxy expect method
-                    if(method==='create') {
-                        this.expectCreate();
-                    } else {
-                        // TODO Test
-                        this.prototype.expect.apply(this,arguments);
-                    }
-                },
-                expectCreate: function() {
-                    Y.Mock.expect(mockProxy, {
-                        method: "create",
-                        args: [
-                            Y.Mock.Value.Object,
-                            Y.Mock.Value.Function,
-                            Y.Mock.Value.Object
-                        ]                            
-                    });
-                }
-            };
-            
-            // inherit from YUITest.Mock
-            mockProxy.prototype = Y.Mock();
+                mockProxy = Y.Mock();
             
             // fake proxy property for ext
             mockProxy.isProxy = true;
@@ -107,7 +96,7 @@ YUITest.ArrayAssert.itemsAreEqual = function(a,b,msg) {
         },
         checkRecursive = function(a,b,property) {
             if(typeof a !== typeof b) {
-                fail(property+" Elements are of different types: "+(typeof a)+", "+(typeof b));
+                fail(property.toString()+" Elements are of different types: "+(typeof a)+", "+(typeof b));
             }
             if(typeof a === 'string' || typeof a === 'boolean' || typeof a === 'function' || typeof a === 'number') {
                 assert.areEqual(a,b,property+" should be the same");
