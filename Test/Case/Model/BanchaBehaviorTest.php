@@ -1,26 +1,26 @@
 <?php
 /**
- * BanchaBehaviorTest file
+ * BanchaBehaviorTest file.
  *
- * PHP 5
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     ???
- * @link          ???
- * @package       plugin.Bancha.Test.Model.Behavior
- * @since         Banche v 0.1
- * @license       GPLv3
+ * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v1.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
+
 if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 	define('CAKEPHP_UNIT_TEST_EXECUTION', 1);
 }
 
-/***** ????? *****/
-//App::uses('Model', 'Model');
 App::uses('AppModel', 'Model');
-App::uses('Bancha', 'plugins');
-//App::uses('Bancha', 'Behavior');
-require_once(dirname(dirname(__FILE__)) . DS . 'Model' . DS . 'testmodels.php');  //here we get the testModel
+require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the testModel
 
 
 /**
@@ -28,15 +28,24 @@ require_once(dirname(dirname(__FILE__)) . DS . 'Model' . DS . 'testmodels.php');
  *
  */
 class BanchaBehaviorTest extends CakeTestCase {
+	/**
+	 * fixtures
+	 * @var unknown_type
+	 */
+	
+	//var $fixtures = array( 'UserTest' ); 
 /**
  * Sets the plugins folder for this test
  *
  * @return void
  */
 	public function setUp() {
-		App::build(array('plugins' => array( 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' . DS ), true));
-		App::objects('plugins', null, false);
-		App::build(array('Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)), App::RESET);
+		//App::build(array('plugins' => array( 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' . DS ), true));
+		//App::objects('plugins', null, false);
+		App::build(array(
+			'Model/Behavior' => array(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' .DS)),
+			App::RESET
+		);
 	}
 
 /**
@@ -48,22 +57,85 @@ class BanchaBehaviorTest extends CakeTestCase {
 	function tearDown() {
 		ClassRegistry::flush();
 	}
+	
+/**
+ *  provider for testing the order attribute
+ */
+
+    public static function providerOrder()
+    {
+        return array(
+          array(
+          	array('Model.name' => 'DESC'), 
+          	array(
+          		array( 'property' => 'name', 'direction' => 'DESC' )
+          	)
+          ),
+       // TODO write into TechDocu that only arrays are allowed for order behavior
+    /*       array(
+          	"field",
+          	array(array( 'property' => 'name', 'direction' => 'DESC' ))),
+          array(
+          	"Model.field",
+          	array(array( 'property' => 'filed', 'direction' => '' ))),
+          array(
+          	"Model.field asc",
+          	array(array( 'property' => 'filed', 'direction' => '' ))),
+         array(
+          	"Model.field ASC",
+          	array(array( 'property' => 'filed', 'direction' => '' ))),
+          array(
+          	"Model.field DESC",
+          	array(array( 'property' => 'filed', 'direction' => '' ))), */
+          array(
+          	array("Model.field" => "asc", "Model.field2" => "DESC"),
+          	array(
+          		array( 'property' => 'field', 'direction' => 'asc' ),
+          		array( 'property' => 'field2', 'direction' => 'DESC')
+          		)
+          	)
+          	
+        );
+    }
 
 /**
  * Tests order
- *
+ * @dataProvider providerOrder
  * @return void
  */
-	public function testMetaDataOrder() {
+	public function testMetaDataOrder3($in=array(),$out=array()) {
 		$TestModel = new TestUserOrder();
+		$TestModel->order = $in;
 		$TestModel->Behaviors->load('Bancha',array('Model'));
 		
 		$ExtJSdata = $TestModel->Behaviors->Bancha->extractBanchaMetaData();
+		$this->assertEqual($ExtJSdata['sorters'], $out);
+	}
 		
-		$this->assertEqual($ExtJSdata['sorters'][0]['property'], 'name');
-		$this->assertEqual($ExtJSdata['sorters'][0]['direction'], 'ASC');
-		}
+/**
+ * provider for relationships
+ */	
+	public static function providerRelationships() {
+		return array(
+			//array('hasOne', 'table', array(array('hasOne' => 'table'))),
+			array('in', 'out', 'test')
+		);
+	}
+	
+	/**
+	 * Tests relationships with provider
+	 * @dataProvider providerRelationships
+	 */
+	
+	public function testMetaDataRealtionships2($type, $table, $out) {
+		$TestModel = new TestUserRelationships();
+		$TestModel->{$type} = $table;
+		$TestModel->Behaviors->load('Bancha',array('Model'));
+		$ExtJSdata = $TestModel->Behaviors->Bancha->extractBanchaMetaData();
+		$this->assertEqual($ExtJSdata['associations'],array( array( 'hasMany' => 'Article')));
 		
+	}
+
 /**
  * Tests relationships
  *
@@ -99,16 +171,16 @@ class BanchaBehaviorTest extends CakeTestCase {
 		#execute function
 		$ExtJSdata = $TestModel->Behaviors->Bancha->extractBanchaMetaData();
 		
-		debug("This debug() output shows the structure of the returned array");
-		debug($ExtJSdata,true);
+		//debug("This debug() output shows the structure of the returned array");
+		//debug($ExtJSdata,true);
 		#do the assertions
-		$this->assertEquals(json_encode($ExtJSdata), '{"fields":[{"name":"id","type":"integer"},{"name":"name","type":"string"},{"name":"login","type":"string"},{"name":"created","type":"datetime"},{"name":"email","type":"string"},{"name":"avatar","type":"string"},{"name":"weight","type":"float"},{"name":"heigth","type":"float"}],"validations":[{"type":"length","name":"id","max":null},{"type":"length","name":"name","max":64},{"type":"length","name":"login","max":64},{"type":"length","name":"created","max":null},{"type":"length","name":"email","max":64},{"type":"length","name":"avatar","max":64},{"type":"length","name":"weight","max":null},{"type":"length","name":"heigth","max":null}],"associations":[{"hasMany":"Article"}],"sorters":[{"property":"name","direction":"ASC"}]}' );
+		$this->assertEquals(json_encode($ExtJSdata), '{"idProperty":"id","fields":[{"name":"id","type":"integer"},{"name":"name","type":"string"},{"name":"login","type":"string"},{"name":"created","type":"datetime"},{"name":"email","type":"string"},{"name":"avatar","type":"string"},{"name":"weight","type":"float"},{"name":"heigth","type":"float"}],"validations":[{"type":"length","name":"id","max":null},{"type":"length","name":"name","max":64},{"type":"length","name":"login","max":64},{"type":"length","name":"created","max":null},{"type":"length","name":"email","max":64},{"type":"length","name":"avatar","max":64},{"type":"length","name":"weight","max":null},{"type":"length","name":"heigth","max":null}],"associations":[{"hasMany":"Article"}],"sorters":[{"property":"order","direction":"ASC"}]}' );
 	}
 
 
 /**
  * unused
-
+ *
  * Tests that BanchaBehavior::extractMetaData() throws an exception on wrong somethinng
  *
  * @return void

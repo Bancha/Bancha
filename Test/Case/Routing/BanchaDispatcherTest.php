@@ -1,5 +1,4 @@
 <?php
-
 /**
  * BanchaDispatcherTest file.
  *
@@ -14,38 +13,88 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-echo realpath(dirname(__FILE__) . '/../../../lib/Bancha') . "\n\n";
-
-set_include_path(realpath(dirname(__FILE__) . '/../../../lib/Bancha/') . PATH_SEPARATOR . get_include_path());
-require_once 'Routing/BanchaDispatcher.php';
+App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
+App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
+ * BanchaDispatcherTest
+ *
  * @package bancha.libs
  */
-class BanchaDispatcherTest extends CakeTestCase
-{
+class BanchaDispatcherTest extends CakeTestCase {
 	
-	public function testDispatch()
-	{
-		$banchaRequest = $this->getMock('BanchaRequest', array('getRequests'));
-		$banchaRequest->expects($this->any())
-					  ->method('getRequests')
-					  ->will($this->returnValue(array(
-						new CakeRequest('/my/testaction1'),
-						new CakeRequest('/my/testaction2')
-					  )));
+/**
+ * Tests the dispatch() method of BanchaDispatcher with the 'return'-option. Thus dispatch() doesn't send the response
+ * to the browser but returns it instead. We are able to mock the BanchaRequest object, but we are not able to mock
+ * the other objects used by the Dispatcher. Especially we need to provide an actual controller class. MyController is
+ * defined at the bottom of this file.
+ *
+ * This tests dispatches two actions and tests if the expected content is available in the combined response.
+ *
+ */
+	public function testDispatchWithReturn() {
+		$rawPostData = array(
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction1',
+				'data'		=> array(),
+				'type'		=> 'rpc',
+				'tid'		=> 1,
+			),
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction2',
+				'data'		=> array(),
+				'type'		=> 'rpc',
+				'tid'		=> 2,
+			)
+		);
+
+		$collection = new BanchaRequestCollection(json_encode($rawPostData));
 		
 		$dispatcher = new BanchaDispatcher();
-		$responses = $dispatcher->dispatch($banchaRequest);
+		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
 		
-		// TODO: Test against the generated BanchaResponse object instead the plain responses.
-		$this->assertEquals('Hello World!', $responses[0]);
-		$this->assertEquals('foobar', $responses[1]);
+		$this->assertEquals('Hello World!', $responses[0]->data->text);
+		$this->assertEquals('foobar', $responses[1]->data->text);
+	}
+	
+/**
+ * Tests the dispatch() method of BanchaDispatcher without the 'return'-option. Thus dispatch() sends the response
+ * directly to the browser. We need to capture the output to test it.
+ *
+ */
+	public function testDispatchWithoutReturn()
+	{
+		$rawPostData = array(
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction1',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 1,
+			),
+			array(
+				'action'	=> 'My',
+				'method'	=> 'testaction2',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 2,
+			)
+		);
+
+		$collection = new BanchaRequestCollection(json_encode($rawPostData));
+		
+		$dispatcher = new BanchaDispatcher();
+		ob_start(); // capture output, because we want to test without return
+		$dispatcher->dispatch($collection);
+		$responses = json_decode(ob_get_contents());
+		ob_end_clean();
+		
+		$this->assertEquals('Hello World!', $responses[0]->data->text);
+		$this->assertEquals('foobar', $responses[1]->data->text);
 	}
 	
 }
@@ -57,15 +106,12 @@ class BanchaDispatcherTest extends CakeTestCase
  */
 class MyController extends AppController {
 	
-	public function testaction1()
-	{
-		return 'Hello World!';
+	public function testaction1() {
+		return array('text' => 'Hello World!');
 	}
 	
-	public function testaction2()
-	{
-		return 'foobar';
+	public function testaction2() {
+		return array('text' => 'foobar');
 	}
 	
 }
-

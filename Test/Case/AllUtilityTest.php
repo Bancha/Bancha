@@ -14,30 +14,22 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Kung Wong <kung.wong@gmail.com>
  */
 
 /**
- * AllBehaviorsTest class
+ * AllUtiltiyTest class
  *
  * This test group will run all test in the Bancha/Test/Cases/Model/Behaviours directory
  *
  * @package       bancha.tests.groups
  */
-class AllRoutingTest extends PHPUnit_Framework_TestSuite {
+class AllUtiltiyTest extends PHPUnit_Framework_TestSuite {
 
-/**
- * Suite define the tests for this suite
- *
- * @return void
- */
 	public static function suite() {
-		$suite = new CakeTestSuite('Routing classes');
+		$suite = new CakeTestSuite('Utility classes');
 
-		$path = dirname(__FILE__) . DS . 'Routing';
-		$suite->addTestFile($path . DS . 'BanchaDispatcherTest.php');
+		$path = dirname(__FILE__) . DS . 'Utility';
+		$suite->addTestFile($path . DS . 'ArrayConverterTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;

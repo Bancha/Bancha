@@ -18,6 +18,7 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Kung Wong <kung.wong@gmail.com>
  */
+
 /**
  * AllBehaviorsTest class
  *
@@ -39,6 +40,7 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile($path . 'AllBehaviorsTest.php');
 		$suite->addTestFile($path . 'AllRoutingTest.php');
 		$suite->addTestFile($path . 'AllNetworkTest.php');
+		$suite->addTestFile($path . 'AllUtilityTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;
