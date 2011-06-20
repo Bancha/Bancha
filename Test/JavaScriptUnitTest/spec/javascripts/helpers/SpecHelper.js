@@ -1,3 +1,7 @@
+/*jslint browser: true, onevar: false, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine */
+
+
 beforeEach(function() {
 	
 	/**
@@ -43,8 +47,15 @@ beforeEach(function() {
     toBeAFunction: function() {
       return (typeof this.actual === 'function');
     },
+	toBeAnObject: function() {
+		return typeof this.actual === 'object';
+	},
+	toBeAnArray: function() {
+		var isArray = ("isArray" in Array)?Array.isArray:function(h){return g.call(h)==="[object Array]";};
+		return isArray(this.actual);
+	},
 	// TODO neuer helper
-	/* property: function(/*string*path) {
+	/* property: function(path) {
 		var property = objectFromPath(path,this.actual);
 		
 		// enable all matcher function for this property
@@ -52,9 +63,9 @@ beforeEach(function() {
 		
 		// if the property exists this is true
 		return property!==null;
-	}*/
+	},*/
 	hasProperty: function(path) {
 		return objectFromPath(path,this.actual)!==null;
 	}
-  })
+  });
 });

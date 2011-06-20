@@ -5,7 +5,7 @@
  * @copyright (c) 2011 Roland Schütz
  */
 /*jslint browser: true, onevar: false, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
-/*global Ext, Bancha, YUITest, User */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, BanchaSpecHelper */
 
 describe("Bancha Singleton", function() {
 
@@ -13,7 +13,7 @@ describe("Bancha Singleton", function() {
 		var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
 			h = BanchaSpecHelper; // helper shortcut
 	
-	befo	reEach(h.reset);
+		beforeEach(h.reset);
 
 		it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
 	    	h.init();
@@ -57,9 +57,9 @@ describe("Bancha Singleton", function() {
 	        //};
 
 		    //check created stubs
-			expect(Bancha.RemoteStubs).hasProperty("User.create")
+			expect(Bancha.RemoteStubs).hasProperty("User.create");
 			expect(Bancha.RemoteStubs.User.create).toBeAFunction(); //"The RemoteStub User supports create"
-			expect(Bancha.RemoteStubs).hasProperty("User.destroy")
+			expect(Bancha.RemoteStubs).hasProperty("User.destroy");
 			expect(Bancha.RemoteStubs.User.destroy).toBeAFunction(); //"The RemoteStub User supports create"
 		});
 
@@ -102,7 +102,7 @@ describe("Bancha Singleton", function() {
 			var directArgs = fnMock.mostRecentCall.args[0],
 				callback = fnMock.mostRecentCall.args[1],
 				scope = fnMock.mostRecentCall.args[2];
-			expect(args).toEqual([['User','PreloadTestArticle']]);
+			expect(directArgs).toEqual([['User','PreloadTestArticle']]);
 			expect(callback).toBeAFunction();
 			expect(scope).toBeAnObject();
 		

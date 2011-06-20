@@ -1,3 +1,6 @@
+/*jslint browser: true, onevar: false, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
+/*global Ext, Bancha, BanchaSpecHelper */
+
 /** helpers */
 BanchaSpecHelper = {};
 BanchaSpecHelper.SampleData = {};
@@ -5,7 +8,6 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
     url: 'Bancha/router.json',
     namespace: 'Bancha.RemoteStubs',
     "type":"remoting",
-    "namespace": "Bancha.RemoteStubs",
     "actions":{
         "User":[{
             "name":"create",
@@ -59,7 +61,7 @@ BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
 
     // create
     Bancha.init();
-    assert.isTrue(Bancha.createModel(modelName),"Try to create fake model "+modelName);
+    expect(Bancha.createModel(modelName)).toBeTruthy(); // Try to create fake model
 };
 BanchaSpecHelper.reset = function() {
    	// Bancha is a singleton, so get the class of
