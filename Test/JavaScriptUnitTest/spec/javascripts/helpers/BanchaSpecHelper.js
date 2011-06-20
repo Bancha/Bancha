@@ -1,5 +1,6 @@
 /** helpers */
 BanchaSpecHelper = {};
+BanchaSpecHelper.SampleData = {};
 BanchaSpecHelper.SampleData.remoteApiDefinition = {
     url: 'Bancha/router.json',
     namespace: 'Bancha.RemoteStubs',

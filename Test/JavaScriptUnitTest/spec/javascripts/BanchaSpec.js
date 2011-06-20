@@ -14,7 +14,7 @@ describe("Bancha Singleton", function() {
 	
 	beforeEach(h.reset);
 
-	it("should return the stubs namespace on getStubsNamespace() if already instanciated":function() {
+	it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
     	this.init();
     
 		var ns = Bancha.getStubsNamespace();
@@ -24,16 +24,16 @@ describe("Bancha Singleton", function() {
     	expect(ns.User.create).toBeDefined(); // looks good
 	});
 	
-	it("should return an expection when calling getRemoteApi() before init()":function() {
+	it("should return an expection when calling getRemoteApi() before init()", function() {
 		// TODO extAssert.throwsExtError("Bancha: The remote api Bancha.REMOTE_API is not yet defined, please define the api before using Bancha.getRemoteApi().", Bancha.getRemoteApi,Bancha);
 	});
 	
-	it("should return the remote api if already defined in js with getRemoteApi()":function() {
+	it("should return the remote api if already defined in js with getRemoteApi()", function() {
         
         this.init();
         assert.isObject(Bancha.getRemoteApi());
         assert.isTrue(Bancha.getRemoteApi().type==="remoting");
-    },
+    });
 	
 	
 	it("should init all stubs on init()", function() {
@@ -57,7 +57,7 @@ describe("Bancha Singleton", function() {
 	    //check created stubs
 		expect(Bancha.RemoteStubs).property("User.create").toBeAFunction(); //"The RemoteStub User supports create");
 		expect(Bancha.RemoteStubs).property("User.destroy").toBeAFunction(); //"The RemoteStub User supports create");
-    });
+  });
 
 
 

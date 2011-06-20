@@ -41,6 +41,7 @@ beforeEach(function() {
 	
   this.addMatchers({
     toBeAFunction: function() {
+    console.info(this);
       return (typeof this.actual === 'function');
     },
 	property: function(/*string*/path) {
