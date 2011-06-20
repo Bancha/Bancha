@@ -41,14 +41,16 @@ beforeEach(function() {
 	
   this.addMatchers({
     toBeAFunction: function() {
-    console.info(this);
       return (typeof this.actual === 'function');
     },
 	property: function(/*string*/path) {
 		var property = objectFromPath(path,this.actual);
 		
 		// enable all matcher function for this property
-		return expect(property);
+		this = expect(property);
+		
+		// if the property exists this is true
+		return property!==null;
 	}
   })
 });

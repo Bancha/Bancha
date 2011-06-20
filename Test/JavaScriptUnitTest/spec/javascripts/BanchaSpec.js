@@ -9,13 +9,13 @@
 
 describe("Bancha Singleton", function() {
 
-    var rs = SampleData.remoteApiDefinition, // remote sample
+    var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
 		h = BanchaSpecHelper; // helper shortcut
 	
 	beforeEach(h.reset);
 
 	it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
-    	this.init();
+    	h.init();
     
 		var ns = Bancha.getStubsNamespace();
 		
@@ -29,10 +29,11 @@ describe("Bancha Singleton", function() {
 	});
 	
 	it("should return the remote api if already defined in js with getRemoteApi()", function() {
+        h.init();
         
-        this.init();
-        assert.isObject(Bancha.getRemoteApi());
-        assert.isTrue(Bancha.getRemoteApi().type==="remoting");
+        var api = Bancha.getRemoteApi();
+        expect(api).hasProperty("type");
+        expect(api.type).toBeEquals("remoting");
     });
 	
 	
@@ -40,12 +41,12 @@ describe("Bancha Singleton", function() {
 		expect(Bancha.init).toBeAFunction();
 
 	    // setup test data
-		Bancha.REMOTE_API = this.remoteApiDefinition;
+		Bancha.REMOTE_API = rs;
 	    
 	    // test
 		Bancha.init();
 	    
-		expect.toBeTruely(Bancha.initialized);
+		expect(Bancha.initialized).toBeTruthy();
 
 	    //var expected = {
         //    User: {
@@ -55,8 +56,10 @@ describe("Bancha Singleton", function() {
         //};
 
 	    //check created stubs
-		expect(Bancha.RemoteStubs).property("User.create").toBeAFunction(); //"The RemoteStub User supports create");
-		expect(Bancha.RemoteStubs).property("User.destroy").toBeAFunction(); //"The RemoteStub User supports create");
+		expect(Bancha.RemoteStubs).hasProperty("User.create")
+		expect(Bancha.RemoteStubs.User.create).toBeAFunction(); //"The RemoteStub User supports create"
+		expect(Bancha.RemoteStubs).hasProperty("User.destroy")
+		expect(Bancha.RemoteStubs.User.destroy).toBeAFunction(); //"The RemoteStub User supports create"
   });
 
 
