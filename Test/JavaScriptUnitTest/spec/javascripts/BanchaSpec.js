@@ -64,21 +64,29 @@ describe("Bancha Singleton", function() {
 		});
 
 	
-		it("should return if a metadata is loaded with modelMetaDataIsLoaded()": function() {
+		it("should return if a metadata is loaded with modelMetaDataIsLoaded()", function() {
 			h.init();
 		
 	        expect(Bancha.modelMetaDataIsLoaded('Phantasy')).toBeFalsy(); // doesn't exist
 	        expect(Bancha.modelMetaDataIsLoaded('User')).toBeTruthy(); // remote object exists
 	  	});
 
-		it('should return is a model is loaded with isRemoteModel after init', function() {
+		it("should return is a model is loaded with isRemoteModel after init", function() {
 			h.init();
 
 			expect(Bancha.isRemoteModel('Phantasy')).toBeFalsy(); // doesn't exist
 			expect(Bancha.isRemoteModel('User')).toBeTruthy(); // remote object exists
 		});
+	 
+		it("Check Bancha.getModelMetaData function", function() {
+	        this.init();
+
+			expect(Bancha.getModelMetaData('Phantasy')).toBeNull(); // doesn't exist
+			expect(Bancha.getModelMetaData('User')).hasProperty('fields.2.name'); // remote api meadata object exists
+			expect(Bancha.getModelMetaData('User').fields[2].name).toEqual('login'); // it's really the metadata
+	    });
 	
-		it("should preload model meta data using the direct stub": function() {
+		it("should preload model meta data using the direct stub", function() {
 			h.init();
       
 			// create direct stub mock
@@ -142,7 +150,7 @@ describe("Bancha Singleton", function() {
 		});
 	
 	
-		it("should allow to just give a string as argument when preloading only one model meta data": function() {
+		it("should allow to just give a string as argument when preloading only one model meta data", function() {
 			h.init();
       
 			// create direct stub mock
@@ -157,6 +165,7 @@ describe("Bancha Singleton", function() {
 			expect(fnMock).toBeCalled();
 			expect(fnMock.mostRecentCall.args[0]).toEqual([['User']]); // direct arguments
 		});
+	
 	
 	}); //eo describe basic functions
 	
