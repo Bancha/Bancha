@@ -41,7 +41,7 @@ beforeEach(function() {
 	
   this.addMatchers({
     toBeAFunction: function() {
-      return typeof this.actual === 'function';
+      return (typeof this.actual === 'function');
     },
 	property: function(/*string*/path) {
 		var property = objectFromPath(path,this.actual);

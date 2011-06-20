@@ -47,11 +47,11 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
 
 
 BanchaSpecHelper.init = function() {
-    Bancha.REMOTE_API = remoteApiDefinition;
+    Bancha.REMOTE_API = BanchaSpecHelper.SampleData.remoteApiDefinition;
     Bancha.init();
 };
 BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
-    Bancha.REMOTE_API = Ext.clone(remoteApiDefinition);
+    Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
     // setup fake model
     Bancha.REMOTE_API.metadata[modelName] = Ext.clone(Bancha.REMOTE_API.metadata.User);
     Bancha.REMOTE_API.actions[modelName] = Ext.clone(Bancha.REMOTE_API.actions.User);
