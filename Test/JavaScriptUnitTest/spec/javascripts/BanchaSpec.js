@@ -33,7 +33,7 @@ describe("Bancha Singleton", function() {
         
         var api = Bancha.getRemoteApi();
         expect(api).hasProperty("type");
-        expect(api.type).toBeEquals("remoting");
+        expect(api.type).toEqual("remoting");
     });
 	
 	
