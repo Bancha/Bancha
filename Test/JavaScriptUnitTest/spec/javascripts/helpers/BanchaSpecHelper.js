@@ -51,66 +51,10 @@ BanchaSpecHelper.init = function() {
     Bancha.init();
 };
 BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
-	/**
-     * Clone almost any type of variable including array, object, DOM nodes and Date without keeping the old reference
-     * @param {Mixed} item The variable to clone
-     * @return {Mixed} clone
-     */
-	var clone= function(item) {
-	            if (item === null || item === undefined) {
-	                return item;
-	            }
-
-	            // DOM nodes
-	            // TODO proxy this to Ext.Element.clone to handle automatic id attribute changing
-	            // recursively
-	            if (item.nodeType && item.cloneNode) {
-	                return item.cloneNode(true);
-	            }
-
-	            var type = toString.call(item);
-
-	            // Date
-	            if (type === '[object Date]') {
-	                return new Date(item.getTime());
-	            }
-
-	            var i, j, k, clone, key;
-
-	            // Array
-	            if (type === '[object Array]') {
-	                i = item.length;
-
-	                clone = [];
-
-	                while (i--) {
-	                    clone[i] = Ext.clone(item[i]);
-	                }
-	            }
-	            // Object
-	            else if (type === '[object Object]' && item.constructor === Object) {
-	                clone = {};
-
-	                for (key in item) {
-	                    clone[key] = Ext.clone(item[key]);
-	                }
-
-	                if (enumerables) {
-	                    for (j = enumerables.length; j--;) {
-	                        k = enumerables[j];
-	                        clone[k] = item[k];
-	                    }
-	                }
-	            }
-
-	            return clone || item;
-	        };
-	
-	
-    Bancha.REMOTE_API = clone(remoteApiDefinition);
+    Bancha.REMOTE_API = Ext.clone(remoteApiDefinition);
     // setup fake model
-    Bancha.REMOTE_API.metadata[modelName] = clone(Bancha.REMOTE_API.metadata.User);
-    Bancha.REMOTE_API.actions[modelName] = clone(Bancha.REMOTE_API.actions.User);
+    Bancha.REMOTE_API.metadata[modelName] = Ext.clone(Bancha.REMOTE_API.metadata.User);
+    Bancha.REMOTE_API.actions[modelName] = Ext.clone(Bancha.REMOTE_API.actions.User);
 
     // create
     Bancha.init();
