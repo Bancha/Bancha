@@ -37,7 +37,7 @@ beforeEach(function() {
 	            return o[p];
 	        }
 	    }, lookIn);
-	},
+	};
 	
   this.addMatchers({
     toBeAFunction: function() {
