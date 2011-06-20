@@ -17,7 +17,7 @@ var assert = YUITest.Assert, // shortcuts
 
 
 //create the test suite
-var suite = new Y.TestSuite("Bancha JS Tests");
+var suite = new YUITest.TestSuite("Bancha JS Tests");
 
 
 /** helpers */
@@ -149,20 +149,286 @@ var banchaTests = new YUITest.TestCase({
         this.init();
         
 		// create direct stub mock
-        var mock = Y.Mock();
-		ExtTest.mock.DirectStub.expectRPC(mock,"loadMetaData",['User']);
-		Bancha.RemoteStubs.Bancha = mock;
+        Bancha.RemoteStubs.Bancha = ExtTest.mock.DirectStub().expect("loadMetaData","rpc", ['User']);
 		
         // execute
         Bancha.preloadModelMetaData('User');
         
 		// test
-		Y.Mock.verify(mock);
+		Y.Mock.verify(Bancha.RemoteStubs.Bancha);
     },
-	
+
+	"Bancha.preloadModelMetaData loads multiple metadata from the server": function() {
+	    this.init();
+
+		// create direct stub mock
+        Bancha.RemoteStubs.Bancha = ExtTest.mock.DirectStub().expect("loadMetaData","rpc", ['User','Person']);
+
+		// fake callback with scope
+		var scope = {
+			callback: function() {
+				this.success = true;
+			},
+			success: false
+		}
+        // execute
+        Bancha.preloadModelMetaData(['User','Person'],scope.callback,scope);
+
+		// verify callback
+		assert.isTrue(scope.success);
+		
+		// test
+		Y.Mock.verify(Bancha.RemoteStubs.Bancha);
+    },
+    
+    "Check Bancha.isRemoteModel function": function() {
+        this.init();
+        
+        assert.isFalse(Bancha.isRemoteModel('Phantasy')); // doesn't exist
+        assert.isTrue(Bancha.isRemoteModel('User')); // remote object exists
+    },
+    
+    "Check Bancha.modelMetaDataIsLoaded function": function() {
+        this.init();
+        
+        assert.isFalse(Bancha.modelMetaDataIsLoaded('Phantasy')); // doesn't exist
+        assert.isTrue(Bancha.modelMetaDataIsLoaded('User')); // user object exists
+    },
+
+    "Check Bancha.getModelMetaData function": function() {
+        this.init();
+        
+        assert.isObject(Bancha.getModelMetaData('User')); // exists
+        assert.isNull(Bancha.getModelMetaData('Phantasy')); // doesn't exist
+    },
+    
+    "Bancha.createModel creates models": function() {
+    
+        // should throw an error, no metadata
+        extAssert.throwsExtError(
+            "Bancha: Bancha is not yet initalized, please init before using Bancha.createModel().",
+            function() { Bancha.createModel('User'); });
+                
+        this.init();
+        
+        
+        // create a yui mock object for the proxy
+        var mockProxy = ExtTest.mock.Proxy();
+        
+        // should create a user defintion
+        assert.isTrue(
+            Bancha.createModel('User', {
+                additionalSettings: true,
+                proxy: mockProxy
+        }));
+        
+        var model = Ext.ClassManager.get('User');
+        assert.isObject(model);
+        assert.isTrue(model.prototype.additionalSettings);
+        
+        var user = new User({
+            firstname: 'Micky',
+            lastname: 'Mouse'
+        });
+        
+        // define expectations for remote stub calls
+        // user.save() should result in one create action
+        mockProxy.expect("create");
+        
+        // test
+        user.save();
+        
+        //verify the expectations were met
+        Y.Mock.verify(mockProxy);    
+    },
+    
+    "Bancha.getModel return and eventually creates models": function() {
+            
+         this.init();
+         
+         // create model
+         var model = Bancha.getModel('User');
+         assert.isObject(model);
+         assert.areEqual('User',Ext.ClassManager.getName(model));
+    
+        // only get model
+        model.alreadyCreated = true;
+        model = Bancha.getModel('User');
+        assert.isObject(model);
+        assert.isTrue(model.alreadyCreated);
+    }
 });
 //add test cases
 suite.add(banchaTests);
+
+
+
+var scarfoldUtilTests = new YUITest.TestCase({
+
+    name: "Scarfold util functions",
+
+    //---------------------------------------------
+    // Setup and tear down
+    //---------------------------------------------
+    setUp : function () {
+    },
+    tearDown : function () {
+    },
+    
+    
+    "Bancha.scarfold.util.toFirstUpper test": function() {
+        var util = Bancha.scarfold.util;
+        assert.areEqual('User',util.toFirstUpper('user'));
+        assert.areEqual('UserName',util.toFirstUpper('userName'));
+    },
+    
+    "Bancha.scarfold.util.humanize test": function() {
+        var util = Bancha.scarfold.util;
+        
+        // first upper case
+        assert.areEqual('User',util.humanize('user'));
+        
+        // ids
+        assert.areEqual('User',util.humanize('user_id'));
+        
+        // underscores
+        assert.areEqual('User name',util.humanize('user_name'));
+        assert.areEqual('Name with many spaces',util.humanize('name_with_many_spaces'));
+        
+        // camel case
+        assert.areEqual('User name',util.humanize('userName'));
+        assert.areEqual('Name with many spaces',util.humanize('nameWithManySpaces'));
+        
+        // shouldn't change normal text
+        assert.areEqual('John Smith',util.humanize('John Smith'));
+        assert.areEqual('This is a normal text with spaces, Upper case words and all UPPER CASE words!',util.humanize('This is a normal text with spaces, Upper case words and all UPPER CASE words!'));
+    }
+});
+//add test cases
+suite.add(scarfoldUtilTests);   
+
+
+var scarfoldGridTests = new YUITest.TestCase({
+
+    name: "Scarfold grid functions",
+
+    //---------------------------------------------
+    // Setup and tear down
+    //---------------------------------------------
+    setUp : function () {
+        delete Bancha.REMOTE_API;
+        delete Bancha.RemoteStubs;
+        Bancha.initialized = false;
+
+    },
+    tearDown : function () {
+    },
+
+    
+    // helpers
+    initAndCreateSampleModel: initAndCreateSampleModel,
+    
+    "Bancha.scarfold.buildColumns build column configs (component test)": function() {
+        // prepare
+        this.initAndCreateSampleModel('GridColumnsTest');
+        
+        // expected columns
+        var expected = [{
+            text     : 'Id',
+            dataIndex: 'id',
+            xtype: 'numbercolumn',
+            editor: {xtype:'numberfield', decimalPrecision:0}
+        }, {
+            text     : 'Name',
+            dataIndex: 'name',
+            xtype: 'gridcolumn',
+            editor: {xtype:'textfield'}
+        }, {
+            text     : 'Login',
+            dataIndex: 'login',
+            xtype: 'gridcolumn',
+            editor: {xtype:'textfield'}
+        }, {
+            text     : 'Created',
+            dataIndex: 'created',
+            xtype: 'datecolumn',
+            editor: {xtype:'datefield'}
+        }, {
+            text     : 'Email',
+            dataIndex: 'email',
+            xtype: 'gridcolumn',
+            editor: {xtype:'textfield'}
+        }, {
+            text     : 'Avatar',
+            dataIndex: 'avatar',
+            xtype: 'gridcolumn',
+            editor: {xtype:'textfield'}
+        }, {
+            text     : 'Weight',
+            dataIndex: 'weight',
+            xtype: 'numbercolumn',
+            editor: {xtype:'numberfield'}
+        }, {
+            text     : 'Height',
+            dataIndex: 'height',
+            xtype: 'numbercolumn',
+            editor: {xtype:'numberfield'}
+        }, {
+            xtype:'actioncolumn', 
+            width:50,
+            items: [{
+                icon: 'images/delete.png',
+                tooltip: 'Delete',
+                handler: Bancha.scarfold.gridFunction.onDelete
+            }]
+        }];
+        
+        // test
+        var result = Bancha.scarfold.buildColumns('GridColumnsTest', {
+            update  : true,
+            destroy : true
+        });
+        
+        // TODO ohne UD
+        // compare
+        arrayAssert.itemsAreEqual(expected, result);
+    },
+
+    "Bancha.scarfold.buildGridPanelConfig should create grid configs (component test)": function() {
+        // prepare
+        this.initAndCreateSampleModel('GridPanelConfigTest');
+        
+        // test
+        var result = Bancha.scarfold.buildColumns('GridPanelConfigTest', {
+            update  : true,
+            destroy : true
+        });
+        
+        // check store
+        var expectedModelName = 'GridPanelConfigTest',
+            resultModelName   = Ext.ClassManager.getName(result.store.getProxy().getModel());
+        assert.areEqual(expectedModelName, resultModelName, "The grid config has an store of the right model");
+        
+        // just a simple column check, buildColumns is already tested above
+        assert.areEqual(9, result.columns.length);
+        
+        
+        // TODO ohne UD
+        // compare
+        arrayAssert.itemsAreEqual(expected, result);
+        
+                
+                                
+        var result = Bancha.scarfold.buildGridPanelConfig('GridPanelTest');
+        assert.areEqual('User',result);
+        
+        assert.fail();
+        
+        // TODO test whole CRUD
+    }
+});
+//add test cases
+suite.add(scarfoldGridTests);   
 
 
 // add to test runner

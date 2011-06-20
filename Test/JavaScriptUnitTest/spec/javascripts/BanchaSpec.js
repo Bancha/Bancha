@@ -60,10 +60,105 @@ describe("Bancha Singleton", function() {
 		expect(Bancha.RemoteStubs.User.create).toBeAFunction(); //"The RemoteStub User supports create"
 		expect(Bancha.RemoteStubs).hasProperty("User.destroy")
 		expect(Bancha.RemoteStubs.User.destroy).toBeAFunction(); //"The RemoteStub User supports create"
-  });
+	});
 
+	
+	it("should return if a metadata is loaded with modelMetaDataIsLoaded()": function() {
+		h.init();
+		
+        expect(Bancha.modelMetaDataIsLoaded('Phantasy')).toBeFalsy(); // doesn't exist
+        expect(Bancha.modelMetaDataIsLoaded('User')).toBeTruthy(); // remote object exists
+  	});
 
+	it('should return is a model is loaded with isRemoteModel after init', function() {
+		h.init();
 
+		expect(Bancha.isRemoteModel('Phantasy')).toBeFalsy(); // doesn't exist
+		expect(Bancha.isRemoteModel('User')).toBeTruthy(); // remote object exists
+	});
+	
+	it("should preload model meta data using the direct stub": function() {
+		h.init();
+      
+		// create direct stub mock
+		var fnMock = jasmine.createSpy();
+		Bancha.RemoteStubs.Bancha = {
+			loadMetaData: fnMock
+		};
+		
+		// execute test
+		Bancha.preloadModelMetaData(['PreloadTestUser','PreloadTestArticle']);
+		
+		expect(fnMock).toBeCalled();
+		var directArgs = fnMock.mostRecentCall.args[0],
+			callback = fnMock.mostRecentCall.args[1],
+			scope = fnMock.mostRecentCall.args[2];
+		expect(args).toEqual([['User','PreloadTestArticle']]);
+		expect(callback).toBeAFunction();
+		expect(scope).toBeAnObject();
+		
+		// now fake answer
+		var result = [{
+			PreloadTestUser: {
+	               fields: [
+                    {name:'id', type:'int'},
+                    {name:'name', type:'string'},
+                    {name:'login', type:'string'},
+                    {name:'created', type:'date'},
+                    {name:'email', type:'string'},
+                    {name:'avatar', type:'string'},
+                    {name:'weight', type:'float'},
+                    {name:'height', type:'float'}
+                ],
+                validations: [
+                    {type:'length', name:'name', min:4, max:64},
+                    {type:'length', name:'login', min:3, max:64},
+                    {type:'length', name:'email', min:5, max:64},
+                    {type:'length', name:'avatar', max:64},
+                    {type:'length', name:'weight', max:64}
+                ],
+                sorters: [{
+                    property: 'name',
+                    direction: 'ASC'
+                }]
+			},
+			PreloadTestArticle: {
+	            fields: [
+                    {name:'id', type:'int'},
+                    {name:'name', type:'string'}
+                ]
+			}
+		}];
+		callback.apply(scope,[result]);
+		
+		// now see if is is available
+		expect(Bancha.modelMetaDataIsLoaded('PreloadTestUser')).toBeTruthy();
+		expect(Bancha.modelMetaDataIsLoaded('PreloadTestArticle')).toBeTruthy();
+		
+		// check model by sample field
+		expect(Bancha.getModelMetaData('PreloadTestUser')).hasProperty('fields.2.name');
+		expect(Bancha.getModelMetaData('PreloadTestUser').fields[2].name).toEqual('login');
+	});
+	
+	
+	it("should allow to just give a string as argument when preloading only one model meta data": function() {
+		h.init();
+      
+		// create direct stub mock
+		var fnMock = jasmine.createSpy();
+		Bancha.RemoteStubs.Bancha = {
+			loadMetaData: fnMock
+		};
+		
+		// execute test
+		Bancha.preloadModelMetaData('PreloadSingleTestUser');
+		
+		expect(fnMock).toBeCalled();
+		expect(fnMock.mostRecentCall.args[0]).toEqual([['User']]); // direct arguments
+	});
+	
+	
+	
 }); //eo describe
 
 //eof
