@@ -43,11 +43,15 @@ beforeEach(function() {
     toBeAFunction: function() {
       return (typeof this.actual === 'function');
     },
-	property: function(/*string*/path) {
+	// TODO neuer helper
+	/* property: function(/*string*path) {
 		var property = objectFromPath(path,this.actual);
 		
 		// enable all matcher function for this property
 		return expect(property);
+	}*/
+	hasProperty: function(path) {
+		return objectFromPath(path,this.actual)!==null;
 	}
   })
 });
