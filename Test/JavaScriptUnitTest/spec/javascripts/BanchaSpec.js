@@ -1,10 +1,10 @@
 /*!
  * Bancha Tests
- * Copyright(c) 2011 Roland Schütz
- * @author Roland Schütz <roland@banchaproject.org>
- * @copyright (c) 2011 Roland Schütz
+ * Copyright(c) 2011 Roland Schuetz
+ * @author Roland Schuetz <mail@rolandschuetz.at>
+ * @copyright (c) 2011 Roland Schuetz
  */
-/*jslint browser: true, onevar: false, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, BanchaSpecHelper */
 
 describe("Bancha Singleton", function() {
@@ -167,6 +167,68 @@ describe("Bancha Singleton", function() {
 		});
 	
 	
+	    it("should throw an error in debug mode / returns false in prodiction mode "+
+	        "when Bancha#createModel is called for a not yet loaded metadata of a model", function() {
+	        
+	        // prepare a remote api without the user metadata
+	        Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+	        delete Bancha.REMOTE_API.metadata.User;
+	        
+	        // init
+	        Bancha.init();
+	        
+	        // now test
+	        expect(function() {
+	            
+	            // in debug mode this should throw an error
+	            var result = Bancha.createModel('User');
+	            
+	            // in production mode var result should be false, so 
+	            // throw an error to pass the test for production code
+	            if(result===false) {
+	                throw 'Bancha: Couldn\'t create the model cause the metadata is not loaded yet, please use onModelReady instead.';
+	            }
+	        }).toThrowExtError('Bancha: Couldn\'t create the model cause the metadata is not loaded yet, please use onModelReady instead.');
+	    });
+        
+        it("should create Models with Bancha#createModel", function() {
+            h.init();
+
+            // create a yui mock object for the proxy
+            var mockProxy = ExtSpecHelper.mockProxy();
+
+            // should create a user defintion
+            expect(
+                Bancha.createModel('User', {
+                    additionalSettings: true,
+                    proxy: mockProxy
+            })).toBeTruthy();
+
+            // check if the model really got created
+            var model = Ext.ClassManager.get('User');
+            expect(model).toBeAnObject();
+            
+            // check if the additional config was used
+            expect(model.prototype.additionalSettings).toBeTruthy();
+
+
+            // test if the model saves data throught ext direct
+            var user = new User({
+                firstname: 'Micky',
+                lastname: 'Mouse'
+            });
+
+            // define expectations for remote stub calls
+            // user.save() should result in one create action
+            expect.mockProxy.expect("create");
+
+            // test
+            user.save();
+
+            //verify the expectations were met
+            Y.Mock.verify(mockProxy);    
+        },
+
 	}); //eo describe basic functions
 	
 	// TODO add more
