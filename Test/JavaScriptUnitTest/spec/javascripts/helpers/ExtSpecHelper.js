@@ -19,6 +19,47 @@ beforeEach(function() {
     
     
     
+	/**
+	 * used for matcher isModelClass
+	 * Safely finds an object, used internally for getStubsNamespace and getRemoteApi
+	 * (This function is tested in RS.util, not part of the package testing, but it is tested)
+	 * @param {String} path A period ('.') separated path to the desired object (String).
+	 * @param {String} lookIn optional: The object on which to perform the lookup.
+	 * @return {Object} The object if found, otherwise undefined.
+	 * @member Bancha
+	 * @method objectFromPath
+	 * @private
+	 */
+	var objectFromPath = function(path, lookIn) {
+	    if (!lookIn) {
+	        //get the global object so it don't use hasOwnProperty on window (IE incompatible)
+	        var first = path.indexOf('.'),
+	            globalObjName,
+	            globalObj;
+	        if (first === -1) {
+	            // the whole path is only one object so eturn the result
+	            return window[path];
+	        }
+	        // else the first part as global object name
+	        globalObjName = path.slice(0, first);
+	        globalObj = window[globalObjName];
+	        if (typeof globalObj === 'undefined') {
+	            // path seems to be false
+	            return undefined;
+	        }
+	        // set the ne lookIn and the path
+	        lookIn = globalObj;
+	        path = path.slice(first + 1);
+	    }
+	    // get the object
+	    return path.split('.').reduce(function(o, p) {
+	        if(o && o.hasOwnProperty(p)) {
+	            return o[p];
+	        }
+	    }, lookIn);
+	};
+	
+	
     this.addMatchers({
         // now add a custom matcher to test methods where ext errors get thrown
         toThrowExtErrorMsg: function(msg) {
@@ -43,7 +84,23 @@ beforeEach(function() {
             
             // if there was an error the expect() above already thrown it
             return true;
-        } //eo toTrowExtErrorMsg
+        }, //eo toTrowExtErrorMsg
+        
+        // test if a function is of an specific ext class
+        toBeOfClass: function(className) {
+            return Ext.ClassManager.getName(this.actual) === className; // right class
+        },
+        
+        // test if a function is an constructor of a model class
+        toBeModelClass: function(className) {
+            var modelClassName = this.actual.modelName,
+                modelExtendsClass = Ext.ClassManager.getName(objectFromPath('prototype.superclass',this.actual));
+            
+            return (
+                typeof this.actual === 'function' && // constructor
+                className === modelClassName &&      // correct class
+                (modelExtendsClass==='Bancha.data.Model' || modelExtendsClass==='Ext.data.Model')); // is a model
+        }
     });
 });
 
@@ -66,19 +123,19 @@ Mock.Proxy = (function() {
     };
     
     // looks like the server has answered with some data
-    proxyPrototype.callLastRPCCallback = function(method,arguments) {
+    proxyPrototype.callLastRPCCallback = function(method,args) {
         if(!this[method] || !this[method].mostRecentCall || !this[method].mostRecentCall.args) {
             throw "The mock was not called yet!";
         }
         
         // undefined as data is allowed
-        arguments = arguments || [];
+        args = args || [];
         
-        var args     = this[method].mostRecentCall.args
-            callback = args[1],
-            scope    = args[2];
+        var methodArgs     = this[method].mostRecentCall.args,
+            callback = methodArgs[1],
+            scope    = methodArgs[2];
         
-        callback.apply(scope,arguments);
+        callback.apply(scope,args);
     };
     
     // fake proxy property for ext
@@ -89,8 +146,8 @@ Mock.Proxy = (function() {
         var proxy = Object.create(proxyPrototype);
         
         // setModel is always called when creating 
-        // an Proxy from model/store
-        proxy.expect("setModel");
+        // an Proxy from model/store, totally unimportant for us
+        proxy.setModel = function() {};
         return proxy;
     };
 }());

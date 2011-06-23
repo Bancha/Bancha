@@ -40,6 +40,7 @@ describe("ExtSpecHelpers toThrowExtError matcher", function() {
         
     });
     
+    // TODO test toBeModelClass
 });
 
 
@@ -52,14 +53,12 @@ describe("Mock.Proxy",function() {
         
         // success
         var mock = Mock.Proxy();
-        mock.setModel();// fake setModel call
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
         mock.create([{id:1,name:'juhu'},'secondDirectArgument'],callback,scope);
         mock.verify();
         
         // error
         var mock = Mock.Proxy();
-        mock.setModel();// fake setModel call
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
         mock.create([{id:1,name:'juhu'},'secondDirectArgument'],'nocallback',scope);
         
@@ -72,7 +71,6 @@ describe("Mock.Proxy",function() {
         
         // successfull without data
         var mock = Mock.Proxy();
-        mock.setModel();// fake setModel call
         var callback = function() { this.success=true;},
             scope = { success:false};
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
@@ -88,7 +86,6 @@ describe("Mock.Proxy",function() {
         
         // successfull with data TODO
         var mock = Mock.Proxy();
-        mock.setModel();// fake setModel call
         var callback = function(data) { this.success=data.successProperty;},
             scope = { success:false};
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
