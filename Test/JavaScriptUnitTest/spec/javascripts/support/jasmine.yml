@@ -38,6 +38,10 @@ stylesheets:
 #   - helpers/**/*.js
 #
 helpers:
+    - helpers/SpecHelper.js
+    - helpers/Mock.js
+    - helpers/ExtSpecHelper.js
+    - helpers/BanchaSpecHelper.js
 
 # spec_files
 #
@@ -50,6 +54,9 @@ helpers:
 #   - **/*[sS]pec.js
 #
 spec_files:
+    - helpers/MockSpec.js
+    - helpers/ExtSpecHelperSpec.js
+    - **/*[sS]pec.js
 
 # src_dir
 #
