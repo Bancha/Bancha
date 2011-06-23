@@ -1,4 +1,7 @@
 <?php
+
+App::uses('ModelBehavior', 'Model');
+
 // TODO doku
 class BanchaBehavior extends ModelBehavior {
 
