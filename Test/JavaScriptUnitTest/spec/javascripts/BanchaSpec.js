@@ -462,6 +462,8 @@ describe("Bancha Singleton", function() {
                 update    : true,
                 withReset : true,
                 destroy   : true,
+            },{
+                additionalGridConfig: true
             });
 
             // should have a store
@@ -483,6 +485,9 @@ describe("Bancha Singleton", function() {
             
             // should have an reset button
             expect(buttons[3].iconCls).toEqual('icon-reset');
+            
+            // should have added the additional grid config
+            expect(result.additionalGridConfig).toBeTruthy();
         });
     }); //eo scarfold grid functions
     // TODO add more
