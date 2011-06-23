@@ -298,38 +298,46 @@ describe("Bancha Singleton", function() {
 
             // expected columns
             var expected = [{
+                flex     : 1,
                 text     : 'Id',
                 dataIndex: 'id',
-                xtype: 'numbercolumn',
-                format: '0'
+                xtype    : 'numbercolumn',
+                format   : '0'
             }, {
+                flex     : 1,
                 text     : 'Name',
                 dataIndex: 'name',
-                xtype: 'gridcolumn'
+                xtype   : 'gridcolumn'
             }, {
+                flex     : 1,
                 text     : 'Login',
                 dataIndex: 'login',
-                xtype: 'gridcolumn'
+                xtype    : 'gridcolumn'
             }, {
+                flex     : 1,
                 text     : 'Created',
                 dataIndex: 'created',
-                xtype: 'datecolumn'
+                xtype    : 'datecolumn'
             }, {
+                flex     : 1,
                 text     : 'Email',
                 dataIndex: 'email',
-                xtype: 'gridcolumn'
+                xtype    : 'gridcolumn'
             }, {
+                flex     : 1,
                 text     : 'Avatar',
                 dataIndex: 'avatar',
-                xtype: 'gridcolumn'
+                xtype    : 'gridcolumn'
             }, {
+                flex     : 1,
                 text     : 'Weight',
                 dataIndex: 'weight',
-                xtype: 'numbercolumn'
+                xtype    : 'numbercolumn'
             }, {
+                flex     : 1,
                 text     : 'Height',
                 dataIndex: 'height',
-                xtype: 'numbercolumn'
+                xtype    : 'numbercolumn'
             }];
 
             // test
@@ -345,51 +353,59 @@ describe("Bancha Singleton", function() {
 
             // expected columns
             var expected = [{
+                flex     : 1,
                 text     : 'Id',
                 dataIndex: 'id',
-                xtype: 'numbercolumn',
-                format: '0',
-                field: {xtype:'numberfield', decimalPrecision:0}
+                xtype    : 'numbercolumn',
+                format   : '0',
+                field    : {xtype:'numberfield', decimalPrecision:0}
             }, {
+                flex     : 1,
                 text     : 'Name',
                 dataIndex: 'name',
-                xtype: 'gridcolumn',
-                field: {xtype:'textfield'}
+                xtype    : 'gridcolumn',
+                field    : {xtype:'textfield'}
             }, {
+                flex     : 1,
                 text     : 'Login',
                 dataIndex: 'login',
-                xtype: 'gridcolumn',
-                field: {xtype:'textfield'}
+                xtype    : 'gridcolumn',
+                field    : {xtype:'textfield'}
             }, {
+                flex     : 1,
                 text     : 'Created',
                 dataIndex: 'created',
-                xtype: 'datecolumn',
-                field: {xtype:'datefield'}
+                xtype    : 'datecolumn',
+                field    : {xtype:'datefield'}
             }, {
+                flex     : 1,
                 text     : 'Email',
                 dataIndex: 'email',
-                xtype: 'gridcolumn',
-                field: {xtype:'textfield'}
+                xtype    : 'gridcolumn',
+                field    : {xtype:'textfield'}
             }, {
+                flex     : 1,
                 text     : 'Avatar',
                 dataIndex: 'avatar',
-                xtype: 'gridcolumn',
-                field: {xtype:'textfield'}
+                xtype    : 'gridcolumn',
+                field    : {xtype:'textfield'}
             }, {
+                flex     : 1,
                 text     : 'Weight',
                 dataIndex: 'weight',
-                xtype: 'numbercolumn',
-                field: {xtype:'numberfield'}
+                xtype    : 'numbercolumn',
+                field    : {xtype:'numberfield'}
             }, {
+                flex     : 1,
                 text     : 'Height',
                 dataIndex: 'height',
-                xtype: 'numbercolumn',
-                field: {xtype:'numberfield'}
+                xtype    : 'numbercolumn',
+                field    : {xtype:'numberfield'}
             }, {
                 xtype:'actioncolumn', 
                 width:50,
                 items: [{
-                    icon: 'images/delete.png',
+                    icon: 'img/icons/delete.png',
                     tooltip: 'Delete',
                     handler: Bancha.scarfold.gridFunction.onDelete
                 }]
@@ -462,7 +478,7 @@ describe("Bancha Singleton", function() {
 
             // test
             var result = Bancha.scarfold.buildGridPanelConfig('GridPanelConfigWithCRUDTest', {
-                autoLoad: false,
+                autoLoad  : false,
                 create    : true,
                 update    : true,
                 withReset : true,
