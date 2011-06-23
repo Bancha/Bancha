@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Jasmine Test Runner</title>
+  <link rel="stylesheet" type="text/css" href="jasmine/jasmine.css">
+  <script type="text/javascript" src="jasmine/jasmine.js"></script>
+  <script type="text/javascript" src="jasmine/jasmine-html.js"></script>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="lib/ext-all-debug-w-comments.js"></script>
+  <script type="text/javascript" src="../../lib/Bancha/vendors/js/Bancha.js"></script>
+
+  <!-- include spec files here... -->
+  <script type="text/javascript" src="spec/javascripts/helpers/SpecHelper.js"></script>
+  <script type="text/javascript" src="spec/javascripts/helpers/Mock.js"></script>
+  <script type="text/javascript" src="spec/javascripts/helpers/MockSpec.js"></script>
+  <script type="text/javascript" src="spec/javascripts/helpers/ExtSpecHelper.js"></script>
+  <script type="text/javascript" src="spec/javascripts/helpers/BanchaSpecHelper.js"></script>
+
+  <script type="text/javascript" src="spec/javascripts/BanchaSpec.js"></script>
+  <script type="text/javascript" src="spec/javascripts/Bancha.data.ModelSpec.js"></script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().execute();
+</script>
+
+</body>
+</html>

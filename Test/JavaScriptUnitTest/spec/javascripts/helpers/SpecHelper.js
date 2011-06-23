@@ -1,4 +1,4 @@
-/*jslint browser: true, onevar: false, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine */
 
 
@@ -51,8 +51,14 @@ beforeEach(function() {
 		return typeof this.actual === 'object';
 	},
 	toBeAnArray: function() {
-		var isArray = ("isArray" in Array)?Array.isArray:function(h){return g.call(h)==="[object Array]";};
+		var isArray = function(testObject) { return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number'; };
 		return isArray(this.actual);
+	},
+	toBeAString: function() {
+		return typeof this.actual === 'string';
+	},
+	toBeANumber: function() {
+		return typeof this.actual === 'number';
 	},
 	// TODO neuer helper
 	/* property: function(path) {
