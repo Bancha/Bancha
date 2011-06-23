@@ -4,33 +4,37 @@
 
 
 // test expect().toThrowExtErrorMsg()
-describe("ExtSpecHelper", function() {
+describe("ExtSpecHelpers toThrowExtError matcher", function() {
     
     it("should be able to catch ext errors (just the right ones)", function() {
-       
         // success 
         expect(function() {
-            Ext.Error.raise('this is a ext errror');
-        }).toThrowExtErrorMsg('this is a ext errror');
-        
+            Ext.Error.raise('this is a ext error');
+        }).toThrowExtErrorMsg('this is a ext error');
+    });
+    
+    it("should be able to recognize when no error was thrown", function() {
         // error no exceptiong
-        var fn = jasmine.Matchers.prototype.toThrowExtError,
+        console.info(this.matchersClass.prototype.toThrowExtErrorMsg.prototype);
+        var fn = this.matchersClass.toThrowExtErrorMsg,
             scope = {
                 actual: function() {}
             },
-            result = fn.apply(scope,'expecting error');
+            result = fn.call(scope,'expecting error');
         
         expect(result).toBeFalse();
-        
-        
+    });
+     
+    it("should be able to recognize when the wrong error is trown", function() {
         // error wrong exception
-        scope = {
-            actual: function() {
-                // this function will throw a false error
-                Ext.Error.raise('this is a wrong ext errror');
-            }
-        };
-        result = fn.apply(scope,'mismatching error');
+        var fn = jasmine.Matchers.prototype.toThrowExtError,
+            scope = {
+                actual: function() {
+                    // this function will throw a false error
+                    Ext.Error.raise('this is a wrong ext error');
+                }
+            },
+            result = fn.call(scope,'mismatching error');
         
         expect(result).toBeFalse();
         

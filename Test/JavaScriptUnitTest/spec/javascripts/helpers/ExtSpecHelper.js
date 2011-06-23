@@ -29,19 +29,20 @@ beforeEach(function() {
 
                 // change error handling inside this function
                 Ext.Error.handle = function(e) {
-                    throw e.message;
+                    throw e.msg;
                 };
             }
         
             // now test the function, jasmine style
-            var result = this.toThrow(msg);
-        
+            expect(this.actual).toThrow(msg);
+            
             // reset error handling
             if(Ext.Error) {
                 Ext.Error.handle = standardHandler;
             }
-        
-            return result;
+            
+            // if there was an error the expect() above already thrown it
+            return true;
         } //eo toTrowExtErrorMsg
     });
 });
