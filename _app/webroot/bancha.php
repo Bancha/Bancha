@@ -44,8 +44,7 @@
 	if (!defined('ROOT')) {
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
-	
-	echo ROOT . " hrllo\n";
+
 /**
  * The actual directory name for the "app".
  *
