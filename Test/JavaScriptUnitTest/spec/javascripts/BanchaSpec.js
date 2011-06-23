@@ -300,7 +300,8 @@ describe("Bancha Singleton", function() {
             var expected = [{
                 text     : 'Id',
                 dataIndex: 'id',
-                xtype: 'numbercolumn'
+                xtype: 'numbercolumn',
+                format: '0'
             }, {
                 text     : 'Name',
                 dataIndex: 'name',
@@ -347,42 +348,43 @@ describe("Bancha Singleton", function() {
                 text     : 'Id',
                 dataIndex: 'id',
                 xtype: 'numbercolumn',
-                editor: {xtype:'numberfield', decimalPrecision:0}
+                format: '0',
+                field: {xtype:'numberfield', decimalPrecision:0}
             }, {
                 text     : 'Name',
                 dataIndex: 'name',
                 xtype: 'gridcolumn',
-                editor: {xtype:'textfield'}
+                field: {xtype:'textfield'}
             }, {
                 text     : 'Login',
                 dataIndex: 'login',
                 xtype: 'gridcolumn',
-                editor: {xtype:'textfield'}
+                field: {xtype:'textfield'}
             }, {
                 text     : 'Created',
                 dataIndex: 'created',
                 xtype: 'datecolumn',
-                editor: {xtype:'datefield'}
+                field: {xtype:'datefield'}
             }, {
                 text     : 'Email',
                 dataIndex: 'email',
                 xtype: 'gridcolumn',
-                editor: {xtype:'textfield'}
+                field: {xtype:'textfield'}
             }, {
                 text     : 'Avatar',
                 dataIndex: 'avatar',
                 xtype: 'gridcolumn',
-                editor: {xtype:'textfield'}
+                field: {xtype:'textfield'}
             }, {
                 text     : 'Weight',
                 dataIndex: 'weight',
                 xtype: 'numbercolumn',
-                editor: {xtype:'numberfield'}
+                field: {xtype:'numberfield'}
             }, {
                 text     : 'Height',
                 dataIndex: 'height',
                 xtype: 'numbercolumn',
-                editor: {xtype:'numberfield'}
+                field: {xtype:'numberfield'}
             }, {
                 xtype:'actioncolumn', 
                 width:50,
@@ -408,7 +410,7 @@ describe("Bancha Singleton", function() {
             h.initAndCreateSampleModel('GridPanelConfigTest');
 
             // test
-            var result = Bancha.scarfold.buildGridPanelConfig('GridPanelConfigTest',{
+            var result = Bancha.scarfold.buildGridPanelConfig('GridPanelConfigTest', {
                 autoLoad: false
             });
 
@@ -435,8 +437,11 @@ describe("Bancha Singleton", function() {
             expect(result.store.getProxy().getModel()).toBeModelClass("GridPanelConfigWithUpdateDeleteTest");
             
             // just a simple column check, buildColumns is already tested above
-            expect(result.columns.length).toEqual(8);
+            expect(result.columns.length).toEqual(9);
 
+            // should have all columns editable
+            expect(result.columns[0].field.xtype).toEqual("numberfield");
+            
             // should be editable
             expect(result.selType).toEqual('cellmodel');
             // expect a celleditor plugin for update support
@@ -470,7 +475,7 @@ describe("Bancha Singleton", function() {
             expect(result.store.getProxy().getModel()).toBeModelClass("GridPanelConfigWithCRUDTest");
             
             // just a simple column check, buildColumns is already tested above
-            expect(result.columns.length).toEqual(8);
+            expect(result.columns.length).toEqual(9);
 
             // should be editable (simple check)
             expect(result.selType).toEqual('cellmodel');
