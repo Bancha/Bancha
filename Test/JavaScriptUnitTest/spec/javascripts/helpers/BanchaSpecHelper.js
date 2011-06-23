@@ -1,5 +1,5 @@
-/*jslint browser: true, onevar: false, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
-/*global Ext, Bancha, BanchaSpecHelper */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, BanchaSpecHelper */
 
 /** helpers */
 BanchaSpecHelper = {};
@@ -17,8 +17,8 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
             "len":1
         }]
     },
-   metadata: {
-      User: {
+    metadata: {
+        User: {
                 fields: [
                     {name:'id', type:'int'},
                     {name:'name', type:'string'},
@@ -50,7 +50,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
 
 
 BanchaSpecHelper.init = function() {
-    Bancha.REMOTE_API = BanchaSpecHelper.SampleData.remoteApiDefinition;
+    Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
     Bancha.init();
 };
 BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
@@ -64,11 +64,11 @@ BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
     expect(Bancha.createModel(modelName)).toBeTruthy(); // Try to create fake model
 };
 BanchaSpecHelper.reset = function() {
-   	// Bancha is a singleton, so get the class of
+    // Bancha is a singleton, so get the class of
     // the singleton object and reinstanciate it
     //var className = Ext.getClassName(Ext.getClass(Bancha));
     //Bancha = Ext.create(className,{});
     delete Bancha.REMOTE_API;
     delete Bancha.RemoteStubs;
     Bancha.initialized = false;
-}
+};
