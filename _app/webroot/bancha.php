@@ -44,6 +44,7 @@
 	if (!defined('ROOT')) {
 		define('ROOT', dirname(dirname(dirname(__FILE__))));
 	}
+
 /**
  * The actual directory name for the "app".
  *
@@ -56,7 +57,7 @@
  *
  */
 	if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-		define('CAKE_CORE_INCLUDE_PATH', ROOT);
+		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
 	}
 
 /**
@@ -71,20 +72,26 @@
 		define('WWW_ROOT', dirname(__FILE__) . DS);
 	}
 	if (!defined('CORE_PATH')) {
-		if (function_exists('ini_set') && ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . ROOT . DS . APP_DIR . DS . PATH_SEPARATOR . ini_get('include_path'))) {
+		/*if (function_exists('ini_set') && ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . ROOT . DS . APP_DIR . DS . PATH_SEPARATOR . ini_get('include_path'))) {
 			define('APP_PATH', null);
 			define('CORE_PATH', null);
-		} else {
+		} else {*/
 			define('APP_PATH', ROOT . DS . APP_DIR . DS);
 			define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
-		}
+		//}
 	}
-	if (!include(CORE_PATH . 'cake' . DS . 'bootstrap.php')) {
+	if (!include(CORE_PATH . 'Cake' . DS . 'bootstrap.php')) {
 		trigger_error("CakePHP core could not be found.  Check the value of CAKE_CORE_INCLUDE_PATH in APP/webroot/index.php.  It should point to the directory containing your " . DS . "cake core directory and your " . DS . "vendors root directory.", E_USER_ERROR);
+	}
+	// load bootstrap of bancha
+	if (!include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
+		trigger_error("Bancha bootstrap could not be loaded.  
+		Check the value of ROOT in APP/webroot/index.php.  
+		It should point to the directory containing your " . DS . " ROOT directory and your " . DS . "vendors root directory.", E_USER_ERROR);
 	}
 	if (isset($_GET['url']) && $_GET['url'] === 'favicon.ico') {
 		return;
 	} else {
 		$Dispatcher = new BanchaDispatcher();
-		$Dispatcher->dispatch(new BanchaRequestCollection($HTTP_RAW_POST_DATA));
+		$Dispatcher->dispatch(new BanchaRequestCollection(isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : ''));
 	}
