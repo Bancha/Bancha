@@ -17,6 +17,16 @@
     /*
      * helper functions for verify
      */
+    var isArray = function(testObject) {   
+        return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
+    };
+    var getType = function(obj) {
+        if(typeof obj==='object') {
+            return (isArray(obj)) ? 'array' : 'object';
+        } else {
+            return typeof obj;
+        }
+    };
     var toString = function(obj) {
         if(typeof obj==='string') {
             // add slashes for objings
@@ -26,16 +36,6 @@
             return "["+obj+"]";
         } else {
             return obj;
-        }
-    };
-    var isArray = function(testObject) {   
-        return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
-    };
-    var getType = function(obj) {
-        if(typeof obj==='object') {
-            return (isArray(obj)) ? 'array' : 'object';
-        } else {
-            return typeof obj;
         }
     };
     // we need a own expect for usefull error messages
