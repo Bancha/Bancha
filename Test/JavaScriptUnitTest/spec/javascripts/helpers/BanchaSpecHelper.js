@@ -19,6 +19,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
     },
     metadata: {
         User: {
+                idProperty: 'id',
                 fields: [
                     {name:'id', type:'int'},
                     {name:'name', type:'string'},
@@ -49,18 +50,20 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
 
 
 
-BanchaSpecHelper.init = function() {
+BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName) {
     Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+    
+    if(Ext.isString(modelDefinitionsForName)) {
+        // setup fake model
+        Bancha.REMOTE_API.metadata[modelDefinitionsForName] = Ext.clone(Bancha.REMOTE_API.metadata.User);
+        Bancha.REMOTE_API.actions[modelDefinitionsForName] = Ext.clone(Bancha.REMOTE_API.actions.User);
+    } else if(Ext.isDefined(modelDefinitionsForName)){
+        throw 'modelDefinitionsFor is not a string';
+    }
     Bancha.init();
 };
 BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
-    Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
-    // setup fake model
-    Bancha.REMOTE_API.metadata[modelName] = Ext.clone(Bancha.REMOTE_API.metadata.User);
-    Bancha.REMOTE_API.actions[modelName] = Ext.clone(Bancha.REMOTE_API.actions.User);
-
-    // create
-    Bancha.init();
+    this.init(modelName);
     expect(Bancha.createModel(modelName)).toBeTruthy(); // Try to create fake model
 };
 BanchaSpecHelper.reset = function() {
