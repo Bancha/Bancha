@@ -46,7 +46,7 @@ class BanchaExceptionHandler extends Object {
 		 * see lib/cake/errorhandler.php
 		 * */
 		
-		echo "testing the exception: " . $e;
+		//echo "testing the exception: " . $e;
 		//throw new Exception('TestException: ');
 	}
 

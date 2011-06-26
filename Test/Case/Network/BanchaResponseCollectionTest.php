@@ -29,24 +29,28 @@ class BanchaResponseCollectionTest extends CakeTestCase
 	function testGetResponses() {
 		$response1 = array(
 			'success'	=> true,
-			'message'	=> 200,
+			'message'	=> 'OK',
 			'body'		=> 'test1',
+			'type'		=> 'rpc'
 		);
 		$response2 = array(
 			'success'	=> true,
-			'message'	=> 200,
+			'message'	=> 'OK',
 			'body'		=> 'test1',
+			'type'		=> 'rpc'
 		);
 		
 		$expectedResponse1 = array(
 			'success'	=> true,
-			'message'	=> 200,
+			'message'	=> 'OK',
 			'data'		=> 'test1',
+			'type'		=> 'rpc'
 		);
 		$expectedResponse2 = array(
 			'success'	=> true,
-			'message'	=> 200,
+			'message'	=> 'OK',
 			'data'		=> 'test1',
+			'type'		=> 'rpc'
 		);
 		
 		$collection = new BanchaResponseCollection();
@@ -54,6 +58,7 @@ class BanchaResponseCollectionTest extends CakeTestCase
 				   ->addResponse(new CakeResponse($response2));
 		
 		$actualResponse = $collection->getResponses()->body();
+		
 		$this->assertEquals(json_encode(array($expectedResponse1, $expectedResponse2)), $actualResponse);
 		
 		$actualResponse = json_decode($actualResponse);
