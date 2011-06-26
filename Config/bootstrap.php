@@ -30,9 +30,9 @@ CakePlugin::load('Bancha');
 // TODO: DEFINE _ KONSTANTE _ BANCHA_CONTEXT_ True 
 
 // TODO: LOAD PLUGINS in webroot/bancha.php -> don't load it here
-// load Behavior
-App::uses('BanchaBehavior', 'Bancha.Model/Behavior');
-App::load('BanchaBehavior');
+// load Behavior -> loaded in app/Config/bootstrap.php
+//App::uses('BanchaBehavior', 'Bancha.Model/Behavior');
+//App::load('BanchaBehavior');
 
 // load exceptionhandler
 App::uses('BanchaExceptionHandler', 'Bancha.Bancha/ExceptionHandler');
@@ -44,4 +44,4 @@ Configure::write('Exception.handler', array('BanchaExceptionHandler', 'handleExc
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
-echo "hello bootstrap";
+//echo "hello bootstrap";

@@ -25,7 +25,7 @@
  * @author Andreas Kern
  */
 
-class BanchaExtController extends BanchaAppController {
+class BanchaController extends BanchaAppController {
 
 	var $name = 'Bancha.BanchaExt'; //turns html on again
 	var $autoRender = false; //we don't need a view for this
@@ -110,6 +110,29 @@ class BanchaExtController extends BanchaAppController {
 		$this->set('API', $API);
 		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
 		//$this->render(null, 'ajax', null); //removes the html
+	}
+	
+	/**
+	 * 
+	 * this function returns the Metadata of the models passed as an argument
+	 */
+	
+	public function metaDataLoad($models = array() ) {
+		if ($models == null) {
+			return;
+		}
+		
+		if ( is_string($models)) {
+			$models = array($models);
+		}
+		
+		$modelMetaData = array();
+		foreach($models as $mod) {
+			$this->loadModel($mod);
+			$this->{$mod}->setBehaviorModel($mod);
+			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();	
+		}
+		return $modelMetaData;
 	}
 }
 

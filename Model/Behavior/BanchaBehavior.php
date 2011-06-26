@@ -15,6 +15,7 @@ class BanchaBehavior extends ModelBehavior {
 		"integer" => "int",
 		"string" => "string",
 		"datetime" => "date",
+		"date" => "date",
 		"float" => "float",
 		"text" => "text",
 		"boolean" => "boolean"
