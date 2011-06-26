@@ -25,9 +25,13 @@
  * @author Andreas Kern
  */
 
-class BanchaController extends BanchaAppController {
+class BanchaExtController extends BanchaAppController {
 
-	var $name = 'Banchas'; //turns html on again
+	var $name = 'Bancha.BanchaExt'; //turns html on again
+	var $autoRender = false; //we don't need a view for this
+	var $autoLayout = false;
+	//var $viewClass = 'Bancha.BanchaExt';
+		
 
 	/**
 	 *  CRUD mapping between cakephp and extjs
@@ -56,8 +60,8 @@ class BanchaController extends BanchaAppController {
 		 * @var array
 		 */
 		$API = array();
-		$API['url'] =  'Bancha/router.php';
-		//$API['url'] =  '/bancha';
+		//$API['url'] =  'Bancha/router.php';
+		$API['url'] =  '/bancha.php';
     	$API['type'] = "remoting";
 		
 
@@ -101,7 +105,8 @@ class BanchaController extends BanchaAppController {
 		}
 
 		$this->set('API', $API);
-		$this->render(null, 'ajax'); //removes the html
+		print( json_encode($API));
+		//$this->render(null, 'ajax', null); //removes the html
 	}
 }
 
