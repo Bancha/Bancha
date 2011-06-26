@@ -10,6 +10,15 @@ class BanchaBehavior extends ModelBehavior {
 	private $actionIsAllowed;
 	private $schema;
 	private $model;
+	
+	private $types = array( 
+		"integer" => "int",
+		"string" => "string",
+		"datetime" => "date",
+		"float" => "float",
+		"text" => "text",
+		"boolean" => "boolean"
+		);
 
 /**
  *  TODO doku
@@ -26,6 +35,15 @@ class BanchaBehavior extends ModelBehavior {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
 		$this->actionIsAllowed = $config;
+	}
+	
+	/** set the model explicit as cakephp does not instantiate the behavior for each model
+	 * 
+	 */
+	
+	function setBehaviorModel(&$Model) {
+		$this->model = $Model;
+		$this->schema = $Model->schema();
 	}
 
 /**
@@ -110,7 +128,7 @@ class BanchaBehavior extends ModelBehavior {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
 		foreach ($columns as $field => $values) {
-				array_push($cols, array( 'name' => $field, 'type' => $values));
+				array_push($cols, array( 'name' => $field, 'type' => $this->types[$values]));
 		}
 		return $cols;
 	}
@@ -128,13 +146,16 @@ class BanchaBehavior extends ModelBehavior {
 		}
 		$cols = array();
 		foreach ($columns as $field => $values) {
-			array_push($cols, array( 'type' => 'length', 'name' => $field, 'max' => $values['length']));
+			if(isset($values['length'])) {
+				array_push($cols, array( 'type' => 'length', 'name' => $field, 'max' => $values['length']));
+			}
 		}
 		return $cols;
 	}
 
 /**
  * Returns an ExtJS formated array describing sortable fields
+ * this is '$order' in cakephp
  *
  * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
  */

@@ -62,7 +62,9 @@ class BanchaExtController extends BanchaAppController {
 		$API = array();
 		//$API['url'] =  'Bancha/router.php';
 		$API['url'] =  '/bancha.php';
+		$API['namespace'] = 'Bancha.RemoteStubs';
     	$API['type'] = "remoting";
+
 		
 
 		/****** parse Models **********/
@@ -82,6 +84,7 @@ class BanchaExtController extends BanchaAppController {
 
 		//load the MetaData into $API
 		foreach ($banchaModels as $mod) {
+			$this->{$mod}->setBehaviorModel($mod);
 			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
 		/**
@@ -105,7 +108,7 @@ class BanchaExtController extends BanchaAppController {
 		}
 
 		$this->set('API', $API);
-		print( json_encode($API));
+		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
 		//$this->render(null, 'ajax', null); //removes the html
 	}
 }
