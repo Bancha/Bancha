@@ -149,6 +149,7 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 		
 		$this->assertEquals(2, count($responses[0]->data));
+		
 		$this->assertEquals($article1->id, $responses[0]->data[0]->id);
 		$this->assertEquals($article2->id, $responses[0]->data[1]->id);
 		
