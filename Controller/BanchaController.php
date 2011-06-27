@@ -59,6 +59,7 @@ class BanchaController extends BanchaAppController {
 		 *
 		 * @var array
 		 */
+
 		$API = array();
 		//$API['url'] =  'Bancha/router.php';
 		$API['url'] =  '/bancha.php';
@@ -117,7 +118,7 @@ class BanchaController extends BanchaAppController {
 	 * this function returns the Metadata of the models passed as an argument
 	 */
 	
-	public function metaDataLoad($models = array() ) {
+	public function loadMetaData($models = array() ) {
 		if ($models == null) {
 			return;
 		}
@@ -130,7 +131,7 @@ class BanchaController extends BanchaAppController {
 		foreach($models as $mod) {
 			$this->loadModel($mod);
 			$this->{$mod}->setBehaviorModel($mod);
-			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();	
+			$modelMetaData[$mod] = $this->{$mod}->extractBanchaMetaData();	
 		}
 		return $modelMetaData;
 	}

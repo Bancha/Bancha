@@ -27,6 +27,10 @@
 // load Banchaplugin
 CakePlugin::load('Bancha');
 
+// set namespace for ExtJS
+Configure:write('Bancha.namespace','Bancha.RemoteStubs');
+
+
 // TODO: DEFINE _ KONSTANTE _ BANCHA_CONTEXT_ True 
 
 // TODO: LOAD PLUGINS in webroot/bancha.php -> don't load it here
