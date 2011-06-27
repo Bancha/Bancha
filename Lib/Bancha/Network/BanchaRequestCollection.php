@@ -54,6 +54,8 @@ class BanchaRequestCollection {
 			$data = array($data); 
 		} 
 		
+		$data = Set::sort($data, '{n}.tid', 'asc');
+		
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
