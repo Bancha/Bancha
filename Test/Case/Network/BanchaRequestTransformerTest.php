@@ -37,6 +37,15 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals('Test', $transformer->getController());
 	}
 	
+	public function testGetControllerForm()
+	{
+		$transformer = new BanchaRequestTransformer(array(
+			'extAction'		=> 'Test',
+		));
+		$this->assertNotNull($transformer->getController());
+		$this->assertEquals('Test', $transformer->getController());
+	}
+	
 /**
  * First the name of action is stored in the "method" property in the Ext JS request, second Ext JS use different names
  * for CRUD operations. We need to transform them.
@@ -54,6 +63,19 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$transformer = new BanchaRequestTransformer(array(
 			'method'		=> $extAction,
 			'data'			=> $extData,
+		));
+		$this->assertNotNull($transformer->getAction());
+		$this->assertEquals($cakeAction, $transformer->getAction());
+	}
+	
+/**
+ * @dataProvider getActionProvider
+ */
+	public function testGetActionForm($extAction, $extData, $cakeAction)
+	{
+		$transformer = new BanchaRequestTransformer(array_merge(
+			array('extMethod'		=> $extAction),
+			$extData
 		));
 		$this->assertNotNull($transformer->getAction());
 		$this->assertEquals($cakeAction, $transformer->getAction());
@@ -84,6 +106,15 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$transformer = new BanchaRequestTransformer(array(
 			'method'	=> 'update',
 			'data'		=> array('id' => 42),
+		));
+		$this->assertEquals(array('id' => 42), $transformer->getPassParams());
+	}
+	
+	public function testGetPassParamsForm()
+	{
+		$transformer = new BanchaRequestTransformer(array(
+			'extMethod'	=> 'update',
+			'id' => 42,
 		));
 		$this->assertEquals(array('id' => 42), $transformer->getPassParams());
 	}
@@ -140,6 +171,25 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertFalse(isset($data['limit']));
 		$this->assertFalse(isset($data['sort']));
 		$this->assertEquals('bar', $data['foo']);
+	}
+	
+	public function testGetCleanedDataArrayForm()
+	{
+		$data = array(
+			'extAction'	=> 'Test',
+			'extMethod'	=> 'read',
+			'id'		=> 42,
+			'foo'		=> 'bar',
+			'extTID'	=> 1,
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$data = $transformer->getCleanedDataArray();
+		$this->assertFalse(isset($data['action']));
+		$this->assertFalse(isset($data['method']));
+		$this->assertFalse(isset($data['id']));
+		$this->assertEquals('bar', $data['foo']);
+		$this->assertFalse(isset($data['extTID']));
 	}
 	
 /**

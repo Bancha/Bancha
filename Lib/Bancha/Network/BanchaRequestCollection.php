@@ -30,14 +30,19 @@ class BanchaRequestCollection {
 	/** @var string */
 	protected $rawPostData;
 	
+	/** @var array */
+	protected $postData;
+	
 	/**
 	 * Constructor.
 	 *
-	 * @param string $rawPostData Content of $HTTP_RAW_POST_DATA
+	 * @param string $rawPostData Content of $HTTP_RAW_POST_DATA.
+	 * @param array $postData Content of $_POST.
 	 */
-	public function __construct($rawPostData)
+	public function __construct($rawPostData = '', $postData = array())
 	{
 		$this->rawPostData = $rawPostData;
+		$this->postData = $postData;
 	}
 
 /**
@@ -47,14 +52,19 @@ class BanchaRequestCollection {
  */
 	public function getRequests() {
 		$requests = array();
-		$data = json_decode($this->rawPostData, true);
-		
-		// TODO: improve detection (not perfect, but should it should be correct in most cases.)
-		if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
-			$data = array($data); 
-		} 
-		
-		$data = Set::sort($data, '{n}.tid', 'asc');
+		if (strlen($this->rawPostData))
+		{
+			$data = json_decode($this->rawPostData, true);
+			// TODO: improve detection (not perfect, but should it should be correct in most cases.)
+			if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
+				$data = array($data); 
+			}
+			$data = Set::sort($data, '{n}.tid', 'asc');
+		}
+		else
+		{
+			$data = array($this->postData);
+		}
 		
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
