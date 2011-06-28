@@ -62,6 +62,7 @@ class BanchaFormTest extends CakeTestCase {
 		$this->assertEquals('Hello World', $responses[0]->data->title);
 		$this->assertEquals(false, $responses[0]->data->published);
 		$this->assertEquals(1, $responses[0]->data->user_id);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article = new Article();
@@ -91,6 +92,7 @@ class BanchaFormTest extends CakeTestCase {
 		$this->assertEquals($article->id, $responses[0]->data->id);
 		$this->assertEquals('foobar', $responses[0]->data->title);
 		$this->assertEquals(true, $responses[0]->data->published);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article->delete();
@@ -115,6 +117,7 @@ class BanchaFormTest extends CakeTestCase {
 		));
 		
 		$this->assertEquals(array(), $responses[0]->data);
+		$this->assertEquals(1, $responses[0]->tid);
 	}
 	
 }

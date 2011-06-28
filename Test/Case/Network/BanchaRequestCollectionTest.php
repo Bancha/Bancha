@@ -60,6 +60,9 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
 		$this->assertTrue(isset($requests[0]['pass']));
 		$this->assertTrue(isset($requests[0]['named']));
+		
+		// TID is set?
+		$this->assertEquals(1, $requests[0]['tid']);
 	}
 
 /**
@@ -146,6 +149,9 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		
 		// Title needs to be added to the data array.
 		$this->assertEquals('Hello World', $requests[0]->data('title'));
+		
+		// TID is set?
+		$this->assertEquals(1, $requests[0]['tid']);
 	}
 
 }

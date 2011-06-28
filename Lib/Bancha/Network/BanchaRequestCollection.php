@@ -77,6 +77,7 @@ class BanchaRequestCollection {
 				$requests[$i]['action']		= $transformer->getAction();
 				$requests[$i]['named']		= $transformer->getPaging();
 				$requests[$i]['pass']		= $transformer->getPassParams();
+				$requests[$i]['tid']		= $transformer->getTid();
 				
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);

@@ -79,7 +79,7 @@ class BanchaResponseCollection {
  * @param CakeResponse $response 
  * @return BanchaResponseCollection
  */
-	public function addResponse(CakeResponse $response, $value = null) {
+	public function addResponse($tid, CakeResponse $response, $value = null) {
 		// check statusCode of response 
 		
 		/** "action":"person",
@@ -100,14 +100,16 @@ class BanchaResponseCollection {
 			    "success" => false,
 			    "message" => $this->statusCodes[$response->statusCode()],
 			    "data" => $response->body(),
-				"type" => 'exception'
+				"type" => 'exception',
+				'tid'	=> $tid,
 			);
 		} else {
 			$response = array(
 			    "success" => true,
 			    "message" => $this->statusCodes[$response->statusCode()],
 			    "data" => $response->body(),
-				"type" => 'rpc'
+				"type" => 'rpc',
+				'tid'	=> $tid,
 			);
 		}
 		
@@ -116,11 +118,11 @@ class BanchaResponseCollection {
 		return $this;
 	}
 	
-	public function addException(Exception $e) {
+	public function addException($tid, Exception $e) {
 		$response = new CakeResponse();
 		// values
 		$response->body($e);
-		$this->addResponse($response, true);
+		$this->addResponse($tid, $response, true);
 	 }
 	 
 /**

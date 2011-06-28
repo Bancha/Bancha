@@ -65,6 +65,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('Hello World', $responses[0]->data->title);
 		$this->assertEquals(false, $responses[0]->data->published);
 		$this->assertEquals(1, $responses[0]->data->user_id);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article = new Article();
@@ -97,6 +98,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals($article->id, $responses[0]->data->id);
 		$this->assertEquals('foobar', $responses[0]->data->title);
 		$this->assertEquals(true, $responses[0]->data->published);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article->delete();
@@ -122,6 +124,7 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 		
 		$this->assertEquals(array(), $responses[0]->data);
+		$this->assertEquals(1, $responses[0]->tid);
 	}
 	
 	public function testIndex() {
@@ -157,6 +160,7 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		$this->assertEquals($article1->id, $responses[0]->data[0]->id);
 		$this->assertEquals($article2->id, $responses[0]->data[1]->id);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete articles
 		$article1->delete();
@@ -185,6 +189,7 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		$this->assertEquals($article->id, $responses[0]->data[0]->id);
 		$this->assertEquals('foo', $responses[0]->data[0]->title);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article->delete();

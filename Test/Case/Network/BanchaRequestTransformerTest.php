@@ -140,6 +140,26 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals($paging['order'], $cakePaginate['order']);
 	}
 	
+	public function testGetTid()
+	{
+		$data = array(
+			'tid'	=> 42,
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$this->assertEquals(42, $transformer->getTid());
+	}
+	
+	public function testGetTidForm()
+	{
+		$data = array(
+			'extTID'	=> 42,
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$this->assertEquals(42, $transformer->getTid());
+	}
+	
 /**
  * The data array (which represent POST parameters) in CakePHP only contains the actual data values but not the special
  * parameters. Thus we need to clean the data array from action, controller, paginate and pass parameters. We therefore
@@ -170,6 +190,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertFalse(isset($data['page']));
 		$this->assertFalse(isset($data['limit']));
 		$this->assertFalse(isset($data['sort']));
+		$this->assertFalse(isset($data['tid']));
 		$this->assertEquals('bar', $data['foo']);
 	}
 	

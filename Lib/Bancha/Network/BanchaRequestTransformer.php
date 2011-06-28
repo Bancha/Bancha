@@ -43,6 +43,9 @@ class BanchaRequestTransformer {
 	
 /** @var boolean TRUE if the given request is a form request. */
 	protected $isFormRequest = false;
+	
+	/** @var boolean */
+	protected $tid;
 
 /**
  * Constructor. Requires a single Ext JS request in PHP array format.
@@ -140,6 +143,25 @@ class BanchaRequestTransformer {
 			unset($this->data['url']);
 		}
 		return $this->url;
+	}
+	
+	public function getTid()
+	{
+		if (null != $this->tid)
+		{
+			return $this->tid;
+		}
+		if (isset($this->data['tid']))
+		{
+			$this->tid = $this->data['tid'];
+			unset($this->data['tid']);
+		}
+		else if (isset($this->data['extTID']))
+		{
+			$this->tid = $this->data['extTID'];
+			unset($this->data['extTID']);
+		}
+		return $this->tid;
 	}
 	
 /**

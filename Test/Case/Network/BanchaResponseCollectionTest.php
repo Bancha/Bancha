@@ -31,7 +31,7 @@ class BanchaResponseCollectionTest extends CakeTestCase
 			'success'	=> true,
 			'message'	=> 'OK',
 			'body'		=> 'test1',
-			'type'		=> 'rpc'
+			'type'		=> 'rpc',
 		);
 		$response2 = array(
 			'success'	=> true,
@@ -44,18 +44,20 @@ class BanchaResponseCollectionTest extends CakeTestCase
 			'success'	=> true,
 			'message'	=> 'OK',
 			'data'		=> 'test1',
-			'type'		=> 'rpc'
+			'type'		=> 'rpc',
+			'tid'		=> 1,
 		);
 		$expectedResponse2 = array(
 			'success'	=> true,
 			'message'	=> 'OK',
 			'data'		=> 'test1',
-			'type'		=> 'rpc'
+			'type'		=> 'rpc',
+			'tid'		=> 2,
 		);
 		
 		$collection = new BanchaResponseCollection();
-		$collection->addResponse(new CakeResponse($response1))
-				   ->addResponse(new CakeResponse($response2));
+		$collection->addResponse(1, new CakeResponse($response1))
+				   ->addResponse(2, new CakeResponse($response2));
 		
 		$actualResponse = $collection->getResponses()->body();
 		
