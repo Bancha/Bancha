@@ -28,7 +28,10 @@ describe("Bancha Singleton", function() {
     
     
         it("should return an expection when calling getRemoteApi() before init()", function() {
-            // TODO extAssert.throwsExtError("Bancha: The remote api Bancha.REMOTE_API is not yet defined, please define the api before using Bancha.getRemoteApi().", Bancha.getRemoteApi,Bancha);
+            expect(function() {
+                Bancha.getRemoteApi();
+            }).toThrowExtErrorMsg("Bancha: The remote api Bancha.REMOTE_API is not yet defined, "+
+                                  "please define the api before using Bancha.getRemoteApi().");
         });
     
     
@@ -36,8 +39,7 @@ describe("Bancha Singleton", function() {
             h.init();
         
             var api = Bancha.getRemoteApi();
-            expect(api).hasProperty("type");
-            expect(api.type).toEqual("remoting");
+            expect(api).property("type").toEqual("remoting");
         });
     
     
@@ -60,10 +62,8 @@ describe("Bancha Singleton", function() {
             //};
 
             //check created stubs
-            expect(Bancha.RemoteStubs).hasProperty("User.create");
-            expect(Bancha.RemoteStubs.User.create).toBeAFunction(); //"The RemoteStub User supports create"
-            expect(Bancha.RemoteStubs).hasProperty("User.destroy");
-            expect(Bancha.RemoteStubs.User.destroy).toBeAFunction(); //"The RemoteStub User supports create"
+            expect(Bancha.RemoteStubs).property("User.create").toBeAFunction(); //"The RemoteStub User supports create"
+            expect(Bancha.RemoteStubs).property("User.destroy").toBeAFunction(); //"The RemoteStub User supports create"
         });
 
     
@@ -87,8 +87,7 @@ describe("Bancha Singleton", function() {
             h.init();
 
             expect(Bancha.getModelMetaData('Phantasy')).toBeNull(); // doesn't exist
-            expect(Bancha.getModelMetaData('User')).hasProperty('fields.2.name'); // remote api meadata object exists
-            expect(Bancha.getModelMetaData('User').fields[2].name).toEqual('login'); // it's really the metadata
+            expect(Bancha.getModelMetaData('User')).property('fields.2.name').toEqual('login'); // it's really the metadata
         });
     
     
@@ -143,8 +142,7 @@ describe("Bancha Singleton", function() {
             expect(Bancha.modelMetaDataIsLoaded('PreloadTestArticle')).toBeTruthy();
         
             // check model by sample field
-            expect(Bancha.getModelMetaData('PreloadTestUser')).hasProperty('fields.2.name');
-            expect(Bancha.getModelMetaData('PreloadTestUser').fields[2].name).toEqual('login');
+            expect(Bancha.getModelMetaData('PreloadTestUser')).property('fields.2.name').toEqual('login');
         });
     
     
@@ -263,17 +261,17 @@ describe("Bancha Singleton", function() {
     
 
 
-    describe("Bancha scarfold util functions",function() {
+    describe("Bancha scaffold util functions",function() {
         
-        it("should pass all Bancha.scarfold.util.toFirstUpper tests", function() {
-            var util = Bancha.scarfold.util;
+        it("should pass all Bancha.scaffold.util.toFirstUpper tests", function() {
+            var util = Bancha.scaffold.util;
             expect('User').toEqual(util.toFirstUpper('user'));
             expect('UserName').toEqual(util.toFirstUpper('userName'));
         });
 
 
-        it("should pass all Bancha.scarfold.util.humanize tests", function() {
-            var util = Bancha.scarfold.util;
+        it("should pass all Bancha.scaffold.util.humanize tests", function() {
+            var util = Bancha.scaffold.util;
 
             // first upper case
             expect('User').toEqual(util.humanize('user'));
@@ -296,17 +294,17 @@ describe("Bancha Singleton", function() {
                    'and all UPPER CASE words!'));
         });
         
-    }); //eo scarfold util functions
+    }); //eo scaffold util functions
     
 
-    describe("Bancha scarfold grid functions",function() {
+    describe("Bancha scaffold grid functions",function() {
         
         var h = BanchaSpecHelper; // helper shortcut
 
         beforeEach(h.reset);
         
         
-        it("should build a grid column config with Bancha.scarfold.buildColumns (component test)", function() {
+        it("should build a grid column config with Bancha.scaffold.buildColumns (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridColumnsConfigTest');
 
@@ -355,14 +353,14 @@ describe("Bancha Singleton", function() {
             }];
 
             // test
-            var result = Bancha.scarfold.buildColumns('GridColumnsConfigTest');
+            var result = Bancha.scaffold.buildColumns('GridColumnsConfigTest');
 
             // compare
             expect(result).toEqual(expected);
         });
         
         
-        it("should build a grid column config with Bancha.scarfold.buildColumns with update "+
+        it("should build a grid column config with Bancha.scaffold.buildColumns with update "+
             "and delete functions (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridColumnsConfigWithUpdateDeleteTest');
@@ -423,12 +421,12 @@ describe("Bancha Singleton", function() {
                 items: [{
                     icon: 'img/icons/delete.png',
                     tooltip: 'Delete',
-                    handler: Bancha.scarfold.gridFunction.onDelete
+                    handler: Bancha.scaffold.gridFunction.onDelete
                 }]
             }];
 
             // test
-            var result = Bancha.scarfold.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
+            var result = Bancha.scaffold.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
                 update  : true,
                 destroy : true
             });
@@ -438,12 +436,12 @@ describe("Bancha Singleton", function() {
         });
         
         
-        it("should build a grid panel config with Bancha.scarfold.buildGridPanelConfig (component test)", function() {
+        it("should build a grid panel config with Bancha.scaffold.buildGridPanelConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridPanelConfigTest');
 
             // test
-            var result = Bancha.scarfold.buildGridPanelConfig('GridPanelConfigTest', {
+            var result = Bancha.scaffold.buildGridPanelConfig('GridPanelConfigTest', {
                 autoLoad: false
             });
 
@@ -456,12 +454,12 @@ describe("Bancha Singleton", function() {
         
         
         it("should build a grid panel config with update and delete support with "+
-            "Bancha.scarfold.buildGridPanelConfig (component test)", function() {
+            "Bancha.scaffold.buildGridPanelConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridPanelConfigWithUpdateDeleteTest');
 
             // test
-            var result = Bancha.scarfold.buildGridPanelConfig('GridPanelConfigWithUpdateDeleteTest', {
+            var result = Bancha.scaffold.buildGridPanelConfig('GridPanelConfigWithUpdateDeleteTest', {
                 autoLoad: false,
                 update  : true,
                 destroy : true
@@ -479,24 +477,22 @@ describe("Bancha Singleton", function() {
             // should be editable
             expect(result.selType).toEqual('cellmodel');
             // expect a celleditor plugin for update support
-            expect(result).hasProperty("plugins[0]");
-            expect(result.plugins[0]).toBeOfClass("Ext.grid.plugin.CellEditing");
+            expect(result).property("plugins.0").toBeOfClass("Ext.grid.plugin.CellEditing");
             // standardwise two clicks are expected for update start
-            expect(result.plugins[0].clicksToEdit).toEqual(2);
+            expect(result).property("plugins.0.clicksToEdit").toEqual(2);
             
             // should have an update button
-            expect(result).hasProperty("dockedItems[0].items[1].iconCls");
-            expect(result.dockedItems[0].items[1].iconCls).toEqual("icon-save");
+            expect(result).property("dockedItems.0.items.1.iconCls").toEqual("icon-save");
         });
         
         
         it("should build a fgrid panel config with full crud support with "+
-            "Bancha.scarfold.buildGridPanelConfig (component test)", function() {
+            "Bancha.scaffold.buildGridPanelConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridPanelConfigWithCRUDTest');
 
             // test
-            var result = Bancha.scarfold.buildGridPanelConfig('GridPanelConfigWithCRUDTest', {
+            var result = Bancha.scaffold.buildGridPanelConfig('GridPanelConfigWithCRUDTest', {
                 autoLoad  : false,
                 create    : true,
                 update    : true,
@@ -529,8 +525,28 @@ describe("Bancha Singleton", function() {
             // should have added the additional grid config
             expect(result.additionalGridConfig).toBeTruthy();
         });
-    }); //eo scarfold grid functions
+    }); //eo scaffold grid functions
 
+
+    describe("Bancha scaffold form functions",function() {
+        
+        var h = BanchaSpecHelper; // helper shortcut
+
+        beforeEach(h.reset);
+        
+        
+        it("should build a form config with Bancha.scaffold.buildFormConfig", function() {
+            // prepare
+            h.initAndCreateSampleModel('FormConfigTest');
+            
+            var expected = {
+                
+                // TODO
+            };
+            expect().toBeTruthy();
+        });
+    }); //eo scaffold form functions
+    
 }); //eo describe Bancha
 
 //eof
