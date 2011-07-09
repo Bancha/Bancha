@@ -2,8 +2,32 @@
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine */
 
 
+/*
+ * Add some basic matcher functions for type checks
+ */
 beforeEach(function() {
-	
+  this.addMatchers({
+    toBeAFunction: function() {
+      return (typeof this.actual === 'function');
+    },
+	toBeAnObject: function() {
+		return typeof this.actual === 'object';
+	},
+	toBeAnArray: function() {
+		var isArray = function(testObject) { return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number'; };
+		return isArray(this.actual);
+	},
+	toBeAString: function() {
+		return typeof this.actual === 'string';
+	},
+	toBeANumber: function() {
+		return typeof this.actual === 'number';
+	}
+  });
+});
+
+
+(function() {
 	/**
 	 * Safely finds an object, used internally for getStubsNamespace and getRemoteApi
 	 * (This function is tested in RS.util, not part of the package testing, but it is tested)
@@ -42,36 +66,19 @@ beforeEach(function() {
 	        }
 	    }, lookIn);
 	};
-	
-  this.addMatchers({
-    toBeAFunction: function() {
-      return (typeof this.actual === 'function');
-    },
-	toBeAnObject: function() {
-		return typeof this.actual === 'object';
-	},
-	toBeAnArray: function() {
-		var isArray = function(testObject) { return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number'; };
-		return isArray(this.actual);
-	},
-	toBeAString: function() {
-		return typeof this.actual === 'string';
-	},
-	toBeANumber: function() {
-		return typeof this.actual === 'number';
-	},
-	// TODO neuer helper
-	/* property: function(path) {
+	/*
+	 * Test if this property exists and if so return an 
+	 * expect-object to make additional tests on
+	 */
+	jasmine.Matchers.prototype.property = function(path) {
 		var property = objectFromPath(path,this.actual);
-		
-		// enable all matcher function for this property
-		this.actual = expect(property).actual;
-		
-		// if the property exists this is true
-		return property!==null;
-	},*/
-	hasProperty: function(path) {
-		return objectFromPath(path,this.actual)!==null;
-	}
-  });
-});
+	
+		// if the property doesn't exist fail
+		if(property===null) {
+			this.fail("Property "+path+" doesn't exist.");
+		}
+	
+		// return expect for property
+		return expect(property);
+	};
+}());
