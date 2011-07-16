@@ -28,43 +28,58 @@ class BanchaResponseCollectionTest extends CakeTestCase
 
 	function testGetResponses() {
 		$response1 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'body'		=> 'test1',
-			'type'		=> 'rpc',
+			'body'	=> array('message' => 'Hello World'),
 		);
 		$response2 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'body'		=> 'test1',
-			'type'		=> 'rpc'
+			'body'	=> array('message' => 'Hello Bancha'),
 		);
+		$response3 = array(
+			'body'	=> array('message' => 'This is an exception'),
+		);
+		$request1 = new CakeRequest();
+		$request1->addParams(array('controller' => 'foo', 'action' => 'bar'));
+		$request2 = new CakeRequest();
+		$request2->addParams(array('controller' => 'bar', 'action' => 'foo'));
+		$request3 = new CakeRequest();
+		$request3->addParams(array('controller' => 'foo', 'action' => 'error'));
 		
 		$expectedResponse1 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'data'		=> 'test1',
 			'type'		=> 'rpc',
 			'tid'		=> 1,
+			'action'	=> 'foo',
+			'method'	=> 'bar',
+			'result'	=> array('message' => 'Hello World'),
 		);
 		$expectedResponse2 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'data'		=> 'test1',
 			'type'		=> 'rpc',
 			'tid'		=> 2,
+			'action'	=> 'bar',
+			'method'	=> 'foo',
+			'result'	=> array('message' => 'Hello Bancha'),
+		);
+		$expectedResponse3 = array(
+			'type'		=> 'exception',
+			'tid'		=> 3,
+			'action'	=> 'foo',
+			'method'	=> 'error',
+			'result'	=> 'This is an exception',
 		);
 		
 		$collection = new BanchaResponseCollection();
-		$collection->addResponse(1, new CakeResponse($response1))
-				   ->addResponse(2, new CakeResponse($response2));
+		$collection->addResponse(1, new CakeResponse($response1), $request1)
+				   ->addResponse(2, new CakeResponse($response2), $request2)
+				   ->addException(3, new Exception($response3['body']['message']), $request3);
 		
 		$actualResponse = $collection->getResponses()->body();
 		
-		$this->assertEquals(json_encode(array($expectedResponse1, $expectedResponse2)), $actualResponse);
+		$this->assertEquals(
+			json_decode(json_encode(array($expectedResponse1, $expectedResponse2, $expectedResponse3))),
+			json_decode($actualResponse)
+		);
 		
 		$actualResponse = json_decode($actualResponse);
-		$this->assertEquals($expectedResponse1['data'], $actualResponse[0]->data);
-		$this->assertEquals($expectedResponse2['data'], $actualResponse[1]->data);
+		$this->assertEquals(json_decode(json_encode($expectedResponse1['result'])), $actualResponse[0]->result);
+		$this->assertEquals(json_decode(json_encode($expectedResponse2['result'])), $actualResponse[1]->result);
+		$this->assertEquals(json_decode(json_encode($expectedResponse3['result'])), $actualResponse[2]->result);
 	}
 }

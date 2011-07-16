@@ -58,15 +58,15 @@ class BanchaFormTest extends CakeTestCase {
 			new BanchaRequestCollection('', $postData), array('return' => true)
 		));
 
-		$this->assertNotNull($responses[0]->data->id);
-		$this->assertEquals('Hello World', $responses[0]->data->title);
-		$this->assertEquals(false, $responses[0]->data->published);
-		$this->assertEquals(1, $responses[0]->data->user_id);
+		$this->assertNotNull($responses[0]->result->id);
+		$this->assertEquals('Hello World', $responses[0]->result->title);
+		$this->assertEquals(false, $responses[0]->result->published);
+		$this->assertEquals(1, $responses[0]->result->user_id);
 		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article = new Article();
-		$article->id = $responses[0]->data->id;
+		$article->id = $responses[0]->result->id;
 		$article->delete();
 	}
 	
@@ -89,9 +89,9 @@ class BanchaFormTest extends CakeTestCase {
 			new BanchaRequestCollection('', $postData), array('return' => true)
 		));
 		
-		$this->assertEquals($article->id, $responses[0]->data->id);
-		$this->assertEquals('foobar', $responses[0]->data->title);
-		$this->assertEquals(true, $responses[0]->data->published);
+		$this->assertEquals($article->id, $responses[0]->result->id);
+		$this->assertEquals('foobar', $responses[0]->result->title);
+		$this->assertEquals(true, $responses[0]->result->published);
 		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
@@ -116,7 +116,7 @@ class BanchaFormTest extends CakeTestCase {
 			new BanchaRequestCollection('', $postData), array('return' => true)
 		));
 		
-		$this->assertEquals(array(), $responses[0]->data);
+		$this->assertEquals(array(), $responses[0]->result);
 		$this->assertEquals(1, $responses[0]->tid);
 	}
 	

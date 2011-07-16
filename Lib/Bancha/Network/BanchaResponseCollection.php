@@ -76,10 +76,11 @@ class BanchaResponseCollection {
 /**
  * Adds a new CakeResponse object to the response transformer.
  *
- * @param CakeResponse $response 
+ * @param integer $tid Transaction ID
+ * @param CakeResponse $response  Cake response object
  * @return BanchaResponseCollection
  */
-	public function addResponse($tid, CakeResponse $response, $value = null) {
+	public function addResponse($tid, CakeResponse $response, CakeRequest $request, $exception = false) {
 		// check statusCode of response 
 		
 		/** "action":"person",
@@ -95,34 +96,35 @@ class BanchaResponseCollection {
 		//	"type":"rpc"
 		*/
 		
-		if (($response->statusCode() != "200") || ($value != null)) {
+		if ('200' != $response->statusCode() || $exception) {
 			$response = array(
-			    "success" => false,
-			    "message" => $this->statusCodes[$response->statusCode()],
-			    "data" => $response->body(),
-				"type" => 'exception',
-				'tid'	=> $tid,
+				'type'		=> 'exception',
+				'tid'		=> $tid,
+				'action'	=> $request->controller, // controllers are called action in Ext JS
+				'method'	=> $request->action, // actions are called methopds in Ext JS
+				'result'	=> $response->body(),
 			);
 		} else {
 			$response = array(
-			    "success" => true,
-			    "message" => $this->statusCodes[$response->statusCode()],
-			    "data" => $response->body(),
-				"type" => 'rpc',
-				'tid'	=> $tid,
+				'type'		=> 'rpc',
+				'tid'		=> $tid,
+				'action'	=> $request->controller, // controllers are called action in Ext JS
+				'method'	=> $request->action, // actions are called methods in Ext JS
+				'result'	=> $response->body(),
 			);
 		}
 		
-		array_push($this->responses, $response);
+		// Add response to response array.
+		$this->responses[] = $response;
 		
 		return $this;
 	}
 	
-	public function addException($tid, Exception $e) {
+	public function addException($tid, Exception $e, CakeRequest $request) {
 		$response = new CakeResponse();
 		// values
-		$response->body($e);
-		$this->addResponse($tid, $response, true);
+		$response->body($e->getMessage());
+		$this->addResponse($tid, $response, $request, true);
 	 }
 	 
 /**

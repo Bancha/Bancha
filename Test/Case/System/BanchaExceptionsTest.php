@@ -52,8 +52,8 @@ class BanchaExceptionsTest extends CakeTestCase {
 		));
 		
 		$this->assertEquals('exception', $responses[0]->type);
-		$this->assertNotNull($responses[0]->message);
-		$this->assertNotNull($responses[0]->data);
+		$this->assertNotNull($responses[0]->result);
+		// $this->assertNotNull($responses[0]->data);
 		
 	}
 	
@@ -132,11 +132,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 			));
 		}
 		
-		//print_r($responses);
+		// print_r($responses);
 		
 		$this->assertEquals('exception', $responses[0][0]->type);
-		$this->assertNotNull($responses[0][0]->message);
-		$this->assertNotNull($responses[0][0]->data);
+		$this->assertNotNull($responses[0][0]->result);
 		
 		/*
 		$this->assertEquals('exception', $responses[0][1]->type);
