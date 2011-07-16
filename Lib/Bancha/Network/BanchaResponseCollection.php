@@ -16,6 +16,7 @@
  */
 
 App::uses('CakeResponse', 'Network');
+App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 
 /**
  * BanchaResponseCollection
@@ -43,7 +44,7 @@ class BanchaResponseCollection {
 			'tid'		=> $tid,
 			'action'	=> $request->controller, // controllers are called action in Ext JS
 			'method'	=> $request->action, // actions are called methods in Ext JS
-			'result'	=> $response->body(),
+			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
 		);
 		
 		return $this;
@@ -62,6 +63,7 @@ class BanchaResponseCollection {
 			'type'		=> 'exception',
 			'message'	=> $e->getMessage(),
 			'where'		=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
+			'trace'		=> $e->getTraceAsString(),
 		);
 		
 		return $this;

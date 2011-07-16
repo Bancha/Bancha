@@ -60,7 +60,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
+		
 		$this->assertNotNull($responses[0]->result->id);
 		$this->assertEquals('Hello World', $responses[0]->result->title);
 		$this->assertEquals(false, $responses[0]->result->published);

@@ -13,12 +13,9 @@ class ArticlesController extends AppController {
  */
 	public function index() {
 		$this->Article->recursive = 0;
-		$data = $this->paginate();
-		foreach ($data as $i => $element)
-		{
-			$data[$i] = $element['Article'];
-		}
-		return $data;
+		$articles = $this->paginate();
+		$this->set('articles', $articles);
+		return $articles;
 	}
 
 /**
@@ -33,7 +30,8 @@ class ArticlesController extends AppController {
 			throw new NotFoundException(__('Invalid article'));
 		}
 		$data = $this->Article->read(null, $id);
-		return array($data['Article']);
+		$this->set('article', $data);
+		return $data;
 	}
 
 /**
@@ -42,14 +40,19 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function add() {
+		$data = array();
 		if ($this->request->is('post')) {
 			$this->Article->create();
 			if ($data = $this->Article->save($this->request->data)) {
+				// $this->flash(__('Article saved.'), array('action' => 'index'));
 				$data['Article']['id'] = $this->Article->id;
-				return $data['Article'];
 			} else {
 			}
 		}
+		$users = $this->Article->User->find('list');
+		$tags = $this->Article->Tag->find('list');
+		$this->set(compact('users', 'tags'));
+		return $data;
 	}
 
 /**
@@ -65,12 +68,17 @@ class ArticlesController extends AppController {
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($data = $this->Article->save($this->request->data)) {
+				// $this->flash(__('The article has been saved.'), array('action' => 'index'));
 				$data['Article']['id'] = $id;
-				return $data['Article'];
 			} else {
 			}
 		} else {
+			$this->request->data = $this->Article->read(null, $id);
 		}
+		$users = $this->Article->User->find('list');
+		$tags = $this->Article->Tag->find('list');
+		$this->set(compact('users', 'tags'));
+		return $data;
 	}
 
 /**
@@ -88,8 +96,11 @@ class ArticlesController extends AppController {
 			throw new NotFoundException(__('Invalid article'));
 		}
 		if ($this->Article->delete()) {
+			// $this->flash(__('Article deleted'), array('action' => 'index'));
 			return array();
 		}
+		// $this->flash(__('Article was not deleted'), array('action' => 'index'));
+		$this->redirect(array('action' => 'index'));
 	}
 
 }
