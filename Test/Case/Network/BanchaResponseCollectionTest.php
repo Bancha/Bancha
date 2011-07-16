@@ -33,9 +33,7 @@ class BanchaResponseCollectionTest extends CakeTestCase
 		$response2 = array(
 			'body'	=> array('message' => 'Hello Bancha'),
 		);
-		$response3 = array(
-			'body'	=> array('message' => 'This is an exception'),
-		);
+		$response3 = new Exception('This is an exception'); $exception_line = __LINE__;
 		$request1 = new CakeRequest();
 		$request1->addParams(array('controller' => 'foo', 'action' => 'bar'));
 		$request2 = new CakeRequest();
@@ -59,16 +57,14 @@ class BanchaResponseCollectionTest extends CakeTestCase
 		);
 		$expectedResponse3 = array(
 			'type'		=> 'exception',
-			'tid'		=> 3,
-			'action'	=> 'foo',
-			'method'	=> 'error',
-			'result'	=> 'This is an exception',
+			'message'	=> 'This is an exception',
+			'where'		=> 'In file "' . __FILE__ . '" on line ' . $exception_line . '.',
 		);
 		
 		$collection = new BanchaResponseCollection();
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
 				   ->addResponse(2, new CakeResponse($response2), $request2)
-				   ->addException(3, new Exception($response3['body']['message']), $request3);
+				   ->addException(3, $response3, $request3);
 		
 		$actualResponse = $collection->getResponses()->body();
 		
@@ -80,6 +76,6 @@ class BanchaResponseCollectionTest extends CakeTestCase
 		$actualResponse = json_decode($actualResponse);
 		$this->assertEquals(json_decode(json_encode($expectedResponse1['result'])), $actualResponse[0]->result);
 		$this->assertEquals(json_decode(json_encode($expectedResponse2['result'])), $actualResponse[1]->result);
-		$this->assertEquals(json_decode(json_encode($expectedResponse3['result'])), $actualResponse[2]->result);
+		$this->assertEquals(json_decode(json_encode($expectedResponse3)), $actualResponse[2]);
 	}
 }

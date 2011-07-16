@@ -18,6 +18,8 @@
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
+require_once dirname(__FILE__) . '/ArticlesController.php';
+
 // Tests if the Exception was thrown, the correct controller was choosen
 /**
  * BanchaCrudTest
@@ -35,7 +37,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		Configure::write('debug', 2);
 		
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'ArticlesException',
 			'method'		=> 'view',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -52,7 +54,6 @@ class BanchaExceptionsTest extends CakeTestCase {
 		));
 		
 		$this->assertEquals('exception', $responses[0]->type);
-		$this->assertNotNull($responses[0]->result);
 		// $this->assertNotNull($responses[0]->data);
 		
 	}
@@ -62,7 +63,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		Configure::write('debug', 0);
 		
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'ArticlesException',
 			'method'		=> 'view',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -87,65 +88,67 @@ class BanchaExceptionsTest extends CakeTestCase {
 		
 		Configure::write('debug', 2);
 		
-		$rawPostData[0] = json_encode(array(
-			'action'		=> 'Articles',
-			'method'		=> 'view',
-			'tid'			=> 1,
-			'type'			=> 'rpc',
-			'data'			=> array(
-				'title'			=> 'Hello World',
-				'body'			=> 'foobar',
-				'published'		=> false,
-				'user_id'		=> 1,
+		$rawPostData = json_encode(array(
+			array(
+				'action'		=> 'ArticlesException',
+				'method'		=> 'view',
+				'tid'			=> 1,
+				'type'			=> 'rpc',
+				'data'			=> array(
+					'title'			=> 'Hello World',
+					'body'			=> 'foobar',
+					'published'		=> false,
+					'user_id'		=> 1,
+				),
 			),
-		));
-		$rawPostData[1] = json_encode(array(
-			'action'		=> 'Articles',
-			'method'		=> 'view',
-			'tid'			=> 2,
-			'type'			=> 'rpc',
-			'data'			=> array(
-				'title'			=> 'Hello World1',
-				'body'			=> 'foobar1',
-				'published'		=> false,
-				'user_id'		=> 2,
+			array(
+				'action'		=> 'ArticlesException',
+				'method'		=> 'view',
+				'tid'			=> 2,
+				'type'			=> 'rpc',
+				'data'			=> array(
+					'title'			=> 'Hello World1',
+					'body'			=> 'foobar1',
+					'published'		=> false,
+					'user_id'		=> 2,
+				),
 			),
+			array(
+				'action'		=> 'ArticlesException',
+				'method'		=> 'view',
+				'tid'			=> 3,
+				'type'			=> 'rpc',
+				'data'			=> array(
+					'title'			=> 'Hello World2',
+					'body'			=> 'foobar2',
+					'published'		=> false,
+					'user_id'		=> 1,
+				),
+			)
 		));
-		$rawPostData[2] = json_encode(array(
-			'action'		=> 'Articles',
-			'method'		=> 'view',
-			'tid'			=> 3,
-			'type'			=> 'rpc',
-			'data'			=> array(
-				'title'			=> 'Hello World2',
-				'body'			=> 'foobar2',
-				'published'		=> false,
-				'user_id'		=> 1,
-			),
-		));
+		
 		
 		$dispatcher = new BanchaDispatcher();
-		// TODO: ask florian if this is the right solution
-		for ($i = 0; $i < count($rawPostData); $i++) {
-			$responses[$i] = json_decode($dispatcher->dispatch(
-				new BanchaRequestCollection($rawPostData[$i]), array('return' => true)
-			));
-		}
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
 		
-		// print_r($responses);
+		$this->assertEquals(3, count($responses), 'Three requests result in three responses.');
 		
-		$this->assertEquals('exception', $responses[0][0]->type);
-		$this->assertNotNull($responses[0][0]->result);
+		$this->assertEquals('exception', $responses[0]->type);
+		$this->assertEquals('Invalid article [EXCEPTION]', $responses[0]->message);
+		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
+				$responses[0]->where, 'message');
 		
-		/*
-		$this->assertEquals('exception', $responses[0][1]->type);
-		$this->assertNotNull($responses[0][1]->message);
-		$this->assertNotNull($responses[0][1]->data);
-		
-		$this->assertEquals('exception', $responses[0][2]->type);
-		$this->assertNotNull($responses[0][2]->message);
-		$this->assertNotNull($responses[0][2]->data);
-		*/
+		$this->assertEquals('exception', $responses[1]->type);
+		$this->assertEquals('Invalid article [EXCEPTION]', $responses[1]->message);
+		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
+				$responses[1]->where, 'message');
+				
+		$this->assertEquals('exception', $responses[2]->type);
+		$this->assertEquals('Invalid article [EXCEPTION]', $responses[2]->message);
+		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
+				$responses[2]->where, 'message');
 	}
 	// TODO: create 3 Controller (through 3 requests) and 1 of them throws an exception
 }
@@ -154,7 +157,7 @@ class BanchaExceptionsTest extends CakeTestCase {
  * Articles Controller, uses view method to throw an exception
  *
  */
-class ArticlesExceptionController extends AppController {
+class ArticlesExceptionController extends ArticlesController {
 
 /**
  * view method
@@ -163,7 +166,7 @@ class ArticlesExceptionController extends AppController {
  * @return void
  */
 	public function view($id = null) {
-		throw new Exception(__('Invalid article'));
+		$GLOBALS['EXCEPTION_LINE'] = __LINE__; throw new Exception(__('Invalid article [EXCEPTION]'));
 	}
 }
 
