@@ -57,8 +57,8 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
 		
-		$this->assertEquals('Hello World!', $responses[0]->data->text);
-		$this->assertEquals('foobar', $responses[1]->data->text);
+		$this->assertEquals('Hello World!', $responses[0]->result->text);
+		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
 	
 /**
@@ -93,8 +93,8 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$responses = json_decode(ob_get_contents());
 		ob_end_clean();
 		
-		$this->assertEquals('Hello World!', $responses[0]->data->text);
-		$this->assertEquals('foobar', $responses[1]->data->text);
+		$this->assertEquals('Hello World!', $responses[0]->result->text);
+		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
 	
 }

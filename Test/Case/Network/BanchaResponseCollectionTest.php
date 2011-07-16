@@ -28,43 +28,40 @@ class BanchaResponseCollectionTest extends CakeTestCase
 
 	function testGetResponses() {
 		$response1 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'body'		=> 'test1',
-			'type'		=> 'rpc',
+			'body'	=> array('message' => 'Hello World'),
 		);
 		$response2 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'body'		=> 'test1',
-			'type'		=> 'rpc'
+			'body'	=> array('message' => 'Hello Bancha'),
 		);
-		
-		$expectedResponse1 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'data'		=> 'test1',
-			'type'		=> 'rpc',
-			'tid'		=> 1,
-		);
-		$expectedResponse2 = array(
-			'success'	=> true,
-			'message'	=> 'OK',
-			'data'		=> 'test1',
-			'type'		=> 'rpc',
-			'tid'		=> 2,
-		);
+		$response3 = new Exception('This is an exception'); $exception_line = __LINE__;
+		$request1 = new CakeRequest();
+		$request1->addParams(array('controller' => 'foo', 'action' => 'bar'));
+		$request2 = new CakeRequest();
+		$request2->addParams(array('controller' => 'bar', 'action' => 'foo'));
+		$request3 = new CakeRequest();
+		$request3->addParams(array('controller' => 'foo', 'action' => 'error'));
 		
 		$collection = new BanchaResponseCollection();
-		$collection->addResponse(1, new CakeResponse($response1))
-				   ->addResponse(2, new CakeResponse($response2));
+		$collection->addResponse(1, new CakeResponse($response1), $request1)
+				   ->addResponse(2, new CakeResponse($response2), $request2)
+				   ->addException(3, $response3, $request3);
 		
-		$actualResponse = $collection->getResponses()->body();
+		$actualResponse = json_decode($collection->getResponses()->body());
 		
-		$this->assertEquals(json_encode(array($expectedResponse1, $expectedResponse2)), $actualResponse);
+		$this->assertEquals('rpc', $actualResponse[0]->type);
+		$this->assertEquals(1, $actualResponse[0]->tid);
+		$this->assertEquals('foo', $actualResponse[0]->action);
+		$this->assertEquals('bar', $actualResponse[0]->method);
+		$this->assertEquals((object)array('message' => 'Hello World'), $actualResponse[0]->result);
 		
-		$actualResponse = json_decode($actualResponse);
-		$this->assertEquals($expectedResponse1['data'], $actualResponse[0]->data);
-		$this->assertEquals($expectedResponse2['data'], $actualResponse[1]->data);
+		$this->assertEquals('rpc', $actualResponse[1]->type);
+		$this->assertEquals(2, $actualResponse[1]->tid);
+		$this->assertEquals('bar', $actualResponse[1]->action);
+		$this->assertEquals('foo', $actualResponse[1]->method);
+		$this->assertEquals((object)array('message' => 'Hello Bancha'), $actualResponse[1]->result);
+		
+		$this->assertEquals('exception', $actualResponse[2]->type);
+		$this->assertEquals('This is an exception', $actualResponse[2]->message);
+		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $exception_line . '.', $actualResponse[2]->where);
 	}
 }
