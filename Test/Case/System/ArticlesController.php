@@ -44,8 +44,8 @@ class ArticlesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Article->create();
 			if ($data = $this->Article->save($this->request->data)) {
-				// $this->flash(__('Article saved.'), array('action' => 'index'));
 				$data['Article']['id'] = $this->Article->id;
+				// $this->flash(__('Article saved.'), array('action' => 'index'));
 			} else {
 			}
 		}
