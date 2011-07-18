@@ -93,5 +93,8 @@
 		return;
 	} else {
 		$Dispatcher = new BanchaDispatcher();
-		$Dispatcher->dispatch(new BanchaRequestCollection(isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : ''));
+		$Dispatcher->dispatch(new BanchaRequestCollection(
+			isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '',
+			isset($_POST) ? $_POST : array()
+		));
 	}

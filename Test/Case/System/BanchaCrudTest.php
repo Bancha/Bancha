@@ -18,6 +18,11 @@
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
+require_once dirname(__FILE__) . '/../../../Model/Behavior/BanchaBehavior.php';
+
+// TODO: refactor to use real test models.
+require_once dirname(__FILE__) . '/ArticlesController.php';
+
 /**
  * BanchaCrudTest
  *
@@ -55,15 +60,16 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
-		$this->assertNotNull($responses[0]->data->id);
-		$this->assertEquals('Hello World', $responses[0]->data->title);
-		$this->assertEquals(false, $responses[0]->data->published);
-		$this->assertEquals(1, $responses[0]->data->user_id);
+		
+		$this->assertNotNull($responses[0]->result->id);
+		$this->assertEquals('Hello World', $responses[0]->result->title);
+		$this->assertEquals(false, $responses[0]->result->published);
+		$this->assertEquals(1, $responses[0]->result->user_id);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article = new Article();
-		$article->id = $responses[0]->data->id;
+		$article->id = $responses[0]->result->id;
 		$article->delete();
 	}
 	
@@ -89,9 +95,10 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals($article->id, $responses[0]->data->id);
-		$this->assertEquals('foobar', $responses[0]->data->title);
-		$this->assertEquals(true, $responses[0]->data->published);
+		$this->assertEquals($article->id, $responses[0]->result->id);
+		$this->assertEquals('foobar', $responses[0]->result->title);
+		$this->assertEquals(true, $responses[0]->result->published);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article->delete();
@@ -116,7 +123,8 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(array(), $responses[0]->data);
+		$this->assertEquals(array(), $responses[0]->result);
+		$this->assertEquals(1, $responses[0]->tid);
 	}
 	
 	public function testIndex() {
@@ -148,9 +156,11 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals(2, count($responses[0]->data));
-		$this->assertEquals($article1->id, $responses[0]->data[0]->id);
-		$this->assertEquals($article2->id, $responses[0]->data[1]->id);
+		$this->assertEquals(2, count($responses[0]->result));
+		
+		$this->assertEquals($article1->id, $responses[0]->result[0]->id);
+		$this->assertEquals($article2->id, $responses[0]->result[1]->id);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete articles
 		$article1->delete();
@@ -177,107 +187,12 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertEquals($article->id, $responses[0]->data[0]->id);
-		$this->assertEquals('foo', $responses[0]->data[0]->title);
+		$this->assertEquals($article->id, $responses[0]->result[0]->id);
+		$this->assertEquals('foo', $responses[0]->result[0]->title);
+		$this->assertEquals(1, $responses[0]->tid);
 		
 		// Clean up operations: delete article
 		$article->delete();
 	}
 	
 }
-
-/**
- * Articles Controller
- *
- */
-class ArticlesController extends AppController {
-
-
-/**
- * index method
- *
- * @return void
- */
-	public function index() {
-		$this->Article->recursive = 0;
-		$data = $this->paginate();
-		foreach ($data as $i => $element)
-		{
-			$data[$i] = $element['Article'];
-		}
-		return $data;
-	}
-
-/**
- * view method
- *
- * @param string $id
- * @return void
- */
-	public function view($id = null) {
-		$this->Article->id = $id;
-		if (!$this->Article->exists()) {
-			throw new NotFoundException(__('Invalid article'));
-		}
-		$data = $this->Article->read(null, $id);
-		return array($data['Article']);
-	}
-
-/**
- * add method
- *
- * @return void
- */
-	public function add() {
-		if ($this->request->is('post')) {
-			$this->Article->create();
-			if ($data = $this->Article->save($this->request->data)) {
-				$data['Article']['id'] = $this->Article->id;
-				return $data['Article'];
-			} else {
-			}
-		}
-	}
-
-/**
- * edit method
- *
- * @param string $id
- * @return void
- */
-	public function edit($id = null) {
-		$this->Article->id = $id;
-		if (!$this->Article->exists()) {
-			throw new NotFoundException(__('Invalid article'));
-		}
-		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($data = $this->Article->save($this->request->data)) {
-				$data['Article']['id'] = $id;
-				return $data['Article'];
-			} else {
-			}
-		} else {
-		}
-	}
-
-/**
- * delete method
- *
- * @param string $id
- * @return void
- */
-	public function delete($id = null) {
-		if (!$this->request->is('post')) {
-			throw new MethodNotAllowedException();
-		}
-		$this->Article->id = $id;
-		if (!$this->Article->exists()) {
-			throw new NotFoundException(__('Invalid article'));
-		}
-		if ($this->Article->delete()) {
-			return array();
-		}
-	}
-
-}
-

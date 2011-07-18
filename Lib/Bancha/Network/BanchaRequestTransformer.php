@@ -40,6 +40,12 @@ class BanchaRequestTransformer {
 	
 /** @var array */
 	protected $paginate = array();
+	
+/** @var boolean TRUE if the given request is a form request. */
+	protected $isFormRequest = false;
+	
+	/** @var boolean */
+	protected $tid;
 
 /**
  * Constructor. Requires a single Ext JS request in PHP array format.
@@ -59,10 +65,20 @@ class BanchaRequestTransformer {
  */
 	public function getController()
 	{
-		if (null == $this->controller && isset($this->data['action']))
+		if (null != $this->controller)
+		{
+			return $this->controller;
+		}
+		if (isset($this->data['action']))
 		{
 			$this->controller = $this->data['action'];
 			unset($this->data['action']);
+		}
+		else if (isset($this->data['extAction']))
+		{
+			$this->controller = $this->data['extAction'];
+			unset($this->data['extAction']);
+			$this->isFormRequest = true;
 		}
 		return $this->controller;
 	}
@@ -81,27 +97,35 @@ class BanchaRequestTransformer {
  */
 	public function getAction()
 	{
-		if (null == $this->action && isset($this->data['method']))
+		if (null != $this->action)
 		{
-			switch ($this->data['method'])
-			{
-				case 'create':
-					$this->action = 'add';
-					break;
-				case 'update':
-					$this->action = 'edit';
-					break;
-				case 'destroy':
-					$this->action = 'delete';
-					break;
-				case 'read':
-					$this->action = isset($this->data['data']['id']) ? 'view' : 'index';
-					break;
-				default:
-					$this->action = $this->data['method'];
-					break;
-			}
+			return $this->action;
+		}
+		if (isset($this->data['method']))
+		{
+			$this->action = $this->data['method'];
 			unset($this->data['method']);
+		}
+		else if (isset($this->data['extMethod']))
+		{
+			$this->action = $this->data['extMethod'];
+			unset($this->data['extMethod']);
+			$this->isFormRequest = true;
+		}
+		switch ($this->action)
+		{
+			case 'create':
+				$this->action = 'add';
+				break;
+			case 'update':
+				$this->action = 'edit';
+				break;
+			case 'destroy':
+				$this->action = 'delete';
+				break;
+			case 'read':
+				$this->action = (isset($this->data['data']['id']) || isset($this->data['id'])) ? 'view' : 'index';
+				break;
 		}
 		return $this->action;
 	}
@@ -121,6 +145,25 @@ class BanchaRequestTransformer {
 		return $this->url;
 	}
 	
+	public function getTid()
+	{
+		if (null != $this->tid)
+		{
+			return $this->tid;
+		}
+		if (isset($this->data['tid']))
+		{
+			$this->tid = $this->data['tid'];
+			unset($this->data['tid']);
+		}
+		else if (isset($this->data['extTID']))
+		{
+			$this->tid = $this->data['extTID'];
+			unset($this->data['extTID']);
+		}
+		return $this->tid;
+	}
+	
 /**
  * Returns the 'pass' parameters from the Ext JS request. 'pass' parameters are special parameters which are passed
  * directly to the controller/action by CakePHP. The only 'pass' parameter that exist for the CRUD operations is 'id'
@@ -130,11 +173,22 @@ class BanchaRequestTransformer {
  */
 	public function getPassParams()
 	{
+		if (!in_array($this->getAction(), array('edit', 'delete', 'view')))
+		{
+			return array();
+		}
+		
 		$pass = array();
-		if (in_array($this->getAction(), array('edit', 'delete', 'view')) && isset($this->data['data']['id']))
+		if (isset($this->data['data']['id']))
 		{
 			$pass['id'] = $this->data['data']['id'];
 			unset($this->data['data']['id']);
+		}
+		else if (isset($this->data['id']))
+		{
+			$pass['id'] = $this->data['id'];
+			unset($this->data['id']);
+			$this->isFormRequest = true;
 		}
 		return $pass;
 	}
@@ -210,6 +264,14 @@ class BanchaRequestTransformer {
 		if (isset($this->data['data']))
 		{
 			$data = $this->data['data'];
+		}
+		if ($this->isFormRequest)
+		{
+			$data = $this->data;
+			if (isset($data['extTID']))
+			{
+				unset($data['extTID']);
+			}
 		}
 		return $data;
 	}

@@ -42,7 +42,18 @@ class BanchaDispatcher {
 		foreach ($requests->getRequests() as $request) {
 			// Call dispatcher for the given CakeRequest.
 			$dispatcher = new BanchaSingleDispatcher();
-			$transformer->addResponse($dispatcher->dispatch($request, array('return' => true)));
+			try {
+				$transformer->addResponse(
+					$request['tid'], 
+					$dispatcher->dispatch($request, array('return' => true)),
+					$request
+				);
+		   	} catch (Exception $e) {
+		   		// only with debug mode
+		   		if(Configure::read('debug') > 0) {
+		    		$transformer->addException($request['tid'], $e, $request);
+		   		}
+		   	}	
 		}
 		
 		// Combine the responses and return or output them.
@@ -52,5 +63,8 @@ class BanchaDispatcher {
 		}
 		$responses->send();
 	}
+	
+	// exceptions abfangen mit try { catch
+	// stacktrace nur mitschicken bei debug != 0 
 
 }
