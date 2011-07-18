@@ -782,9 +782,23 @@ Ext.define('Bancha', {
               * and Bancha will always use the current functions, since there are no references
               */
             createFacade: function(method) {
+                // IFDEBUG
+                /*
+                 * totally stupid, but we need a singleton pattern in debug mode here, since
+                 * jasmine provides us only with VERY little compare options
+                 */
+                this.singletonFns = this.singletonFns || {};
+                this.singletonFns[method] = this.singletonFns[method] || function() {
+                    return this[method].apply(this,arguments);
+                };
+                return this.singletonFns[method];
+                // ENDIF
+                
+                /* IFPRODUCTION
                 return function() {
                     return this[method].apply(this,arguments);
                 };
+                ENDIF */
             },
             /**
              * @property
