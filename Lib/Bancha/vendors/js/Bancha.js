@@ -67,7 +67,7 @@ Ext.define('Bancha.data.Model', {
  *         Bancha.onModelReady('User', function(userModel) {
  *             // ... create a full featured users grid
  *             Ext.create('Ext.grid.Panel', 
- *                 Bancha.scarfold.buildGridPanelConfig('User', { //TODO grid functions richten
+ *                 Bancha.scarfold.GridConfig.buildConfig('User', { //TODO grid functions richten
  *                     create: true,
  *                     update: true,
  *                     withReset: true,
@@ -699,19 +699,20 @@ Ext.define('Bancha', {
     },
     
     /**
-     * scaffolding functions for Bancha, mostly for rapid prototyping
+     * Scaffolding functions for Bancha, mostly for rapid prototyping
      */
     scaffold: {
         /**
          * @private
          * some scaffolding util function
          */
-        util: {
+        Util: {
             /**
              * @private
              * make the first letter of an String upper case
              * @param {String} str
              * @return {String} str with first letter upper case
+             * @member Bancha.scaffold.Util
              */
             toFirstUpper: function(str) {
                 if(typeof str!=='string') {
@@ -734,79 +735,86 @@ Ext.define('Bancha', {
              *
              * @param {String} str
              * @return {String} str transformed string
+             * @member Bancha.scaffold.Util
              */
             humanize: function(str) {
                 str = str.replace(/_id/g,''); // delete _id from the string
                 str = str.replace(/_/g,' '); // _ to spaces
                 str = str.replace(/([a-z])([A-Z])/g, function(all,first,second) { return first + " " + second.toLowerCase(); }); // convert camel case (only)
                 return this.toFirstUpper(str);
-            }
-        },
-        
-        /**
-         * @private
-         * @property
-         * Maps column types and field types for prototyping
-         */
-        fieldToColumnConfigs: {
-            'string'  : {xtype:'gridcolumn'},
-            'int'     : {xtype:'numbercolumn',format:'0'},
-            'float'   : {xtype:'numbercolumn'},
-            'boolean' : {xtype:'booleancolumn'},
-            'date'    : {xtype:'datecolumn'}
-        },
-        /**
-         * @private
-         * @property
-         * Maps form field configs and field types for prototyping
-         */
-        fieldToFormFieldConfigs: {
-            'string'  : {xtype:'textfield'},
-            'int'     : {xtype:'numberfield', decimalPrecision:0},
-            'float'   : {xtype:'numberfield'},
-            'boolean' : {xtype:'checkboxfield'},
-            'date'    : {xtype:'datefield'}
-            // TODO add type upload field in backend and test
-            // 'file'    : {xtype: 'filefield',buttonText: 'Select File...'}
-        },
-        /**
-         * function scaffolding for {@link Ext.grid.Panel}s on-functions
-         * To change the default scaffolding behaviour just replace the functions.  
-         * You can do this at any time, the current declarations are always used
-         */
-        gridFunction: {
+            },
             /**
-              * @private
-               * @property
-              * This enables the developer to change the default functions at any time
-              * and Bancha will always use the current functions, since there are no references
-              */
-            createFacade: function(method) {
+             * @private
+             * This enables the developer to change the default scaffolding functions at any time
+             * and Bancha will always use the current functions, since there are no references
+             * @member Bancha.scaffold.Util
+             */
+            createFacade: function(scopeName,scope,method) {
                 // IFDEBUG
                 /*
                  * totally stupid, but we need a singleton pattern in debug mode here, since
                  * jasmine provides us only with VERY little compare options
                  */
                 this.singletonFns = this.singletonFns || {};
-                this.singletonFns[method] = this.singletonFns[method] || function() {
-                    return this[method].apply(this,arguments);
+                this.singletonFns[scopeName] = this.singletonFns[scopeName] || {};
+                this.singletonFns[scopeName][method] = this.singletonFns[scopeName][method] || function() {
+                    return scope[method].apply(scope,arguments);
                 };
-                return this.singletonFns[method];
+                return this.singletonFns[scopeName][method];
                 // ENDIF
-                
+
                 /* IFPRODUCTION
                 return function() {
-                    return this[method].apply(this,arguments);
+                    return scope[method].apply(scope,arguments);
                 };
                 ENDIF */
+            },
+        },
+        /*
+         * Create GridConfigs for scaffolding and production use.
+         * @class Bancha.scaffold.GridConfig
+         */
+        GridConfig: {
+            /**
+             * @private
+             * @property
+             * Maps column types and field types for prototyping
+             * @member Bancha.scaffold.GridConfig
+             */
+            fieldToColumnConfigs: {
+                'string'  : {xtype:'gridcolumn'},
+                'int'     : {xtype:'numbercolumn',format:'0'},
+                'float'   : {xtype:'numbercolumn'},
+                'boolean' : {xtype:'booleancolumn'},
+                'date'    : {xtype:'datecolumn'}
+            },
+            /**
+             * @private
+             * Creates a {@link Ext.grid.Column} config  an field type
+             * @param {Sring} type the fields type
+             * @member Bancha.scaffold.GridConfig
+             */
+            buildColumnConfig: function(type) {
+                return Ext.clone(this.fieldToColumnConfigs[type]);
+            },
+            /**
+             * @private
+             * Shorthand for {@llink Bancha.scaffold.Util#createFacade}
+             * @member Bancha.scaffold.GridConfig
+             */
+            createFacade: function(method) {
+                return Bancha.scaffold.Util.createFacade('GridConfig',this,method);
             },
             /**
              * @property
              * Editable function to be called when the create button is pressed  
+             * To change the default scaffolding behaviour just replace these functions.  
+             * You can do this at any time, the current declarations are always used.  
              * scope is an object: {  
              *  store:       the grids store  
              *  cellEditing: the grids cell editing plugin  
              * }
+             * @member Bancha.scaffold.GridConfig
              */
             onCreate: function() { // scope is a config object
                 var edit = this.cellEditing,
@@ -829,8 +837,11 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * Editable function to be called when the save button is pressed
+             * Editable function to be called when the save button is pressed  
+             * To change the default scaffolding behaviour just replace these functions.  
+             * You can do this at any time, the current declarations are always used.
              * scope is the store
+             * @member Bancha.scaffold.GridConfig
              */
             onSave: function() { // scope is the store
                 var valid = true,
@@ -853,7 +864,10 @@ Ext.define('Bancha', {
             /**
              * @property
              * Editable function to be called when the reset button is pressed  
+             * To change the default scaffolding behaviour just replace these functions.  
+             * You can do this at any time, the current declarations are always used.
              * scope is the store
+             * @member Bancha.scaffold.GridConfig
              */
             onReset: function() { // scope is the store
                 var changes = this.getUpdatedRecords();
@@ -865,7 +879,10 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * Editable function to be called when the delete button is pressed
+             * Editable function to be called when the delete button is pressed  
+             * To change the default scaffolding behaviour just replace these functions.  
+             * You can do this at any time, the current declarations are always used.
+             * @member Bancha.scaffold.GridConfig
              */
             onDelete: function(grid, rowIndex, colIndex) {
                 var rec = grid.getStore().getAt(rowIndex);
@@ -874,175 +891,198 @@ Ext.define('Bancha', {
                         Ext.alert('The User was destroyed!');
                     }
                 });
-            }
-        },
-        /**
-          * @private
-         * Creates a {@link Ext.form.Field} config form an field type
-         * @param {Sring} type the fields type
-         */
-        buildFormFieldConfig: function(type) {
-            return Ext.clone(this.fieldToFormFieldConfigs[type]);
-        },
-        /**
-         * Builds a grid config from the metadata, for scaffolding purposes.
-         * @param {Ext.data.Model|String} model the model class or model name
-         * @param {Object} config (optional) config object with:  
-         *  - {Boolean} _create_ true to add create button  
-         *  - {Boolean} _update_ true to allow changes  
-         *  - {Boolean} _withReset_ when updatable, true display a reset button as well  
-         *  - {Boolean} _destroy_ true to add delete buttons 
-         *  - {Boolean} _autoLoad_ false to don't set autoLoad on the store (default: true)
-         * @param {Object} additionalGridConfig some additional configs which are applied to the config
-         * @return {Object} an Ext.grid.Panel configuration object
-         */
-        buildGridPanelConfig: function(model,config,additionalGridConfig) {
-            var gridConfig, modelName, buttons, cellEditing, store;
-            config = config || {};
+            },
+            /**
+             * Builds a grid config from the metadata, for scaffolding purposes.
+             * @param {Ext.data.Model|String} model the model class or model name
+             * @param {Object} config (optional) config object with:  
+             *  - {Boolean} _create_ true to add create button  
+             *  - {Boolean} _update_ true to allow changes  
+             *  - {Boolean} _withReset_ when updatable, true display a reset button as well  
+             *  - {Boolean} _destroy_ true to add delete buttons 
+             *  - {Boolean} _autoLoad_ false to don't set autoLoad on the store (default: true)
+             * @param {Object} additionalGridConfig some additional configs which are applied to the config
+             * @return {Object} an Ext.grid.Panel configuration object
+             * @member Bancha.scaffold.GridConfig
+             */
+            buildConfig: function(model,config,additionalGridConfig) {
+                var gridConfig, modelName, buttons, cellEditing, store;
+                config = config || {};
             
-            // define model and modelName
-            if(Ext.isString(model)) {
-                modelName = model;
-                model = Ext.ClassManager.get(modelName);
-            } else {
-                modelName = Ext.getClassName(model);
-            }
+                // define model and modelName
+                if(Ext.isString(model)) {
+                    modelName = model;
+                    model = Ext.ClassManager.get(modelName);
+                } else {
+                    modelName = Ext.getClassName(model);
+                }
             
-            // basic config
-            store = Ext.create("Ext.data.Store",{
-                model: modelName,
-                autoLoad: (config.autoLoad===false) ? false : true
-            });
-            
-            gridConfig = {
-                store: store,
-                columns: this.buildColumns(model,config)
-            };
-            
-            // add update configs
-            if(config.update) {
-                cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
-                    clicksToEdit: 2
+                // basic config
+                store = Ext.create("Ext.data.Store",{
+                    model: modelName,
+                    autoLoad: (config.autoLoad===false) ? false : true
                 });
-                Ext.apply(gridConfig, {
-                    selType: 'cellmodel',
-                    plugins: [cellEditing]
-                });
-            }
             
-            // add buttons
-            if(config.create || config.update) {
-                buttons = ['->'];
-                
-                if(config.create) {
-                    buttons.push({
-                        iconCls: 'icon-add',
-                        text: 'Create',
-                        scope: {
-                            cellEditing: cellEditing,
-                            store      : store
-                        },
-                        handler: this.gridFunction.createFacade('onCreate')
+                gridConfig = {
+                    store: store,
+                    columns: this.buildColumns(model,config)
+                };
+            
+                // add update configs
+                if(config.update) {
+                    cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
+                        clicksToEdit: 2
+                    });
+                    Ext.apply(gridConfig, {
+                        selType: 'cellmodel',
+                        plugins: [cellEditing]
                     });
                 }
+            
+                // add buttons
+                if(config.create || config.update) {
+                    buttons = ['->'];
                 
-                if(config.update) {
-                    buttons.push({
-                        iconCls: 'icon-save',
-                        text: 'Save', //TODO OPTIMIZE disabled:true?
-                        scope: store,
-                        handler: this.gridFunction.createFacade('onSave')
-                    });
-                    if(config.withReset) {
+                    if(config.create) {
                         buttons.push({
-                            iconCls: 'icon-reset',
-                            text: 'Reset',
-                            scope: store,
-                            handler: this.gridFunction.createFacade('onReset')
+                            iconCls: 'icon-add',
+                            text: 'Create',
+                            scope: {
+                                cellEditing: cellEditing,
+                                store      : store
+                            },
+                            handler: this.createFacade('onCreate')
                         });
                     }
-                }
                 
-                gridConfig.dockedItems = [{
-                    xtype: 'toolbar',
-                    dock: 'bottom',
-                    ui: 'footer',
-                    items: buttons
-                }];
-            }
+                    if(config.update) {
+                        buttons.push({
+                            iconCls: 'icon-save',
+                            text: 'Save', //TODO OPTIMIZE disabled:true?
+                            scope: store,
+                            handler: this.createFacade('onSave')
+                        });
+                        if(config.withReset) {
+                            buttons.push({
+                                iconCls: 'icon-reset',
+                                text: 'Reset',
+                                scope: store,
+                                handler: this.createFacade('onReset')
+                            });
+                        }
+                    }
+                
+                    gridConfig.dockedItems = [{
+                        xtype: 'toolbar',
+                        dock: 'bottom',
+                        ui: 'footer',
+                        items: buttons
+                    }];
+                }
             
-            // apply user configs
-            if(Ext.isObject(additionalGridConfig)) {
-                gridConfig = Ext.apply(gridConfig,additionalGridConfig);
-            }
+                // apply user configs
+                if(Ext.isObject(additionalGridConfig)) {
+                    gridConfig = Ext.apply(gridConfig,additionalGridConfig);
+                }
             
-            return gridConfig;
-        },
-        /**
-         * Builds grid columns from the metadata, for scaffolding purposes.  
-         * Please use buildGridPanelConfig function if you want support for 
-         * create,update and/or delete!
-         * 
-         * @param {Ext.data.Model|String} model the model class or model name
-         * @param {Object} config (optional) config object with:
-         *  - {Boolean} _create_ true to add create button
-         *  - {Boolean} _update_ true to allow changes
-         *  - {Boolean} _destroy_ true to add delete buttons
-         * @return {Array} array of Ext.grid.Column configs
-         */
-        buildColumns: function(model, config) {
-            var columns = [],
-                scaffold;
-            config = config || {};
+                return gridConfig;
+            },
+            /**
+             * Builds grid columns from the metadata, for scaffolding purposes.  
+             * Please use buildGridPanelConfig function if you want support for 
+             * create,update and/or delete!
+             * 
+             * @param {Ext.data.Model|String} model the model class or model name
+             * @param {Object} config (optional) config object with:
+             *  - {Boolean} _create_ true to add create button
+             *  - {Boolean} _update_ true to allow changes
+             *  - {Boolean} _destroy_ true to add delete buttons
+             * @return {Array} array of Ext.grid.Column configs
+             * @member Bancha.scaffold.GridConfig
+             */
+            buildColumns: function(model, config) {
+                var columns = [];
+                config = config || {};
             
             
-            // IFDEBUG
-            if(!Ext.isDefined(model)) {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    msg: 'Bancha: Bancha.scaffold.buildColumns() expected the model or model name as first argument, instead got undefined'
-                });
-            }
-            // ENDIF
-
-            if(Ext.isString(model)) {
                 // IFDEBUG
-                if(!Ext.isDefined(Ext.ModelManager.getModel(model))) {
+                if(!Ext.isDefined(model)) {
                     Ext.Error.raise({
                         plugin: 'Bancha',
-                        model: model,
-                        msg: 'Bancha: First argument for Bancha.scaffold.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
+                        msg: 'Bancha: Bancha.scaffold.GridConfig.buildColumns() expected the model or model name as first argument, instead got undefined'
                     });
                 }
                 // ENDIF
-                model = Ext.ModelManager.getModel(model);
-            }
+
+                if(Ext.isString(model)) {
+                    // IFDEBUG
+                    if(!Ext.isDefined(Ext.ModelManager.getModel(model))) {
+                        Ext.Error.raise({
+                            plugin: 'Bancha',
+                            model: model,
+                            msg: 'Bancha: First argument for Bancha.scaffold.GridConfig.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
+                        });
+                    }
+                    // ENDIF
+                    model = Ext.ModelManager.getModel(model);
+                }
             
-            scaffold = this;
-            model.prototype.fields.each(function(field) {
-                columns.push(Ext.apply({
-                    flex     : 1, // foreFit the columns
-                    text     : scaffold.util.humanize(field.name),
-                    dataIndex: field.name,
-                    field: (config.update) ? scaffold.buildFormFieldConfig(field.type.type) : undefined
-                },scaffold.fieldToColumnConfigs[field.type.type])); // add xtype
-            });
-            
-            if(config.destroy) {
-                columns.push({
-                    xtype:'actioncolumn', 
-                    width:50,
-                    items: [{
-                        icon: 'img/icons/delete.png',
-                        tooltip: 'Delete',
-                        handler: this.gridFunction.createFacade('onDelete')
-                    }]
+                model.prototype.fields.each(function(field) {
+                    var scaffold = Bancha.scaffold;
+                    columns.push(Ext.apply({
+                        flex     : 1, // foreFit the columns
+                        text     : scaffold.Util.humanize(field.name),
+                        dataIndex: field.name,
+                        field: (config.update) ? scaffold.FormConfig.buildFieldConfig(field.type.type) : undefined
+                    },scaffold.GridConfig.buildColumnConfig(field.type.type))); // add xtype
                 });
-            }
+            
+                if(config.destroy) {
+                    columns.push({
+                        xtype:'actioncolumn', 
+                        width:50,
+                        items: [{
+                            icon: 'img/icons/delete.png',
+                            tooltip: 'Delete',
+                            handler: this.createFacade('onDelete')
+                        }]
+                    });
+                }
     
-            return columns;
-        }
-    }
+                return columns;
+            } //eo buildColumns
+        }, //eo GridConfig 
+        /*
+         * Create GridConfigs for scaffolding and production use.
+         * @class Bancha.scaffold.FormConfig
+         */
+        FormConfig: { 
+            /**
+             * @private
+             * @property
+             * Maps form field configs and field types for prototyping
+              * @member Bancha.scaffold.FormConfig
+             */
+            fieldToFieldConfigs: {
+                'string'  : {xtype:'textfield'},
+                'int'     : {xtype:'numberfield', decimalPrecision:0},
+                'float'   : {xtype:'numberfield'},
+                'boolean' : {xtype:'checkboxfield'},
+                'date'    : {xtype:'datefield'}
+                // TODO add type upload field in backend and test
+                // 'file'    : {xtype: 'filefield',buttonText: 'Select File...'}
+            },
+            /**
+             * @private
+             * Creates a {@link Ext.form.Field} config form an field type
+             * @param {Sring} type the fields type
+             * @member Bancha.scaffold.FormConfig
+             */
+            buildFieldConfig: function(type) {
+                return Ext.clone(this.fieldToFieldConfigs[type]);
+            },
+        }, //eo FormConfig   
+    } //eo scaffold
 });
 
 // eof
