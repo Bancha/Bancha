@@ -60,14 +60,14 @@ Ext.define('Bancha.data.Model', {
  * example usage:
  *     <!-- include Bancha and the remote API -->
  *     <script type="text/javascript" src="path/to/cakephp/Bancha/api.js"></script>
- *     <script type="text/javascript" src="path/to/bancha-debug.js"></script>
+ *     <script type="text/javascript" src="path/to/bancha.js"></script>
  *     <script>
  *         // when Bancha is ready, the model meta data is loaded
  *         // from the server and the model is created....
  *         Bancha.onModelReady('User', function(userModel) {
  *             // ... create a full featured users grid
  *             Ext.create('Ext.grid.Panel', 
- *                 Bancha.scarfold.GridConfig.buildConfig('User', { //TODO grid functions richten
+ *                 Bancha.scarfold.GridConfig.buildConfig('User', {
  *                     create: true,
  *                     update: true,
  *                     withReset: true,
@@ -120,14 +120,14 @@ Ext.define('Bancha', {
     metaDataLoadFunction: 'Bancha.loadMetaData',
     /**
      * @property
-     * the namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Ext#init}  
+     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Ext#init}  
      * null means no namespace, this is not recommanded. The namespace can be set in CakePHP: Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
      */
     namespace: null,
     /**
      * @private
      * @property
-     * indicates that Bancha is initialized. Used for debugging.
+     * Indicates that Bancha is initialized. Used for debugging.
      */
     initialized: false,
     /**
@@ -135,7 +135,7 @@ Ext.define('Bancha', {
      * Safely finds an object, used internally for getStubsNamespace and getRemoteApi
      * (This function is tested in RS.util, not part of the package testing, but it is tested)
      * @param {String} path A period ('.') separated path to the desired object (String).
-     * @param {String} lookIn optional: The object on which to perform the lookup.
+     * @param {String} lookIn (optional) The object on which to perform the lookup.
      * @return {Object} The object if found, otherwise undefined.
      */
     objectFromPath: function (path, lookIn) {
@@ -205,7 +205,7 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.remoteApi);
     },
     /**
-     * Inits Bancha with the RemotingProvider, always init before using Bancha
+     * Inits Bancha with the RemotingProvider, always init before using Bancha.  
      * (when you use {@link Bancha#onReady} init is done automatically by Bancha)
      */
     init: function() {
@@ -264,11 +264,11 @@ Ext.define('Bancha', {
     /**
      * Preloads the models metadata from the server to create a new model.  
      *  
-     * When to use it: You should use this function is you don't want to load 
+     * __When to use it:__ You should use this function is you don't want to load 
      * the metadata at startup, but want to load it before it is (eventually) 
      * used to have a more reactive interface.  
      * 
-     * Attention: In most cases it's best to load all model metadata on startup
+     * __Attention:__ In most cases it's best to load all model metadata on startup
      * when the api is loaded, please install guide for more information. This
      * is mostly usefull if you can guess that a user will need a model soon
      * which wasn't loaded at startup or if you want to load all not at startup
@@ -281,8 +281,8 @@ Ext.define('Bancha', {
      *     );
      *
      * @param {Array|String} models An array of the models to preload, one model name or 'all'
-     * @param {Function} models callback function (optional)
-     * @param {Object} models scope of the callback function (optional)
+     * @param {Function} callback  (optional) A callback function
+     * @param {Object} scope  (optional) The scope of the callback function
      */
     preloadModelMetaData: function(modelNames,callback,scope) {
         // get remote stub function
@@ -363,7 +363,7 @@ Ext.define('Bancha', {
     },
     /**
      * Checks if the model is supported by the server
-     * @param {String} modelName the name of the model
+     * @param {String} modelName The name of the model
      * @return {Boolean} True is the model is remotable
      */
     isRemoteModel: function(modelName) {
@@ -375,8 +375,8 @@ Ext.define('Bancha', {
     
     /**
      * Checks if the metadata of a model is loaded
-     * @param {String} modelName the name of the model
-     * @return {Boolean} True is the metadata is present
+     * @param {String} modelName The name of the model
+     * @return {Boolean} True is the metadata is present for _modelName_
      */
     modelMetaDataIsLoaded: function(modelName) {
         var api = this.getRemoteApi();
@@ -391,13 +391,15 @@ Ext.define('Bancha', {
      * Loads and instanciates a model if not already done and then
      * calls the callback function.  
      * 
-     * If Bancha is not initialized already it will wait for {@link Ext#isReady}
-     * and calls {@link Ext#init} before model creation.
-     * @param {String|Array} modelNames a name of the model or an array of model names
-     * @param {Function} callback (optional) callback function, the first argument is:
-     * - a model class if input modelNames was an string
+     * If Bancha is not already initialized it will wait for {@link Ext#isReady}
+     * and calls {@link Ext#init} before model creation.  
+     * 
+     * See {@link Bancha class explaination} for an example.
+     * @param {String|Array} modelNames A name of the model or an array of model names
+     * @param {Function} callback (optional) A callback function, the first argument is:  
+     * - a model class if input modelNames was an string  
      * - an object with model names as keys and models as arguments if an array was given
-     * @param {Object} scope scope of the callback function (optional)
+     * @param {Object} scope (optional) The scope of the callback function
      */
     onModelReady: function(modelNames, callback, scope) {
         if(this.initialized) {
@@ -482,7 +484,7 @@ Ext.define('Bancha', {
     /**
      * @private
      * Get the metadata of an model
-     * @param {String} modelName the name of the model
+     * @param {String} modelName The name of the model
      * @return {Object|null} Returns an objects with all metadata or null if not loaded yet.
      */
     getModelMetaData: function(modelName) {
@@ -522,13 +524,13 @@ Ext.define('Bancha', {
     
     /**
      * This method creates a {@link Bancha.data.Model} with your additional model configs, 
-     * if you don't have any additional configs just use the convienient method getModel.  
+     * if you don't have any additional configs just use the convienient method {@link #getModel}.  
      * 
      * In the debug version it will raise an {@link Ext.Error} if the model can't be 
      * or is already created, in production it will only return false.
      * 
-     * @param {String} modelName the name of the model
-     * @param {Object} modelConfig The config object, see Banacha.data.Model
+     * @param {String} modelName The name of the model
+     * @param {Object} modelConfig A standard {@link Ext.data.Model} config object
      * @return {Boolean} Returns true is model was created successfully
      */
     createModel: function(modelName, modelConfig) {
@@ -689,7 +691,7 @@ Ext.define('Bancha', {
      * 
      * In the debug version it will raise an {@link Ext.Error} if the model can't be created,
      * in production it will just return null.
-     * @param {String} modelName the name of the model
+     * @param {String} modelName The name of the model
      * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist or the metadata is not loaded
      * @member Bancha
      * @method getModel
@@ -704,7 +706,7 @@ Ext.define('Bancha', {
     scaffold: {
         /**
          * @private
-         * some scaffolding util function
+         * Some scaffolding util function
          */
         Util: {
             /**
@@ -727,11 +729,11 @@ Ext.define('Bancha', {
             /**
              * @private
              * Capitalizes the first word and turns underscores into spaces and strips a trailing “_id”, if any.  
-             * Also it converts camel case by finding upper case letters right after lower case and repalceing the upper case with an space and lower case.
-             * examples:
-             * "user_name"  -> "User name"
-             * "userName"   -> "User name"
-             * "John Smith" -> "John Smith"
+             * Also it converts camel case by finding upper case letters right after lower case and repalceing the upper case with an space and lower case.  
+             * examples:  
+             * "user_name"  -> "User name"  
+             * "userName"   -> "User name"  
+             * "John Smith" -> "John Smith"  
              *
              * @param {String} str
              * @return {String} str transformed string
@@ -805,10 +807,11 @@ Ext.define('Bancha', {
             createFacade: function(method) {
                 return Bancha.scaffold.Util.createFacade('GridConfig',this,method);
             },
+             //TODO grid functions richten
             /**
              * @property
-             * Editable function to be called when the create button is pressed  
-             * To change the default scaffolding behaviour just replace these functions.  
+             * Editable function to be called when the create button is pressed.  
+             * To change the default scaffolding behaviour just replace this function.  
              * You can do this at any time, the current declarations are always used.  
              * scope is an object: {  
              *  store:       the grids store  
@@ -837,8 +840,8 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * Editable function to be called when the save button is pressed  
-             * To change the default scaffolding behaviour just replace these functions.  
+             * Editable function to be called when the save button is pressed.  
+             * To change the default scaffolding behaviour just replace this function.  
              * You can do this at any time, the current declarations are always used.
              * scope is the store
              * @member Bancha.scaffold.GridConfig
@@ -863,8 +866,8 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * Editable function to be called when the reset button is pressed  
-             * To change the default scaffolding behaviour just replace these functions.  
+             * Editable function to be called when the reset button is pressed.  
+             * To change the default scaffolding behaviour just replace this function.  
              * You can do this at any time, the current declarations are always used.
              * scope is the store
              * @member Bancha.scaffold.GridConfig
@@ -879,8 +882,8 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * Editable function to be called when the delete button is pressed  
-             * To change the default scaffolding behaviour just replace these functions.  
+             * Editable function to be called when the delete button is pressed.  
+             * To change the default scaffolding behaviour just replace this function.  
              * You can do this at any time, the current declarations are always used.
              * @member Bancha.scaffold.GridConfig
              */
@@ -893,16 +896,18 @@ Ext.define('Bancha', {
                 });
             },
             /**
-             * Builds a grid config from the metadata, for scaffolding purposes.
-             * @param {Ext.data.Model|String} model the model class or model name
-             * @param {Object} config (optional) config object with:  
-             *  - {Boolean} _create_ true to add create button  
-             *  - {Boolean} _update_ true to allow changes  
-             *  - {Boolean} _withReset_ when updatable, true display a reset button as well  
-             *  - {Boolean} _destroy_ true to add delete buttons 
-             *  - {Boolean} _autoLoad_ false to don't set autoLoad on the store (default: true)
-             * @param {Object} additionalGridConfig some additional configs which are applied to the config
-             * @return {Object} an Ext.grid.Panel configuration object
+             * Builds a grid config from Bancha metadata, for scaffolding purposes.
+             * 
+             * See {@link Bancha class explaination} for an example.
+             * @param {Ext.data.Model|String} model The model class or model name
+             * @param {Object} config (optional) A config object with:  
+             *  - _create_: {Boolean} true to add create button  
+             *  - _update_: {Boolean} true to allow changes  
+             *  -  _withReset_: {Boolean} when updatable, true display a reset button as well  
+             *  - _destroy_: {Boolean} true to add delete buttons 
+             *  - _autoLoad: {Boolean}_ false to don't set autoLoad on the store (default: true)
+             * @param {Object} additionalGridConfig Some additional grid configs which are applied to the config
+             * @return {Object} Returns an Ext.grid.Panel configuration object
              * @member Bancha.scaffold.GridConfig
              */
             buildConfig: function(model,config,additionalGridConfig) {
@@ -988,16 +993,16 @@ Ext.define('Bancha', {
                 return gridConfig;
             },
             /**
-             * Builds grid columns from the metadata, for scaffolding purposes.  
-             * Please use buildGridPanelConfig function if you want support for 
+             * Builds grid columns from the Bancha metadata, for scaffolding purposes.  
+             * Please use buildConfig function if you want support for 
              * create,update and/or delete!
              * 
-             * @param {Ext.data.Model|String} model the model class or model name
-             * @param {Object} config (optional) config object with:
-             *  - {Boolean} _create_ true to add create button
-             *  - {Boolean} _update_ true to allow changes
-             *  - {Boolean} _destroy_ true to add delete buttons
-             * @return {Array} array of Ext.grid.Column configs
+             * @param {Ext.data.Model|String} model The model class or model name
+             * @param {Object} config (optional) A config object with:  
+             *  - _create_: {Boolean}  true to add create button  
+             *  - _update_: {Boolean}  true to allow changes  
+             *  - _destroy_: {Boolean}  true to add delete buttons  
+             * @return {Array} Returns an array of Ext.grid.Column configs
              * @member Bancha.scaffold.GridConfig
              */
             buildColumns: function(model, config) {
@@ -1061,7 +1066,7 @@ Ext.define('Bancha', {
              * @private
              * @property
              * Maps form field configs and field types for prototyping
-              * @member Bancha.scaffold.FormConfig
+             * @member Bancha.scaffold.FormConfig
              */
             fieldToFieldConfigs: {
                 'string'  : {xtype:'textfield'},
