@@ -92,7 +92,8 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$dispatcher->dispatch($collection);
 		$responses = json_decode(ob_get_contents());
 		ob_end_clean();
-		
+		header("Content-Type: text/html; charset=utf-8"); // ob_end_clean() does not restore the Content-Type
+
 		$this->assertEquals('Hello World!', $responses[0]->result->text);
 		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
