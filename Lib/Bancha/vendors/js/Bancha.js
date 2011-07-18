@@ -83,7 +83,7 @@ Ext.define('Bancha.data.Model', {
  *         }); //eo onModelReady
  *     </script>
  *   
- * If you want to listen for exceptions, please do this directly on {@link Ext.direct.Manager}
+ * If you want to listen for exceptions, please do this directly on Ext.direct.Manager
  *
  * @singleton
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -109,7 +109,7 @@ Ext.define('Bancha', {
     /**
      * @property
      * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')  
-     * Only change this if you changed 'Bancha.remote_api' in the CakePHP config, never change after {@link Ext#init}
+     * Only change this if you changed 'Bancha.remote_api' in the CakePHP config, never change after {@link Bancha#init}
      */
     remoteApi: 'Bancha.REMOTE_API',
     /**
@@ -120,7 +120,7 @@ Ext.define('Bancha', {
     metaDataLoadFunction: 'Bancha.loadMetaData',
     /**
      * @property
-     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Ext#init}  
+     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Bancha#init}  
      * null means no namespace, this is not recommanded. The namespace can be set in CakePHP: Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
      */
     namespace: null,
@@ -391,8 +391,8 @@ Ext.define('Bancha', {
      * Loads and instanciates a model if not already done and then
      * calls the callback function.  
      * 
-     * If Bancha is not already initialized it will wait for {@link Ext#isReady}
-     * and calls {@link Ext#init} before model creation.  
+     * If Bancha is not already initialized it will wait for link Ext.isReady
+     * and calls {@link Bancha#init} before model creation.  
      * 
      * See {@link Bancha class explaination} for an example.
      * @param {String|Array} modelNames A name of the model or an array of model names
@@ -526,11 +526,11 @@ Ext.define('Bancha', {
      * This method creates a {@link Bancha.data.Model} with your additional model configs, 
      * if you don't have any additional configs just use the convienient method {@link #getModel}.  
      * 
-     * In the debug version it will raise an {@link Ext.Error} if the model can't be 
+     * In the debug version it will raise an Ext.Error if the model can't be 
      * or is already created, in production it will only return false.
      * 
      * @param {String} modelName The name of the model
-     * @param {Object} modelConfig A standard {@link Ext.data.Model} config object
+     * @param {Object} modelConfig A standard Ext.data.Model config object
      * @return {Boolean} Returns true is model was created successfully
      */
     createModel: function(modelName, modelConfig) {
@@ -689,7 +689,7 @@ Ext.define('Bancha', {
      * Get a bancha model by name.  
      * If it isn't already defined this function will define the model.
      * 
-     * In the debug version it will raise an {@link Ext.Error} if the model can't be created,
+     * In the debug version it will raise an Ext.Error if the model can't be created,
      * in production it will just return null.
      * @param {String} modelName The name of the model
      * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist or the metadata is not loaded
@@ -706,11 +706,12 @@ Ext.define('Bancha', {
     scaffold: {
         /**
          * @private
+         * @singleton
+         * @class Bancha.scaffold.Util
          * Some scaffolding util function
          */
         Util: {
             /**
-             * @private
              * make the first letter of an String upper case
              * @param {String} str
              * @return {String} str with first letter upper case
@@ -727,7 +728,6 @@ Ext.define('Bancha', {
                 }
             },
             /**
-             * @private
              * Capitalizes the first word and turns underscores into spaces and strips a trailing “_id”, if any.  
              * Also it converts camel case by finding upper case letters right after lower case and repalceing the upper case with an space and lower case.  
              * examples:  
@@ -746,7 +746,6 @@ Ext.define('Bancha', {
                 return this.toFirstUpper(str);
             },
             /**
-             * @private
              * This enables the developer to change the default scaffolding functions at any time
              * and Bancha will always use the current functions, since there are no references
              * @member Bancha.scaffold.Util
@@ -770,7 +769,7 @@ Ext.define('Bancha', {
                     return scope[method].apply(scope,arguments);
                 };
                 ENDIF */
-            },
+            }
         },
         /*
          * Create GridConfigs for scaffolding and production use.
@@ -793,7 +792,7 @@ Ext.define('Bancha', {
             },
             /**
              * @private
-             * Creates a {@link Ext.grid.Column} config  an field type
+             * Creates a Ext.grid.Column config  an field type
              * @param {Sring} type the fields type
              * @member Bancha.scaffold.GridConfig
              */
@@ -1081,7 +1080,7 @@ Ext.define('Bancha', {
             },
             /**
              * @private
-             * Creates a {@link Ext.form.Field} config form an field type
+             * Creates a Ext.form.Field config form an field type
              * @param {Sring} type the fields type
              * @member Bancha.scaffold.FormConfig
              */
