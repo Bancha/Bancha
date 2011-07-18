@@ -775,6 +775,7 @@ Ext.define('Bancha', {
         /*
          * Create GridConfigs for scaffolding and production use.
          * @class Bancha.scaffold.GridConfig
+         * @singleton
          */
         GridConfig: {
             /**
@@ -1060,6 +1061,7 @@ Ext.define('Bancha', {
         /*
          * Create GridConfigs for scaffolding and production use.
          * @class Bancha.scaffold.FormConfig
+         * @singleton
          */
         FormConfig: { 
             /**
@@ -1085,8 +1087,8 @@ Ext.define('Bancha', {
              */
             buildFieldConfig: function(type) {
                 return Ext.clone(this.fieldToFieldConfigs[type]);
-            },
-        }, //eo FormConfig   
+            }
+        } //eo FormConfig
     } //eo scaffold
 });
 
