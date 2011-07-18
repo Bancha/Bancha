@@ -15,7 +15,6 @@ describe("ExtSpecHelpers toThrowExtError matcher", function() {
     
     it("should be able to recognize when no error was thrown", function() {
         // error no exceptiong
-        console.info(this.matchersClass.prototype.toThrowExtErrorMsg.prototype);
         var fn = this.matchersClass.toThrowExtErrorMsg,
             scope = {
                 actual: function() {}
@@ -49,16 +48,17 @@ describe("Mock.Proxy",function() {
     
     it("should be able to expect RCP calls",function() {
         var callback = function() {},
-            scope = {};
+            scope = {},
+            mock;
         
         // success
-        var mock = Mock.Proxy();
+        mock = Mock.Proxy();
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
         mock.create([{id:1,name:'juhu'},'secondDirectArgument'],callback,scope);
         mock.verify();
         
         // error
-        var mock = Mock.Proxy();
+        mock = Mock.Proxy();
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
         mock.create([{id:1,name:'juhu'},'secondDirectArgument'],'nocallback',scope);
         
@@ -68,11 +68,12 @@ describe("Mock.Proxy",function() {
     });
     
     it("should be able to call the last rpc's callback", function() {
+        var mock, callback, scope;
         
         // successfull without data
-        var mock = Mock.Proxy();
-        var callback = function() { this.success=true;},
-            scope = { success:false};
+        mock = Mock.Proxy();
+        callback = function() { this.success=true;};
+        scope = { success:false};
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
         mock.create([{id:1,name:'juhu'},'secondDirectArgument'],callback,scope);
         mock.verify(); // just to keep clean
@@ -84,10 +85,10 @@ describe("Mock.Proxy",function() {
         
         
         
-        // successfull with data TODO
-        var mock = Mock.Proxy();
-        var callback = function(data) { this.success=data.successProperty;},
-            scope = { success:false};
+        // successfull with data
+        mock = Mock.Proxy();
+        callback = function(data) { this.success=data.successProperty;};
+        scope = { success:false};
         mock.expectRPC('create',[{id:1,name:'juhu'},'secondDirectArgument']);
         mock.create([{id:1,name:'juhu'},'secondDirectArgument'],callback,scope);
         mock.verify(); // just to keep clean

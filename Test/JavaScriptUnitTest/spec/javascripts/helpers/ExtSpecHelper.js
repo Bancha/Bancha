@@ -10,7 +10,7 @@
 
 beforeEach(function() {
     
-    // ext errors ishould be catched and result in an error
+    // ext errors should be catched and result in an error
     if(Ext.Error) { // ext.error only exists in the debug version
         Ext.Error.handle = function(e) {
             throw 'Unexpected Ext.Error thrown: '+e.msg;
@@ -58,7 +58,6 @@ beforeEach(function() {
 	        }
 	    }, lookIn);
 	};
-	
 	
     this.addMatchers({
         // now add a custom matcher to test methods where ext errors get thrown

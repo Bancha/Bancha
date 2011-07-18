@@ -27,7 +27,11 @@
 
 class BanchaController extends BanchaAppController {
 
-	var $name = 'Banchas'; //turns html on again
+	var $name = 'Bancha.BanchaExt'; //turns html on again
+	var $autoRender = false; //we don't need a view for this
+	var $autoLayout = false;
+	//var $viewClass = 'Bancha.BanchaExt';
+		
 
 	/**
 	 *  CRUD mapping between cakephp and extjs
@@ -55,10 +59,13 @@ class BanchaController extends BanchaAppController {
 		 *
 		 * @var array
 		 */
+
 		$API = array();
-		$API['url'] =  'Bancha/router.php';
-		//$API['url'] =  '/bancha';
+		//$API['url'] =  'Bancha/router.php';
+		$API['url'] =  '/bancha.php';
+		$API['namespace'] = 'Bancha.RemoteStubs';
     	$API['type'] = "remoting";
+
 		
 
 		/****** parse Models **********/
@@ -78,6 +85,7 @@ class BanchaController extends BanchaAppController {
 
 		//load the MetaData into $API
 		foreach ($banchaModels as $mod) {
+			$this->{$mod}->setBehaviorModel($mod);
 			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
 		/**
@@ -101,7 +109,31 @@ class BanchaController extends BanchaAppController {
 		}
 
 		$this->set('API', $API);
-		$this->render(null, 'ajax'); //removes the html
+		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
+		//$this->render(null, 'ajax', null); //removes the html
+	}
+	
+	/**
+	 * 
+	 * this function returns the Metadata of the models passed as an argument
+	 */
+	
+	public function loadMetaData($models = array() ) {
+		if ($models == null) {
+			return;
+		}
+		
+		if ( is_string($models)) {
+			$models = array($models);
+		}
+		
+		$modelMetaData = array();
+		foreach($models as $mod) {
+			$this->loadModel($mod);
+			$this->{$mod}->setBehaviorModel($mod);
+			$modelMetaData[$mod] = $this->{$mod}->extractBanchaMetaData();	
+		}
+		return $modelMetaData;
 	}
 }
 

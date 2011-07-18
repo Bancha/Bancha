@@ -19,70 +19,71 @@
  *
  * For more information go to http://banchaproject.org 
  */
-/*jslint browser: true, vars: false, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
+/*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, window */
 
-// TODO Docu: Add Links in Format: {@link Ext#define}
 // TODO Native support for Ext.data.TreeStore with server-side TreeBehaviour
 // TODO Form Support: http://dev.sencha.com/deploy/ext-4.0.0/examples/direct/direct-form.html
 // TODO serverside form validation
 // TODO selectboxes with serverside content (enum support also(?)) http://dev.sencha.com/deploy/ext-4.0.0/examples/form/combos.html
-// TODO Model.clientName: the clientside model name (serverseitig als $Model->exposeAs)
+// TODO samples sollten "$javascript->link('script.js', false);" verwenden, da dies auch aus vendors (und plugins!?) ausliest
+
 
 /**
  * @class Bancha.data.Model
  * @extends Ext.data.Model
  * 
- * currently model is doing not much, we expect to need some additional code here later
+ * This should only be used by Bancha internally, 
+ * since it just has an additional flag to force consistency in Bancha.
  * 
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
- * 
- * @constructor
- * @param {Object} data An object containing keys corresponding to this model's fields, and their associated values
- * @param {Number} id Optional unique ID to assign to this model instance
  */
 Ext.define('Bancha.data.Model', {
     extend: 'Ext.data.Model',
-    // TODO forceConsistancy: use the consistant model
-    forceConsistancy: false
+    // TODO forceConsistency: use the consistent model
+    /**
+     * @cfg
+     * If true the frontend forces consistency
+     */
+    forceConsistency: false
 });
 
 
 
 /**
  * @class Bancha
- * // TODO docu here, especially about createModel, getModel, onModelReady, init
-// spec http://www.sencha.com/products/extjs/extdirect
-
-
-
- * example:
- * <code>
- * <!-- include Bancha and the remote API -->
- * <script type="text/javascript" src="path/to/cakephp/Bancha/api.js"></script>
- * <script type="text/javascript" src="path/to/bancha-debug.js"></script>
- * <script>
- * <Ext.onReady(function() {
- *     // init the Bancha with remote information
- *     Bancha.init();
  * 
- *     // when Bancha is ready, the model meta data is 
- *  // loaded from the server and the model is created...
- *     Bancha.onModelReady('User', function() {
- *         // ... create a users grid
- *         Ext.create('Ext.grid.Panel', {
- *             store: {
- *                 model: 'User',
- *                 autoLoad: true
- *             },
- *             columns: Bancha.scarfold.buildColumns(userModel) // propably not suitable for production
- *         });
- * });
- * </script></code>
+ * This singleton is the core of Bancha on the client-side.  
+ * For documentation on how to use it please look at the docs at banchaproject.org  
  * 
- * // TODO later exceptions fangen?
- * Please listen for exceptions on Ext.direct.Manager
+ * example usage:
+ *     <!-- include Bancha and the remote API -->
+ *     <script type="text/javascript" src="path/to/cakephp/Bancha/api.js"></script>
+ *     <script type="text/javascript" src="path/to/bancha-debug.js"></script>
+ *     <script>
+ *         // when Bancha is ready, the model meta data is loaded
+ *         // from the server and the model is created....
+ *         Bancha.onModelReady('User', function(userModel) {
+ *             // ... create a full featured users grid
+ *             Ext.create('Ext.grid.Panel', 
+ *                 Bancha.scarfold.buildGridPanelConfig('User', { //TODO grid functions richten
+ *                     create: true,
+ *                     update: true,
+ *                     withReset: true,
+ *                     destroy: true
+ *                 }, {
+ *                     height: 350,
+ *                     width: 650,
+ *                     frame: true,
+ *                     title: 'User Grid',
+ *                     renderTo: 'gridpanel'
+ *                 })
+ *             );
+ *         }); //eo onModelReady
+ *     </script>
+ *   
+ * If you want to listen for exceptions, please do this directly on {@link Ext.direct.Manager}
  *
  * @singleton
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -101,48 +102,43 @@ Ext.define('Bancha', {
     
     
     /**
+     * @property
      * Bancha Project version
-     * @property debug
-     * @type String
      */
     version: '0.0.1',
     /**
-     * Only change this if you changed 'Bancha.remote_api' in the config, never change after Bancha.init()
-     * @cfg {String} remoteApi The local path to the Bancha remote api (Default: Bancha.REMOTE_API)
+     * @property
+     * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')  
+     * Only change this if you changed 'Bancha.remote_api' in the CakePHP config, never change after {@link Ext#init}
      */
     remoteApi: 'Bancha.REMOTE_API',
     /**
-     * @propterty The path of the RCP for loading model meta data from the server, without the namespace
-     * @type {String}
+     * @property
+     * The path of the RCP for loading model meta data from the server, without the namespace. (Default: 'Bancha.loadMetaData')  
+     * Only change this if you renamed the server-side BanchaController or it's method
      */
     metaDataLoadFunction: 'Bancha.loadMetaData',
     /**
-     * @propterty apiRoute The absolute route to the Bancha API, will be loaded from the REMOTE_API configuration on Bancha.init()
-     * @type {String}
-     */
-    apiRoute: null, //TODO server should to set the absolute path!
-    /**
-     * the namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on Bancha.init()
-     * null means no namespace, this is not recommanded. The namespace can be set in CakePHP Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
+     * @property
+     * the namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Ext#init}  
+     * null means no namespace, this is not recommanded. The namespace can be set in CakePHP: Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
      */
     namespace: null,
     /**
-     * indicates that Bancha is initialized. Used for debugging.
      * @private
-     * @property {Boolean} initialized
+     * @property
+     * indicates that Bancha is initialized. Used for debugging.
      */
     initialized: false,
     /**
+     * @private
      * Safely finds an object, used internally for getStubsNamespace and getRemoteApi
      * (This function is tested in RS.util, not part of the package testing, but it is tested)
      * @param {String} path A period ('.') separated path to the desired object (String).
      * @param {String} lookIn optional: The object on which to perform the lookup.
      * @return {Object} The object if found, otherwise undefined.
-     * @member Bancha
-     * @method objectFromPath
-     * @private
      */
-    objectFromPath: function(path, lookIn) {
+    objectFromPath: function (path, lookIn) {
         if (!lookIn) {
             //get the global object so it don't use hasOwnProperty on window (IE incompatible)
             var first = path.indexOf('.'),
@@ -171,10 +167,9 @@ Ext.define('Bancha', {
         }, lookIn);
     },
     /**
+     * @private
      * Returns the namespace of the remote stubs
      * @return {Object} The namespace if already instanciated, otherwise undefined
-     * @member Bancha
-     * @method getStubsNamespace
      */
     getStubsNamespace: function() {
         // IFDEBUG
@@ -188,10 +183,9 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.namespace);
     },
     /**
+     * @private
      * Returns the remote api definition of Ext.direct
      * @return {Object} The api if already defined, otherwise undefined
-     * @member Bancha
-     * @method getRemoteApi
      */
     getRemoteApi: function() {    
         // IFDEBUG
@@ -211,7 +205,8 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.remoteApi);
     },
     /**
-     * inits Bancha with the RemotingProvider, allways init before using Bancha
+     * Inits Bancha with the RemotingProvider, always init before using Bancha
+     * (when you use {@link Bancha#onReady} init is done automatically by Bancha)
      */
     init: function() {
         var remoteApi;
@@ -241,6 +236,13 @@ Ext.define('Bancha', {
         
         remoteApi = this.getRemoteApi();
         
+        
+        // if the server didn't send an metadata object in the api, create it
+        if(!Ext.isDefined(remoteApi.metadata)) {
+            remoteApi.metadata = {};
+        }
+        
+        
         // IFDEBUG
         if(Ext.isObject(remoteApi)===false) {
             Ext.Error.raise({
@@ -251,7 +253,6 @@ Ext.define('Bancha', {
         }
         // ENDIF
         
-        this.apiRoute  = remoteApi.url;
         this.namespace = remoteApi.namespace || null;
         
         // init Provider
@@ -260,43 +261,30 @@ Ext.define('Bancha', {
         this.initialized = true;
     },
     
-    
     /**
-     * for Dev mode?
-     */
-    initLoader: function() { // TODO
-      var script = document.createElement("script");
-      script.src = "https://www.google.com/jsapi?key=INSERT-YOUR-KEY&callback=loadMaps";
-      script.type = "text/javascript";
-      document.getElementsByTagName("head")[0].appendChild(script);
-    },
-    
-    
-    /**
-     * Preloads the models metadata from the server to create a new model
-     * 
+     * Preloads the models metadata from the server to create a new model.  
+     *  
      * When to use it: You should use this function is you don't want to load 
      * the metadata at startup, but want to load it before it is (eventually) 
-     * used to have a more reactive interface.
+     * used to have a more reactive interface.  
      * 
      * Attention: In most cases it's best to load all model metadata on startup
-     * when the api is loaded, please install guide for more inforamtion. This
+     * when the api is loaded, please install guide for more information. This
      * is mostly usefull if you can guess that a user will need a model soon
      * which wasn't loaded at startup or if you want to load all not at startup
      * needed models right after startup with something like: 
-     * <code>Ext.onReady(
-     *        Ext.Function.createDelayed(
+     *     Ext.onReady(
+     *         Ext.Function.createDelayed(
      *             function() { Bancha.preloadModelMetaData('all'); },
-     *             100));
-     * </code>
+     *             100
+     *         )
+     *     );
      *
      * @param {Array|String} models An array of the models to preload, one model name or 'all'
-     * @param {Function} models Optional callback function
-     * @param {Object} models Optional scope of the callback function
-     * @member Bancha
-     * @method preloadModelMetaData
+     * @param {Function} models callback function (optional)
+     * @param {Object} models scope of the callback function (optional)
      */
-    preloadModelMetaData: function(models,callback,scope) {
+    preloadModelMetaData: function(modelNames,callback,scope) {
         // get remote stub function
         var cb,
             fn = this.objectFromPath(this.metaDataLoadFunction,this.getStubsNamespace());
@@ -312,9 +300,9 @@ Ext.define('Bancha', {
         // ENDIF
         
         // IFDEBUG
-        Ext.each(models, function(modelName) {
+        Ext.each(modelNames, function(modelName) {
             if(Ext.isObject(Bancha.getModelMetaData(modelName))) {
-                if(window.console && Ext.isFunction(console.warn)) {
+                if(window.console && Ext.isFunction(window.console.warn)) {
                     window.console.warn(
                         'Bancha: The model '+modelName+' is already loaded, we will reload the meta data '+
                         'but this seems strange. Notice that this warning is only created in debug mode.');
@@ -324,18 +312,11 @@ Ext.define('Bancha', {
         // ENDIF
         
         // force models to be an array
-        if(Ext.isString(models)) {
-            models = [models];
+        if(Ext.isString(modelNames)) {
+            modelNames = [modelNames];
         }
         
-        // TODO lesen
-        //Is it in php possible to force a type in the method deklaration, like function(Integer $int) ?
-        // http://www.sencha.com/forum/showthread.php?134882-How-to-implement-Ext.Direct-in-MVC-architecture-with-ExtJs-4
-        // http://www.sencha.com/forum/showthread.php?134505-Model-proxy-for-a-Store-doesn-t-seem-to-work-if-the-proxy-is-a-direct-proxy
-        // Test samples.html
-        // TODO probably should be done with Ext.Direct
-        
-        cb = function(result, event) { // TODO test this
+        cb = function(result, event) {
             var data = Ext.decode(result);
             
             // IFDEBUG
@@ -344,7 +325,7 @@ Ext.define('Bancha', {
                     plugin: 'Bancha',
                     result: result,
                     event: event,
-                    msg: 'Bancha: The Bancha.preloadModelMetaData('+models.toString()+') did expect to to get the metadata from the server, instead got: '+result
+                    msg: 'Bancha: The Bancha.preloadModelMetaData('+modelNames.toString()+') did expect to to get the metadata from the server, instead got: '+result
                 });
             }
             // ENDIF
@@ -378,14 +359,12 @@ Ext.define('Bancha', {
         };
         
         // start ext.direct request
-        fn(models,cb,Bancha);
+        fn(modelNames,cb,Bancha);
     },
     /**
-     * checks if the model is supported by the server
+     * Checks if the model is supported by the server
      * @param {String} modelName the name of the model
      * @return {Boolean} True is the model is remotable
-     * @member Bancha
-     * @method isRemoteModel
      */
     isRemoteModel: function(modelName) {
         return (
@@ -395,11 +374,9 @@ Ext.define('Bancha', {
     },
     
     /**
-     * checks if the metadata of a model is loaded
+     * Checks if the metadata of a model is loaded
      * @param {String} modelName the name of the model
      * @return {Boolean} True is the metadata is present
-     * @member Bancha
-     * @method modelMetaDataIsLoaded
      */
     modelMetaDataIsLoaded: function(modelName) {
         var api = this.getRemoteApi();
@@ -412,17 +389,15 @@ Ext.define('Bancha', {
     
     /**
      * Loads and instanciates a model if not already done and then
-     * calls the callback function.
+     * calls the callback function.  
      * 
-     * If Bancha is not initialized already it will wait for Ext.isReady
-     * and calls Bancha.init() first.
+     * If Bancha is not initialized already it will wait for {@link Ext#isReady}
+     * and calls {@link Ext#init} before model creation.
      * @param {String|Array} modelNames a name of the model or an array of model names
-     * @param {Function} callback Optional callback function, the first argument is: //TODO OPTIMIZE keine Argumente?
-                          - a model class if input modelNames was an string
-                          - an object with model names as keys and models as arguments if an array was given
-     * @param {Object} scope Optional scope of the callback function
-     * @member Bancha
-     * @method onModelReady
+     * @param {Function} callback (optional) callback function, the first argument is:
+     * - a model class if input modelNames was an string
+     * - an object with model names as keys and models as arguments if an array was given
+     * @param {Object} scope scope of the callback function (optional)
      */
     onModelReady: function(modelNames, callback, scope) {
         if(this.initialized) {
@@ -435,9 +410,9 @@ Ext.define('Bancha', {
         }
     },
     /**
+     * @private
      * Helper, Bancha.onModelReady will call this function in an Ext.onReady
      * !!!don't use this function directly!!!
-     * @private
      */
     onInitializedOnModelReady: function(modelNamesToLoad, loadingModels, loadedModels, callback, scope) {
         var modelsToLoad  = [],
@@ -466,7 +441,7 @@ Ext.define('Bancha', {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 modelNamesToLoad: modelNamesToLoad,
-                msg: 'Bancha: The Bancha.onModelReady(modelNamesToLoad) expects either a string with one model oder an array of models, instead got'+modelNamesToLoad+' of type '+(typeof modelNamesToLoad)
+                msg: 'Bancha: The Bancha.onModelReady(modelNamesToLoad) expects either a string with one model oder an array of models, instead got'+modelNamesToLoad.toString()+' of type '+(typeof modelNamesToLoad)
             });
             // ENDIF
             return false;
@@ -496,7 +471,7 @@ Ext.define('Bancha', {
         } else {
             // add all elements to the queue
             Ext.forEach(modelsToLoad, function(modelName) {
-                // TODO OPTIMIZE not very performat for large arrrays
+                // TODO OPTIMIZE not very performant for large arrrays
                 this.preloadModelMetaData(modelName, function() {
                     // when model is loaded try again
                     this.onInitializedOnModelReady([], loadingModels, loadedModels, callback, scope);
@@ -505,8 +480,8 @@ Ext.define('Bancha', {
         }
     },
     /**
-     * Get the metadata of an model
      * @private
+     * Get the metadata of an model
      * @param {String} modelName the name of the model
      * @return {Object|null} Returns an objects with all metadata or null if not loaded yet.
      */
@@ -537,27 +512,6 @@ Ext.define('Bancha', {
             // metadata found, clone it to prevent unobvious errors (ext always uses the config object and modifies it
             return Ext.clone(
                 this.getRemoteApi().metadata[modelName]);
-            
-            /* TODO should return metadata like this: {
-                fields: [
-                    // TODO loaded from server
-                    // types: string, int, float, boolean, data
-                    // {name:'name', type:'string', defaultValue:'', persist:false(for generated values), } // additionally isDouble? + text?
-                ],
-                validations: [
-                    // TODO loaded from server
-                    // {type:'length', name:'name', min:2}
-                ]
-                // TODO loaded from server
-                associations: [
-                    // TODO loaded from server
-                    //{type:'hasMany', model:'Post', name:'posts'},
-                ],
-                sorters: [{ // TODO sort dir in cake bestimmen
-                    property: 'name', // TODO name?
-                    direction: 'ASC'
-                }]
-            }*/
         }
         
         // nothing found
@@ -567,17 +521,15 @@ Ext.define('Bancha', {
     
     
     /**
-     * This method creates a Bancha.data.Model with your additional model configs, 
-     * if you don't have any additional configs just use the convienient method getModel
+     * This method creates a {@link Bancha.data.Model} with your additional model configs, 
+     * if you don't have any additional configs just use the convienient method getModel.  
      * 
-     * In the debug version it will raise an {@link #Ext.Error} if the model can't be 
+     * In the debug version it will raise an {@link Ext.Error} if the model can't be 
      * or is already created, in production it will only return false.
      * 
      * @param {String} modelName the name of the model
      * @param {Object} modelConfig The config object, see Banacha.data.Model
      * @return {Boolean} Returns true is model was created successfully
-     * @member Bancha
-     * @method createModel
      */
     createModel: function(modelName, modelConfig) {
         var metaData,
@@ -635,7 +587,7 @@ Ext.define('Bancha', {
         
         // IFDEBUG
         if(!Ext.isDefined(this.getModelMetaData(modelName).idProperty)) {
-            if(window.console && Ext.isFunction(console.warn)) {
+            if(window.console && Ext.isFunction(window.console.warn)) {
                 window.console.warn(
                     'Bancha: The model meta data for '+modelName+' seems strange, probably this was '+
                     'not created by Bancha, or an error occured on the server-side. Please notice '+
@@ -651,13 +603,19 @@ Ext.define('Bancha', {
             }
             
             // function doesn't exit, create fake which will throw an error on first use
-            var fakeFn = function() {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    modelName: modelName,
-                    msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'Controller->'+ map[method]+'(...).'
-                });
-            };
+            var map = {
+                    create : 'add',
+                    read   : 'view or index',
+                    update : 'edit',
+                    destroy: 'delete'
+                },
+                fakeFn = function() {
+                    Ext.Error.raise({
+                        plugin: 'Bancha',
+                        modelName: modelName,
+                        msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'Controller->'+ map[method]+'(...).'
+                    });
+                };
             
             // this is not part of the official Ext API!, but it seems to be necessary to do this for better bancha debugging
             fakeFn.directCfg = Ext.define("Ext.direct.RemotingMethod", {
@@ -665,13 +623,19 @@ Ext.define('Bancha', {
                 name: method,
                 formHandler: false
             });
+            // fake the execution method
+            fakeFn.directCfg.method = function() {
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    modelName: modelName,
+                    msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'Controller->'+ map[method]+'(...).'
+                });
+            };
             
             return fakeFn;
         }; 
         // ENDIF
         
-        // TODO klappt das jetzt? http://www.sencha.com/forum/showthread.php?134505-Model-proxy-for-a-Store-doesn-t-seem-to-work-if-the-proxy-is-a-direct-proxy&p=606283&viewfull=1#post606283
-    
         // create the metadata
         modelConfig = modelConfig || {};
         stub = this.getStubsNamespace()[modelName];
@@ -684,7 +648,6 @@ Ext.define('Bancha', {
                 api: {
                     /* IFPRODUCTION
                     // if method is not supported by remote it get's set to undefined
-                    // TODO mapping auf server-side?
                     read    : stub.read,
                     create  : stub.create,
                     update  : stub.update,
@@ -699,16 +662,16 @@ Ext.define('Bancha', {
                 },
                 // because of an error in ext the following directFn def. has to be 
                 // defined, which should be read from api.read instead...
+                // see http://www.sencha.com/forum/showthread.php?134505-Model-proxy-for-a-Store-doesn-t-seem-to-work-if-the-proxy-is-a-direct-proxy&p=606283&viewfull=1#post606283
                 /* IFPRODUCTION
                 directFn: stub.read,
                 ENDIF */
                 // IFDEBUG
-                directFn: safeDirectFn(stub,'read',modelName), // TODO ticket erstellen
+                directFn: safeDirectFn(stub,'read',modelName),
                 // ENDIF
-                reader: { // TODO does this work?
+                reader: {
                     type: 'json',
-                    root: 'data',
-                    idProperty: idProperty
+                    root: 'data'
                 },
                 cacheString: '_dc' // TODO later
             }
@@ -721,10 +684,10 @@ Ext.define('Bancha', {
         return true;
     },
     /**
-     * Get a bancha model by name
-     * if it isn't already defined this function will define the model.
+     * Get a bancha model by name.  
+     * If it isn't already defined this function will define the model.
      * 
-     * In the debug version it will raise an {@link #Ext.Error} if the model can't be created,
+     * In the debug version it will raise an {@link Ext.Error} if the model can't be created,
      * in production it will just return null.
      * @param {String} modelName the name of the model
      * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist or the metadata is not loaded
@@ -736,20 +699,19 @@ Ext.define('Bancha', {
     },
     
     /**
-     * scarfolding functions for Bancha, mostly for rapid prototyping
+     * scaffolding functions for Bancha, mostly for rapid prototyping
      */
-    scarfold: {
+    scaffold: {
         /**
-         * some scarfolding util function
+         * @private
+         * some scaffolding util function
          */
         util: {
             /**
+             * @private
              * make the first letter of an String upper case
              * @param {String} str
              * @return {String} str with first letter upper case
-             * @member Bancha.scarfold.util
-             * @method toFirstUpper
-             * @static
              */
             toFirstUpper: function(str) {
                 if(typeof str!=='string') {
@@ -762,7 +724,8 @@ Ext.define('Bancha', {
                 }
             },
             /**
-             * Capitalizes the first word and turns underscores into spaces and strips a trailing “_id”, if any.
+             * @private
+             * Capitalizes the first word and turns underscores into spaces and strips a trailing “_id”, if any.  
              * Also it converts camel case by finding upper case letters right after lower case and repalceing the upper case with an space and lower case.
              * examples:
              * "user_name"  -> "User name"
@@ -771,9 +734,6 @@ Ext.define('Bancha', {
              *
              * @param {String} str
              * @return {String} str transformed string
-             * @member Bancha.scarfold.util
-             * @method humanize
-             * @static
              */
             humanize: function(str) {
                 str = str.replace(/_id/g,''); // delete _id from the string
@@ -784,23 +744,21 @@ Ext.define('Bancha', {
         },
         
         /**
+         * @private
+         * @property
          * Maps column types and field types for prototyping
-         * @property fieldToColumnTypes
-         * @static
-         * @type Object
          */
-        fieldToColumnTypes: {
-            'string'  : 'gridcolumn',
-            'int'     : 'numbercolumn',
-            'float'   : 'numbercolumn',
-            'boolean' : 'booleancolumn',
-            'date'    : 'datecolumn'
+        fieldToColumnConfigs: {
+            'string'  : {xtype:'gridcolumn'},
+            'int'     : {xtype:'numbercolumn',format:'0'},
+            'float'   : {xtype:'numbercolumn'},
+            'boolean' : {xtype:'booleancolumn'},
+            'date'    : {xtype:'datecolumn'}
         },
         /**
+         * @private
+         * @property
          * Maps form field configs and field types for prototyping
-         * @property fieldToFormFieldConfigs
-         * @static
-         * @type Object
          */
         fieldToFormFieldConfigs: {
             'string'  : {xtype:'textfield'},
@@ -808,12 +766,34 @@ Ext.define('Bancha', {
             'float'   : {xtype:'numberfield'},
             'boolean' : {xtype:'checkboxfield'},
             'date'    : {xtype:'datefield'}
-            // TODO OPTIMIZE add type upload field?
+            // TODO add type upload field in backend and test
+            // 'file'    : {xtype: 'filefield',buttonText: 'Select File...'}
         },
         /**
-         * function scarfolding for Ext.grid.Panels on-functions
+         * function scaffolding for {@link Ext.grid.Panel}s on-functions
+         * To change the default scaffolding behaviour just replace the functions.  
+         * You can do this at any time, the current declarations are always used
          */
         gridFunction: {
+            /**
+              * @private
+               * @property
+              * This enables the developer to change the default functions at any time
+              * and Bancha will always use the current functions, since there are no references
+              */
+            createFacade: function(method) {
+                return function() {
+                    return this[method].apply(this,arguments);
+                };
+            },
+            /**
+             * @property
+             * Editable function to be called when the create button is pressed  
+             * scope is an object: {  
+             *  store:       the grids store  
+             *  cellEditing: the grids cell editing plugin  
+             * }
+             */
             onCreate: function() { // scope is a config object
                 var edit = this.cellEditing,
                     store = this.store,
@@ -833,6 +813,11 @@ Ext.define('Bancha', {
                     column: 0
                 });
             },
+            /**
+             * @property
+             * Editable function to be called when the save button is pressed
+             * scope is the store
+             */
             onSave: function() { // scope is the store
                 var valid = true,
                     store = this,
@@ -851,6 +836,11 @@ Ext.define('Bancha', {
                     store.sync();
                 }
             },
+            /**
+             * @property
+             * Editable function to be called when the reset button is pressed  
+             * scope is the store
+             */
             onReset: function() { // scope is the store
                 var changes = this.getUpdatedRecords();
                 
@@ -859,6 +849,10 @@ Ext.define('Bancha', {
                     el.reject();
                 });
             },
+            /**
+             * @property
+             * Editable function to be called when the delete button is pressed
+             */
             onDelete: function(grid, rowIndex, colIndex) {
                 var rec = grid.getStore().getAt(rowIndex);
                 rec.destroy({
@@ -869,32 +863,26 @@ Ext.define('Bancha', {
             }
         },
         /**
-         * Creates a Ext.form.Field config form an field type
+          * @private
+         * Creates a {@link Ext.form.Field} config form an field type
          * @param {Sring} type the fields type
-         * @method buildFormFieldConfig
-         * @static
-         * @type Object
          */
         buildFormFieldConfig: function(type) {
             return Ext.clone(this.fieldToFormFieldConfigs[type]);
         },
         /**
-         * Builds grid config from the metadata, for scarfolding purposes
+         * Builds a grid config from the metadata, for scaffolding purposes.
          * @param {Ext.data.Model|String} model the model class or model name
-         * @param {Object} config optional an config object with:
-         *                 - {Boolean} <i>create</i> true to add create button
-         *                 - {Boolean} <i>update</i> true to allow changes
-         *                 - {Boolean} <i>withReset</i> when updatable, true display a reset button as well
-          *                - {Boolean} <i>destroy</i> true to add delete buttons
-           *               - {Boolean} <i>autoLoad</i> false to don't set autoLoad on the store (default: true)
-         * @param {Object} modelConfig some additional model configs which are applied to the config
-          * @return {Object} an Ext.grid.Panel configuration object
-         * @member Bancha.scarfold
-         * @method buildGridPanelConfig
-         * @property
-         * @static
+         * @param {Object} config (optional) config object with:  
+         *  - {Boolean} _create_ true to add create button  
+         *  - {Boolean} _update_ true to allow changes  
+         *  - {Boolean} _withReset_ when updatable, true display a reset button as well  
+         *  - {Boolean} _destroy_ true to add delete buttons 
+         *  - {Boolean} _autoLoad_ false to don't set autoLoad on the store (default: true)
+         * @param {Object} additionalGridConfig some additional configs which are applied to the config
+         * @return {Object} an Ext.grid.Panel configuration object
          */
-        buildGridPanelConfig: function(model,config,modelConfig) {
+        buildGridPanelConfig: function(model,config,additionalGridConfig) {
             var gridConfig, modelName, buttons, cellEditing, store;
             config = config || {};
             
@@ -907,14 +895,14 @@ Ext.define('Bancha', {
             }
             
             // basic config
-            store = new Ext.data.Store({
+            store = Ext.create("Ext.data.Store",{
                 model: modelName,
                 autoLoad: (config.autoLoad===false) ? false : true
             });
             
             gridConfig = {
                 store: store,
-                columns: this.buildColumns(model)
+                columns: this.buildColumns(model,config)
             };
             
             // add update configs
@@ -940,7 +928,7 @@ Ext.define('Bancha', {
                             cellEditing: cellEditing,
                             store      : store
                         },
-                        handler: this.gridFunction.onCreate
+                        handler: this.gridFunction.createFacade('onCreate')
                     });
                 }
                 
@@ -949,14 +937,14 @@ Ext.define('Bancha', {
                         iconCls: 'icon-save',
                         text: 'Save', //TODO OPTIMIZE disabled:true?
                         scope: store,
-                        handler: this.gridFunction.onSave
+                        handler: this.gridFunction.createFacade('onSave')
                     });
                     if(config.withReset) {
                         buttons.push({
                             iconCls: 'icon-reset',
                             text: 'Reset',
                             scope: store,
-                            handler: this.gridFunction.onReset
+                            handler: this.gridFunction.createFacade('onReset')
                         });
                     }
                 }
@@ -970,31 +958,27 @@ Ext.define('Bancha', {
             }
             
             // apply user configs
-            if(Ext.isObject(modelConfig)) {
-                Ext.apply(config,modelConfig);
+            if(Ext.isObject(additionalGridConfig)) {
+                gridConfig = Ext.apply(gridConfig,additionalGridConfig);
             }
             
             return gridConfig;
         },
         /**
-         * Builds grid columns from the metadata, for scarfolding purposes
+         * Builds grid columns from the metadata, for scaffolding purposes.  
          * Please use buildGridPanelConfig function if you want support for 
          * create,update and/or delete!
          * 
          * @param {Ext.data.Model|String} model the model class or model name
-         * @param {Object} config optional an config object with:
-         *                 - {Boolean} <i>create</i> true to add create button
-         *                 - {Boolean} <i>update</i> true to allow changes
-         *                 - {Boolean} <i>destroy</i> true to add delete buttons
-          * @return {Array} array of Ext.grid.Column configs
-         * @member Bancha.scarfold
-         * @method buildColumns
-         * @property
-         * @static
+         * @param {Object} config (optional) config object with:
+         *  - {Boolean} _create_ true to add create button
+         *  - {Boolean} _update_ true to allow changes
+         *  - {Boolean} _destroy_ true to add delete buttons
+         * @return {Array} array of Ext.grid.Column configs
          */
         buildColumns: function(model, config) {
             var columns = [],
-                scarfold;
+                scaffold;
             config = config || {};
             
             
@@ -1002,7 +986,7 @@ Ext.define('Bancha', {
             if(!Ext.isDefined(model)) {
                 Ext.Error.raise({
                     plugin: 'Bancha',
-                    msg: 'Bancha: Bancha.scarfold.buildColumns() expected the model or model name as first argument, instead got undefined'
+                    msg: 'Bancha: Bancha.scaffold.buildColumns() expected the model or model name as first argument, instead got undefined'
                 });
             }
             // ENDIF
@@ -1013,21 +997,21 @@ Ext.define('Bancha', {
                     Ext.Error.raise({
                         plugin: 'Bancha',
                         model: model,
-                        msg: 'Bancha: First argument for Bancha.scarfold.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
+                        msg: 'Bancha: First argument for Bancha.scaffold.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
                     });
                 }
                 // ENDIF
                 model = Ext.ModelManager.getModel(model);
             }
             
-            scarfold = this;
+            scaffold = this;
             model.prototype.fields.each(function(field) {
-                columns.push({
-                    text     : scarfold.util.humanize(field.name),
+                columns.push(Ext.apply({
+                    flex     : 1, // foreFit the columns
+                    text     : scaffold.util.humanize(field.name),
                     dataIndex: field.name,
-                    xtype: scarfold.fieldToColumnTypes[field.type.type],
-                    editor: (config.update) ? scarfold.buildFormFieldConfig(field.type.type) : undefined
-                });
+                    field: (config.update) ? scaffold.buildFormFieldConfig(field.type.type) : undefined
+                },scaffold.fieldToColumnConfigs[field.type.type])); // add xtype
             });
             
             if(config.destroy) {
@@ -1035,9 +1019,9 @@ Ext.define('Bancha', {
                     xtype:'actioncolumn', 
                     width:50,
                     items: [{
-                        icon: 'images/delete.png',
+                        icon: 'img/icons/delete.png',
                         tooltip: 'Delete',
-                        handler: this.gridFunction.onDelete
+                        handler: this.gridFunction.createFacade('onDelete')
                     }]
                 });
             }
