@@ -263,15 +263,15 @@ describe("Bancha Singleton", function() {
 
     describe("Bancha scaffold util functions",function() {
         
-        it("should pass all Bancha.scaffold.util.toFirstUpper tests", function() {
-            var util = Bancha.scaffold.util;
+        it("should pass all Bancha.scaffold.Util.toFirstUpper tests", function() {
+            var util = Bancha.scaffold.Util;
             expect('User').toEqual(util.toFirstUpper('user'));
             expect('UserName').toEqual(util.toFirstUpper('userName'));
         });
 
 
-        it("should pass all Bancha.scaffold.util.humanize tests", function() {
-            var util = Bancha.scaffold.util;
+        it("should pass all Bancha.scaffold.Util.humanize tests", function() {
+            var util = Bancha.scaffold.Util;
 
             // first upper case
             expect('User').toEqual(util.humanize('user'));
@@ -304,7 +304,7 @@ describe("Bancha Singleton", function() {
         beforeEach(h.reset);
         
         
-        it("should build a grid column config with Bancha.scaffold.buildColumns (component test)", function() {
+        it("should build a grid column config with Bancha.scaffold.GridConfig.buildColumns (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridColumnsConfigTest');
 
@@ -353,14 +353,14 @@ describe("Bancha Singleton", function() {
             }];
 
             // test
-            var result = Bancha.scaffold.buildColumns('GridColumnsConfigTest');
+            var result = Bancha.scaffold.GridConfig.buildColumns('GridColumnsConfigTest');
 
             // compare
             expect(result).toEqual(expected);
         });
         
         
-        it("should build a grid column config with Bancha.scaffold.buildColumns with update "+
+        it("should build a grid column config with Bancha.scaffold.GridConfig.buildColumns with update "+
             "and delete functions (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridColumnsConfigWithUpdateDeleteTest');
@@ -370,63 +370,63 @@ describe("Bancha Singleton", function() {
                 flex     : 1,
                 text     : 'Id',
                 dataIndex: 'id',
+                field    : {xtype:'numberfield', decimalPrecision:0},
                 xtype    : 'numbercolumn',
-                format   : '0',
-                field    : {xtype:'numberfield', decimalPrecision:0}
+                format   : '0'
             }, {
                 flex     : 1,
                 text     : 'Name',
                 dataIndex: 'name',
-                xtype    : 'gridcolumn',
-                field    : {xtype:'textfield'}
+                field    : {xtype:'textfield'},
+                xtype    : 'gridcolumn'
             }, {
                 flex     : 1,
                 text     : 'Login',
                 dataIndex: 'login',
-                xtype    : 'gridcolumn',
-                field    : {xtype:'textfield'}
+                field    : {xtype:'textfield'},
+                xtype    : 'gridcolumn'
             }, {
                 flex     : 1,
                 text     : 'Created',
                 dataIndex: 'created',
-                xtype    : 'datecolumn',
-                field    : {xtype:'datefield'}
+                field    : {xtype:'datefield'},
+                xtype    : 'datecolumn'
             }, {
                 flex     : 1,
                 text     : 'Email',
                 dataIndex: 'email',
-                xtype    : 'gridcolumn',
-                field    : {xtype:'textfield'}
+                field    : {xtype:'textfield'},
+                xtype    : 'gridcolumn'
             }, {
                 flex     : 1,
                 text     : 'Avatar',
                 dataIndex: 'avatar',
-                xtype    : 'gridcolumn',
-                field    : {xtype:'textfield'}
+                field    : {xtype:'textfield'},
+                xtype    : 'gridcolumn'
             }, {
                 flex     : 1,
                 text     : 'Weight',
                 dataIndex: 'weight',
-                xtype    : 'numbercolumn',
-                field    : {xtype:'numberfield'}
+                field    : {xtype:'numberfield'},
+                xtype    : 'numbercolumn'
             }, {
                 flex     : 1,
                 text     : 'Height',
                 dataIndex: 'height',
-                xtype    : 'numbercolumn',
-                field    : {xtype:'numberfield'}
+                field    : {xtype:'numberfield'},
+                xtype    : 'numbercolumn'
             }, {
                 xtype:'actioncolumn', 
                 width:50,
                 items: [{
                     icon: 'img/icons/delete.png',
                     tooltip: 'Delete',
-                    handler: Bancha.scaffold.gridFunction.onDelete
+                    handler: Bancha.scaffold.GridConfig.createFacade('onDelete')
                 }]
             }];
 
             // test
-            var result = Bancha.scaffold.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
+            var result = Bancha.scaffold.GridConfig.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
                 update  : true,
                 destroy : true
             });
@@ -436,12 +436,12 @@ describe("Bancha Singleton", function() {
         });
         
         
-        it("should build a grid panel config with Bancha.scaffold.buildGridPanelConfig (component test)", function() {
+        it("should build a grid panel config with Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridPanelConfigTest');
 
             // test
-            var result = Bancha.scaffold.buildGridPanelConfig('GridPanelConfigTest', {
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigTest', {
                 autoLoad: false
             });
 
@@ -454,12 +454,12 @@ describe("Bancha Singleton", function() {
         
         
         it("should build a grid panel config with update and delete support with "+
-            "Bancha.scaffold.buildGridPanelConfig (component test)", function() {
+            "Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridPanelConfigWithUpdateDeleteTest');
 
             // test
-            var result = Bancha.scaffold.buildGridPanelConfig('GridPanelConfigWithUpdateDeleteTest', {
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigWithUpdateDeleteTest', {
                 autoLoad: false,
                 update  : true,
                 destroy : true
@@ -486,13 +486,13 @@ describe("Bancha Singleton", function() {
         });
         
         
-        it("should build a fgrid panel config with full crud support with "+
-            "Bancha.scaffold.buildGridPanelConfig (component test)", function() {
+        it("should build a grid panel config with full crud support with "+
+            "Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridPanelConfigWithCRUDTest');
 
             // test
-            var result = Bancha.scaffold.buildGridPanelConfig('GridPanelConfigWithCRUDTest', {
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigWithCRUDTest', {
                 autoLoad  : false,
                 create    : true,
                 update    : true,
@@ -526,27 +526,6 @@ describe("Bancha Singleton", function() {
             expect(result.additionalGridConfig).toBeTruthy();
         });
     }); //eo scaffold grid functions
-
-
-    describe("Bancha scaffold form functions",function() {
-        
-        var h = BanchaSpecHelper; // helper shortcut
-
-        beforeEach(h.reset);
-        
-        
-        it("should build a form config with Bancha.scaffold.buildFormConfig", function() {
-            // prepare
-            h.initAndCreateSampleModel('FormConfigTest');
-            
-            var expected = {
-                
-                // TODO
-            };
-            expect().toBeTruthy();
-        });
-    }); //eo scaffold form functions
-    
 }); //eo describe Bancha
 
 //eof
