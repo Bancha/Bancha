@@ -67,7 +67,7 @@ Ext.define('Bancha.data.Model', {
  *         Bancha.onModelReady('User', function(userModel) {
  *             // ... create a full featured users grid
  *             Ext.create('Ext.grid.Panel', 
- *                 Bancha.scarfold.GridConfig.buildConfig('User', {
+ *                 Bancha.scaffold.GridConfig.buildConfig('User', {
  *                     create: true,
  *                     update: true,
  *                     withReset: true,
