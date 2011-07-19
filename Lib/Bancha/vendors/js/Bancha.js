@@ -450,7 +450,7 @@ Ext.define('Bancha', {
         }
         
         // iterate trought the models to load
-        Ext.forEach(modelNamesToLoad, function(modelName) {
+        Ext.Array.forEach(modelNamesToLoad, function(modelName) {
             if(this.modelMetaDataIsLoaded(modelName)) {
                 loadedModels[modelName] = this.getModel(modelName);
             } else {
@@ -472,7 +472,7 @@ Ext.define('Bancha', {
             callback.call(scope,loadedModels);
         } else {
             // add all elements to the queue
-            Ext.forEach(modelsToLoad, function(modelName) {
+            Ext.Array.forEach(modelsToLoad, function(modelName) {
                 // TODO OPTIMIZE not very performant for large arrrays
                 this.preloadModelMetaData(modelName, function() {
                     // when model is loaded try again
@@ -759,7 +759,7 @@ Ext.define('Bancha', {
                 this.singletonFns = this.singletonFns || {};
                 this.singletonFns[scopeName] = this.singletonFns[scopeName] || {};
                 this.singletonFns[scopeName][method] = this.singletonFns[scopeName][method] || function() {
-                    return scope[method].apply(scope,arguments);
+                    return scope[method].apply(this,arguments);
                 };
                 return this.singletonFns[scopeName][method];
                 // ENDIF
@@ -848,19 +848,24 @@ Ext.define('Bancha', {
              */
             onSave: function() { // scope is the store
                 var valid = true,
+                    errors = [],
                     store = this,
                     changes = this.getUpdatedRecords();
                 
                 // check all changes
-                Ext.forEach(changes,function(el) {
-                    if(el.isValid()) {
+                Ext.Array.forEach(changes,function(el) {
+                    if(!el.isValid()) {
                         valid = false;
                     }
                 });
                 
-                if(valid) {
-                    Ext.alert("One entry is not valid.");
+                if(!valid) {
+                    Ext.MessageBox.alert("One entry is not valid","Please make sure that all input is valid"); // don't expect to ever happen
                 } else {
+                    // commit changes
+                    Ext.Array.forEach(changes,function(el) { // TODO funktioniert nicht
+                        el.commit();
+                    });
                     store.sync();
                 }
             },
@@ -876,7 +881,7 @@ Ext.define('Bancha', {
                 var changes = this.getUpdatedRecords();
                 
                 // reject all changes
-                Ext.forEach(changes,function(el) {
+                Ext.Array.forEach(changes,function(el) {
                     el.reject();
                 });
             },
