@@ -4,7 +4,7 @@
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @copyright (c) 2011 Roland Schuetz
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: true, plusplus: false, bitwise: true, regexp: true, newcap: true, immed: true */
+/*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, BanchaSpecHelper */
 
 describe("Bancha Singleton", function() {
@@ -257,6 +257,9 @@ describe("Bancha Singleton", function() {
              
         });
 
+
+        // TODO test functiosn for onModelReady
+        
     }); //eo describe basic functions
     
 
@@ -299,10 +302,87 @@ describe("Bancha Singleton", function() {
 
     describe("Bancha scaffold grid functions",function() {
         
-        var h = BanchaSpecHelper; // helper shortcut
-
-        beforeEach(h.reset);
+        var h = BanchaSpecHelper, // shortcuts
+            gridScaf = Bancha.scaffold.GridConfig,
+            // take the defaults
+            // (actually this is also copying all the function references, but it doesn't atter)
+            testDefaults = Ext.clone(gridScaf);
         
+        // force easiert defaults for unit testing
+        testDefaults = Ext.apply(testDefaults,{
+            enableCreate:  false,
+            enableUpdate:  false,
+            enableDestroy: false,
+            enableReset:   false,
+            storeDefaults: {
+                autoLoad: false // since we only want to unit-test and not laod data
+            }
+        });
+        
+        beforeEach(function() {
+            h.reset();
+            // re-enforce defaults
+            Ext.apply(gridScaf, testDefaults);
+        });
+        
+        
+
+        it("should build column configs while considering the defined defaults", function() {
+            // define some defaults
+            gridScaf.columnDefaults = {
+                forAllFields: 'added'
+            };
+            gridScaf.gridcolumnDefaults = {
+                justForText: true
+            };
+            gridScaf.datecolumnDefaults = {};
+
+            expect(gridScaf.buildColumnConfig('string','someName')).toEqual({
+                forAllFields: 'added',
+                justForText: true,
+                xtype : 'gridcolumn',
+                text: 'Some name',
+                dataIndex: 'someName'
+            });
+
+            // now there should be just added the first one
+            expect(gridScaf.buildColumnConfig('date','someName')).toEqual({
+                forAllFields: 'added',
+                xtype : 'datecolumn',
+                text: 'Some name',
+                dataIndex: 'someName'
+            });
+        });
+
+        it("should build column configs while considering special defaults per call", function() {
+            gridScaf.columnDefaults = {
+                forAllFields: 'added'
+            };
+            gridScaf.gridcolumnDefaults = {
+                justForText: true
+            };
+            var defaults = {
+                gridcolumnDefaults: {
+                    justForThisTextBuild: true
+                }
+            };
+            
+            expect(gridScaf.buildColumnConfig('string','someName',defaults)).toEqual({
+                forAllFields: 'added',
+                justForThisTextBuild: true, // <-- old defaults got overrided
+                xtype : 'gridcolumn',
+                text: 'Some name',
+                dataIndex: 'someName'
+            });
+
+            // now there should be just added the first one
+            expect(gridScaf.buildColumnConfig('date','someName',defaults)).toEqual({
+                forAllFields: 'added',
+                xtype : 'datecolumn',
+                text: 'Some name',
+                dataIndex: 'someName'
+            });
+        });
         
         it("should build a grid column config with Bancha.scaffold.GridConfig.buildColumns (component test)", function() {
             // prepare
@@ -311,45 +391,46 @@ describe("Bancha Singleton", function() {
             // expected columns
             var expected = [{
                 flex     : 1,
+                xtype    : 'numbercolumn',
+                format   : '0',
                 text     : 'Id',
                 dataIndex: 'id',
-                xtype    : 'numbercolumn',
-                format   : '0'
+                hidden   : true
             }, {
                 flex     : 1,
+                xtype   : 'gridcolumn',
                 text     : 'Name',
-                dataIndex: 'name',
-                xtype   : 'gridcolumn'
+                dataIndex: 'name'
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Login',
-                dataIndex: 'login',
-                xtype    : 'gridcolumn'
+                dataIndex: 'login'
             }, {
                 flex     : 1,
+                xtype    : 'datecolumn',
                 text     : 'Created',
-                dataIndex: 'created',
-                xtype    : 'datecolumn'
+                dataIndex: 'created'
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Email',
-                dataIndex: 'email',
-                xtype    : 'gridcolumn'
+                dataIndex: 'email'
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Avatar',
-                dataIndex: 'avatar',
-                xtype    : 'gridcolumn'
+                dataIndex: 'avatar'
             }, {
                 flex     : 1,
+                xtype    : 'numbercolumn',
                 text     : 'Weight',
-                dataIndex: 'weight',
-                xtype    : 'numbercolumn'
+                dataIndex: 'weight'
             }, {
                 flex     : 1,
+                xtype    : 'numbercolumn',
                 text     : 'Height',
-                dataIndex: 'height',
-                xtype    : 'numbercolumn'
+                dataIndex: 'height'
             }];
 
             // test
@@ -368,53 +449,54 @@ describe("Bancha Singleton", function() {
             // expected columns
             var expected = [{
                 flex     : 1,
+                xtype    : 'numbercolumn',
+                format   : '0',
                 text     : 'Id',
                 dataIndex: 'id',
-                field    : {xtype:'numberfield', decimalPrecision:0},
-                xtype    : 'numbercolumn',
-                format   : '0'
+                field    : undefined,
+                hidden   : true
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Name',
                 dataIndex: 'name',
-                field    : {xtype:'textfield'},
-                xtype    : 'gridcolumn'
+                field    : {xtype:'textfield'}
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Login',
                 dataIndex: 'login',
-                field    : {xtype:'textfield'},
-                xtype    : 'gridcolumn'
+                field    : {xtype:'textfield'}
             }, {
                 flex     : 1,
+                xtype    : 'datecolumn',
                 text     : 'Created',
                 dataIndex: 'created',
-                field    : {xtype:'datefield'},
-                xtype    : 'datecolumn'
+                field    : {xtype:'datefield'}
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Email',
                 dataIndex: 'email',
-                field    : {xtype:'textfield'},
-                xtype    : 'gridcolumn'
+                field    : {xtype:'textfield'}
             }, {
                 flex     : 1,
+                xtype    : 'gridcolumn',
                 text     : 'Avatar',
                 dataIndex: 'avatar',
-                field    : {xtype:'textfield'},
-                xtype    : 'gridcolumn'
+                field    : {xtype:'textfield'}
             }, {
                 flex     : 1,
+                xtype    : 'numbercolumn',
                 text     : 'Weight',
                 dataIndex: 'weight',
-                field    : {xtype:'numberfield'},
-                xtype    : 'numbercolumn'
+                field    : {xtype:'numberfield'}
             }, {
                 flex     : 1,
+                xtype    : 'numbercolumn',
                 text     : 'Height',
                 dataIndex: 'height',
-                field    : {xtype:'numberfield'},
-                xtype    : 'numbercolumn'
+                field    : {xtype:'numberfield'}
             }, {
                 xtype:'actioncolumn', 
                 width:50,
@@ -427,8 +509,8 @@ describe("Bancha Singleton", function() {
 
             // test
             var result = Bancha.scaffold.GridConfig.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
-                update  : true,
-                destroy : true
+                enableUpdate  : true,
+                enableDestroy : true
             });
 
             // compare
@@ -441,9 +523,7 @@ describe("Bancha Singleton", function() {
             h.initAndCreateSampleModel('GridPanelConfigTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigTest', {
-                autoLoad: false
-            });
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigTest');
 
             // should have a store
             expect(result.store.getProxy().getModel()).toBeModelClass("GridPanelConfigTest");
@@ -460,9 +540,8 @@ describe("Bancha Singleton", function() {
 
             // test
             var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigWithUpdateDeleteTest', {
-                autoLoad: false,
-                update  : true,
-                destroy : true
+                enableUpdate  : true,
+                enableDestroy : true
             });
 
             // should have a store
@@ -472,7 +551,8 @@ describe("Bancha Singleton", function() {
             expect(result.columns.length).toEqual(9);
 
             // should have all columns editable
-            expect(result.columns[0].field.xtype).toEqual("numberfield");
+            // (the first is the id-field and therefore is guessed to don't have an editorfield)
+            expect(result.columns[1].field.xtype).toEqual("textfield");
             
             // should be editable
             expect(result.selType).toEqual('cellmodel');
@@ -493,11 +573,10 @@ describe("Bancha Singleton", function() {
 
             // test
             var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigWithCRUDTest', {
-                autoLoad  : false,
-                create    : true,
-                update    : true,
-                withReset : true,
-                destroy   : true
+                enableCreate    : true,
+                enableUpdate    : true,
+                enableReset : true,
+                enableDestroy   : true
             },{
                 additionalGridConfig: true
             });
@@ -526,6 +605,91 @@ describe("Bancha Singleton", function() {
             expect(result.additionalGridConfig).toBeTruthy();
         });
     }); //eo scaffold grid functions
+
+
+    describe("Bancha scaffold form functions",function() {
+        
+        var h = BanchaSpecHelper, // shortcuts
+            formScaf = Bancha.scaffold.FormConfig; //shortcuf
+            // take the defaults
+            // (actually this is also copying all the function references, but it doesn't atter)
+            testDefaults = Ext.clone(formScaf);
+    
+        beforeEach(function() {
+            h.reset();
+            // re-enforce defaults
+            Ext.apply(formScaf, testDefaults);
+        });
+        
+        it("should build field configs while considering the defined defaults", function() {
+            // define some defaults
+            formScaf.fieldDefaults = {
+                forAllFields: 'added'
+            };
+            formScaf.textfieldDefaults = {
+                justForText: true
+            };
+            formScaf.datefieldDefaults = {};
+            
+            expect(formScaf.buildFieldConfig('string','someName')).toEqual({
+                forAllFields: 'added',
+                justForText: true,
+                xtype : 'textfield',
+                fieldLabel: 'Some name',
+                name: 'someName'
+            });
+            
+            // now there should be just added the first one
+            expect(formScaf.buildFieldConfig('date','someName')).toEqual({
+                forAllFields: 'added',
+                xtype : 'datefield',
+                fieldLabel: 'Some name',
+                name: 'someName'
+            });
+        });
+        
+        it("should build field configs while considering special defaults per call", function() {
+            formScaf.fieldDefaults = {
+                forAllFields: 'added'
+            };
+            formScaf.textfieldDefaults = {
+                justForText: true
+            };
+            var defaults = {
+                textfieldDefaults: {
+                    justForThisTextBuild: true
+                }
+            };
+            
+            expect(formScaf.buildFieldConfig('string','someName',defaults)).toEqual({
+                forAllFields: 'added',
+                justForThisTextBuild: true, // <-- old defaults got overrided
+                xtype : 'textfield',
+                fieldLabel: 'Some name',
+                name: 'someName'
+            });
+
+            // now there should be just added the first one
+            expect(formScaf.buildFieldConfig('date','someName'),defaults).toEqual({
+                forAllFields: 'added',
+                xtype : 'datefield',
+                fieldLabel: 'Some name',
+                name: 'someName'
+            });
+        });
+        
+        it("should build a form config with Bancha.scaffold.buildFormConfig", function() {
+            // prepare
+            h.initAndCreateSampleModel('FormConfigTest');
+            
+            var expected = {
+                
+                // TODO
+            };
+            expect().toBeTruthy();
+        });
+    }); //eo scaffold form functions
+    
 }); //eo describe Bancha
 
 //eof
