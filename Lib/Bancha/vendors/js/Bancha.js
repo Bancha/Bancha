@@ -68,7 +68,9 @@ Ext.define('Bancha.data.Model', {
  *             // ... create a full featured users grid
  *             Ext.create('Ext.grid.Panel', 
  *                 Bancha.scaffold.GridConfig.buildConfig('User', {
- *                     enableDestroy: false // override deafaults here
+ *                     // you can overwrite defaults either like this
+ *                     enableDestroy: true
+ *                     // or permanent with Bancha.scaffold.GridConfig.enableDestroy = true;
  *                 }, {
  *                     height: 350,
  *                     width: 650,
@@ -1204,7 +1206,7 @@ Ext.define('Bancha', {
              * This config is applied to each scaffolded Ext.form.field.Date
              */
             fileuploadfieldDefaults: {
-                buttonText: 'Select File...'
+                emptyText: 'Select an file'
             },
             /**
              * @property
@@ -1285,6 +1287,41 @@ Ext.define('Bancha', {
                 return field;
             },
             /**
+             * @private
+             * build the form api config, used only by buildConfig()
+             * just for separation of concern, since this is the only 
+             * part which deals with Bancha's RCP
+             */
+            buildApiConfig: function(model) {
+                 // IFDEBUG
+                 if(!this.initialized) {
+                     Ext.Error.raise({
+                         plugin: 'Bancha',
+                         msg: 'Bancha: Bancha is not yet initalized, please init before using Bancha.scaffold.FormConfig.buildConfig().'
+                     });
+                 }
+                 // ENDIF
+                 
+                var modelName = Ext.ClassManager.getName(model),
+                    stub = Bancha.getStubsNamespace()[modelName];
+                
+                // IFDEBUG
+                if(!Ext.isDefined(stub)) {
+                    Ext.Error.raise({
+                        plugin: 'Bancha',
+                        msg: 'Bancha: Bancha.scaffold.FormConfig.buildConfig() expects an remotable bancha model, but got an "normal" model or something else'
+                    });
+                }
+                // ENDIF
+                
+                return {
+                    // The server-side method to call for load() requests
+                    load: stub.read,
+                    // The server-side must mark the submit handler as a 'formHandler'
+                    submit: stub.submits
+                };
+             },
+            /**
              * Builds form configs from the metadata, for scaffolding purposes.  
              * By default data is loaded from the server if an id is supplied and 
              * onSvae it pushed the data to the server.  
@@ -1342,7 +1379,8 @@ Ext.define('Bancha', {
 
                 // TODO make some form configs
                 formConfig = {
-                    items: fields
+                    items: fields,
+                    api: this.buildApiConfig(model)
                 };
                 
                 // todo handle id loading
