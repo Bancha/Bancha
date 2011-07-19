@@ -893,6 +893,11 @@ Ext.define('Bancha', {
             },
             /**
              * @property
+             * The defaults class to create an store for grid scaffolding
+             */
+            storeDefaultClass: "Ext.data.Store",
+            /**
+             * @property
              * Defaults for all grid stores created with this scaffolding
              */
             storeDefaults: { 
@@ -1100,7 +1105,7 @@ Ext.define('Bancha', {
                 }
             
                 // basic config
-                store = Ext.create("Ext.data.Store",
+                store = Ext.create(this.storeDefaultClass,
                     Ext.apply({
                         model: modelName
                     },config.storeDefaults)
