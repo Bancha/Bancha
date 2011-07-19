@@ -1008,6 +1008,65 @@ Ext.define('Bancha', {
              */
             enableReset: true,
             /**
+             * Builds grid columns from the Bancha metadata, for scaffolding purposes.  
+             * Please use buildConfig function if you want support for 
+             * create,update and/or delete!
+             * 
+             * @param {Ext.data.Model|String} model The model class or model name
+             * @param {Object} config (optional) Any applicable property of GridConfig can be overrided for this call by declaring it here. E.g
+             *      {
+             *         enableDestroy: true
+             *      }
+             * @return {Array} Returns an array of Ext.grid.column.* configs
+             */
+            buildColumns: function(model, config) {
+                var columns = [];
+                config = Ext.apply({},config,this); // get all defaults for this call
+            
+            
+                // IFDEBUG
+                if(!Ext.isDefined(model)) {
+                    Ext.Error.raise({
+                        plugin: 'Bancha',
+                        msg: 'Bancha: Bancha.scaffold.GridConfig.buildColumns() expected the model or model name as first argument, instead got undefined'
+                    });
+                }
+                // ENDIF
+
+                if(Ext.isString(model)) {
+                    // IFDEBUG
+                    if(!Ext.isDefined(Ext.ModelManager.getModel(model))) {
+                        Ext.Error.raise({
+                            plugin: 'Bancha',
+                            model: model,
+                            msg: 'Bancha: First argument for Bancha.scaffold.GridConfig.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
+                        });
+                    }
+                    // ENDIF
+                    model = Ext.ModelManager.getModel(model);
+                }
+            
+                model.prototype.fields.each(function(field) {
+                    columns.push(
+                        Bancha.scaffold.GridConfig.buildColumnConfig(field.type.type,field.name,config)
+                    );
+                });
+            
+                if(config.enableDestroy) {
+                    columns.push({
+                        xtype:'actioncolumn', 
+                        width:50,
+                        items: [{
+                            icon: 'img/icons/delete.png',
+                            tooltip: 'Delete',
+                            handler: this.createFacade('onDelete')
+                        }]
+                    });
+                }
+    
+                return columns;
+            },
+            /**
              * Builds a grid config from Bancha metadata, for scaffolding purposes.  
              * Guesses are made by model field configs
              *
@@ -1110,66 +1169,7 @@ Ext.define('Bancha', {
                 }
             
                 return gridConfig;
-            },
-            /**
-             * Builds grid columns from the Bancha metadata, for scaffolding purposes.  
-             * Please use buildConfig function if you want support for 
-             * create,update and/or delete!
-             * 
-             * @param {Ext.data.Model|String} model The model class or model name
-             * @param {Object} config (optional) Any applicable property of GridConfig can be overrided for this call by declaring it here. E.g
-             *      {
-             *         enableDestroy: true
-             *      }
-             * @return {Array} Returns an array of Ext.grid.column.* configs
-             */
-            buildColumns: function(model, config) {
-                var columns = [];
-                config = Ext.apply({},config,this); // get all defaults for this call
-            
-            
-                // IFDEBUG
-                if(!Ext.isDefined(model)) {
-                    Ext.Error.raise({
-                        plugin: 'Bancha',
-                        msg: 'Bancha: Bancha.scaffold.GridConfig.buildColumns() expected the model or model name as first argument, instead got undefined'
-                    });
-                }
-                // ENDIF
-
-                if(Ext.isString(model)) {
-                    // IFDEBUG
-                    if(!Ext.isDefined(Ext.ModelManager.getModel(model))) {
-                        Ext.Error.raise({
-                            plugin: 'Bancha',
-                            model: model,
-                            msg: 'Bancha: First argument for Bancha.scaffold.GridConfig.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
-                        });
-                    }
-                    // ENDIF
-                    model = Ext.ModelManager.getModel(model);
-                }
-            
-                model.prototype.fields.each(function(field) {
-                    columns.push(
-                        Bancha.scaffold.GridConfig.buildColumnConfig(field.type.type,field.name,config)
-                    );
-                });
-            
-                if(config.enableDestroy) {
-                    columns.push({
-                        xtype:'actioncolumn', 
-                        width:50,
-                        items: [{
-                            icon: 'img/icons/delete.png',
-                            tooltip: 'Delete',
-                            handler: this.createFacade('onDelete')
-                        }]
-                    });
-                }
-    
-                return columns;
-            } //eo buildColumns
+            }
         }, //eo GridConfig 
         /*
          * Create GridConfigs for scaffolding and production use.
