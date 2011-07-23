@@ -674,6 +674,21 @@ Ext.define('Bancha', {
                     type: 'json',
                     root: 'data'
                 },
+                writer: {
+                    type: 'json',
+                    writeAllFields: false,
+                    root: 'data'
+                },
+                listeners: { // TODO abstract error handling
+                    exception: function(proxy, response, operation){
+                        Ext.MessageBox.show({
+                            title: 'REMOTE EXCEPTION',
+                            msg: operation.getError(),
+                            icon: Ext.MessageBox.ERROR,
+                            buttons: Ext.Msg.OK
+                        });
+                    }
+                },
                 cacheString: '_dc' // TODO later
             }
         };
@@ -950,22 +965,36 @@ Ext.define('Bancha', {
              */
             onCreate: function() { // scope is a config object
                 var edit = this.cellEditing,
+                    grid = edit.grid,
                     store = this.store,
                     model = store.getProxy().getModel(),
-                    rec;
+                    rec,
+                    visibleColumn = false;
                 
                 // Cancel any active editing.
                 edit.cancelEdit();
                  
                 // create new entry
-                rec = Ext.ClassManager.create(Ext.ClassManager.getName(model),rec);
+                rec = Ext.create(Ext.ClassManager.getName(model),{});
 
                 // add entry
                 store.insert(0, rec);
-                edit.startEditByPosition({
-                    row: 0,
-                    column: 0
+                
+                // find first visible column
+                Ext.each(grid.columns,function(el,i) {
+                    if(el.hidden !== true) {
+                        visibleColumn = i;
+                        return false;
+                    }
                 });
+                
+                // start editing
+                if (visibleColumn) {
+                    edit.startEditByPosition({
+                        row: 0,
+                        column: visibleColumn
+                    });
+                }
             },
             /**
              * @property
@@ -976,24 +1005,26 @@ Ext.define('Bancha', {
              */
             onSave: function() { // scope is the store
                 var valid = true,
-                    errors = [],
                     store = this,
-                    changes = this.getUpdatedRecords();
+                    changes = this.getUpdatedRecords().concat(this.getNewRecords()); // there seems to be a bug in extjs, see: http://www.sencha.com/forum/showthread.php?141421-Ext.data.Store-getNewRecords()-behaves-strange&p=629086#post629086
                 
-                // check all changes
-                Ext.Array.forEach(changes,function(el) {
+                // check if all changes are valid
+                // Ext.Array.forEach(changes,function(el) {
+                store.each(function(el) {
                     if(!el.isValid()) {
                         valid = false;
                     }
                 });
                 
                 if(!valid) {
-                    Ext.MessageBox.alert("One entry is not valid","Please make sure that all input is valid"); // don't expect to ever happen
-                } else {
-                    // commit changes
-                    Ext.Array.forEach(changes,function(el) { // TODO funktioniert nicht
-                        el.commit();
+                    Ext.MessageBox.show({
+                        title: 'Invalid Data',
+                        msg: 'At least one record is not valid, please make sure that all inputs are correct.',
+                        icon: Ext.MessageBox.ERROR,
+                        buttons: Ext.Msg.OK
                     });
+                } else {
+                    // commit create and update
                     store.sync();
                 }
             },
@@ -1005,11 +1036,15 @@ Ext.define('Bancha', {
              * scope is the store
              */
             onReset: function() { // scope is the store
-                var changes = this.getUpdatedRecords();
-                
                 // reject all changes
-                Ext.Array.forEach(changes,function(el) {
-                    el.reject();
+                var store = this;
+                store.each(function(rec) {
+                    if (rec.modified) {
+                        rec.reject();
+                    }
+                    if(rec.phantom) {
+                        store.remove(rec);
+                    }
                 });
             },
             /**
@@ -1019,12 +1054,26 @@ Ext.define('Bancha', {
              * You can do this at any time, the current declarations are always used.
              */
             onDelete: function(grid, rowIndex, colIndex) {
-                var rec = grid.getStore().getAt(rowIndex);
-                rec.destroy({
-                    success: function() {
-                        Ext.alert('The User was destroyed!');
-                    }
-                });
+                var store = grid.getStore(),
+                    rec = store.getAt(rowIndex),
+                    name = Ext.getClassName(rec);
+                
+                // instantly remove vom ui
+                store.remove(rec);
+                
+                // delete on server
+                if (!rec.phantom) {
+                    rec.destroy({
+                        success: function() {
+                            Ext.MessageBox.show({
+                                title: name + ' record deleted',
+                                msg: name + ' record was successfully deleted.',
+                                icon: Ext.MessageBox.INFO,
+                                buttons: Ext.Msg.OK
+                            });
+                        }
+                    });
+                }
             },
             /**
              * @property
