@@ -823,6 +823,52 @@ Ext.define('Bancha', {
              */
             datecolumnDefaults: {},
             /**
+             * @property
+             * The defaults class to create an store for grid scaffolding
+             */
+            storeDefaultClass: "Ext.data.Store",
+            /**
+             * @property
+             * Defaults for all grid stores created with this scaffolding
+             */
+            storeDefaults: { 
+                autoLoad: true
+            },
+            /**
+             * @property
+             * True to use only one store per model (singleton), 
+             * false to create a new store each time
+             */
+            oneStorePerModel: true,
+            /**
+             * @private
+             * for separation of concerns, gets/create a store for the grid
+             */
+            getStore: (function(model,config) {
+                this.stores = {};
+                var stores = this.stores;
+                
+                return function(model,config) {
+                    var modelName = Ext.ClassManager.getName(model),
+                        store;
+                    if(config.oneStorePerModel && stores[modelName]) {
+                        return stores[modelName];
+                    }
+                
+                    store = Ext.create(config.storeDefaultClass,
+                        Ext.apply({
+                            model: modelName
+                        },config.storeDefaults)
+                    );
+                
+                    if(config.oneStorePerModel) {
+                        stores[modelName] = stores;
+                    }
+                
+                    return store;
+                };
+            }()),
+            /**
              * @property {Function|False} guessFieldConfigs Writable function used to guess some default behaviour.
              * Can be set to false to don't guess at all.
              * @param {Object} configs A column config
@@ -890,18 +936,6 @@ Ext.define('Bancha', {
                 }
 
                 return column;
-            },
-            /**
-             * @property
-             * The defaults class to create an store for grid scaffolding
-             */
-            storeDefaultClass: "Ext.data.Store",
-            /**
-             * @property
-             * Defaults for all grid stores created with this scaffolding
-             */
-            storeDefaults: { 
-                autoLoad: true
             },
              //TODO grid functions richten
             /**
@@ -1105,11 +1139,7 @@ Ext.define('Bancha', {
                 }
             
                 // basic config
-                store = Ext.create(this.storeDefaultClass,
-                    Ext.apply({
-                        model: modelName
-                    },config.storeDefaults)
-                );
+                store = this.getStore(model,config);
             
                 gridConfig = {
                     store: store,
