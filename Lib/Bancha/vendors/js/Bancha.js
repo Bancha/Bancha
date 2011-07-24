@@ -873,6 +873,11 @@ Ext.define('Bancha', {
          * 
          * If enableCreate or enableUpdate is true, this class will use 
          * {@link Bancha.scaffold.FormConfig} to create the editor fields.
+         *
+         * You have three possible interceptors:
+         *     - beforeBuild      : executed before {@link #buildGrid}
+         *     - guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig} 
+         *     - afterBuild       : executed after {@link #buildGrid} created the config
          */
         GridConfig: { 
              /**
@@ -1024,8 +1029,8 @@ Ext.define('Bancha', {
                 }
                 
                 // now make some crazy guesses ;)
-                if(typeof this.guessColumnConfigs === 'function') {
-                    column = this.guessColumnConfigs(column,type);
+                if(typeof defaults.guessColumnConfigs === 'function') {
+                    column = defaults.guessColumnConfigs(column,type);
                 }
 
                 return column;
@@ -1233,6 +1238,25 @@ Ext.define('Bancha', {
                 return columns;
             },
             /**
+             * @property
+             * This function will be executed before each {@link #buildConfig} as interceptor
+             * For params see {@link buildConfig}
+             * @return {Object|undefined} object with initial Ext.form.Panel configs
+             */
+            beforeBuild: function(model,config,additionalGridConfig) { // TODO test!
+            },
+            /**
+             * @property
+             * This function will be executed before each {@link #buildConfig} as interceptor
+             * @param {Object} columnConfig just build grid panel config
+             * @param {Object} {Ext.data.Model|String} model see {@link buildConfig}
+             * @param {Object} {Object} config (optional) see {@link buildConfig}
+             * @param {Object} additionalFormConfig (optional) see {@link buildConfig}
+             * @return {Object|undefined} object with final Ext.grid.Panel configs
+             */
+            afterBuild: function(columnConfig, model,config,additionalGridConfig) {
+            },
+            /**
              * Builds a grid config from Bancha metadata, for scaffolding purposes.  
              * Guesses are made by model field configs
              *
@@ -1271,12 +1295,13 @@ Ext.define('Bancha', {
                 }
             
                 // basic config
-                store = this.getStore(model,config);
+                store = config.getStore(model,config);
             
-                gridConfig = {
+                gridConfig = config.beforeBuild(model,config,additionalGridConfig) || {};
+                Ext.apply(gridConfig,{
                     store: store,
                     columns: this.buildColumns(model,config)
-                };
+                });
             
                 // add update configs
                 if(config.enableUpdate) {
@@ -1335,7 +1360,7 @@ Ext.define('Bancha', {
                     gridConfig = Ext.apply(gridConfig,additionalGridConfig);
                 }
             
-                return gridConfig;
+                return config.afterBuild(gridConfig,model,config,additionalGridConfig) || gridConfig;
             }
         }, //eo GridConfig 
         /*
@@ -1353,6 +1378,11 @@ Ext.define('Bancha', {
          *  - length
          *  - numberformat
          *  - presence
+         *
+         * You have three possible interceptors:
+         *     - beforeBuild     : executed before {@link #buildGrid}
+         *     - guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
+         *     - afterBuild      : executed after {@link #buildGrid} created the config
          */
         FormConfig: {
             /**
@@ -1597,8 +1627,8 @@ Ext.define('Bancha', {
                 }
                 
                 // now make some crazy guesses ;)
-                if(typeof this.guessFieldConfigs === 'function') {
-                    field = this.guessFieldConfigs(field,type);
+                if(typeof defaults.guessFieldConfigs === 'function') {
+                    field = defaults.guessFieldConfigs(field,type);
                 }
                 
                 return field;
@@ -1677,10 +1707,39 @@ Ext.define('Bancha', {
                 };
             },
             /**
-             * @private
-             * builds a form button with the right scope
+             * @property
+             * This function will be executed before each {@link #buildConfig} as interceptor
+             * For params see {@link buildConfig}
+             * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
-            buildButton: (function() {
+            beforeBuild: function(model, recordId, config, additionalFormConfig) { // TODO test!
+            },
+            /**
+             * @property
+             * This function will be executed before each {@link #buildConfig} as interceptor
+             * @param {Object} formConfig just build form panel config
+             * @param {Object} {Ext.data.Model|String} model see {@link buildConfig}
+             * @param {Object} {Number|String} recordId (optional) see {@link buildConfig}
+             * @param {Object} {Object} config (optional) see {@link buildConfig}
+             * @param {Object} additionalFormConfig (optional) see {@link buildConfig}
+             * @return {Object|undefined} object with final Ext.form.Panel configs
+             */
+            afterBuild: function(formConfig, model, recordId, config, additionalFormConfig) {
+            },
+            /**
+             * @method
+             * This function will rarely be used by application developers
+             * It adds a scope around the button handler which provides on function:
+             * this.getForm().  
+             * The buttonConfig.scoe will be ignored.
+             * @param {Function} handler A button handler function to apply the scope to
+             * @param {Number|String} id the form panel id
+             */
+            /*
+             * the third argument {String} buttonText is just for the singleton 
+             * and this is just for jasmine testing, so feel free to ignore it
+             */
+            scopeButtonHandler: (function() {
                 var scopePrototype = {
                         getForm: function() {
                             return this.up(this.id).getForm();
@@ -1691,23 +1750,24 @@ Ext.define('Bancha', {
                     // ENDIF
                     };
                 
-                return function(config,handler,id) {    
-                    var scope = Ext.apply({id:id},scopePrototype);
-                    config.handler = function() {
-                        return handler.apply(scope,arguments);
+                return function(originalHandler, id, buttonText) {    
+                    var scope = Ext.apply({id:id},scopePrototype),
+                        handler = function() {
+                        return originalHandler.apply(scope,arguments);
                     };
                     /*
                      * ONLY for jasmin testing we need a singleton here
                      */
                     // IFDEBUG
-                    if(singleton[id] && singleton[id][config.text]) {
-                        return singleton[id][config.text];
+                    if(buttonText && singleton[id] && singleton[id][buttonText]) {
+                        return singleton[id][buttonText];
                     } else {
                         singleton[id] = singleton[id] || {};
-                        singleton[id][config.text] = config;
+                        singleton[id][buttonText] = handler;
                     }
                     // ENDIF
-                    return config;
+                    
+                    return handler;
                 };
             }()),
             /**
@@ -1717,7 +1777,7 @@ Ext.define('Bancha', {
              *  
              * Guesses are made by model field configs. 
              * @param {Ext.data.Model|String} model the model class or model name
-             * @param {Number|String} (optional) recordId of an row to load data from server, false to don't load anything (for creating new rows)
+             * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
              * @param {Object} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
              *      {
              *          fieldDefaults: {
@@ -1737,12 +1797,15 @@ Ext.define('Bancha', {
              */
             buildConfig: function(model, recordId, config, additionalFormConfig) {
                 var fields = [],
-                    formConfig = {},
+                    formConfig,
                     id,
                     validations,
                     buttons,
                     loadFn;
                 config = Ext.apply({},config,this); // get all defaults for this call
+                
+                // build initial config
+                formConfig = config.beforeBuild(model, recordId, config, additionalFormConfig) || {};
 
                 // IFDEBUG
                 if(!Ext.isDefined(model)) {
@@ -1778,28 +1841,26 @@ Ext.define('Bancha', {
                 id = config.id || Ext.id(null,'formpanel-');
                 
                 // build buttons
-                buttons = [
-                    this.buildButton({
-                        text: 'Save',
-                        iconCls: 'icon-save',
-                        formBind: true
-                    },config.onSave,id)
-                ];
+                buttons = [{
+                    text: 'Save',
+                    iconCls: 'icon-save',
+                    formBind: true,
+                    handler: this.scopeButtonHandler(config.onSave,id,'Save')
+                }];
                 if(config.enableReset) {
-                    buttons.unshift( // add at the front
-                        this.buildButton({
-                            text: 'reset',
-                            iconCls: 'icon-reset'
-                        },config.onReset,id)
-                    );
+                    buttons.unshift({ // add at the front
+                        text: 'Reset',
+                        iconCls: 'icon-reset',
+                        handler: this.scopeButtonHandler(config.onReset,id,'Reset')
+                    });
                 }
                 
-                formConfig = {
+                Ext.apply(formConfig,{
                     id: id,
                     api: this.buildApiConfig(model),
                     items: fields,
                     buttons: buttons
-                };
+                });
                 
                 if(Ext.isObject(additionalFormConfig)) {
                     formConfig = Ext.apply(formConfig,additionalFormConfig);
@@ -1822,7 +1883,7 @@ Ext.define('Bancha', {
                         formConfig.listeners.afterrender = loadFn;
                     }
                 }
-                return formConfig;
+                return config.afterBuild(formConfig, model, recordId, config, additionalFormConfig) || formConfig;
             }
         } //eo FormConfig
     } //eo scaffold

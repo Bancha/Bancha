@@ -522,13 +522,13 @@ describe("Bancha Singleton", function() {
         
         it("should build a grid panel config with Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
             // prepare
-            h.initAndCreateSampleModel('GridPanelConfigTest');
+            h.initAndCreateSampleModel('GridConfigTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigTest');
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridConfigTest');
 
             // should have a store
-            expect(result.store.getProxy().getModel()).toBeModelClass("GridPanelConfigTest");
+            expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigTest");
             
             // just a simple column check, buildColumns is already tested above
             expect(result.columns.length).toEqual(8);
@@ -538,16 +538,16 @@ describe("Bancha Singleton", function() {
         it("should build a grid panel config with update and delete support with "+
             "Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
             // prepare
-            h.initAndCreateSampleModel('GridPanelConfigWithUpdateDeleteTest');
+            h.initAndCreateSampleModel('GridConfigWithUpdateDeleteTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigWithUpdateDeleteTest', {
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridConfigWithUpdateDeleteTest', {
                 enableUpdate  : true,
                 enableDestroy : true
             });
 
             // should have a store
-            expect(result.store.getProxy().getModel()).toBeModelClass("GridPanelConfigWithUpdateDeleteTest");
+            expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigWithUpdateDeleteTest");
             
             // just a simple column check, buildColumns is already tested above
             expect(result.columns.length).toEqual(9);
@@ -571,10 +571,10 @@ describe("Bancha Singleton", function() {
         it("should build a grid panel config with full crud support with "+
             "Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
             // prepare
-            h.initAndCreateSampleModel('GridPanelConfigWithCRUDTest');
+            h.initAndCreateSampleModel('GridConfigWithCRUDTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridPanelConfigWithCRUDTest', {
+            var result = Bancha.scaffold.GridConfig.buildConfig('GridConfigWithCRUDTest', {
                 enableCreate    : true,
                 enableUpdate    : true,
                 enableReset : true,
@@ -584,7 +584,7 @@ describe("Bancha Singleton", function() {
             });
 
             // should have a store
-            expect(result.store.getProxy().getModel()).toBeModelClass("GridPanelConfigWithCRUDTest");
+            expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigWithCRUDTest");
             
             // just a simple column check, buildColumns is already tested above
             expect(result.columns.length).toEqual(9);
@@ -605,6 +605,70 @@ describe("Bancha Singleton", function() {
             
             // should have added the additional grid config
             expect(result.additionalGridConfig).toBeTruthy();
+        });
+        
+        
+        it("should use class interceptors when building a config (component test)", function() {
+            // prepare
+            h.initAndCreateSampleModel('GridConfigWithClassInterceptorsTest');
+            
+            // the same when defining them on the class
+            Ext.apply(gridScaf,{
+                beforeBuild: function() {
+                    return {
+                        interceptors: ['before'] // make sure that afterBuild only augemts
+                    };
+                },
+                afterBuild: function(config) {
+                    config.interceptors.push('after');
+                    return config;
+                },
+                guessColumnConfigs: function(config) {
+                    config.isAugmented = true;
+                    return config;
+                }
+            });
+            result = gridScaf.buildConfig('GridConfigWithClassInterceptorsTest');
+            
+            // beforeBuild, afterBuild
+            expect(result.interceptors).toEqual(['before','after']);
+            
+            // guessFieldConfg
+            expect(result.columns).toBeAnObject();
+            Ext.each(result.columns, function(column) {
+                expect(column.isAugmented).toEqual(true);
+            });
+        });
+        
+        
+        it("should use config interceptors when building a config (component test)", function() {
+            // prepare
+            h.initAndCreateSampleModel('GridConfigWithConfigInterceptorsTest');
+            
+            var result = gridScaf.buildConfig('GridConfigWithConfigInterceptorsTest',{
+                beforeBuild: function() {
+                    return {
+                        interceptors: ['before'] // make sure that afterBuild only augemts
+                    };
+                },
+                afterBuild: function(config) {
+                    config.interceptors.push('after');
+                    return config;
+                },
+                guessColumnConfigs: function(config) {
+                    config.isAugmented = true;
+                    return config;
+                }
+            });
+            
+            // beforeBuild, afterBuild
+            expect(result.interceptors).toEqual(['before','after']);
+            
+            // guessFieldConfg
+            expect(result.columns).toBeAnObject();
+            Ext.each(result.columns, function(column) {
+                expect(column.isAugmented).toEqual(true);
+            });
         });
     }); //eo scaffold grid functions
 
@@ -681,17 +745,16 @@ describe("Bancha Singleton", function() {
         });
         
         var getButtonConfig = function(id) {
-            return [
-                Bancha.scaffold.FormConfig.buildButton({
-                    text: 'reset',
-                    iconCls: 'icon-reset',
-                },Bancha.scaffold.FormConfig.onReset,id),
-            Bancha.scaffold.FormConfig.buildButton({
-                    text: 'Save',
-                    iconCls: 'icon-save',
-                    formBind: true,
-                },Bancha.scaffold.FormConfig.onSave,id)
-            ];
+            return [{
+                text: 'Reset',
+                iconCls: 'icon-reset',
+                handler: formScaf.scopeButtonHandler(formScaf.onReset,id,'Reset'),
+            }, {
+                text: 'Save',
+                iconCls: 'icon-save',
+                formBind: true,
+                handler: formScaf.scopeButtonHandler(formScaf.onSave,id,'Save')
+            }];
         };
         
         it("should build a form config, where it recognizes the type from the field type, when no validation rules are set in the model (component test)", function() {
@@ -707,7 +770,7 @@ describe("Bancha Singleton", function() {
                     // The server-side must mark the submit handler as a 'formHandler'
                     submit: Bancha.getStubsNamespace().User.submit
                 },
-                items: [{ //TODO use scaffolding
+                items: [{
                     xtype: 'hiddenfield',
                     allowDecimals : false,
                     fieldLabel: 'Id',
@@ -745,7 +808,7 @@ describe("Bancha Singleton", function() {
                 buttons: getButtonConfig('FormConfigTest-id')
             }; // eo expected
             
-            expect(Bancha.scaffold.FormConfig.buildConfig('FormConfigTest',false,{
+            expect(formScaf.buildConfig('FormConfigTest',false,{
                 id: 'FormConfigTest-id'
             })).toEqual(expected);
         });
@@ -777,7 +840,7 @@ describe("Bancha Singleton", function() {
                     load: Bancha.getStubsNamespace().User.load, // TODO this should be a function!
                     submit: Bancha.getStubsNamespace().User.submit
                 },
-                items: [{ 
+                items: [{
                     xtype: 'hiddenfield',
                     allowDecimals: false,
                     fieldLabel: 'Id',
@@ -835,7 +898,7 @@ describe("Bancha Singleton", function() {
                 buttons: getButtonConfig('FormConfigWithValidationTest-id')
             }; // eo expected
             
-            expect(Bancha.scaffold.FormConfig.buildConfig('FormConfigWithValidationTest',false,{
+            expect(formScaf.buildConfig('FormConfigWithValidationTest',false,{
                 id: 'FormConfigWithValidationTest-id',
                 fileuploadfieldDefaults: {
                     emptyText: 'Select an image',
@@ -845,6 +908,75 @@ describe("Bancha Singleton", function() {
                     }
                 }
             })).toEqual(expected);
+            
+            
+            expect(formScaf.buildConfig('FormConfigWithValidationTest',false,{
+                id: 'FormConfigWithValidationTest-id',
+            }).buttons[0].handler).toEqual(expected.buttons[0].handler);
+        });
+        
+        
+        it("should use class interceptors when building a config (component test)", function() {
+            // prepare
+            h.initAndCreateSampleModel('FormConfigWithClassInterceptorsTest');
+            
+            // the same when defining them on the class
+            Ext.apply(formScaf,{
+                beforeBuild: function() {
+                    return {
+                        interceptors: ['before'] // make sure that afterBuild only augemts
+                    };
+                },
+                afterBuild: function(config) {
+                    config.interceptors.push('after');
+                    return config;
+                },
+                guessFieldConfigs: function(config) {
+                    config.isAugmented = true;
+                    return config;
+                }
+            });
+            result = formScaf.buildConfig('FormConfigWithClassInterceptorsTest');
+            
+            // beforeBuild, afterBuild
+            expect(result.interceptors).toEqual(['before','after']);
+            
+            // guessFieldConfg
+            expect(result.items).toBeAnObject();
+            Ext.each(result.items, function(item) {
+                expect(item.isAugmented).toEqual(true);
+            });
+        });
+        
+        
+        it("should use config interceptors when building a config (component test)", function() {
+            // prepare
+            h.initAndCreateSampleModel('FormConfigWithConfigInterceptorsTest');
+            
+            var result = formScaf.buildConfig('FormConfigWithConfigInterceptorsTest',false,{
+                beforeBuild: function() {
+                    return {
+                        interceptors: ['before'] // make sure that afterBuild only augemts
+                    };
+                },
+                afterBuild: function(config) {
+                    config.interceptors.push('after');
+                    return config;
+                },
+                guessFieldConfigs: function(config) {
+                    config.isAugmented = true;
+                    return config;
+                }
+            });
+            
+            // beforeBuild, afterBuild
+            expect(result.interceptors).toEqual(['before','after']);
+            
+            // guessFieldConfg
+            expect(result.items).toBeAnObject();
+            Ext.each(result.items, function(item) {
+                expect(item.isAugmented).toEqual(true);
+            });
         });
         
     }); //eo scaffold form functions
