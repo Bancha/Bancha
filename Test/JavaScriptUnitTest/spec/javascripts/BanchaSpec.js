@@ -429,6 +429,7 @@ describe("Bancha Singleton", function() {
             }, {
                 flex     : 1,
                 xtype    : 'numbercolumn',
+                format   : '0',
                 text     : 'Height',
                 dataIndex: 'height'
             }];
@@ -494,9 +495,10 @@ describe("Bancha Singleton", function() {
             }, {
                 flex     : 1,
                 xtype    : 'numbercolumn',
+                format   : '0',
                 text     : 'Height',
                 dataIndex: 'height',
-                field    : {xtype:'numberfield'}
+                field    : {xtype:'numberfield', allowDecimals : false}
             }, {
                 xtype:'actioncolumn', 
                 width:50,
@@ -678,16 +680,173 @@ describe("Bancha Singleton", function() {
             });
         });
         
-        it("should build a form config with Bancha.scaffold.buildFormConfig", function() {
+        var getButtonConfig = function(id) {
+            return [
+                Bancha.scaffold.FormConfig.buildButton({
+                    text: 'reset',
+                    iconCls: 'icon-reset',
+                },Bancha.scaffold.FormConfig.onReset,id),
+            Bancha.scaffold.FormConfig.buildButton({
+                    text: 'Save',
+                    iconCls: 'icon-save',
+                    formBind: true,
+                },Bancha.scaffold.FormConfig.onSave,id)
+            ];
+        };
+        
+        it("should build a form config, where it recognizes the type from the field type, when no validation rules are set in the model (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('FormConfigTest');
             
             var expected = {
-                
-                // TODO
-            };
-            expect().toBeTruthy();
+                id: 'FormConfigTest-id', // forced
+                // configs for BasicForm
+                api: {
+                    // The server-side method to call for load() requests
+                    load: Bancha.getStubsNamespace().User.load,
+                    // The server-side must mark the submit handler as a 'formHandler'
+                    submit: Bancha.getStubsNamespace().User.submit
+                },
+                items: [{ //TODO use scaffolding
+                    xtype: 'hiddenfield',
+                    allowDecimals : false,
+                    fieldLabel: 'Id',
+                    name: 'id'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Name',
+                    name: 'name'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Login',
+                    name: 'login'
+                },{
+                    xtype: 'datefield',
+                    fieldLabel: 'Created',
+                    name: 'created'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Email',
+                    name: 'email'
+                }, {
+                    xtype: 'textfield', // an fileuploadfield is recognized through validation rules
+                    fieldLabel: 'Avatar',
+                    name: 'avatar'
+                }, {
+                    xtype: 'numberfield',
+                    fieldLabel: 'Weight',
+                    name: 'weight'
+                }, {
+                    xtype: 'numberfield',
+                    allowDecimals : false,
+                    fieldLabel: 'Height',
+                    name: 'height'
+                }],
+                buttons: getButtonConfig('FormConfigTest-id')
+            }; // eo expected
+            
+            expect(Bancha.scaffold.FormConfig.buildConfig('FormConfigTest',false,{
+                id: 'FormConfigTest-id'
+            })).toEqual(expected);
         });
+        
+        it("should build a form config, where it recognizes the type from the field type, when no validation rules are set in the model (component test)", function() {
+            // prepare
+            h.initAndCreateSampleModel('FormConfigWithValidationTest',{
+                validations: [
+                    {type:'presence', name:'id'},
+                    {type:'presence', name:'name'},
+                    {type:'length', name:'name', min:3, max:64},
+                    {type:'presence', name:'login'},
+                    {type:'length', name:'login', min:3, max:64},
+                    {type:'format', name:'login', matcher: /^[a-zA-Z0-9_]+$/},
+                    {type:'presence', name:'email'},
+                    {type:'format', name:'email', matcher: /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/},
+                    {type:'numberformat', name:'weight', precision:2},
+                    {type:'numberformat', name:'height', min:50, max:300},
+                    {type:'file', name:'avatar', extension:['gif', 'jpeg', 'png', 'jpg']},
+                ]
+            });
+            
+            expect(Bancha.getStubsNamespace().User.load).toBeAFunction();
+            
+            var expected = {
+                id: 'FormConfigWithValidationTest-id', // forced
+                // configs for BasicForm
+                api: {
+                    load: Bancha.getStubsNamespace().User.load, // TODO this should be a function!
+                    submit: Bancha.getStubsNamespace().User.submit
+                },
+                items: [{ 
+                    xtype: 'hiddenfield',
+                    allowDecimals: false,
+                    fieldLabel: 'Id',
+                    name: 'id',
+                    allowBlank:false
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Name',
+                    name: 'name',
+                    allowBlank:false,
+                    minLength: 3,
+                    maxLength: 64
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Login',
+                    name: 'login',
+                    allowBlank:false,
+                    minLength: 3,
+                    maxLength: 64,
+                    vtype: 'alphanum' // use toString to compare
+                },{
+                    xtype: 'datefield',
+                    fieldLabel: 'Created',
+                    name: 'created'
+                },{
+                    xtype: 'textfield',
+                    fieldLabel: 'Email',
+                    name: 'email',
+                    allowBlank: false,
+                    vtype: 'email'
+                }, {
+                    xtype: 'fileuploadfield',
+                    fieldLabel: 'Avatar',
+                    name: 'avatar',
+                    emptyText: 'Select an image',
+                    buttonText: '',
+                    buttonConfig: {
+                        iconCls: 'icon-upload'
+                    },
+                    vtype: 'fileExtension',
+                    validExtensions: ['gif', 'jpeg', 'png', 'jpg']
+                }, {
+                    xtype: 'numberfield',
+                    fieldLabel: 'Weight',
+                    name: 'weight',
+                    decimalPrecision: 2
+                }, {
+                    xtype: 'numberfield',
+                    allowDecimals: false,
+                    fieldLabel: 'Height',
+                    name: 'height',
+                    minValue: 50,
+                    maxValue: 300
+                }],
+                buttons: getButtonConfig('FormConfigWithValidationTest-id')
+            }; // eo expected
+            
+            expect(Bancha.scaffold.FormConfig.buildConfig('FormConfigWithValidationTest',false,{
+                id: 'FormConfigWithValidationTest-id',
+                fileuploadfieldDefaults: {
+                    emptyText: 'Select an image',
+                    buttonText: '',
+                    buttonConfig: {
+                        iconCls: 'icon-upload'
+                    }
+                }
+            })).toEqual(expected);
+        });
+        
     }); //eo scaffold form functions
     
 }); //eo describe Bancha

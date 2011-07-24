@@ -50,6 +50,80 @@ Ext.define('Bancha.data.Model', {
 });
 
 
+/**
+ * Add some validation function for scaffolding
+ */
+(function() {
+    var filenameHasExtension = function(filename,validExtensions) {
+        var ext = filename.split('.').pop();
+        return Ext.Array.contains(validExtensions,ext);
+    };
+    /**
+     * @class Ext.form.field.VTypes
+     * Custom VTypes for scaffolding support
+     */
+    Ext.apply(Ext.form.field.VTypes, {
+        /**
+         * @method
+         * Validates that the file extension is of one of field.validExtensions
+         */
+        fileExtension: function(val, field) {
+            return filenameHasExtension(val,field.validExtensions || []);
+        },
+        /**
+         * @property
+         * The error text to display when the file extension validation function returns false. Defaults to: 'This file type is not allowed.'
+         */
+        fileExtensionText: 'This file type is not allowed.',
+        /**
+         * @property
+         * The keystroke filter mask to be applied on alpha input. Defaults to: /(.*)/i
+         */
+        fileExtensionMask: /.*/i
+    });
+    
+    /**
+     * @class Ext.form.field.VTypes
+     * Custom VTypes for scaffolding support
+     */
+    Ext.apply(Ext.data.validations,{
+        /**
+         * @property
+         * The default error message used when a numberformat validation fails.
+         */
+        numberformatMessage: "is not a number or not in the allowed range",
+        /**
+         * @property
+         * The default error message used when a file validation fails.
+         */
+        fileMessage: "is not a valid file",
+        /**
+         * @method
+         * Validates the value is a number in the range of minValue and maxValue.
+         * Precision is not validated, it's just meta data for scaffolding.
+         * For example:
+         *     validations: [{type: 'numberformat', field: 'euro', precision:2, min:0, max: 1000}]
+         */
+        numberformat: function(config, value) {
+            if(typeof value === 'number') {
+                return false; // not a number
+            }
+            if((config.min && config.min > value) || (config.max && value > config.max)) {
+                return false; // not in the range
+            }
+            return true;
+        },
+        /**
+         * @method
+         * Validates that the given filename is of the configured extension. 
+         * For example:
+         *     validations: [{type: 'file', field: 'avatar', extension:[]}]
+         */
+        file: function(config, value) {
+            return filenameHasExtension(value,config.extension || []);
+        }
+    });
+}())
 
 /**
  * @class Bancha
@@ -789,6 +863,12 @@ Ext.define('Bancha', {
          * Create GridConfigs for scaffolding and production use.
          * @class Bancha.scaffold.GridConfig
          * @singleton
+         * 
+         * This class helps in creating Ext.grid.Panel's by creating config objects.
+         * This class uses many data from the given model.  
+         * 
+         * If enableCreate or enableUpdate is true, this class will use 
+         * {@link Bancha.scaffold.FormConfig} to create the editor fields.
          */
         GridConfig: { 
              /**
@@ -1005,8 +1085,7 @@ Ext.define('Bancha', {
              */
             onSave: function() { // scope is the store
                 var valid = true,
-                    store = this,
-                    changes = this.getUpdatedRecords().concat(this.getNewRecords()); // there seems to be a bug in extjs, see: http://www.sencha.com/forum/showthread.php?141421-Ext.data.Store-getNewRecords()-behaves-strange&p=629086#post629086
+                    store = this;
                 
                 // check if all changes are valid
                 // Ext.Array.forEach(changes,function(el) {
@@ -1077,12 +1156,14 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * If true a create button will be added to all scaffolded grids
+             * If true a create button will be added to all scaffolded grids.  
+              * See class descrition on how the fields are created.
              */
             enableCreate: true,
             /**
              * @property
-             * If true a editor field is added to all columns for scaffolded grids
+             * If true a editor field is added to all columns for scaffolded grids.  
+             * See class descrition on how the fields are created.
              */
             enableUpdate: true,
             /**
@@ -1092,7 +1173,7 @@ Ext.define('Bancha', {
             enableDestroy: true,
             /**
              * @property
-             * If true a reset button will be added to all scaffoldeg grids (only if enableUpdate is true)
+             * If true a reset button will be added to all scaffolded grids (only if enableUpdate is true)
              */
             enableReset: true,
             /**
@@ -1168,10 +1249,15 @@ Ext.define('Bancha', {
              *          onSave: function() {
              *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
              *          },
-             *         enableUpdate: true
+             *          enableUpdate: true,
+             *          formConfig: {
+             *              textfieldDefaults: {
+             *                  minLength: 3
+             *              }
+             *          }
              *      }
              * You can add editorfield configs to the property formConfig, which will then used as standard 
-             * {@link Bancha.scaffold.FormConfig} properties for this call
+             * {@link Bancha.scaffold.FormConfig} properties for this call.
              * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the config
              * @return {Object} Returns an Ext.grid.Panel configuration object
              */
@@ -1259,8 +1345,15 @@ Ext.define('Bancha', {
          * Create GridConfigs for scaffolding and production use.
          * @class Bancha.scaffold.FormConfig
          * @singleton
+          * 
+          * This class helps in creating Ext.form.Panel's by creating config objects.
+          * This class uses many data from the given model.  
+          * 
+          * It's recognizing following validation rules on the model to add validations
+          * to the form fields:
+          * TODO
          */
-        FormConfig: { 
+        FormConfig: {
             /**
              * @private
              * @property
@@ -1273,7 +1366,7 @@ Ext.define('Bancha', {
                 'boolean' : {xtype:'checkboxfield'},
                 'date'    : {xtype:'datefield'},
                 // TODO combobox?
-                'file'    : {xtype: 'fileuploadfield'}
+                'file'    : {xtype: 'fileuploadfield'} // TODO aus den validations?
             },
             /**
              * @property
@@ -1324,6 +1417,143 @@ Ext.define('Bancha', {
                 return configs;
             },
             /**
+             * Analysis the validation rules for a field and adds validation rules to the field config
+             * @param {Object} field A Ext.form.field.* config
+             * @param {Array} validations An array of Ext.data.validations of the model
+             * @param {Object} config A Bancha.scaffold.FormConfig config
+             * @return {Object} Returns a Ext.form.field.* config
+             */
+            addValidationRuleConfigs: (function() {
+                /*
+                 * closure these in so they are only created once.
+                 * we first create the regex and then get the string of them to not have to delete the backslashes 
+                 * have a bit cleaner code. It doesn't matter for performance cause it's done only once
+                 */
+                var alpha = /^[a-zA-Z_]+$/.toString(),
+                    alphanum = /^[a-zA-Z0-9_]+$/.toString(),
+                    email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.toString(),
+                    url = /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i.toString();
+                        
+                return function(field,validations,config) {
+                    var name = field.name; // it's used so often, make a shortcut
+                
+                    Ext.Array.forEach(validations,function(rule) {
+                        if(rule.name !== name) {
+                            return;
+                        }
+                        switch(rule.type) {
+                            case 'presence':
+                                field.allowBlank = false;
+                                break;
+                            case 'length':
+                                // IFDEBUG
+                                // length validation works only only on textfields
+                                if(field.xtype!=='textfield') {
+                                    msgAddition = (field.xtype==='numberfield') ? 'Use the rule numberformat to force minimal and maximal values.' : '';
+                                    Ext.Error.raise({
+                                        plugin: 'Bancha',
+                                        msg: 'Bancha: The model has a validation rule length for the field '+name+', but this field is of type '+field.xtype+
+                                             ', so the rule makes no sense. '+msgAddition
+                                    });
+                                }
+                                // ENDIF
+                                if(field.xtype==='textfield') {
+                                    if(Ext.isDefined(rule.min)) {
+                                        field.minLength = rule.min;
+                                    }
+                                    if(Ext.isDefined(rule.max)) {
+                                        field.maxLength = rule.max;
+                                    }
+                                }
+                                break;
+                            case 'format':
+                                // IFDEBUG
+                                // length validation works only only on textfields
+                                if(field.xtype!=='textfield') {
+                                    Ext.Error.raise({
+                                        plugin: 'Bancha',
+                                        msg: 'Bancha: The model has a validation rule format for the field '+name+', but this field is of type '+field.xtype+
+                                             ', so the rule makes no sense.'
+                                    });
+                                }
+                                // ENDIF
+                                switch(rule.matcher.toString()) {
+                                    case alpha:
+                                        field.vtype = 'alpha';
+                                        break;
+                                    case alphanum:
+                                        field.vtype = 'alphanum';
+                                        break;
+                                     case email:
+                                        field.vtype = 'email';
+                                        break;
+                                    case url:
+                                        field.vtype = 'url';
+                                        break;
+                                    default:
+                                        // IFDEBUG
+                                        if(window.console && Ext.isFunction(window.console.warn)) {
+                                            window.console.warn(
+                                                'Bancha: Currently Bancha.scaffold.FormConfig only recognizes the model Ext.data.validations format rules '+
+                                                 'with the matcher regex of Ext.form.field.VType alpha, alphanum, email and url. This rule with matcher '+
+                                                 rule.matcher.toString()+' will just be ignored.');
+                                        }
+                                        // ENDIF
+                                        break;
+                                }
+                                break;
+                            case 'numberformat':    
+                                // numberformat validation works only only on numberfields
+                                if(field.xtype!=='numberfield') {
+                                    Ext.Error.raise({
+                                        plugin: 'Bancha',
+                                        msg: 'Bancha: The model has a validation rule numberformat for the field '+name+', but this field is of type '+field.xtype+
+                                             ', so the rule makes no sense. A numberfield is expected.'
+                                    });
+                                }
+                                // ENDIF
+                                if(field.xtype==='numberfield') {
+                                    if(Ext.isDefined(rule.min)) {
+                                        field.minValue = rule.min;
+                                    }
+                                    if(Ext.isDefined(rule.max)) {
+                                        field.maxValue = rule.max;
+                                    }
+                                    if(Ext.isDefined(rule.precision)) {
+                                        field.decimalPrecision = rule.precision;
+                                    }
+                                }
+                                break;
+                            case 'file':
+                                // make the field a fieluploadfield
+                                field.xtype = 'fileuploadfield';
+                                Ext.apply(field,config.fileuploadfieldDefaults);
+                            
+                                // add validation rules
+                                if(Ext.isString(rule.extension)) {
+                                    rule.extension = [rule.extension];
+                                }
+                                if(Ext.isArray(rule.extension)) {
+                                    field.vtype = 'fileExtension';
+                                    field.validExtensions = rule.extension;
+                                }
+                                break;
+                            default:    
+                                // IFDEBUG
+                                if(window.console && Ext.isFunction(window.console.warn)) {
+                                    window.console.warn(
+                                        "Bancha: Could not recognize rule "+Ext.encode(rule)+' when trying to create a form field field.');
+                                }
+                                // ENDIF
+                                break;
+                        }
+                        // TODO OPTIMIZE Also include inclusion and exclusion
+                    })
+                
+                    return field;
+                }; //eo return fn
+            }()),
+            /**
              * @private
              * Builds a field with all defaults defined here
              * @param {Sring} type The model field type
@@ -1333,10 +1563,10 @@ Ext.define('Bancha', {
              */
             buildDefaultFieldFromModelType: function(type,defaults) {
                 defaults = defaults || {};
-                var field = this.fieldToFieldConfigs[type],
-                    fieldDefaults     = Ext.clone(defaults.fieldDefaults || this.fieldDefaults), // make a new object of defaults
-                    fieldTypeDefaults = defaults[field.xtype+'Defaults'] || this[field.xtype+'Defaults'];
-                return Ext.apply(fieldDefaults,field,fieldTypeDefaults); 
+                var field               = this.fieldToFieldConfigs[type],
+                    fieldDefaults       = Ext.clone(defaults.fieldDefaults || this.fieldDefaults), // make a new object of defaults
+                    fieldTypeDefaults   = defaults[field.xtype+'Defaults'] || this[field.xtype+'Defaults'];
+                return Ext.apply(fieldDefaults,field,fieldTypeDefaults);
             },
             /**
              * @private
@@ -1345,10 +1575,11 @@ Ext.define('Bancha', {
              * @param {String} fieldName (optional) the name of the field
              * @param {Object} defaults (optional) Defaults like textfieldDefaults as property of this config. 
              * See {@link #buildConfig}'s config property
+             * @param {Array} validations An array of Ext.data.validations of the model
              * @return {Object} Returns a field config
              */
-            buildFieldConfig: function(type,fieldName,defaults) {
-                defaults = defaults || {};
+            buildFieldConfig: function(type,fieldName,defaults,validations) { 
+                defaults = Ext.apply({},defaults,this); // get all defaults for this call
                 var field = this.buildDefaultFieldFromModelType(type,defaults);
                 
                 // infer name
@@ -1357,11 +1588,10 @@ Ext.define('Bancha', {
                     field.name = fieldName;
                 }
                 
-                /* TODO validations
-                    allowBlank: true,
-                    minLength, maxLength,
-                    vtype
-                    */
+                // add some additional validation rules from model validation rules
+                if(Ext.isDefined(validations) && validations.length) {
+                    field = this.addValidationRuleConfigs(field,validations,defaults);
+                }
                 
                 // now make some crazy guesses ;)
                 if(typeof this.guessFieldConfigs === 'function') {
@@ -1371,6 +1601,44 @@ Ext.define('Bancha', {
                 return field;
             },
             /**
+             * @property
+             * Editable function to be called when the save button is pressed.  
+             * To change the default scaffolding behaviour just replace this function.  
+             * You can do this at any time, the current declarations are always used.
+             * scope a config object with a single fucntion this.getForm()
+             */
+            onSave: function(){
+                var form = this.getForm(),
+                    msg;
+                if(form.isValid()){
+                    msg = form.hasUpload() ? 'Uploading files...' : 'Saving data..';
+                    form.submit({
+                        waitMsg: msg,
+                        success: function(form, action) {
+                            Ext.MessageBox.alert('Success', action.result.msg);
+                        },
+                        failure: function(form, action) {
+                            Ext.MessageBox.alert('Failed', action.result.msg);
+                        }
+                    });
+                }
+            },
+            /**
+             * @property
+             * Editable function to be called when the reset button is pressed.  
+             * To change the default scaffolding behaviour just replace this function.  
+             * You can do this at any time, the current declarations are always used.
+             * scope a config object with a single fucntion this.getForm()
+             */
+            onReset:  function() {
+                this.getForm().reset();
+            },
+            /**
+             * @property
+             * If true a reset button will be added to all scaffolded form (Default: true)
+             */
+            enableReset: true,
+            /**
              * @private
              * build the form api config, used only by buildConfig()
              * just for separation of concern, since this is the only 
@@ -1378,7 +1646,7 @@ Ext.define('Bancha', {
              */
             buildApiConfig: function(model) {
                  // IFDEBUG
-                 if(!this.initialized) {
+                 if(!Bancha.initialized) {
                      Ext.Error.raise({
                          plugin: 'Bancha',
                          msg: 'Bancha: Bancha is not yet initalized, please init before using Bancha.scaffold.FormConfig.buildConfig().'
@@ -1400,11 +1668,45 @@ Ext.define('Bancha', {
                 
                 return {
                     // The server-side method to call for load() requests
-                    load: stub.read,
+                    load: stub.load,
                     // The server-side must mark the submit handler as a 'formHandler'
-                    submit: stub.submits
+                    submit: stub.submit
                 };
-             },
+            },
+            /**
+             * @private
+             * builds a form button with the right scope
+             */
+            buildButton: (function() {
+                var scope = {
+                        getForm: function() {
+                            return this.up(this.id).getForm();
+                        }
+                    // IFDEBUG
+                    },
+                    singleton = {
+                    // ENDIF
+                    };
+                
+                return function(config,handler,id) {    
+                    var scope = Ext.apply({id:id},scope);
+                    config.handler = function() {
+                        return handler.apply(scope,arguments);
+                    };
+                    /*
+                     * ONLY for jasmin testing we need a singleton here
+                     */
+                    // IFDEBUG
+                    if(singleton[id] && singleton[id][config.text]) {
+                        return singleton[id][config.text];
+                    } else {
+                        singleton[id] = singleton[id] || {};
+                        singleton[id][config.text] = config;
+                    }
+                    // ENDIF
+                    return config;
+                };
+            }()),
             /**
              * Builds form configs from the metadata, for scaffolding purposes.  
              * By default data is loaded from the server if an id is supplied and 
@@ -1420,8 +1722,11 @@ Ext.define('Bancha', {
              *          },
              *          onSave: function() {
              *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
-             *          }
+             *          },
+             *          id: 'form'
              *      }
+             *
+             * If you don't define an id here it will be created and can not be changed anymore afterwards.
              *
              * @param {Object} additionalFormConfig (optional) Some additional Ext.form.Panel configs which are applied to the config
              * @return {Object} object with Ext.form.Panel configs
@@ -1429,8 +1734,11 @@ Ext.define('Bancha', {
              */
             buildConfig: function(model, id, config, additionalFormConfig) {
                 var fields = [],
-                    formConfig = {};
-                config = config || {};
+                    formConfig = {},
+                    id,
+                    validations,
+                    buttons;
+                config = Ext.apply({},config,this); // get all defaults for this call
 
                 // IFDEBUG
                 if(!Ext.isDefined(model)) {
@@ -1455,19 +1763,40 @@ Ext.define('Bancha', {
                 }
 
                 // create all fields
+                validations = model.prototype.validations;
                 model.prototype.fields.each(function(field) {
                     fields.push(
-                        Bancha.scaffold.FormConfig.buildFieldConfig(field.type.type, field.name, config)
+                        Bancha.scaffold.FormConfig.buildFieldConfig(field.type.type, field.name, config, validations)
                     );
                 });
 
+                // for scoping reason we have to force an id here
+                id = config.id || Ext.id(null,'formpanel-');
+                
+                // build buttons
+                buttons = [
+                    this.buildButton({
+                        text: 'Save',
+                        iconCls: 'icon-save',
+                        formBind: true,
+                    },config.onSave,id)
+                ];
+                if(config.enableReset) {
+                    buttons.unshift( // add at the front
+                        this.buildButton({
+                            text: 'reset',
+                            iconCls: 'icon-reset',
+                        },config.onReset,id)
+                    );
+                }
+                
                 // TODO make some form configs
                 formConfig = {
+                    id: id,
+                    api: this.buildApiConfig(model),
                     items: fields,
-                    api: this.buildApiConfig(model)
+                    buttons: buttons
                 };
-                
-                // todo handle id loading
                 
                 if(Ext.isObject(additionalFormConfig)) {
                     formConfig = Ext.apply(formConfig,additionalFormConfig);
