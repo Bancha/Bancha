@@ -23,7 +23,6 @@
 /*global Ext, Bancha, window */
 
 // TODO Native support for Ext.data.TreeStore with server-side TreeBehaviour
-// TODO Form Support: http://dev.sencha.com/deploy/ext-4.0.0/examples/direct/direct-form.html
 // TODO serverside form validation
 // TODO selectboxes with serverside content (enum support also(?)) http://dev.sencha.com/deploy/ext-4.0.0/examples/form/combos.html
 // TODO samples sollten "$javascript->link('script.js', false);" verwenden, da dies auch aus vendors (und plugins!?) ausliest
@@ -77,9 +76,9 @@ Ext.define('Bancha.data.Model', {
         fileExtensionText: 'This file type is not allowed.',
         /**
          * @property
-         * The keystroke filter mask to be applied on alpha input. Defaults to: /(.*)/i
+         * The keystroke filter mask to be applied on alpha input. Defaults to: /[\^\r\n]/
          */
-        fileExtensionMask: /.*/i
+        fileExtensionMask: /[\^\r\n]/ // alow everything except new lines
     });
     
     /**
@@ -123,7 +122,7 @@ Ext.define('Bancha.data.Model', {
             return filenameHasExtension(value,config.extension || []);
         }
     });
-}())
+}());
 
 /**
  * @class Bancha
@@ -546,7 +545,6 @@ Ext.define('Bancha', {
         } else {
             // add all elements to the queue
             Ext.Array.forEach(modelsToLoad, function(modelName) {
-                // TODO OPTIMIZE not very performant for large arrrays
                 this.preloadModelMetaData(modelName, function() {
                     // when model is loaded try again
                     this.onInitializedOnModelReady([], loadingModels, loadedModels, callback, scope);
@@ -593,7 +591,20 @@ Ext.define('Bancha', {
         return null;
     },
     
-    
+    /**
+     * @property {Function|False} onRemoteException
+     * This function will be added to each model to handle remote errors.
+     * (modelConfig.listeners.exception).  
+     * Use false to don't have exception handling on models.
+     */
+     onRemoteException: function(proxy, response, operation){
+         Ext.MessageBox.show({
+             title: 'REMOTE EXCEPTION',
+             msg: operation.getError(),
+             icon: Ext.MessageBox.ERROR,
+             buttons: Ext.Msg.OK
+         });
+     },
     
     /**
      * This method creates a {@link Bancha.data.Model} with your additional model configs, 
@@ -753,15 +764,8 @@ Ext.define('Bancha', {
                     writeAllFields: false,
                     root: 'data'
                 },
-                listeners: { // TODO abstract error handling
-                    exception: function(proxy, response, operation){
-                        Ext.MessageBox.show({
-                            title: 'REMOTE EXCEPTION',
-                            msg: operation.getError(),
-                            icon: Ext.MessageBox.ERROR,
-                            buttons: Ext.Msg.OK
-                        });
-                    }
+                listeners: {
+                    exception: this.onRemoteException || Ext.emptyFn
                 },
                 cacheString: '_dc' // TODO later
             }
@@ -1019,12 +1023,6 @@ Ext.define('Bancha', {
                     column.field = Bancha.scaffold.FormConfig.buildFieldConfig(type,undefined,defaults.formConfig); // we don't need name definition in here
                 }
                 
-                /* TODO validations
-                    allowBlank: true,
-                    minLength, maxLength,
-                    vtype
-                    */
-
                 // now make some crazy guesses ;)
                 if(typeof this.guessColumnConfigs === 'function') {
                     column = this.guessColumnConfigs(column,type);
@@ -1032,7 +1030,6 @@ Ext.define('Bancha', {
 
                 return column;
             },
-             //TODO grid functions richten
             /**
              * @property
              * Editable function to be called when the create button is pressed.  
@@ -1311,7 +1308,7 @@ Ext.define('Bancha', {
                     if(config.enableUpdate) {
                         buttons.push({ // TODO expose button defaults
                             iconCls: 'icon-save',
-                            text: 'Save', //TODO OPTIMIZE disabled:true?
+                            text: 'Save',
                             scope: store,
                             handler: this.createFacade('onSave')
                         });
@@ -1345,13 +1342,17 @@ Ext.define('Bancha', {
          * Create GridConfigs for scaffolding and production use.
          * @class Bancha.scaffold.FormConfig
          * @singleton
-          * 
-          * This class helps in creating Ext.form.Panel's by creating config objects.
-          * This class uses many data from the given model.  
-          * 
-          * It's recognizing following validation rules on the model to add validations
-          * to the form fields:
-          * TODO
+         * 
+         * This class helps in creating Ext.form.Panel's by creating config objects.
+         * This class uses many data from the given model.  
+         * 
+         * It's recognizing following validation rules on the model to add validations
+         * to the form fields:
+         *  - format
+         *  - file
+         *  - length
+         *  - numberformat
+         *  - presence
          */
         FormConfig: {
             /**
@@ -1364,9 +1365,8 @@ Ext.define('Bancha', {
                 'int'     : {xtype:'numberfield', allowDecimals:false},
                 'float'   : {xtype:'numberfield'},
                 'boolean' : {xtype:'checkboxfield'},
-                'date'    : {xtype:'datefield'},
-                // TODO combobox?
-                'file'    : {xtype: 'fileuploadfield'} // TODO aus den validations?
+                'date'    : {xtype:'datefield'}
+                // TODO OPTIMIZE Add combobox support
             },
             /**
              * @property
@@ -1417,7 +1417,9 @@ Ext.define('Bancha', {
                 return configs;
             },
             /**
-             * Analysis the validation rules for a field and adds validation rules to the field config
+             * @private
+             * Analysis the validation rules for a field and adds validation rules to the field config.
+             * For what is supported see {@link Bancha.scaffold.FormConfig}
              * @param {Object} field A Ext.form.field.* config
              * @param {Array} validations An array of Ext.data.validations of the model
              * @param {Object} config A Bancha.scaffold.FormConfig config
@@ -1435,7 +1437,8 @@ Ext.define('Bancha', {
                     url = /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i.toString();
                         
                 return function(field,validations,config) {
-                    var name = field.name; // it's used so often, make a shortcut
+                    var name = field.name, // it's used so often, make a shortcut
+                        msgAddition;
                 
                     Ext.Array.forEach(validations,function(rule) {
                         if(rule.name !== name) {
@@ -1548,7 +1551,7 @@ Ext.define('Bancha', {
                                 break;
                         }
                         // TODO OPTIMIZE Also include inclusion and exclusion
-                    })
+                    }); //eo forEach
                 
                     return field;
                 }; //eo return fn
@@ -1678,7 +1681,7 @@ Ext.define('Bancha', {
              * builds a form button with the right scope
              */
             buildButton: (function() {
-                var scope = {
+                var scopePrototype = {
                         getForm: function() {
                             return this.up(this.id).getForm();
                         }
@@ -1689,7 +1692,7 @@ Ext.define('Bancha', {
                     };
                 
                 return function(config,handler,id) {    
-                    var scope = Ext.apply({id:id},scope);
+                    var scope = Ext.apply({id:id},scopePrototype);
                     config.handler = function() {
                         return handler.apply(scope,arguments);
                     };
@@ -1714,7 +1717,7 @@ Ext.define('Bancha', {
              *  
              * Guesses are made by model field configs. 
              * @param {Ext.data.Model|String} model the model class or model name
-             * @param {Number|String} (optional) id of an row to load data from server, false to don't load anything (for creating new rows)
+             * @param {Number|String} (optional) recordId of an row to load data from server, false to don't load anything (for creating new rows)
              * @param {Object} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
              *      {
              *          fieldDefaults: {
@@ -1732,12 +1735,13 @@ Ext.define('Bancha', {
              * @return {Object} object with Ext.form.Panel configs
              * @property
              */
-            buildConfig: function(model, id, config, additionalFormConfig) {
+            buildConfig: function(model, recordId, config, additionalFormConfig) {
                 var fields = [],
                     formConfig = {},
                     id,
                     validations,
-                    buttons;
+                    buttons,
+                    loadFn;
                 config = Ext.apply({},config,this); // get all defaults for this call
 
                 // IFDEBUG
@@ -1778,19 +1782,18 @@ Ext.define('Bancha', {
                     this.buildButton({
                         text: 'Save',
                         iconCls: 'icon-save',
-                        formBind: true,
+                        formBind: true
                     },config.onSave,id)
                 ];
                 if(config.enableReset) {
                     buttons.unshift( // add at the front
                         this.buildButton({
                             text: 'reset',
-                            iconCls: 'icon-reset',
+                            iconCls: 'icon-reset'
                         },config.onReset,id)
                     );
                 }
                 
-                // TODO make some form configs
                 formConfig = {
                     id: id,
                     api: this.buildApiConfig(model),
@@ -1800,6 +1803,24 @@ Ext.define('Bancha', {
                 
                 if(Ext.isObject(additionalFormConfig)) {
                     formConfig = Ext.apply(formConfig,additionalFormConfig);
+                }
+                
+                // autoload the record
+                if(Ext.isDefined(recordId) && recordId!==false) {
+                    formConfig.listeners = formConfig.listeners || {};
+                    // if there's already a function, batch them
+                    loadFn = function(component,options) {
+                        component.load({
+                            params: {
+                                id: recordId // TODO testen
+                            }
+                        });
+                    };
+                    if(formConfig.listeners.afterrender) {
+                        formConfig.listeners.afterrender = Ext.Function.createSequence(formConfig.listeners.afterrender,loadFn);
+                    } else {
+                        formConfig.listeners.afterrender = loadFn;
+                    }
                 }
                 return formConfig;
             }
