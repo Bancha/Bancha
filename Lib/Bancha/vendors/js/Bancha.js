@@ -1807,7 +1807,7 @@ Ext.define('Bancha', {
                 
                 // autoload the record
                 if(Ext.isDefined(recordId) && recordId!==false) {
-                    formConfig.listeners = formConfig.listeners || {};
+                    formConfig.listeners = formConfig.listeners || {};
                     // if there's already a function, batch them
                     loadFn = function(component,options) {
                         component.load({
