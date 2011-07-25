@@ -32,8 +32,10 @@
  * @class Bancha.data.Model
  * @extends Ext.data.Model
  * 
+ * 
  * This should only be used by Bancha internally, 
  * since it just has an additional flag to force consistency in Bancha.
+ * 
  * 
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
@@ -82,8 +84,8 @@ Ext.define('Bancha.data.Model', {
     });
     
     /**
-     * @class Ext.form.field.VTypes
-     * Custom VTypes for scaffolding support
+     * @class Ext.data.validations
+     * Custom validations for scaffolding support
      */
     Ext.apply(Ext.data.validations,{
         /**
@@ -116,7 +118,7 @@ Ext.define('Bancha.data.Model', {
          * @method
          * Validates that the given filename is of the configured extension. 
          * For example:
-         *     validations: [{type: 'file', field: 'avatar', extension:[]}]
+         *     validations: [{type: 'file', field: 'avatar', extension:['jpg','jpeg','gif','png']}]
          */
         file: function(config, value) {
             return filenameHasExtension(value,config.extension || []);
@@ -277,7 +279,7 @@ Ext.define('Bancha', {
     },
     /**
      * Inits Bancha with the RemotingProvider, always init before using Bancha.  
-     * (when you use {@link Bancha#onReady} init is done automatically by Bancha)
+     * ({@link Bancha#onModelReady} will init automatically)
      */
     init: function() {
         var remoteApi;
@@ -335,23 +337,23 @@ Ext.define('Bancha', {
     /**
      * Preloads the models metadata from the server to create a new model.  
      *  
-     * __When to use it:__ You should use this function is you don't want to load 
+     * __When to use it:__ You should use this function if you don't want to load 
      * the metadata at startup, but want to load it before it is (eventually) 
      * used to have a more reactive interface.  
      * 
      * __Attention:__ In most cases it's best to load all model metadata on startup
-     * when the api is loaded, please install guide for more information. This
-     * is mostly usefull if you can guess that a user will need a model soon
-     * which wasn't loaded at startup or if you want to load all not at startup
-     * needed models right after startup with something like: 
+     * when the api is loaded, please see the Bancha CakePHP install guide for more 
+     * information. This is mostly usefull if you can guess that a user will need a 
+     * model soon which wasn't loaded at startup or if you want to load all needed
+     * models right after startup with something like: 
      *     Ext.onReady(
      *         Ext.Function.createDelayed(
-     *             function() { Bancha.preloadModelMetaData('all'); },
-     *             100
+     *             function() { Bancha.preloadModelMetaData(['User','Article','Post']); },
+     *             100 // after 100ms the whole ui should be already ready
      *         )
      *     );
      *
-     * @param {Array|String} models An array of the models to preload, one model name or 'all'
+     * @param {Array|String} models An array of the models to preload or a string with one model name
      * @param {Function} callback  (optional) A callback function
      * @param {Object} scope  (optional) The scope of the callback function
      */
@@ -445,7 +447,7 @@ Ext.define('Bancha', {
     },
     
     /**
-     * Checks if the metadata of a model is loaded
+     * Checks if the metadata of a model is loaded.
      * @param {String} modelName The name of the model
      * @return {Boolean} True is the metadata is present for _modelName_
      */
@@ -465,11 +467,11 @@ Ext.define('Bancha', {
      * If Bancha is not already initialized it will wait for link Ext.isReady
      * and calls {@link Bancha#init} before model creation.  
      * 
-     * See {@link Bancha class explaination} for an example.
+     * See {@link Bancha Bancha class explaination} for an example.
      * @param {String|Array} modelNames A name of the model or an array of model names
      * @param {Function} callback (optional) A callback function, the first argument is:  
-     * - a model class if input modelNames was an string  
-     * - an object with model names as keys and models as arguments if an array was given
+     * * a model class if input modelNames was an string  
+     * * an object with model names as keys and models as arguments if an array was given
      * @param {Object} scope (optional) The scope of the callback function
      */
     onModelReady: function(modelNames, callback, scope) {
@@ -873,9 +875,9 @@ Ext.define('Bancha', {
          * {@link Bancha.scaffold.Form} to create the editor fields.
          *
          * You have three possible interceptors:
-         *     - beforeBuild      : executed before {@link #buildGrid}
-         *     - guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig} 
-         *     - afterBuild       : executed after {@link #buildGrid} created the config
+         * * beforeBuild      : executed before {@link #buildGrid}
+         * * guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig} 
+         * * afterBuild       : executed after {@link #buildGrid} created the config
          */
         Grid: { 
              /**
@@ -973,6 +975,7 @@ Ext.define('Bancha', {
             /**
              * @property {Function|False} guessFieldConfigs Writable function used to guess some default behaviour.
              * Can be set to false to don't guess at all.
+             * Default function just hides id columns and makes it uneditable.
              * @param {Object} configs A column config
              * @param {String} modelType This is either a standard model field type like 'string' or our in Bancha added 'file'
              * @return {Object} Returns an Ext.grid.column.* configuration object
@@ -1168,12 +1171,12 @@ Ext.define('Bancha', {
             enableUpdate: true,
             /**
              * @property
-             * If true a delete button is added to all rows for scaffolded grids
+             * If true a delete button is added to all rows for scaffolded grids.
              */
             enableDestroy: true,
             /**
              * @property
-             * If true a reset button will be added to all scaffolded grids (only if enableUpdate is true)
+             * If true a reset button will be added to all scaffolded grids (only if enableCreate or enableUpdate is true).
              */
             enableReset: true,
             /**
@@ -1236,20 +1239,21 @@ Ext.define('Bancha', {
                 return columns;
             },
             /**
-             * @property
-             * This function will be executed before each {@link #buildConfig} as interceptor
-             * For params see {@link buildConfig}
+             * @method
+             * You can replace this function! The function will be executed before each 
+             * {@link #buildConfig} as interceptor. For params see {@link #buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
             beforeBuild: function(model,config,additionalGridConfig) {
             },
             /**
-             * @property
-             * This function will be executed before each {@link #buildConfig} as interceptor
+             * @method
+             * You can replace this fucntion! This function will be executed after each 
+             * {@link #buildConfig} as interceptor.
              * @param {Object} columnConfig just build grid panel config
-             * @param {Object} {Ext.data.Model|String} model see {@link buildConfig}
-             * @param {Object} {Object} config (optional) see {@link buildConfig}
-             * @param {Object} additionalGridConfig (optional) see {@link buildConfig}
+             * @param {Object} {Ext.data.Model|String} model see {@link #buildConfig}
+             * @param {Object} {Object} config (optional) see {@link #buildConfig}
+             * @param {Object} additionalGridConfig (optional) see {@link #buildConfig}
              * @return {Object|undefined} object with final Ext.grid.Panel configs
              */
             afterBuild: function(columnConfig, model,config,additionalGridConfig) {
@@ -1312,15 +1316,16 @@ Ext.define('Bancha', {
                         });
                     }
                 
+                    if(config.enableReset) {
+                        buttons.push({
+                            iconCls: 'icon-reset',
+                            text: 'Reset',
+                            scope: store,
+                            handler: this.createFacade('onReset')
+                        });
+                    }
+                    
                     if(config.enableUpdate) {
-                        if(config.enableReset) {
-                            buttons.push({
-                                iconCls: 'icon-reset',
-                                text: 'Reset',
-                                scope: store,
-                                handler: this.createFacade('onReset')
-                            });
-                        }
                         buttons.push({ // TODO expose button defaults
                             iconCls: 'icon-save',
                             text: 'Save',
@@ -1386,16 +1391,16 @@ Ext.define('Bancha', {
          * 
          * It's recognizing following validation rules on the model to add validations
          * to the form fields:
-         *  - format
-         *  - file
-         *  - length
-         *  - numberformat
-         *  - presence
+         *  * format
+         *  * file
+         *  * length
+         *  * numberformat
+         *  * presence
          *
          * You have three possible interceptors:
-         *     - beforeBuild     : executed before {@link #buildGrid}
-         *     - guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
-         *     - afterBuild      : executed after {@link #buildGrid} created the config
+         * * beforeBuild     : executed before {@link #buildGrid}
+         * * guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
+         * * afterBuild      : executed after {@link #buildGrid} created the config
          */
         Form: {
             /**
@@ -1423,7 +1428,7 @@ Ext.define('Bancha', {
             datefieldDefaults: {},
             /**
              * @property
-             * This config is applied to each scaffolded Ext.form.field.Date
+             * This config is applied to each scaffolded Ext.form.field.File
              */
             fileuploadfieldDefaults: {
                 emptyText: 'Select an file'
@@ -1447,7 +1452,8 @@ Ext.define('Bancha', {
             },
             /**
              * @property {Function|False} guessFieldConfigs Writable function used to guess some default behaviour.
-             * Can be set to false to don't guess at all.
+             * Can be set to false to don't guess at all.  
+              * Default function just hides id fields.
              * @param {Object} configs a form field config
              * @param {String} modelType this is either a standard model field type like 'string' or our in Bancha added 'file'
              * @return {Object} Returns a field config
@@ -1571,7 +1577,7 @@ Ext.define('Bancha', {
                                 }
                                 break;
                             case 'file':
-                                // make the field a fieluploadfield
+                                // make the field a fileuploadfield
                                 field.xtype = 'fileuploadfield';
                                 Ext.apply(field,config.fileuploadfieldDefaults);
                             
@@ -1721,20 +1727,21 @@ Ext.define('Bancha', {
             },
             /**
              * @property
-             * This function will be executed before each {@link #buildConfig} as interceptor
-             * For params see {@link buildConfig}
+             * You can replace this function! The function will be executed before each 
+             * {@link #buildConfig} as interceptor. For params see {@link #buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
             beforeBuild: function(model, recordId, config, additionalFormConfig) {
             },
             /**
              * @property
-             * This function will be executed before each {@link #buildConfig} as interceptor
+             * You can replace this function! This function will be executed after each 
+             * {@link #buildConfig} as interceptor
              * @param {Object} formConfig just build form panel config
-             * @param {Object} {Ext.data.Model|String} model see {@link buildConfig}
-             * @param {Object} {Number|String} recordId (optional) see {@link buildConfig}
-             * @param {Object} {Object} config (optional) see {@link buildConfig}
-             * @param {Object} additionalFormConfig (optional) see {@link buildConfig}
+             * @param {Object} {Ext.data.Model|String} model see {@link #buildConfig}
+             * @param {Object} {Number|String} recordId (optional) see {@link #buildConfig}
+             * @param {Object} {Object} config (optional) see {@link #buildConfig}
+             * @param {Object} additionalFormConfig (optional) see {@link #buildConfig}
              * @return {Object|undefined} object with final Ext.form.Panel configs
              */
             afterBuild: function(formConfig, model, recordId, config, additionalFormConfig) {
@@ -1743,8 +1750,8 @@ Ext.define('Bancha', {
              * @method
              * This function will rarely be used by application developers
              * It adds a scope around the button handler which provides two function:
-             *  - this.getPanel() to get the form panel
-             *  - this.getForm() to get the basic form
+             *  * this.getPanel() to get the form panel
+             *  * this.getForm() to get the basic form
              * The buttonConfig.scoe will be ignored.
              * @param {Function} handler A button handler function to apply the scope to
              * @param {Number|String} id the form panel id
@@ -1808,6 +1815,7 @@ Ext.define('Bancha', {
                     buttons,
                     loadFn;
                 config = Ext.apply({},config,this); // get all defaults for this call
+                additionalFormConfig = additionalFormConfig || {};
                 
                 // build initial config
                 formConfig = config.beforeBuild(model, recordId, config, additionalFormConfig) || {};
@@ -1897,7 +1905,7 @@ Ext.define('Bancha', {
              * By default data is loaded from the server if an id is supplied and 
              * onSvae it pushed the data to the server.  
              *  
-              * Guesses are made by model field configs and validation rules.
+             * Guesses are made by model field configs and validation rules.
              * @param {Ext.data.Model|String} model the model class or model name
              * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
              * @param {Object} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g

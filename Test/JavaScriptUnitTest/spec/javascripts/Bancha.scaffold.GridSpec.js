@@ -303,11 +303,11 @@ describe("Bancha.scaffold.Grid tests",function() {
         var buttons = result.dockedItems[0].items;
         expect(buttons[1].iconCls).toEqual('icon-add');
         
-        // should have an update button
-        expect(buttons[2].iconCls).toEqual("icon-save");
-        
         // should have an reset button
-        expect(buttons[3].iconCls).toEqual('icon-reset');
+        expect(buttons[2].iconCls).toEqual('icon-reset');
+        
+        // should have an update button
+        expect(buttons[3].iconCls).toEqual("icon-save");
         
         // should have added the additional grid config
         expect(result.additionalGridConfig).toBeTruthy();
