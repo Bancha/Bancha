@@ -10,10 +10,6 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
     "type":"remoting",
     "actions":{
         "User":[{
-            "name":"load",
-            "formHandler": true,
-            "len":1
-        },{
             "name":"submit",
             "formHandler": true,
             "len":1

@@ -92,7 +92,8 @@ describe("Bancha.scaffold.Form tests",function() {
         }];
     };
     
-    it("should build a form config, where it recognizes the type from the field type, when no validation rules are set in the model (component test)", function() {
+    it("should build a form config, where it recognizes the type from the field type, when no "+
+       "validation rules are set in the model (component test)", function() {
         // prepare
         h.initAndCreateSampleModel('FormConfigTest');
         
@@ -101,10 +102,11 @@ describe("Bancha.scaffold.Form tests",function() {
             // configs for BasicForm
             api: {
                 // The server-side method to call for load() requests
-                load: Bancha.getStubsNamespace().FormConfigTest.load,
+                load: Bancha.getStubsNamespace().FormConfigTest.read,
                 // The server-side must mark the submit handler as a 'formHandler'
                 submit: Bancha.getStubsNamespace().FormConfigTest.submit
             },
+            paramOrder : [ 'data' ],
             items: [{
                 xtype: 'hiddenfield',
                 allowDecimals : false,
@@ -143,12 +145,13 @@ describe("Bancha.scaffold.Form tests",function() {
             buttons: getButtonConfig('FormConfigTest-id')
         }; // eo expected
         
-        expect(formScaf.buildConfig('FormConfigTest',false,{
+        expect(formScaf.buildConfig('FormConfigTest',false,false,{
             id: 'FormConfigTest-id'
         })).toEqual(expected);
     });
     
-    it("should build a form config, where it recognizes the type from the field type, when no validation rules are set in the model (component test)", function() {
+    it("should build a form config, where it recognizes the type from the field type, when no "+
+       "validation rules are set in the model (component test)", function() {
         // prepare
         h.initAndCreateSampleModel('FormConfigWithValidationTest',{
             validations: [
@@ -166,15 +169,16 @@ describe("Bancha.scaffold.Form tests",function() {
             ]
         });
         
-        expect(Bancha.getStubsNamespace().FormConfigWithValidationTest.load).toBeAFunction();
+        expect(Bancha.getStubsNamespace().FormConfigWithValidationTest.submit).toBeAFunction();
         
         var expected = {
             id: 'FormConfigWithValidationTest-id', // forced
             // configs for BasicForm
             api: {
-                load: Bancha.getStubsNamespace().FormConfigWithValidationTest.load, // TODO this should be a function!
-                submit: Bancha.getStubsNamespace().FormConfigWithValidationTest.submit
+                load: Bancha.getStubsNamespace().FormConfigWithValidationTest.read,
+                submit: Bancha.getStubsNamespace().FormConfigWithValidationTest.submit // TODO this should be a function!
             },
+            paramOrder : [ 'data' ],
             items: [{
                 xtype: 'hiddenfield',
                 allowDecimals: false,
@@ -234,7 +238,6 @@ describe("Bancha.scaffold.Form tests",function() {
         }; // eo expected
         
         expect(formScaf.buildConfig('FormConfigWithValidationTest',false,{
-            id: 'FormConfigWithValidationTest-id',
             fileuploadfieldDefaults: {
                 emptyText: 'Select an image',
                 buttonText: '',
@@ -242,10 +245,12 @@ describe("Bancha.scaffold.Form tests",function() {
                     iconCls: 'icon-upload'
                 }
             }
+        }, {
+            id: 'FormConfigWithValidationTest-id'
         })).toEqual(expected);
         
         
-        expect(formScaf.buildConfig('FormConfigWithValidationTest',false,{
+        expect(formScaf.buildConfig('FormConfigWithValidationTest',false,false,{
             id: 'FormConfigWithValidationTest-id',
         }).buttons[0].handler).toEqual(expected.buttons[0].handler);
     });
