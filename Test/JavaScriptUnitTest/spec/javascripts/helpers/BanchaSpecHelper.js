@@ -10,8 +10,16 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
     "type":"remoting",
     "actions":{
         "User":[{
+            "name":"load",
+            "formHandler": true,
+            "len":1
+        },{
+            "name":"submit",
+            "formHandler": true,
+            "len":1
+        },{
             "name":"create",
-            "len":3
+            "len":1
         },{
             "name":"destroy",
             "len":1
@@ -28,14 +36,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {name:'email', type:'string'},
                     {name:'avatar', type:'string'},
                     {name:'weight', type:'float'},
-                    {name:'height', type:'float'}
-                ],
-                validations: [
-                    {type:'length', name:'name', min:4, max:64},
-                    {type:'length', name:'login', min:3, max:64},
-                    {type:'length', name:'email', min:5, max:64},
-                    {type:'length', name:'avatar', max:64},
-                    {type:'length', name:'weight', max:64}
+                    {name:'height', type:'int'}
                 ],
                 //associations: [
                     //{type:'hasMany', model:'Post', name:'posts'},
@@ -50,20 +51,20 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
 
 
 
-BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName) {
+BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName,additionalConfigs) {
     Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
     
     if(Ext.isString(modelDefinitionsForName)) {
         // setup fake model
-        Bancha.REMOTE_API.metadata[modelDefinitionsForName] = Ext.clone(Bancha.REMOTE_API.metadata.User);
+        Bancha.REMOTE_API.metadata[modelDefinitionsForName] = Ext.apply({},additionalConfigs,Bancha.REMOTE_API.metadata.User);
         Bancha.REMOTE_API.actions[modelDefinitionsForName] = Ext.clone(Bancha.REMOTE_API.actions.User);
     } else if(Ext.isDefined(modelDefinitionsForName)){
         throw 'modelDefinitionsFor is not a string';
     }
     Bancha.init();
 };
-BanchaSpecHelper.initAndCreateSampleModel = function(modelName) {
-    this.init(modelName);
+BanchaSpecHelper.initAndCreateSampleModel = function(modelName,additionalConfigs) {
+    this.init(modelName,additionalConfigs);
     expect(Bancha.createModel(modelName)).toBeTruthy(); // Try to create fake model
 };
 BanchaSpecHelper.reset = function() {
