@@ -86,6 +86,7 @@ class BanchaController extends BanchaAppController {
 		//load the MetaData into $API
 		foreach ($banchaModels as $mod) {
 			$this->{$mod}->setBehaviorModel($mod);
+			$API['metaData']['_UID'] = str_replace('.','',uniqid('', true));
 			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
 		/**
