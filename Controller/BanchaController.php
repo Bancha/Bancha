@@ -27,7 +27,7 @@
 
 class BanchaController extends BanchaAppController {
 
-	var $name = 'Bancha.BanchaExt'; //turns html on again
+	var $name = 'Bancha.Bancha'; //turns html on again
 	var $autoRender = false; //we don't need a view for this
 	var $autoLayout = false;
 	//var $viewClass = 'Bancha.BanchaExt';
@@ -82,11 +82,23 @@ class BanchaController extends BanchaAppController {
 				}
 			}
 		}
+		
+		//insert UID
+		$API['metaData']['_UID'] = str_replace('.','',uniqid('', true));
+		
 
+		if(	in_array("all",$this->params['pass'] )) {
+			$metaDataModels = $banchaModels;
+		} else {
+			$metaDataModels = $this->params['pass'];
+		}
+		
 		//load the MetaData into $API
-		foreach ($banchaModels as $mod) {
+		foreach ($metaDataModels as $mod) {
+			if(! in_array($mod, $banchaModels)) {
+				throw new MissingModelException($mod);
+			}
 			$this->{$mod}->setBehaviorModel($mod);
-			$API['metaData']['_UID'] = str_replace('.','',uniqid('', true));
 			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
 		/**
@@ -120,6 +132,9 @@ class BanchaController extends BanchaAppController {
 	 */
 	
 	public function loadMetaData($models = array() ) {
+		if(isset($this->params['pass'])) {
+			$models = $this->params['pass'];
+		}
 		if ($models == null) {
 			return;
 		}
@@ -127,12 +142,14 @@ class BanchaController extends BanchaAppController {
 		if ( is_string($models)) {
 			$models = array($models);
 		}
-		
 		$modelMetaData = array();
 		foreach($models as $mod) {
+			$mod =  Inflector::Singularize($mod);
+			$mod = ucfirst($mod);
 			$this->loadModel($mod);
 			$this->{$mod}->setBehaviorModel($mod);
 			$modelMetaData[$mod] = $this->{$mod}->extractBanchaMetaData();	
+			
 		}
 		return $modelMetaData;
 	}
