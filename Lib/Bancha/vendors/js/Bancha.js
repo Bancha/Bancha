@@ -839,6 +839,7 @@ Ext.define('Bancha', {
                 return this.toFirstUpper(str);
             },
             /**
+             * DEPRICATED - CURRENTLY NOT USED
              * This enables the developer to change the default scaffolding functions at any time
              * and Bancha will always use the current functions, since there are no references
              * @member Bancha.scaffold.Util
@@ -882,6 +883,7 @@ Ext.define('Bancha', {
         Grid: { 
              /**
               * @private
+               * DEPRICATED - CURRENTLY NOT USED
               * Shorthand for {@llink Bancha.scaffold.Util#createFacade}
               */
              createFacade: function(method) {
@@ -1040,11 +1042,11 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the create button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * You can do this at any time, the current declarations are always used.  
-             * scope is an object: {  
-             *  store:       the grids store  
-             *  cellEditing: the grids cell editing plugin  
-             * }
+             * Scope is following object:
+             *     {  
+             *      store:       the grids store  
+             *      cellEditing: the grids cell editing plugin  
+             *     }
              */
             onCreate: function() { // scope is a config object
                 var edit = this.cellEditing,
@@ -1083,8 +1085,7 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * You can do this at any time, the current declarations are always used.
-             * scope is the store
+             * Scope is the store.
              */
             onSave: function() { // scope is the store
                 var valid = true,
@@ -1114,8 +1115,7 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the reset button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * You can do this at any time, the current declarations are always used.
-             * scope is the store
+             * Scope is the store.
              */
             onReset: function() { // scope is the store
                 // reject all changes
@@ -1133,7 +1133,6 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the delete button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * You can do this at any time, the current declarations are always used.
              */
             onDelete: function(grid, rowIndex, colIndex) {
                 var store = grid.getStore(),
@@ -1231,7 +1230,7 @@ Ext.define('Bancha', {
                         items: [{
                             icon: 'img/icons/delete.png',
                             tooltip: 'Delete',
-                            handler: this.createFacade('onDelete')
+                            handler: this.onDelete
                         }]
                     });
                 }
@@ -1312,7 +1311,7 @@ Ext.define('Bancha', {
                                 cellEditing: cellEditing,
                                 store      : store
                             },
-                            handler: this.createFacade('onCreate')
+                            handler: config.onCreate
                         });
                     }
                 
@@ -1321,7 +1320,7 @@ Ext.define('Bancha', {
                             iconCls: 'icon-reset',
                             text: 'Reset',
                             scope: store,
-                            handler: this.createFacade('onReset')
+                            handler: config.onReset
                         });
                     }
                     
@@ -1330,7 +1329,7 @@ Ext.define('Bancha', {
                             iconCls: 'icon-save',
                             text: 'Save',
                             scope: store,
-                            handler: this.createFacade('onSave')
+                            handler: config.onSave
                         });
                     }
                 
@@ -1656,7 +1655,6 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * You can do this at any time, the current declarations are always used.
              * scope is create by {@link #scopeButtonHandler}
              */
             onSave: function(){
@@ -1679,7 +1677,6 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the reset button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * You can do this at any time, the current declarations are always used.
              * scope a config object with a single fucntion this.getForm()
              */
             onReset:  function() {

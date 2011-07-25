@@ -211,7 +211,7 @@ describe("Bancha.scaffold.Grid tests",function() {
             items: [{
                 icon: 'img/icons/delete.png',
                 tooltip: 'Delete',
-                handler: gridScaf.createFacade('onDelete')
+                handler: gridScaf.onDelete
             }]
         }];
 
