@@ -670,6 +670,16 @@ describe("Bancha Singleton", function() {
                 expect(column.isAugmented).toEqual(true);
             });
         });
+        
+        it("should create a GridPanel using #createPanel", function() {
+            // prepare
+            h.initAndCreateSampleModel('GridPanelTest');
+            
+            // since this function is just a wrapper for #buildConfig,
+            // just test that it returns an grid panel
+
+            expect(gridScaf.createPanel('GridPanelTest')).toBeOfClass('Ext.grid.Panel');
+        });
     }); //eo scaffold grid functions
 
 
@@ -977,6 +987,16 @@ describe("Bancha Singleton", function() {
             Ext.each(result.items, function(item) {
                 expect(item.isAugmented).toEqual(true);
             });
+        });
+        
+        it("should create a FormPanel using #createPanel", function() {
+            // prepare
+            h.initAndCreateSampleModel('FormPanelTest');
+            
+            // since this function is just a wrapper for #buildConfig,
+            // just test that it returns an form panel
+
+            expect(formScaf.createPanel('FormPanelTest')).toBeOfClass('Ext.form.Panel');
         });
         
     }); //eo scaffold form functions

@@ -1243,7 +1243,7 @@ Ext.define('Bancha', {
              * For params see {@link buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
-            beforeBuild: function(model,config,additionalGridConfig) { // TODO test!
+            beforeBuild: function(model,config,additionalGridConfig) {
             },
             /**
              * @property
@@ -1258,28 +1258,12 @@ Ext.define('Bancha', {
             },
             /**
              * Builds a grid config from Bancha metadata, for scaffolding purposes.  
-             * Guesses are made by model field configs
+             * Guesses are made by model field configs and validation rules.
              *
-             * See {@link Bancha class explaination} for an example.
              * @param {Ext.data.Model|String} model The model class or model name
-             * @param {Object} (optional) config any property of GridConfig can be overrided for this call by declaring it here. E.g
-             *      {
-             *          columnDefaults: {
-             *              width: 200, // force a fixed with
-             *          },
-             *          onSave: function() {
-             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
-             *          },
-             *          enableUpdate: true,
-             *          formConfig: {
-             *              textfieldDefaults: {
-             *                  minLength: 3
-             *              }
-             *          }
-             *      }
-             * You can add editorfield configs to the property formConfig, which will then used as standard 
-             * {@link Bancha.scaffold.FormConfig} properties for this call.
-             * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the config
+             * @param {Object} config (optional) Any property of Bancha.scaffold.Grid can be overrided for this call by 
+             * declaring it in this config. See {@link #createPanel} config param.
+             * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the config.
              * @return {Object} Returns an Ext.grid.Panel configuration object
              */
             buildConfig: function(model,config,additionalGridConfig) {
@@ -1361,6 +1345,38 @@ Ext.define('Bancha', {
                 }
             
                 return config.afterBuild(gridConfig,model,config,additionalGridConfig) || gridConfig;
+            },
+            
+            
+            /**
+             * Builds a grid from Bancha metadata, for scaffolding purposes.  
+             * Guesses are made by model field configs and validation rules.
+             *
+             * See {@link Bancha class explaination} for an example.
+             * @param {Ext.data.Model|String} model The model class or model name
+             * @param {Object} config (optional) Any property of Bancha.scaffold.Grid can be overrided for this call by 
+             * declaring it in this config. E.g
+             *      {
+             *          columnDefaults: {
+             *              width: 200, // force a fixed with
+             *          },
+             *          onSave: function() {
+             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
+             *          },
+             *          enableUpdate: true,
+             *          formConfig: {
+             *              textfieldDefaults: {
+             *                  minLength: 3
+             *              }
+             *          }
+             *      }
+             * You can add editorfield configs to the property formConfig, which will then used as standard.  
+             * {@link Bancha.scaffold.FormConfig} properties for this call.
+             * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the new grid panel.
+             * @return {Object} Returns the new instance of Ext.grid.Panel
+             */
+            createPanel: function(model, recordId, config, additionalFormConfig) {
+                return Ext.create('Ext.grid.Panel', this.buildConfig.apply(this,arguments));
             }
         }, //eo GridConfig 
         /*
@@ -1712,7 +1728,7 @@ Ext.define('Bancha', {
              * For params see {@link buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
-            beforeBuild: function(model, recordId, config, additionalFormConfig) { // TODO test!
+            beforeBuild: function(model, recordId, config, additionalFormConfig) {
             },
             /**
              * @property
@@ -1775,25 +1791,13 @@ Ext.define('Bancha', {
              * By default data is loaded from the server if an id is supplied and 
              * onSvae it pushed the data to the server.  
              *  
-             * Guesses are made by model field configs. 
+              * Guesses are made by model field configs and validation rules. 
              * @param {Ext.data.Model|String} model the model class or model name
              * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
-             * @param {Object} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
-             *      {
-             *          fieldDefaults: {
-             *              disabled: true; // disable all fields by default
-             *          },
-             *          onSave: function() {
-             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
-             *          },
-             *          id: 'form'
-             *      }
-             *
-             * If you don't define an id here it will be created and can not be changed anymore afterwards.
-             *
+             * @param {Object} config (optional) Any property of Bancha.scaffold.Form can be overrided for this call by 
+             * declaring it in this config. See {@link #createPanel} config param.
              * @param {Object} additionalFormConfig (optional) Some additional Ext.form.Panel configs which are applied to the config
              * @return {Object} object with Ext.form.Panel configs
-             * @property
              */
             buildConfig: function(model, recordId, config, additionalFormConfig) {
                 var fields = [],
@@ -1884,6 +1888,34 @@ Ext.define('Bancha', {
                     }
                 }
                 return config.afterBuild(formConfig, model, recordId, config, additionalFormConfig) || formConfig;
+            },
+            
+            /**
+             * Builds form configs from the metadata, for scaffolding purposes.  
+             * By default data is loaded from the server if an id is supplied and 
+             * onSvae it pushed the data to the server.  
+             *  
+              * Guesses are made by model field configs and validation rules.
+             * @param {Ext.data.Model|String} model the model class or model name
+             * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
+             * @param {Object} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
+             *      {
+             *          fieldDefaults: {
+             *              disabled: true; // disable all fields by default
+             *          },
+             *          onSave: function() {
+             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
+             *          },
+             *          id: 'form'
+             *      }
+             *
+             * If you don't define an id here it will be created and can not be changed anymore afterwards.
+             *
+             * @param {Object} additionalFormConfig (optional) Some additional Ext.form.Panel configs which are applied to the new form panel
+             * @return {Object} Returns the new instance of Ext.form.Panel
+             */
+            createPanel: function(model, recordId, config, additionalFormConfig) {
+                return Ext.create('Ext.form.Panel', this.buildConfig.apply(this,arguments));
             }
         } //eo FormConfig
     } //eo scaffold
