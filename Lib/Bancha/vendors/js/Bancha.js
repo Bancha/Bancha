@@ -470,8 +470,8 @@ Ext.define('Bancha', {
      * See {@link Bancha Bancha class explaination} for an example.
      * @param {String|Array} modelNames A name of the model or an array of model names
      * @param {Function} callback (optional) A callback function, the first argument is:  
-     * * a model class if input modelNames was an string  
-     * * an object with model names as keys and models as arguments if an array was given
+     * -   a model class if input modelNames was an string  
+     * -   an object with model names as keys and models as arguments if an array was given
      * @param {Object} scope (optional) The scope of the callback function
      */
     onModelReady: function(modelNames, callback, scope) {
@@ -876,9 +876,9 @@ Ext.define('Bancha', {
          * {@link Bancha.scaffold.Form} to create the editor fields.
          *
          * You have three possible interceptors:
-         * * beforeBuild      : executed before {@link #buildGrid}
-         * * guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig} 
-         * * afterBuild       : executed after {@link #buildGrid} created the config
+         * -   beforeBuild      : executed before {@link #buildGrid}
+         * -   guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig} 
+         * -   afterBuild       : executed after {@link #buildGrid} created the config
          */
         Grid: { 
              /**
@@ -1399,16 +1399,16 @@ Ext.define('Bancha', {
          * 
          * It's recognizing following validation rules on the model to add validations
          * to the form fields:
-         *  * format
-         *  * file
-         *  * length
-         *  * numberformat
-         *  * presence
+         * -   format
+         * -   file
+         * -   length
+         * -   numberformat
+         * -   presence
          *
          * You have three possible interceptors:
-         * * beforeBuild     : executed before {@link #buildGrid}
-         * * guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
-         * * afterBuild      : executed after {@link #buildGrid} created the config
+         * -   beforeBuild     : executed before {@link #buildGrid}
+         * -   guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
+         * -   afterBuild      : executed after {@link #buildGrid} created the config
          */
         Form: {
             /**
@@ -1664,7 +1664,7 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is create by {@link #scopeButtonHandler}
+             * Scope is created by {@link #scopeButtonHandler}
              */
             onSave: function(){
                 var form = this.getForm(),
@@ -1686,7 +1686,7 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the reset button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is create by {@link #scopeButtonHandler}
+             * Scope is created by {@link #scopeButtonHandler}
              */
             onReset:  function() {
                 this.getForm().reset();
@@ -1754,10 +1754,10 @@ Ext.define('Bancha', {
             },
             /**
              * @method
-             * This function will rarely be used by application developers
+             * This function will rarely be used by application developers.
              * It adds a scope around the button handler which provides two function:  
-             *  * this.getPanel() to get the form panel  
-             *  * this.getForm() to get the basic form  
+             * -   this.getPanel() to get the form panel  
+             * -   this.getForm() to get the basic form  
              * 
              * The buttonConfig.scope will be ignored.
              * @param {Function} handler A button handler function to apply the scope to
