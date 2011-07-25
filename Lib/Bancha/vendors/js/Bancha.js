@@ -139,11 +139,10 @@ Ext.define('Bancha.data.Model', {
  *         // from the server and the model is created....
  *         Bancha.onModelReady('User', function(userModel) {
  *             // ... create a full featured users grid
- *             Ext.create('Ext.grid.Panel', 
- *                 Bancha.scaffold.GridConfig.buildConfig('User', {
+ *             Bancha.scaffold.Grid.createPanel('User', {
  *                     // you can overwrite defaults either like this
  *                     enableDestroy: true
- *                     // or permanent with Bancha.scaffold.GridConfig.enableDestroy = true;
+ *                     // or permanent with Bancha.scaffold.Grid.enableDestroy = true;
  *                 }, {
  *                     height: 350,
  *                     width: 650,
@@ -863,29 +862,28 @@ Ext.define('Bancha', {
                 ENDIF */
             }
         },
-        /*
-         * Create GridConfigs for scaffolding and production use.
-         * @class Bancha.scaffold.GridConfig
+        /**
+         * @class Bancha.scaffold.Grid
          * @singleton
          * 
-         * This class helps in creating Ext.grid.Panel's by creating config objects.
-         * This class uses many data from the given model.  
+         * This class helps in creating Ext.grid.Panel's.
+         * This class uses many data from the given model, including field configs and validation rules. 
          * 
          * If enableCreate or enableUpdate is true, this class will use 
-         * {@link Bancha.scaffold.FormConfig} to create the editor fields.
+         * {@link Bancha.scaffold.Form} to create the editor fields.
          *
          * You have three possible interceptors:
          *     - beforeBuild      : executed before {@link #buildGrid}
          *     - guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig} 
          *     - afterBuild       : executed after {@link #buildGrid} created the config
          */
-        GridConfig: { 
+        Grid: { 
              /**
               * @private
               * Shorthand for {@llink Bancha.scaffold.Util#createFacade}
               */
              createFacade: function(method) {
-                 return Bancha.scaffold.Util.createFacade('GridConfig',this,method);
+                 return Bancha.scaffold.Util.createFacade('Grid',this,method);
              },
             /**
              * @private
@@ -1025,7 +1023,7 @@ Ext.define('Bancha', {
                 // add an editor
                 enableUpdate = (typeof defaults.enableUpdate !== 'undefined') ? defaults.enableUpdate : this.enableUpdate;
                 if(enableUpdate) {
-                    column.field = Bancha.scaffold.FormConfig.buildFieldConfig(type,undefined,defaults.formConfig); // we don't need name definition in here
+                    column.field = Bancha.scaffold.Form.buildFieldConfig(type,undefined,defaults.formConfig); // we don't need name definition in here
                 }
                 
                 // now make some crazy guesses ;)
@@ -1184,7 +1182,7 @@ Ext.define('Bancha', {
              * create,update and/or delete!
              * 
              * @param {Ext.data.Model|String} model The model class or model name
-             * @param {Object} config (optional) Any applicable property of GridConfig can be overrided for this call by declaring it here. E.g
+             * @param {Object} config (optional) Any applicable property of Grid can be overrided for this call by declaring it here. E.g
              *      {
              *         enableDestroy: true
              *      }
@@ -1199,7 +1197,7 @@ Ext.define('Bancha', {
                 if(!Ext.isDefined(model)) {
                     Ext.Error.raise({
                         plugin: 'Bancha',
-                        msg: 'Bancha: Bancha.scaffold.GridConfig.buildColumns() expected the model or model name as first argument, instead got undefined'
+                        msg: 'Bancha: Bancha.scaffold.Grid.buildColumns() expected the model or model name as first argument, instead got undefined'
                     });
                 }
                 // ENDIF
@@ -1210,7 +1208,7 @@ Ext.define('Bancha', {
                         Ext.Error.raise({
                             plugin: 'Bancha',
                             model: model,
-                            msg: 'Bancha: First argument for Bancha.scaffold.GridConfig.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
+                            msg: 'Bancha: First argument for Bancha.scaffold.Grid.buildColumns() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
                         });
                     }
                     // ENDIF
@@ -1219,7 +1217,7 @@ Ext.define('Bancha', {
             
                 model.prototype.fields.each(function(field) {
                     columns.push(
-                        Bancha.scaffold.GridConfig.buildColumnConfig(field.type.type,field.name,config)
+                        Bancha.scaffold.Grid.buildColumnConfig(field.type.type,field.name,config)
                     );
                 });
             
@@ -1251,7 +1249,7 @@ Ext.define('Bancha', {
              * @param {Object} columnConfig just build grid panel config
              * @param {Object} {Ext.data.Model|String} model see {@link buildConfig}
              * @param {Object} {Object} config (optional) see {@link buildConfig}
-             * @param {Object} additionalFormConfig (optional) see {@link buildConfig}
+             * @param {Object} additionalGridConfig (optional) see {@link buildConfig}
              * @return {Object|undefined} object with final Ext.grid.Panel configs
              */
             afterBuild: function(columnConfig, model,config,additionalGridConfig) {
@@ -1371,21 +1369,20 @@ Ext.define('Bancha', {
              *          }
              *      }
              * You can add editorfield configs to the property formConfig, which will then used as standard.  
-             * {@link Bancha.scaffold.FormConfig} properties for this call.
+             * {@link Bancha.scaffold.Form} properties for this call.
              * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the new grid panel.
              * @return {Object} Returns the new instance of Ext.grid.Panel
              */
-            createPanel: function(model, recordId, config, additionalFormConfig) {
+            createPanel: function(model, recordId, config, additionalGridConfig) {
                 return Ext.create('Ext.grid.Panel', this.buildConfig.apply(this,arguments));
             }
-        }, //eo GridConfig 
-        /*
-         * Create GridConfigs for scaffolding and production use.
-         * @class Bancha.scaffold.FormConfig
+        }, //eo Grid 
+        /**
+         * @class Bancha.scaffold.Form
          * @singleton
          * 
-         * This class helps in creating Ext.form.Panel's by creating config objects.
-         * This class uses many data from the given model.  
+         * This class helps in creating Ext.form.Panel's.
+         * This class uses many data from the given model, including field configs and validation rules.  
          * 
          * It's recognizing following validation rules on the model to add validations
          * to the form fields:
@@ -1400,7 +1397,7 @@ Ext.define('Bancha', {
          *     - guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
          *     - afterBuild      : executed after {@link #buildGrid} created the config
          */
-        FormConfig: {
+        Form: {
             /**
              * @private
              * @property
@@ -1465,10 +1462,10 @@ Ext.define('Bancha', {
             /**
              * @private
              * Analysis the validation rules for a field and adds validation rules to the field config.
-             * For what is supported see {@link Bancha.scaffold.FormConfig}
+             * For what is supported see {@link Bancha.scaffold.Form}
              * @param {Object} field A Ext.form.field.* config
              * @param {Array} validations An array of Ext.data.validations of the model
-             * @param {Object} config A Bancha.scaffold.FormConfig config
+             * @param {Object} config A Bancha.scaffold.Form config
              * @return {Object} Returns a Ext.form.field.* config
              */
             addValidationRuleConfigs: (function() {
@@ -1543,7 +1540,7 @@ Ext.define('Bancha', {
                                         // IFDEBUG
                                         if(window.console && Ext.isFunction(window.console.warn)) {
                                             window.console.warn(
-                                                'Bancha: Currently Bancha.scaffold.FormConfig only recognizes the model Ext.data.validations format rules '+
+                                                'Bancha: Currently Bancha.scaffold.Form only recognizes the model Ext.data.validations format rules '+
                                                  'with the matcher regex of Ext.form.field.VType alpha, alphanum, email and url. This rule with matcher '+
                                                  rule.matcher.toString()+' will just be ignored.');
                                         }
@@ -1698,7 +1695,7 @@ Ext.define('Bancha', {
                  if(!Bancha.initialized) {
                      Ext.Error.raise({
                          plugin: 'Bancha',
-                         msg: 'Bancha: Bancha is not yet initalized, please init before using Bancha.scaffold.FormConfig.buildConfig().'
+                         msg: 'Bancha: Bancha is not yet initalized, please init before using Bancha.scaffold.Form.buildConfig().'
                      });
                  }
                  // ENDIF
@@ -1710,7 +1707,7 @@ Ext.define('Bancha', {
                 if(!Ext.isDefined(stub)) {
                     Ext.Error.raise({
                         plugin: 'Bancha',
-                        msg: 'Bancha: Bancha.scaffold.FormConfig.buildConfig() expects an remotable bancha model, but got an "normal" model or something else'
+                        msg: 'Bancha: Bancha.scaffold.Form.buildConfig() expects an remotable bancha model, but got an "normal" model or something else'
                     });
                 }
                 // ENDIF
@@ -1791,7 +1788,7 @@ Ext.define('Bancha', {
              * By default data is loaded from the server if an id is supplied and 
              * onSvae it pushed the data to the server.  
              *  
-              * Guesses are made by model field configs and validation rules. 
+             * Guesses are made by model field configs and validation rules. 
              * @param {Ext.data.Model|String} model the model class or model name
              * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
              * @param {Object} config (optional) Any property of Bancha.scaffold.Form can be overrided for this call by 
@@ -1815,7 +1812,7 @@ Ext.define('Bancha', {
                 if(!Ext.isDefined(model)) {
                     Ext.Error.raise({
                         plugin: 'Bancha',
-                        msg: 'Bancha: Bancha.scaffold.FormConfig.buildConfig() expected the model or model name as first argument, instead got undefined'
+                        msg: 'Bancha: Bancha.scaffold.Form.buildConfig() expected the model or model name as first argument, instead got undefined'
                     });
                 }
                 // ENDIF
@@ -1826,7 +1823,7 @@ Ext.define('Bancha', {
                         Ext.Error.raise({
                             plugin: 'Bancha',
                             model: model,
-                            msg: 'Bancha: First argument for Bancha.scaffold.FormConfig.buildConfig() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
+                            msg: 'Bancha: First argument for Bancha.scaffold.Form.buildConfig() is the string "'+model+'", which  is not a valid model class name. Please define a model first (see Bancha.getModel() and Bancha.createModel())'
                         });
                     }
                     // ENDIF
@@ -1837,7 +1834,7 @@ Ext.define('Bancha', {
                 validations = model.prototype.validations;
                 model.prototype.fields.each(function(field) {
                     fields.push(
-                        Bancha.scaffold.FormConfig.buildFieldConfig(field.type.type, field.name, config, validations)
+                        Bancha.scaffold.Form.buildFieldConfig(field.type.type, field.name, config, validations)
                     );
                 });
 
@@ -1917,7 +1914,7 @@ Ext.define('Bancha', {
             createPanel: function(model, recordId, config, additionalFormConfig) {
                 return Ext.create('Ext.form.Panel', this.buildConfig.apply(this,arguments));
             }
-        } //eo FormConfig
+        } //eo Form
     } //eo scaffold
 });
 

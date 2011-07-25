@@ -303,7 +303,7 @@ describe("Bancha Singleton", function() {
     describe("Bancha scaffold grid functions",function() {
         
         var h = BanchaSpecHelper, // shortcuts
-            gridScaf = Bancha.scaffold.GridConfig,
+            gridScaf = Bancha.scaffold.Grid,
             // take the defaults
             // (actually this is also copying all the function references, but it doesn't atter)
             testDefaults = Ext.clone(gridScaf);
@@ -384,7 +384,7 @@ describe("Bancha Singleton", function() {
             });
         });
         
-        it("should build a grid column config with Bancha.scaffold.GridConfig.buildColumns (component test)", function() {
+        it("should build a grid column config with #buildColumns (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridColumnsConfigTest');
 
@@ -435,14 +435,14 @@ describe("Bancha Singleton", function() {
             }];
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildColumns('GridColumnsConfigTest');
+            var result = gridScaf.buildColumns('GridColumnsConfigTest');
 
             // compare
             expect(result).toEqual(expected);
         });
         
         
-        it("should build a grid column config with Bancha.scaffold.GridConfig.buildColumns with update "+
+        it("should build a grid column config with #buildColumns with update "+
             "and delete functions (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridColumnsConfigWithUpdateDeleteTest');
@@ -505,12 +505,12 @@ describe("Bancha Singleton", function() {
                 items: [{
                     icon: 'img/icons/delete.png',
                     tooltip: 'Delete',
-                    handler: Bancha.scaffold.GridConfig.createFacade('onDelete')
+                    handler: gridScaf.createFacade('onDelete')
                 }]
             }];
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
+            var result = gridScaf.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
                 enableUpdate  : true,
                 enableDestroy : true
             });
@@ -520,12 +520,12 @@ describe("Bancha Singleton", function() {
         });
         
         
-        it("should build a grid panel config with Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
+        it("should build a grid panel config with #buildConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridConfigTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridConfigTest');
+            var result = gridScaf.buildConfig('GridConfigTest');
 
             // should have a store
             expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigTest");
@@ -536,12 +536,12 @@ describe("Bancha Singleton", function() {
         
         
         it("should build a grid panel config with update and delete support with "+
-            "Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
+            "#buildConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridConfigWithUpdateDeleteTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridConfigWithUpdateDeleteTest', {
+            var result = gridScaf.buildConfig('GridConfigWithUpdateDeleteTest', {
                 enableUpdate  : true,
                 enableDestroy : true
             });
@@ -569,12 +569,12 @@ describe("Bancha Singleton", function() {
         
         
         it("should build a grid panel config with full crud support with "+
-            "Bancha.scaffold.GridConfig.buildConfig (component test)", function() {
+            "#buildConfig (component test)", function() {
             // prepare
             h.initAndCreateSampleModel('GridConfigWithCRUDTest');
 
             // test
-            var result = Bancha.scaffold.GridConfig.buildConfig('GridConfigWithCRUDTest', {
+            var result = gridScaf.buildConfig('GridConfigWithCRUDTest', {
                 enableCreate    : true,
                 enableUpdate    : true,
                 enableReset : true,
@@ -686,7 +686,7 @@ describe("Bancha Singleton", function() {
     describe("Bancha scaffold form functions",function() {
         
         var h = BanchaSpecHelper, // shortcuts
-            formScaf = Bancha.scaffold.FormConfig; //shortcuf
+            formScaf = Bancha.scaffold.Form; //shortcuf
             // take the defaults
             // (actually this is also copying all the function references, but it doesn't atter)
             testDefaults = Ext.clone(formScaf);
