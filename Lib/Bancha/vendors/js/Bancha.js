@@ -51,7 +51,7 @@ Ext.define('Bancha.data.Model', {
 });
 
 
-/**
+/*
  * Add some validation function for scaffolding
  */
 (function() {
@@ -1269,7 +1269,7 @@ Ext.define('Bancha', {
              * Guesses are made by model field configs and validation rules.
              *
              * @param {Ext.data.Model|String} model The model class or model name
-             * @param {Object} config (optional) Any property of Bancha.scaffold.Grid can be overrided for this call by 
+             * @param {Object|False} config (optional) Any property of Bancha.scaffold.Grid can be overrided for this call by 
              * declaring it in this config. See {@link #createPanel} config param.
              * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the config.
              * @return {Object} Returns an Ext.grid.Panel configuration object
@@ -1363,7 +1363,7 @@ Ext.define('Bancha', {
              *
              * See {@link Bancha class explaination} for an example.
              * @param {Ext.data.Model|String} model The model class or model name
-             * @param {Object} config (optional) Any property of Bancha.scaffold.Grid can be overrided for this call by 
+             * @param {Object|False} config (optional) Any property of Bancha.scaffold.Grid can be overrided for this call by 
              * declaring it in this config. E.g
              *      {
              *          columnDefaults: {
@@ -1379,8 +1379,10 @@ Ext.define('Bancha', {
              *              }
              *          }
              *      }
-             * You can add editorfield configs to the property formConfig, which will then used as standard.  
+             *  
+             * You can add editorfield configs to the property formConfig, which will then used as standard
              * {@link Bancha.scaffold.Form} properties for this call.
+             * 
              * @param {Object} additionalGridConfig (optional) Some additional grid configs which are applied to the new grid panel.
              * @return {Object} Returns the new instance of Ext.grid.Panel
              */
@@ -1662,7 +1664,7 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * scope is create by {@link #scopeButtonHandler}
+             * Scope is create by {@link #scopeButtonHandler}
              */
             onSave: function(){
                 var form = this.getForm(),
@@ -1684,7 +1686,7 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the reset button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * scope a config object with a single fucntion this.getForm()
+             * Scope is create by {@link #scopeButtonHandler}
              */
             onReset:  function() {
                 this.getForm().reset();
@@ -1753,10 +1755,11 @@ Ext.define('Bancha', {
             /**
              * @method
              * This function will rarely be used by application developers
-             * It adds a scope around the button handler which provides two function:
-             *  * this.getPanel() to get the form panel
-             *  * this.getForm() to get the basic form
-             * The buttonConfig.scoe will be ignored.
+             * It adds a scope around the button handler which provides two function:  
+             *  * this.getPanel() to get the form panel  
+             *  * this.getForm() to get the basic form  
+             * 
+             * The buttonConfig.scope will be ignored.
              * @param {Function} handler A button handler function to apply the scope to
              * @param {Number|String} id the form panel id
              */
@@ -1806,7 +1809,7 @@ Ext.define('Bancha', {
              * Guesses are made by model field configs and validation rules. 
              * @param {Ext.data.Model|String} model the model class or model name
              * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
-             * @param {Object} config (optional) Any property of Bancha.scaffold.Form can be overrided for this call by 
+             * @param {Object|False} config (optional) Any property of Bancha.scaffold.Form can be overrided for this call by 
              * declaring it in this config. See {@link #createPanel} config param.
              * @param {Object} additionalFormConfig (optional) Some additional Ext.form.Panel configs which are applied to the config
              * @return {Object} object with Ext.form.Panel configs
@@ -1891,7 +1894,7 @@ Ext.define('Bancha', {
                     loadFn = function(component,options) {
                         component.load({
                             params: {
-                                id: recordId // TODO testen
+                                id: recordId
                             }
                         });
                     };
@@ -1912,13 +1915,13 @@ Ext.define('Bancha', {
              * Guesses are made by model field configs and validation rules.
              * @param {Ext.data.Model|String} model the model class or model name
              * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
-             * @param {Object} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
+             * @param {Object|False} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
              *      {
              *          fieldDefaults: {
              *              disabled: true; // disable all fields by default
              *          },
              *          onSave: function() {
-             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
+             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)");
              *          },
              *          id: 'form'
              *      }
