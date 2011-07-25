@@ -1313,12 +1313,6 @@ Ext.define('Bancha', {
                     }
                 
                     if(config.enableUpdate) {
-                        buttons.push({ // TODO expose button defaults
-                            iconCls: 'icon-save',
-                            text: 'Save',
-                            scope: store,
-                            handler: this.createFacade('onSave')
-                        });
                         if(config.enableReset) {
                             buttons.push({
                                 iconCls: 'icon-reset',
@@ -1327,6 +1321,12 @@ Ext.define('Bancha', {
                                 handler: this.createFacade('onReset')
                             });
                         }
+                        buttons.push({ // TODO expose button defaults
+                            iconCls: 'icon-save',
+                            text: 'Save',
+                            scope: store,
+                            handler: this.createFacade('onSave')
+                        });
                     }
                 
                     gridConfig.dockedItems = [{
@@ -1651,7 +1651,7 @@ Ext.define('Bancha', {
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
              * You can do this at any time, the current declarations are always used.
-             * scope a config object with a single fucntion this.getForm()
+             * scope is create by {@link #scopeButtonHandler}
              */
             onSave: function(){
                 var form = this.getForm(),
@@ -1714,7 +1714,7 @@ Ext.define('Bancha', {
                 
                 return {
                     // The server-side method to call for load() requests
-                    load: stub.load,
+                    load: stub.read, // as first and only param you must add data: {id: id} when loading
                     // The server-side must mark the submit handler as a 'formHandler'
                     submit: stub.submit
                 };
@@ -1742,8 +1742,9 @@ Ext.define('Bancha', {
             /**
              * @method
              * This function will rarely be used by application developers
-             * It adds a scope around the button handler which provides on function:
-             * this.getForm().  
+             * It adds a scope around the button handler which provides two function:
+             *  - this.getPanel() to get the form panel
+             *  - this.getForm() to get the basic form
              * The buttonConfig.scoe will be ignored.
              * @param {Function} handler A button handler function to apply the scope to
              * @param {Number|String} id the form panel id
@@ -1754,8 +1755,11 @@ Ext.define('Bancha', {
              */
             scopeButtonHandler: (function() {
                 var scopePrototype = {
+                        getPanel: function() {
+                            return this.panel || Ext.ComponentManager.get(this.id);
+                        },
                         getForm: function() {
-                            return this.up(this.id).getForm();
+                            return this.form || this.getPanel().getForm();
                         }
                     // IFDEBUG
                     },
@@ -1839,7 +1843,7 @@ Ext.define('Bancha', {
                 });
 
                 // for scoping reason we have to force an id here
-                id = config.id || Ext.id(null,'formpanel-');
+                id = additionalFormConfig.id || Ext.id(null,'formpanel-');
                 
                 // build buttons
                 buttons = [{
@@ -1859,6 +1863,7 @@ Ext.define('Bancha', {
                 Ext.apply(formConfig,{
                     id: id,
                     api: this.buildApiConfig(model),
+                    paramOrder: ['data'],
                     items: fields,
                     buttons: buttons
                 });
@@ -1912,7 +1917,9 @@ Ext.define('Bancha', {
              * @return {Object} Returns the new instance of Ext.form.Panel
              */
             createPanel: function(model, recordId, config, additionalFormConfig) {
-                return Ext.create('Ext.form.Panel', this.buildConfig.apply(this,arguments));
+            
+                var config = this.buildConfig.apply(this,arguments);
+                return Ext.create('Ext.form.Panel', config);
             }
         } //eo Form
     } //eo scaffold
