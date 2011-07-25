@@ -60,7 +60,7 @@ class BanchaSingleDispatcher extends Dispatcher {
 		}
 		$controller->shutdownProcess();
 		if (isset($request->params['action'])) {
-			action = $request->params['action'];
+			$action = $request->params['action'];
 		}
 		if (isset($request->params['method'])) {
 			
