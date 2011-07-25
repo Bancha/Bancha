@@ -26,8 +26,13 @@
  */
 
 class BanchaUploadController extends BanchaAppController {
-
-    function add() {
+	
+	/**
+	 * submit method, saves the file in the database
+	 *
+	 * @return void
+	 */
+    function submit() {
         if (!empty($this->data) &&
              is_uploaded_file($this->data['MyFile']['File']['tmp_name'])) {
             $fileData = fread(fopen($this->data['MyFile']['File']['tmp_name'], "r"),
@@ -40,10 +45,27 @@ class BanchaUploadController extends BanchaAppController {
 
             $this->MyFile->save($this->data);
 
-            $this->redirect('somecontroller/someaction');
+            $this->redirect('BanchaController/index');
         }
     }
 
+	
+    /**
+	 * load method, to retrieve files
+	 *
+	 * @return void
+	 */
+    function load($id) {
+	    Configure::write('debug', 0);
+	    $file = $this->MyFile->findById($id);
+	
+	    header('Content-type: ' . $file['MyFile']['type']);
+	    //header('Content-length: ' . $file['MyFile']['size']);
+	    header('Content-Disposition: attachment; filename="'.$file['MyFile']['name'].'"');
+	    echo $file['MyFile']['data'];
+	
+	    exit();
+	}
 }
 
 ?>
