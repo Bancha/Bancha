@@ -26,13 +26,13 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
  * @package bancha.libs
  */
 class BanchaRequestCollection {
-	
+
 	/** @var string */
 	protected $rawPostData;
-	
+
 	/** @var array */
 	protected $postData;
-	
+
 	/**
 	 * Constructor.
 	 *
@@ -57,7 +57,7 @@ class BanchaRequestCollection {
 			$data = json_decode($this->rawPostData, true);
 			// TODO: improve detection (not perfect, but should it should be correct in most cases.)
 			if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
-				$data = array($data); 
+				$data = array($data);
 			}
 			$data = Set::sort($data, '{n}.tid', 'asc');
 		}
@@ -65,21 +65,22 @@ class BanchaRequestCollection {
 		{
 			$data = array($this->postData);
 		}
-		
+
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
-				
+
 				$_SERVER['REQUEST_METHOD'] = 'POST';
-				
+
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				$requests[$i]['controller'] = $transformer->getController();
 				$requests[$i]['action']		= $transformer->getAction();
 				$requests[$i]['named']		= $transformer->getPaging();
 				$requests[$i]['pass']		= $transformer->getPassParams();
 				$requests[$i]['tid']		= $transformer->getTid();
-				$requests[$i]['plugin']	= null;
-				
+				$requests[$i]['plugin']		= null;
+				$requests[$i]['extUpload']	= $transformer->getExtUpload();
+
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);
 				}

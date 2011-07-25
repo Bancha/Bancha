@@ -3,15 +3,15 @@
 class BanchaResponseTransformer
 {
 
-	public static function transform($response, CakeRequest $request) {	
+	public static function transform($response, CakeRequest $request) {
 		$data = array();
 		$modelName = null;
-		
+
 		if ($request->controller)
 		{
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
-		
+
 		if ('index' == $request->action && $modelName)
 		{
 			foreach ($response as $i => $element) {
@@ -27,6 +27,12 @@ class BanchaResponseTransformer
 		{
 			$response = $response[$modelName];
 		}
+
+		if (isset($request['extUpload']) && $request['extUpload'])
+		{
+			return '<html><body><textarea>' . json_encode($response) . '</textarea></body></html>';
+		}
+
 		return $response;
 	}
 

@@ -24,7 +24,7 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  * @package bancha.libs
  */
 class BanchaResponseCollection {
-	
+
 /** @var array */
 	protected $responses = array();
 
@@ -46,10 +46,10 @@ class BanchaResponseCollection {
 			'method'	=> $request->action, // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
 		);
-		
+
 		return $this;
 	}
-	
+
 /**
  * Adds an exception to the BanchaResponse
  *
@@ -65,16 +65,25 @@ class BanchaResponseCollection {
 			'where'		=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
 			'trace'		=> $e->getTraceAsString(),
 		);
-		
+
 		return $this;
 	 }
-	 
+
 /**
  * Combines all CakeResponses into a single response and transforms it into JSON.
  *
  * @return CakeResponse
  */
 	public function getResponses() {
+		if (isset($this->responses[0]) && !is_array($this->responses[0]))
+		{
+			return new CakeResponse(array(
+				'body'		=>	$this->responses,
+				'status'	=> 200,
+				'type'		=> 'text/html',
+				'charset'	=> 'utf-8',
+			));
+		}
 		return new CakeResponse(array(
 			'body'			=> json_encode($this->responses),
 			'status'		=> 200,

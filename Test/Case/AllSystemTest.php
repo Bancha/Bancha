@@ -38,10 +38,11 @@ class AllSystemTest extends PHPUnit_Framework_TestSuite {
 
 		$path = dirname(__FILE__) . DS . 'System';
 		$suite->addTestFile($path . DS . 'BanchaCrudTest.php');
+		$suite->addTestFile($path . DS . 'BanchaExceptionsTest.php');
 		$suite->addTestFile($path . DS . 'BanchaFormTest.php');
 		$suite->addTestFile($path . DS . 'ConsistentModelTest.php');
 
-		$suite->addTestDirectory($path);
+		// $suite->addTestDirectory($path);
 		return $suite;
 	}
 }
