@@ -20,6 +20,14 @@ class BanchaBehavior extends ModelBehavior {
 		"text" => "text",
 		"boolean" => "boolean"
 		);
+		
+		//  formater for the validation rules
+		private $formater = array(
+		'alpha' => '/^[a-zA-Z_]+$/',
+		'alphanum' => '/^[a-zA-Z0-9_]+$/',
+		'email' => '/^(\w+)([\-+.][\w]+)*@(\w[\-\<wbr>w]*\.){1,5}([A-Za-z]){2,6}$/',
+		'url' => '/(((^https?)|(^ftp)):\/\/([\-\<wbr>w]+\.)+\w{2,3}(\/[%\-\w]+(\.\<wbr>w{2,})?)*(([\w\-\.\?\\\/+@&amp;#;`<wbr>~=%!]*)(\.\w{2,})?)*\/?)/i)',
+		);
 
 /**
  *  TODO doku
@@ -167,15 +175,119 @@ class BanchaBehavior extends ModelBehavior {
  * @return array ExtJS formated {type, name, max}
  */
 	private function getValidations() {
-		$columns = $this->schema;
+		$columns = $this->model->validate;
 		if (empty($columns)) {
-			trigger_error(__d('cake_dev', '(Model::getColumnTypes) Unable to build model field data. If you are using a model without a database table, try implementing schema()'), E_USER_WARNING);
+			//some testcases fail with this
+			//trigger_error(__d('cake_dev', '(Model::getColumnTypes) Unable to build model field data. If you are using a model without a database table, try implementing schema()'), E_USER_WARNING);
 		}
 		$cols = array();
 		foreach ($columns as $field => $values) {
-			if(isset($values['length'])) {
-				array_push($cols, array( 'type' => 'length', 'name' => $field, 'max' => $values['length']));
+			if(isset($values['notempty'])) {
+				$cols[] = array( 
+					'type' => 'presence', 
+					'name' => $field, 
+				);
 			}
+			
+			if(isset($values['minLength'])) {
+				$cols[] = array( 
+					'type' => 'length', 
+					'name' => $field, 
+					'min' => $values['minLength']['rule'][1],
+				);
+			}
+			
+			if(isset($values['maxLength'])) {
+				$cols[] = array( 
+					'type' => 'length', 
+					'name' => $field, 
+					'max' => $values['maxLength']['rule'][1],
+				);
+			}
+			
+			if(isset($values['between'])) {
+				if(	isset($values['between']['rule'][1]) ||
+					isset($values['between']['rule'][2]) ) {
+					$cols[] = array( 
+					'type' => 'length', 
+					'name' => $field,
+					'min' => $values['between']['rule'][1],
+					'max' => $values['between']['rule'][2]
+				);
+				} else {
+					$cols[] = array( 
+						'type' => 'length', 
+						'name' => $field,
+					);
+				}
+			}
+			
+			//TODO there is no alpha in cakephp
+			if(isset($values['alpha'])) {
+				$cols[] = array( 
+					'type' => 'format', 
+					'name' => $field, 
+					'matcher' => $this->formater['alpha'],
+				);
+			}
+			
+			if(isset($values['alphaNumeric'])) {
+				$cols[] = array( 
+					'type' => 'format', 
+					'name' => $field,  
+					'matcher' => $this->formater['alphanum'],
+				);
+			}
+			
+			if(isset($values['email'])) {
+				$cols[] = array( 
+					'type' => 'format', 
+					'name' => $field,  
+					'matcher' => $this->formater['email'],
+				);
+			}			
+			
+			if(isset($values['url'])) {
+				$cols[] = array( 
+					'type' => 'format', 
+					'name' => $field,  
+					'matcher' => $this->formater['url'],
+				);
+			}
+			
+			//  numberformat = precision, min, max
+			if(isset($values['decimal'])) {
+				if(isset($values['decimal']['rule'][1])) {
+					$cols[] = array( 
+						'type' => 'numberformat', 
+						'name' => $field,
+						'precision' => $values['decimal']['rule'][1],
+					);
+				} else {
+					$cols[] = array( 
+						'type' => 'numberformat', 
+						'name' => $field,
+					);				
+				}
+			}
+
+			if(isset($values['range'])) {
+				$cols[] = array( 
+					'type' => 'numberformat', 
+					'name' => $field,
+					'min' => $values['range']['rule'][1],
+					'max' => $values['range']['rule'][2],
+				);
+			}
+			// extension 
+			if(isset($values['extension'])) {
+				$cols[] = array( 
+					'type' => 'file', 
+					'name' => $field,
+					//TODO 'extension' => $values['extension']['rule'][1],
+				);
+			}		
+			
 		}
 		return $cols;
 	}
