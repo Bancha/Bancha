@@ -48,6 +48,7 @@ class BanchaUploadController extends BanchaAppController {
             $this->redirect('BanchaController/index');
         }
     }
+
 	
     /**
 	 * downloaad method, to retrieve files
