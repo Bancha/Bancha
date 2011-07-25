@@ -972,7 +972,7 @@ Ext.define('Bancha', {
                     );
                 
                     if(config.oneStorePerModel) {
-                        stores[modelName] = stores;
+                        stores[modelName] = store;
                     }
                 
                     return store;
