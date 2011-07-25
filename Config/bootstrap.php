@@ -28,7 +28,7 @@
 CakePlugin::load('Bancha');
 
 // set namespace for ExtJS
-Configure:write('Bancha.namespace','Bancha.RemoteStubs');
+Configure::write('Bancha.namespace','Bancha.RemoteStubs');
 
 
 // TODO: DEFINE _ KONSTANTE _ BANCHA_CONTEXT_ True 
