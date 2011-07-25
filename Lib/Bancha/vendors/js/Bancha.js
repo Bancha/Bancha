@@ -930,12 +930,16 @@ Ext.define('Bancha', {
             datecolumnDefaults: {},
             /**
              * @property
-             * The defaults class to create an store for grid scaffolding
+             * The defaults class to create an store for grid scaffolding. (Default: "Ext.data.Store")
              */
             storeDefaultClass: "Ext.data.Store",
             /**
              * @property
-             * Defaults for all grid stores created with this scaffolding
+             * Defaults for all grid stores created with this scaffolding.  
+             * Default:
+             *    { 
+             *      autoLoad: true
+             *    }
              */
             storeDefaults: { 
                 autoLoad: true
@@ -943,7 +947,7 @@ Ext.define('Bancha', {
             /**
              * @property
              * True to use only one store per model (singleton), 
-             * false to create a new store each time
+             * false to create a new store each time.
              */
             oneStorePerModel: true,
             /**
@@ -1175,19 +1179,22 @@ Ext.define('Bancha', {
             enableDestroy: true,
             /**
              * @property
-             * If true a reset button will be added to all scaffolded grids (only if enableCreate or enableUpdate is true).
+             * If true a reset button will be added to all scaffolded grids
+             * (only if enableCreate or enableUpdate is true).
              */
             enableReset: true,
             /**
              * Builds grid columns from the Bancha metadata, for scaffolding purposes.  
-             * Please use buildConfig function if you want support for 
-             * create,update and/or delete!
+             * Please use {@link #createPanel} or {@link #buildConfig} if you want 
+             * support for create,update and/or delete!
              * 
              * @param {Ext.data.Model|String} model The model class or model name
-             * @param {Object} config (optional) Any applicable property of Grid can be overrided for this call by declaring it here. E.g
-             *      {
+             * @param {Object} config (optional) Any applicable property of 
+             * Bancha.scaffold.Grid can be overrided for this call by declaring it
+             * here. E.g.:
+             *     {
              *         enableDestroy: true
-             *      }
+             *     }
              * @return {Array} Returns an array of Ext.grid.column.* configs
              */
             buildColumns: function(model, config) {
@@ -1196,10 +1203,10 @@ Ext.define('Bancha', {
             
             
                 // IFDEBUG
-                if(!Ext.isDefined(model)) {
+                if(!Ext.isDefined(model) || ( (Ext.isString(model) && !Ext.ModelManager.isRegistered(model)) && !model.isModel)) {
                     Ext.Error.raise({
                         plugin: 'Bancha',
-                        msg: 'Bancha: Bancha.scaffold.Grid.buildColumns() expected the model or model name as first argument, instead got undefined'
+                        msg: 'Bancha: Bancha.scaffold.Grid.buildColumns() expected the model or model name as first argument, instead got '+model+'(of type'+(typeof model)+')'
                     });
                 }
                 // ENDIF
