@@ -8,6 +8,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @category      Tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -21,7 +23,8 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 /**
  * BanchaDispatcherTest
  *
- * @package bancha.libs
+ * @package       Bancha
+ * @category      Tests
  */
 class BanchaDispatcherTest extends CakeTestCase {
 
@@ -66,8 +69,7 @@ class BanchaDispatcherTest extends CakeTestCase {
  * directly to the browser. We need to capture the output to test it.
  *
  */
-	public function testDispatchWithoutReturn()
-	{
+	public function testDispatchWithoutReturn() {
 		$rawPostData = array(
 			array(
 				'action'	=> 'My',
@@ -93,8 +95,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$responses = json_decode(ob_get_contents());
 		ob_end_clean();
 		// ob_end_clean() does not restore the Content-Type, but we do not want to send the header in CLI mode.
-		if (isset($_SERVER['HTTP_HOST']))
-		{
+		if (isset($_SERVER['HTTP_HOST'])) {
 			header("Content-Type: text/html; charset=utf-8");
 		}
 
@@ -107,7 +108,8 @@ class BanchaDispatcherTest extends CakeTestCase {
 /**
  * MyController class
  *
- * @package       bancha.tests.cases
+ * @package       Bancha
+ * @category      TestFixtures
  */
 class MyController extends AppController {
 
