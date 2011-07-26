@@ -2,7 +2,7 @@
 /**
  * This file is loaded automatically by the app/webroot/index.php file after core.php
  *
- * This file should load/create any application wide configuration settings, such as 
+ * This file should load/create any application wide configuration settings, such as
  * Caching, Logging, loading additional configuration files.
  *
  * You should also use this file to include any files that provide global functions/constants
@@ -16,6 +16,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Config
  * @copyright     Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       app.config
@@ -31,7 +33,7 @@ CakePlugin::load('Bancha');
 Configure:write('Bancha.namespace','Bancha.RemoteStubs');
 
 
-// TODO: DEFINE _ KONSTANTE _ BANCHA_CONTEXT_ True 
+// TODO: DEFINE _ KONSTANTE _ BANCHA_CONTEXT_ True
 
 // TODO: LOAD PLUGINS in webroot/bancha.php -> don't load it here
 // load Behavior -> loaded in app/Config/bootstrap.php

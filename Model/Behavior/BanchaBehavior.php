@@ -1,8 +1,19 @@
 <?php
+/**
+ * BanchaBehavior file.
+ *
+ * @package    Bancha
+ * @subpackage Model.Behavior
+ */
 
 App::uses('ModelBehavior', 'Model');
 
-// TODO doku
+/**
+ * BanchaBehavior.
+ *
+ * @package    Bancha
+ * @subpackage Model.Behavior
+ */
 class BanchaBehavior extends ModelBehavior {
 
 	// TODO doku
@@ -10,8 +21,8 @@ class BanchaBehavior extends ModelBehavior {
 	private $actionIsAllowed;
 	private $schema;
 	private $model;
-	
-	private $types = array( 
+
+	private $types = array(
 		"integer" => "int",
 		"string" => "string",
 		"datetime" => "date",
@@ -37,11 +48,11 @@ class BanchaBehavior extends ModelBehavior {
 		$this->schema = $Model->schema();
 		$this->actionIsAllowed = $config;
 	}
-	
+
 	/** set the model explicit as cakephp does not instantiate the behavior for each model
-	 * 
+	 *
 	 */
-	
+
 	function setBehaviorModel(&$Model) {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
@@ -54,15 +65,15 @@ class BanchaBehavior extends ModelBehavior {
  * @return array all the metadata as array
  */
 	function extractBanchaMetaData() {
-		
+
 		//TODO persist: persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
 		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
 
 		$ExtMetaData = array();
 
-		// TODO check types (CakePHP vs ExtJS) and convert if necessary 
-		
+		// TODO check types (CakePHP vs ExtJS) and convert if necessary
+
 		/* cakePHP types 	MySQL types						ExtJS Types
 		 * 	primary_key 	NOT NULL auto_increment			???
 		 *	string 			varchar(255)
@@ -76,8 +87,8 @@ class BanchaBehavior extends ModelBehavior {
 		 *	binary 			blob
 		 *	boolean 		tinyint(1)
 		 */
-		
-		
+
+
 		$fields = $this->getColumnTypes();
 		$validations = $this->getValidations();
 		$associations = $this->getAssociated();
@@ -85,18 +96,18 @@ class BanchaBehavior extends ModelBehavior {
 
 		$ExtMetaData = array (
 			'idProperty' => 'id',
-			'fields' => $fields, 
-			'validations' => $validations, 
+			'fields' => $fields,
+			'validations' => $validations,
 			'associations' => $associations,
 			'sorters' => $sorters
 		);
 
 		return $ExtMetaData;
 	}
-	
+
 /**
  * Return the Associations as ExtJS-Assoc Model
- * should look like this: 
+ * should look like this:
  *
  * 'Post', {
  *     fields: ['id', 'user_id', 'title', 'body'],
@@ -112,12 +123,12 @@ class BanchaBehavior extends ModelBehavior {
 		}
 		return $return;
 	}
-	
+
 /**
  * return the model columns as ExtJS Fields
- * 
- * should look like 
- * 
+ *
+ * should look like
+ *
  * 'User', {
  *   fields: [
  *     {name: 'id', type: 'int'},
@@ -163,7 +174,7 @@ class BanchaBehavior extends ModelBehavior {
 	private function getSorters() {
 		// TODO TechDocu: only arrays are allowed as $order
 		$sorters = array();
-		if ( is_array($this->model->order) ) {			
+		if ( is_array($this->model->order) ) {
 			foreach($this->model->order as $key => $value) {
 				$token = strtok($key, ".");
 				$key = strtok(".");

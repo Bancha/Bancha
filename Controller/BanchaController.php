@@ -7,6 +7,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Controller
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -22,16 +24,17 @@
  * Bancha Controller
  * This class exports the ExtJS API of all other Controllers for use in ExtJS Frontends
  *
+ * @package    Bancha
+ * @subpackage Controller
  * @author Andreas Kern
  */
-
 class BanchaController extends BanchaAppController {
 
 	var $name = 'Bancha.BanchaExt'; //turns html on again
 	var $autoRender = false; //we don't need a view for this
 	var $autoLayout = false;
 	//var $viewClass = 'Bancha.BanchaExt';
-		
+
 
 	/**
 	 *  CRUD mapping between cakephp and extjs
@@ -42,8 +45,8 @@ class BanchaController extends BanchaAppController {
 	public $map = array(
 			'index' => array('getAll', 0),
 			'view' => array('read', 1),
-			'add' => array('create', 1), 
-			'edit' => array('update', 1), 
+			'add' => array('create', 1),
+			'edit' => array('update', 1),
 			'delete' => array('destroy', 1)
 	);
 
@@ -66,7 +69,7 @@ class BanchaController extends BanchaAppController {
 		$API['namespace'] = 'Bancha.RemoteStubs';
     	$API['type'] = "remoting";
 
-		
+
 
 		/****** parse Models **********/
 
@@ -90,20 +93,20 @@ class BanchaController extends BanchaAppController {
 		}
 		/**
 		 * loop through the Controllers and adds the apropriate methods
-		 * 
+		 *
 		 * TODO implement scaffolding;
 		 */
 
 		foreach($banchaModels as $cont) {
 			$cont = Inflector::pluralize($cont);
-			include(APP . DS . 'Controller' . DS . $cont . 'Controller.php');			
+			include(APP . DS . 'Controller' . DS . $cont . 'Controller.php');
 			$methods = get_class_methods($cont . 'Controller');;
 			$cont = str_replace('Controller','',$cont);
 			$cont = Inflector::singularize($cont);
 			$API['actions'][$cont] = array();
 			foreach( $this->map as $key => $value) {
 				if (array_search($key, $methods) !== false) {
-					array_push($API['actions'][$cont], array('name' => $value[0],'len' => $value[1]));					
+					array_push($API['actions'][$cont], array('name' => $value[0],'len' => $value[1]));
 				};
 			}
 		}
@@ -112,26 +115,26 @@ class BanchaController extends BanchaAppController {
 		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
 		//$this->render(null, 'ajax', null); //removes the html
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * this function returns the Metadata of the models passed as an argument
 	 */
-	
+
 	public function loadMetaData($models = array() ) {
 		if ($models == null) {
 			return;
 		}
-		
+
 		if ( is_string($models)) {
 			$models = array($models);
 		}
-		
+
 		$modelMetaData = array();
 		foreach($models as $mod) {
 			$this->loadModel($mod);
 			$this->{$mod}->setBehaviorModel($mod);
-			$modelMetaData[$mod] = $this->{$mod}->extractBanchaMetaData();	
+			$modelMetaData[$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
 		return $modelMetaData;
 	}
