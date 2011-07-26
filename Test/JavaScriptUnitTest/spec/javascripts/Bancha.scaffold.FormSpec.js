@@ -81,14 +81,16 @@ describe("Bancha.scaffold.Form tests",function() {
     
     var getButtonConfig = function(id) {
         return [{
-            text: 'Reset',
+            scope: formScaf.buildButtonScope(id),
+            handler: formScaf.onReset,
             iconCls: 'icon-reset',
-            handler: formScaf.scopeButtonHandler(formScaf.onReset,id,'Reset'),
+            text: 'Reset'
         }, {
-            text: 'Save',
+            scope: formScaf.buildButtonScope(id),
+            handler: formScaf.onSave,
             iconCls: 'icon-save',
+            text: 'Save',
             formBind: true,
-            handler: formScaf.scopeButtonHandler(formScaf.onSave,id,'Save')
         }];
     };
     

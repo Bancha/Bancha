@@ -1920,13 +1920,14 @@ Ext.define('Bancha', {
                         scope: buttonScope,
                         handler: config.onReset
                     });
-                    buttons.push(button); // add at the front
+                    buttons.push(button);
                 }
                 // save button
                 button = Ext.apply({}, config.saveButtonConfig, {
                     scope: buttonScope,
                     handler: config.onSave
-                });
+                });    
+                buttons.push(button);
                 
                 
                 // extend formConfig
