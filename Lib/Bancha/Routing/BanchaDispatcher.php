@@ -6,7 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @subpackage    Routing
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -21,7 +22,8 @@ App::uses('BanchaSingleDispatcher', 'Bancha.Bancha/Routing');
 /**
  * BanchaDispatcher
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Routing
  */
 class BanchaDispatcher {
 
@@ -37,14 +39,14 @@ class BanchaDispatcher {
  */
 	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
 		$transformer = new BanchaResponseCollection();
-		
+
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
 			// Call dispatcher for the given CakeRequest.
 			$dispatcher = new BanchaSingleDispatcher();
 			try {
 				$transformer->addResponse(
-					$request['tid'], 
+					$request['tid'],
 					$dispatcher->dispatch($request, array('return' => true)),
 					$request
 				);
@@ -53,9 +55,9 @@ class BanchaDispatcher {
 		   		if(Configure::read('debug') > 0) {
 		    		$transformer->addException($request['tid'], $e, $request);
 		   		}
-		   	}	
+		   	}
 		}
-		
+
 		// Combine the responses and return or output them.
 		$responses = $transformer->getResponses();
 		if (isset($additionalParams['return']) && $additionalParams['return']) {
@@ -63,8 +65,8 @@ class BanchaDispatcher {
 		}
 		$responses->send();
 	}
-	
+
 	// exceptions abfangen mit try { catch
-	// stacktrace nur mitschicken bei debug != 0 
+	// stacktrace nur mitschicken bei debug != 0
 
 }

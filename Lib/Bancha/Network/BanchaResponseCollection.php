@@ -6,7 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @subpackage    Network
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -21,7 +22,8 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 /**
  * BanchaResponseCollection
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Network
  */
 class BanchaResponseCollection {
 

@@ -6,6 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Network
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -23,22 +25,23 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 /**
  * BanchaRequestCollection
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Network
  */
 class BanchaRequestCollection {
 
-	/** @var string */
+/** @var string */
 	protected $rawPostData;
 
-	/** @var array */
+/** @var array */
 	protected $postData;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param string $rawPostData Content of $HTTP_RAW_POST_DATA.
-	 * @param array $postData Content of $_POST.
-	 */
+/**
+ * Constructor.
+ *
+ * @param string $rawPostData Content of $HTTP_RAW_POST_DATA.
+ * @param array $postData Content of $_POST.
+ */
 	public function __construct($rawPostData = '', $postData = array())
 	{
 		$this->rawPostData = $rawPostData;

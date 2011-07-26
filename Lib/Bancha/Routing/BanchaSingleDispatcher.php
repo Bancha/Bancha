@@ -6,7 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @subpackage    Routing
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -19,7 +20,8 @@ App::uses('Dispatcher', 'Routing');
 /**
  * BanchaSingleDispatcher
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Routing
  */
 class BanchaSingleDispatcher extends Dispatcher {
 
@@ -65,7 +67,7 @@ class BanchaSingleDispatcher extends Dispatcher {
 		}
 		$response->send();
 	}
-	
+
 	/**
 	 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
 	 * applies the routeas.

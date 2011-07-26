@@ -6,6 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Network
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -22,7 +24,8 @@ App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
  * This is a helper class which provides a convenient interface to extract, transform and retrieve data from an Ext JS
  * request in a format suited for CakePHP.
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Network
  */
 class BanchaRequestTransformer {
 
