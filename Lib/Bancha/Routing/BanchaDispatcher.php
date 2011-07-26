@@ -65,6 +65,8 @@ class BanchaDispatcher {
 
 			if (!$skip_request) {
 				// Call dispatcher for the given CakeRequest.
+				// We need to use a sub classes disaptcher, because some parameters are missing in Bancha requests and
+				// because we need to full response, not only the body of the response.
 				$dispatcher = new BanchaSingleDispatcher();
 				try {
 					$transformer->addResponse(

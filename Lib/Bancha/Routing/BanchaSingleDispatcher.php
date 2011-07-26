@@ -18,7 +18,9 @@
 App::uses('Dispatcher', 'Routing');
 
 /**
- * BanchaSingleDispatcher
+ * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
+ *
+ * See the method descriptions why this is required.
  *
  * @package    Bancha
  * @subpackage Lib.Routing
@@ -31,6 +33,9 @@ class BanchaSingleDispatcher extends Dispatcher {
  * Otherwise the return value of the controller action are returned.
  *
  * Works like {@see Dispatcher::_invoke()} but returns the full response instead the body only.
+ *
+ * Bancha needs to overwrite this method because we need the full response object not only the body of the response
+ * object on return.
  *
  * @param Controller $controller Controller to invoke
  * @param CakeRequest $request The request object to invoke the controller for.
@@ -65,7 +70,7 @@ class BanchaSingleDispatcher extends Dispatcher {
 			$action = $request->params['action'];
 		}
 		if (isset($request->params['method'])) {
-			
+
 		}
 		if (isset($request->params['return'])) {
 			return $response;
@@ -75,7 +80,7 @@ class BanchaSingleDispatcher extends Dispatcher {
 
 	/**
 	 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
-	 * applies the routeas.
+	 * applies the routes.
 	 *
 	 * @param CakeRequest $request CakeRequest object to mine for parameter information.
 	 * @param array $additionalParams An array of additional parameters to set to the request.
