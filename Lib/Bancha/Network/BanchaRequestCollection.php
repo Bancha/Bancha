@@ -23,7 +23,8 @@ App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
 App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 
 /**
- * BanchaRequestCollection
+ * BanchaRequestCollection. The purpose of this class is to take a POST request (either as $_POST array or as raw POST
+ * data), extract batch requests form it into an array of CakeRequest objects.
  *
  * @package    Bancha
  * @subpackage Lib.Network
@@ -42,30 +43,29 @@ class BanchaRequestCollection {
  * @param string $rawPostData Content of $HTTP_RAW_POST_DATA.
  * @param array $postData Content of $_POST.
  */
-	public function __construct($rawPostData = '', $postData = array())
-	{
+	public function __construct($rawPostData = '', $postData = array()) {
 		$this->rawPostData = $rawPostData;
 		$this->postData = $postData;
 	}
 
 /**
- * Returns an array of CakeRequest objects.
+ * Returns an array of CakeRequest objects. Performs various transformations on the request passed to the constructor,
+ * so that the requests match the format expected by CakePHP.
  *
  * @return array Array with CakeRequest objects.
  */
 	public function getRequests() {
 		$requests = array();
-		if (strlen($this->rawPostData))
-		{
+		// If the request comes from $HTTP_RAW_POST_DATA it could be a batch request.
+		if (strlen($this->rawPostData)) {
 			$data = json_decode($this->rawPostData, true);
 			// TODO: improve detection (not perfect, but should it should be correct in most cases.)
 			if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
 				$data = array($data);
 			}
 			$data = Set::sort($data, '{n}.tid', 'asc');
-		}
-		else
-		{
+		} else {
+			// Form requests only contain one request.
 			$data = array($this->postData);
 		}
 
@@ -73,8 +73,10 @@ class BanchaRequestCollection {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
 
+				// CakePHP should think that every Bancha request is a POST request.
 				$_SERVER['REQUEST_METHOD'] = 'POST';
 
+				// Create CakeRequest and fill it with values from the transformer.
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				$requests[$i]['controller'] = $transformer->getController();
 				$requests[$i]['action']		= $transformer->getAction();
@@ -85,6 +87,7 @@ class BanchaRequestCollection {
 				$requests[$i]['extUpload']	= $transformer->getExtUpload();
 				$requests[$i]['client_id']	= $transformer->getClientId();
 
+				// Handle all other parameters as POST parameters.
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);
 				}
