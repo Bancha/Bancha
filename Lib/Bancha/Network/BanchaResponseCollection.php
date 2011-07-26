@@ -41,13 +41,18 @@ class BanchaResponseCollection {
  * @return BanchaResponseCollection
  */
 	public function addResponse($tid, CakeResponse $response, CakeRequest $request, $exception = false) {
-		$this->responses[] = array(
+		$response = array(
 			'type'		=> 'rpc',
 			'tid'		=> $tid,
 			'action'	=> $request->controller, // controllers are called action in Ext JS
 			'method'	=> $request->action, // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
 		);
+		if ($request['extUpload'])
+		{
+			$response['extUpload'] = true;
+		}
+		$this->responses[] = $response;
 
 		return $this;
 	}
@@ -79,9 +84,9 @@ class BanchaResponseCollection {
  */
 	public function getResponses() {
 		// Response to ExtUpload request
-		if (isset($this->responses[0]) && !is_array($this->responses[0])) {
+		if (isset($this->responses[0]['extUpload']) && $this->responses[0]['extUpload']) {
 			return new CakeResponse(array(
-				'body'		=>	$this->responses,
+				'body'		=>	$this->responses[0]['result'],
 				'status'	=> 200,
 				'type'		=> 'text/html',
 				'charset'	=> 'utf-8',
