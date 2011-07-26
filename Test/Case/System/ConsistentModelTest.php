@@ -8,6 +8,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @category      Tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -28,7 +30,8 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
 /**
  * ConsistentModelTest
  *
- * @package bancha.libs
+ * @package       Bancha
+ * @category      Tests
  */
 class ConsistentModelTest extends CakeTestCase {
 
@@ -109,14 +112,17 @@ class ConsistentModelTest extends CakeTestCase {
 		$clientId = uniqid();
 		// The syntax of the fake_request script is
 		// php _fake_request.php client_id article_id tid new_title sleep_time
+		// These processes are executed in the background and we do not need the output.
 		exec('php ' . dirname(__FILE__) . '/_fake_request.php ' . $clientId . ' ' . $article->id . ' 1 foobar 5 '
 			. '>/dev/null &');
 		sleep(3);
 		exec('php ' . dirname(__FILE__) . '/_fake_request.php ' . $clientId . ' ' . $article->id . ' 2 barfoo 0 '
 			. ' >/dev/null &');
 
+		// Wait some seconds until the backround process are executed.
 		sleep(8);
 
+		// Read article from database and check if the value is correct.
 		$data = $article->read(null, $article->id);
 		$this->assertEquals('foobar', $data['Article']['title']);
 

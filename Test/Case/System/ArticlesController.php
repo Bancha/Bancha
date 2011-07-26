@@ -3,6 +3,8 @@
 /**
  * Articles Controller
  *
+ * @package       Bancha
+ * @category      TestFixtures
  */
 class ArticlesController extends AppController {
 

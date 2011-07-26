@@ -1,4 +1,14 @@
 <?php
+/**
+* @package       Bancha
+* @category      TestFixtures
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ */
+
+// this script is used by the ConsistentModelTest to simulate executing multiple HTTP requests in parallel.
+
+// this script can be called using
+// php _fake_request.php client_id article_id tid title sleep_time
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', realpath(dirname(__FILE__) . '/../../../../..'));
