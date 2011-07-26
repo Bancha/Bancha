@@ -24,7 +24,7 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
  * @package bancha.libs
  */
 class BanchaDispatcherTest extends CakeTestCase {
-	
+
 /**
  * Tests the dispatch() method of BanchaDispatcher with the 'return'-option. Thus dispatch() doesn't send the response
  * to the browser but returns it instead. We are able to mock the BanchaRequest object, but we are not able to mock
@@ -53,14 +53,14 @@ class BanchaDispatcherTest extends CakeTestCase {
 		);
 
 		$collection = new BanchaRequestCollection(json_encode($rawPostData));
-		
+
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
-		
+
 		$this->assertEquals('Hello World!', $responses[0]->result->text);
 		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
-	
+
 /**
  * Tests the dispatch() method of BanchaDispatcher without the 'return'-option. Thus dispatch() sends the response
  * directly to the browser. We need to capture the output to test it.
@@ -86,18 +86,22 @@ class BanchaDispatcherTest extends CakeTestCase {
 		);
 
 		$collection = new BanchaRequestCollection(json_encode($rawPostData));
-		
+
 		$dispatcher = new BanchaDispatcher();
 		ob_start(); // capture output, because we want to test without return
 		$dispatcher->dispatch($collection);
 		$responses = json_decode(ob_get_contents());
 		ob_end_clean();
-		header("Content-Type: text/html; charset=utf-8"); // ob_end_clean() does not restore the Content-Type
+		// ob_end_clean() does not restore the Content-Type, but we do not want to send the header in CLI mode.
+		if (isset($_SERVER['HTTP_HOST']))
+		{
+			header("Content-Type: text/html; charset=utf-8");
+		}
 
 		$this->assertEquals('Hello World!', $responses[0]->result->text);
 		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
-	
+
 }
 
 /**
@@ -106,13 +110,13 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @package       bancha.tests.cases
  */
 class MyController extends AppController {
-	
+
 	public function testaction1() {
 		return array('text' => 'Hello World!');
 	}
-	
+
 	public function testaction2() {
 		return array('text' => 'foobar');
 	}
-	
+
 }
