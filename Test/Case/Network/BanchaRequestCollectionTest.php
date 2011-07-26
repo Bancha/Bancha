@@ -6,7 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @category      tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -20,10 +21,10 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 /**
  * BanchaRequestCollectionTest
  *
- * @package bancha.libs
+ * @package       Bancha
+ * @category      tests
  */
-class BanchaRequestCollectionTest extends CakeTestCase
-{
+class BanchaRequestCollectionTest extends CakeTestCase {
 
 /**
  * Transforms one Ext JS request into a CakePHP request. Transforms the indexes from Ext JS syntax (action + method)
@@ -160,8 +161,11 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		$this->assertEquals(1, $requests[0]['tid']);
 	}
 
-	public function testGetExtUploadForm()
-	{
+/**
+ * Tests if the extUpload parameter is correctly passed through the CakeRequest.
+ *
+ */
+	public function testGetExtUploadForm() {
 		$postData = array(
 			'extAction'	=> 'Test',
 			'extMethod'	=> 'update',

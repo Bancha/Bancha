@@ -23,10 +23,19 @@ App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
  *
  * @package bancha.libs
  */
-class BanchaResponseCollectionTest extends CakeTestCase
-{
+class BanchaResponseCollectionTest extends CakeTestCase {
 
+/**
+ * Tests the getResponses() method.
+ *
+ * The test response is a batch response that contains three responses. The first two are successful, while the third
+ * response is an exception.
+ *
+ * @return void
+ * @author Florian Eckerstorfer
+ */
 	function testGetResponses() {
+		// Content of responses.
 		$response1 = array(
 			'body'	=> array('message' => 'Hello World'),
 		);
@@ -34,6 +43,8 @@ class BanchaResponseCollectionTest extends CakeTestCase
 			'body'	=> array('message' => 'Hello Bancha'),
 		);
 		$response3 = new Exception('This is an exception'); $exception_line = __LINE__;
+
+		// ResponseCollection needs additional information from the request.
 		$request1 = new CakeRequest();
 		$request1->addParams(array('controller' => 'foo', 'action' => 'bar'));
 		$request2 = new CakeRequest();
@@ -41,25 +52,29 @@ class BanchaResponseCollectionTest extends CakeTestCase
 		$request3 = new CakeRequest();
 		$request3->addParams(array('controller' => 'foo', 'action' => 'error'));
 
+		// The heart of the test: create BanchaResponseCollection, add responses and get combined response.
 		$collection = new BanchaResponseCollection();
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
 				   ->addResponse(2, new CakeResponse($response2), $request2)
 				   ->addException(3, $response3, $request3);
-
+		// getResponses() is an array with JSON objects.
 		$actualResponse = json_decode($collection->getResponses()->body());
 
+		// Successfull response
 		$this->assertEquals('rpc', $actualResponse[0]->type);
 		$this->assertEquals(1, $actualResponse[0]->tid);
 		$this->assertEquals('foo', $actualResponse[0]->action);
 		$this->assertEquals('bar', $actualResponse[0]->method);
 		$this->assertEquals((object)array('message' => 'Hello World'), $actualResponse[0]->result);
 
+		// Successfull response
 		$this->assertEquals('rpc', $actualResponse[1]->type);
 		$this->assertEquals(2, $actualResponse[1]->tid);
 		$this->assertEquals('bar', $actualResponse[1]->action);
 		$this->assertEquals('foo', $actualResponse[1]->method);
 		$this->assertEquals((object)array('message' => 'Hello Bancha'), $actualResponse[1]->result);
 
+		// Exception response
 		$this->assertEquals('exception', $actualResponse[2]->type);
 		$this->assertEquals('This is an exception', $actualResponse[2]->message);
 		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $exception_line . '.', $actualResponse[2]->where);
