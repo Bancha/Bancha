@@ -40,7 +40,6 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile($path . 'AllBehaviorsTest.php');
 		$suite->addTestFile($path . 'AllRoutingTest.php');
 		$suite->addTestFile($path . 'AllNetworkTest.php');
-		$suite->addTestFile($path . 'AllUtilityTest.php');
 
 		// $suite->addTestDirectory($path);
 		return $suite;
