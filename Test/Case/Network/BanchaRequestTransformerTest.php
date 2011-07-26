@@ -91,6 +91,21 @@ class BanchaRequestTransformerTest extends CakeTestCase
 	}
 
 /**
+ * Tests if BanchaRequestTransformer extracts the Client ID correctly from the request.
+ *
+ */
+	public function testGetClientId()
+	{
+		$transformer = new BanchaRequestTransformer(array(
+			'data'		=> array(
+				'__bcid'	=> '123456',
+			),
+		));
+		$this->assertNotNull($transformer->getClientId());
+		$this->assertEquals('123456', $transformer->getClientId());
+	}
+
+/**
  * If the Ext JS request contains an URL, we need to extract is from the request, because we need to pass it to the
  * Constructor of CakeRequest.
  *
@@ -181,6 +196,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 			'action'	=> 'Test',
 			'method'	=> 'read',
 			'data'		=> array(
+				'__bcid'	=> uniqid(),
 				'id'		=> 42,
 				'page'		=> 2,
 				'limit'		=> 10,
@@ -200,6 +216,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertFalse(isset($data['limit']));
 		$this->assertFalse(isset($data['sort']));
 		$this->assertFalse(isset($data['tid']));
+		$this->assertFalse(isset($data['__bcid']));
 		$this->assertEquals('bar', $data['foo']);
 	}
 
@@ -211,6 +228,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 			'id'		=> 42,
 			'foo'		=> 'bar',
 			'extTID'	=> 1,
+			'extUpload'	=> '1',
 		);
 
 		$transformer = new BanchaRequestTransformer($data);
@@ -220,6 +238,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertFalse(isset($data['id']));
 		$this->assertEquals('bar', $data['foo']);
 		$this->assertFalse(isset($data['extTID']));
+		$this->assertFalse(isset($data['extUpload']));
 	}
 
 /**

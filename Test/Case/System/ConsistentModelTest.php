@@ -31,25 +31,32 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  * @package bancha.libs
  */
 class ConsistentModelTest extends CakeTestCase {
-	
+
 	public function setUp() {
 		parent::setUp();
 	}
-	
+
 	function tearDown() {
 		parent::tearDown();
 		ClassRegistry::flush();
 	}
-	
-	public function testEditEditOneRequest()
-	{
+
+/**
+ * This tests ensures that two requests, which are sent in the same batch request are executed in order of their
+ * transaction IDs. Therefore the order is wrong in the input data and the test ensures that their order is correct
+ * in the output data.
+ *
+ */
+	public function testEditEditOneRequest() {
 		// Preparation: create article
 		$article = new Article();
 		$article->create();
 		$article->save(array('title' => 'foo'));
-			
+
 		$dispatcher = new BanchaDispatcher();
-		
+
+		$client_id = uniqid();
+
 		$rawPostData = json_encode(array(
 			array(
 				'action'		=> 'Articles',
@@ -57,6 +64,7 @@ class ConsistentModelTest extends CakeTestCase {
 				'tid'			=> 2,
 				'type'			=> 'rpc',
 				'data'			=> array(
+					'__bcid'		=> $client_id,
 					'id'			=> $article->id,
 					'title'			=> 'foobar',
 					'published'		=> true,
@@ -68,6 +76,7 @@ class ConsistentModelTest extends CakeTestCase {
 				'tid'			=> 1,
 				'type'			=> 'rpc',
 				'data'			=> array(
+					'__bcid'		=> $client_id,
 					'id'			=> $article->id,
 					'title'			=> 'barfoo',
 					'published'		=> true,
@@ -77,55 +86,42 @@ class ConsistentModelTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$data = $article->read(null, $article->id);
 		$this->assertEquals('foobar', $data['Article']['title']);
-		
+
 		// Clean up operations: delete article
 		$article->delete();
 	}
-	
-	// public function testEditEditMultipleRequests()
-	// {
-	// 	// Preparation: create article
-	// 	$article = new Article();
-	// 	$article->create();
-	// 	$article->save(array('title' => 'foo'));
-	// 		
-	// 	$dispatcher = new BanchaDispatcher();
-	// 	
-	// 	$rawPostData1 = json_encode(array(
-	// 		'action'		=> 'Articles',
-	// 		'method'		=> 'update',
-	// 		'tid'			=> 2,
-	// 		'type'			=> 'rpc',
-	// 		'data'			=> array(
-	// 			'id'			=> $article->id,
-	// 			'title'			=> 'foobar',
-	// 			'published'		=> true,
-	// 		),
-	// 	));
-	// 	$responses1 = json_decode($dispatcher->dispatch(
-	// 		new BanchaRequestCollection($rawPostData1), array('return' => true)
-	// 	));
-	// 	
-	// 	$rawPostData2 = json_encode(array(
-	// 		'action'		=> 'Articles',
-	// 		'method'		=> 'update',
-	// 		'tid'			=> 1,
-	// 		'type'			=> 'rpc',
-	// 		'data'			=> array(
-	// 			'id'			=> $article->id,
-	// 			'title'			=> 'barfoo',
-	// 			'published'		=> true,
-	// 		),
-	// 	));
-	// 	$responses2 = json_decode($dispatcher->dispatch(
-	// 		new BanchaRequestCollection($rawPostData2), array('return' => true)
-	// 	));
-	// 	
-	// 	$data = $article->read(null, $article->id);
-	// 	$this->assertEquals('foobar', $data['Article']['title']);
-	// }
-	
+
+/**
+ * This test ensures that multiple requests, which are sent with multiple requests are executed in the correct order.
+ * Thus it ensures that a request with a higher transaction ID is not executed before a request with a lower TID.
+ *
+ */
+	public function testEditEditMultipleRequests() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+
+		// Execute two requests in parallel.
+		$clientId = uniqid();
+		// The syntax of the fake_request script is
+		// php _fake_request.php client_id article_id tid new_title sleep_time
+		exec('php ' . dirname(__FILE__) . '/_fake_request.php ' . $clientId . ' ' . $article->id . ' 1 foobar 5 '
+			. '>/dev/null &');
+		sleep(3);
+		exec('php ' . dirname(__FILE__) . '/_fake_request.php ' . $clientId . ' ' . $article->id . ' 2 barfoo 0 '
+			. ' >/dev/null &');
+
+		sleep(8);
+
+		$data = $article->read(null, $article->id);
+		$this->assertEquals('foobar', $data['Article']['title']);
+
+		// Clean up operations: delete article
+		$article->delete();
+	}
+
 }

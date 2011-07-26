@@ -31,12 +31,16 @@ class BanchaRequestCollectionTest extends CakeTestCase
  *
  */
 	function testGetRequests() {
+		$client_id = uniqid();
+
 		// We need to provide a request which looks like an actual Ext JS request in JSON syntax.
 		// It is notated as a PHP array and transformed into JSON because it is easier to read that way.
 		$rawPostData = json_encode(array(
 			'action'	=> 'Test',
 			'method'	=> 'create',
-			'data'		=> null,
+			'data'		=> array(
+				'__bcid'		=> $client_id,
+			),
 			'type'		=> 'rpc',
 			'tid'		=> 1,
 		));
@@ -63,6 +67,8 @@ class BanchaRequestCollectionTest extends CakeTestCase
 
 		// TID is set?
 		$this->assertEquals(1, $requests[0]['tid']);
+
+		$this->assertEquals($client_id, $requests[0]['client_id']);
 	}
 
 /**

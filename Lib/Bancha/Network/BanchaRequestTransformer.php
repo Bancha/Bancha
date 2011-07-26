@@ -53,6 +53,9 @@ class BanchaRequestTransformer {
 /** @var boolean TRUE if the given request is an upload request. */
 	protected $extUpload;
 
+	/** @var integer Client ID is a unique ID for every client (= Instance of Ext JS) */
+	protected $client_id;
+
 /**
  * Constructor. Requires a single Ext JS request in PHP array format.
  *
@@ -139,6 +142,10 @@ class BanchaRequestTransformer {
 		return $this->action;
 	}
 
+/**
+ * Returns the extUpload request parameter.
+ *
+ */
 	public function getExtUpload()
 	{
 		if (null != $this->extUpload)
@@ -146,6 +153,7 @@ class BanchaRequestTransformer {
 			return $this->extUpload;
 		}
 		$this->extUpload = isset($this->data['extUpload']) ? $this->data['extUpload'] : false;
+		unset($this->data['extUpload']);
 		return $this->extUpload;
 	}
 
@@ -164,6 +172,10 @@ class BanchaRequestTransformer {
 		return $this->url;
 	}
 
+/**
+ * Returns the Transaction ID from the request.
+ *
+ */
 	public function getTid()
 	{
 		if (null != $this->tid)
@@ -181,6 +193,22 @@ class BanchaRequestTransformer {
 			unset($this->data['extTID']);
 		}
 		return $this->tid;
+	}
+
+/**
+ * Returns the Client ID sent by requests as '__bcid' parameter. If no Client ID is given a uniqid() is generated.
+ *
+ */
+	public function getClientId()
+	{
+		if (null != $this->client_id) {
+			return $this->client_id;
+		}
+		if (isset($this->data['data']['__bcid'])) {
+			$this->client_id = $this->data['data']['__bcid'];
+			unset($this->data['data']['__bcid']);
+		}
+		return $this->client_id;
 	}
 
 /**
@@ -278,6 +306,8 @@ class BanchaRequestTransformer {
 		$this->getController();
 		$this->getAction();
 		$this->getUrl();
+		$this->getClientId();
+		$this->getExtUpload();
 		$this->getPassParams();
 		$this->getPaging();
 		if (isset($this->data['data']))

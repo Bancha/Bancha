@@ -83,6 +83,7 @@ class BanchaRequestCollection {
 				$requests[$i]['tid']		= $transformer->getTid();
 				$requests[$i]['plugin']		= null;
 				$requests[$i]['extUpload']	= $transformer->getExtUpload();
+				$requests[$i]['client_id']	= $transformer->getClientId();
 
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);
