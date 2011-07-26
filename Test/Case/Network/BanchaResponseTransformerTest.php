@@ -194,10 +194,10 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		));
 
 		// Response expected by Ext JS.
-		$expectedResponse = '<html><body><textarea>' . json_encode(array(
+		$expectedResponse = '<html><body><textarea>' . str_replace('"', '\"', json_encode(array(
 			'id'	=> 304,
 			'title'	=> 'foo',
-		)) . '</textarea></body></html>';
+		))) . '</textarea></body></html>';
 
 		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
 	}

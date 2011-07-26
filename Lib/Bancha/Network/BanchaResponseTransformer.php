@@ -55,7 +55,7 @@ class BanchaResponseTransformer {
 
 		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
 		if (isset($request['extUpload']) && $request['extUpload']) {
-			return '<html><body><textarea>' . json_encode($response) . '</textarea></body></html>';
+			return '<html><body><textarea>' . str_replace('"', '\"', json_encode($response)) . '</textarea></body></html>';
 		}
 
 		return $response;
