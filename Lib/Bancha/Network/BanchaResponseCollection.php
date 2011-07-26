@@ -27,7 +27,7 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  */
 class BanchaResponseCollection {
 
-/** @var array */
+/** @var array List of responses. */
 	protected $responses = array();
 
 
@@ -72,13 +72,14 @@ class BanchaResponseCollection {
 	 }
 
 /**
- * Combines all CakeResponses into a single response and transforms it into JSON.
+ * Combines all CakeResponses into a single response and transforms it into JSON. If the first response does not contain
+ * an array, we assume that 'extUpload' is active and therefore we do not transform the response into JSON.
  *
  * @return CakeResponse
  */
 	public function getResponses() {
-		if (isset($this->responses[0]) && !is_array($this->responses[0]))
-		{
+		// Response to ExtUpload request
+		if (isset($this->responses[0]) && !is_array($this->responses[0])) {
 			return new CakeResponse(array(
 				'body'		=>	$this->responses,
 				'status'	=> 200,
