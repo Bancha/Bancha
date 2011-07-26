@@ -87,7 +87,7 @@ class BanchaController extends BanchaAppController {
 		}
 
 		//insert UID
-		$API['metaData']['_UID'] = str_replace('.','',uniqid('', true));
+		$API['metadata']['_UID'] = str_replace('.','',uniqid('', true));
 
 
 		if(	in_array("all",$this->params['pass'] )) {
@@ -102,7 +102,7 @@ class BanchaController extends BanchaAppController {
 				throw new MissingModelException($mod);
 			}
 			$this->{$mod}->setBehaviorModel($mod);
-			$API['metaData'][$mod] = $this->{$mod}->extractBanchaMetaData();
+			$API['metadata'][$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
 		/**
 		 * loop through the Controllers and adds the apropriate methods
