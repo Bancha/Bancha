@@ -6,6 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Lib.ExceptionHandler
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -18,18 +20,14 @@
 
 
 /**
- * ExceptionsTestController
- * This throws a exception and simulates an error
+ * BanchaExceptionHandler.
  *
- * @author Kung Wong
- */
-
-/**
- * ExceptionsTest Controller
- *
+ * @package    Bancha
+ * @subpackage Lib.ExceptionHandler
+ * @author     Kung Wong
  */
 class BanchaExceptionHandler extends Object {
-	
+
 	public function handleException(Exception $e) {
 		// first log exception
 		$config = Configure::read('Exception');
@@ -41,11 +39,11 @@ class BanchaExceptionHandler extends Object {
 					  	);
 			CakeLog::write(LOG_ERR, $message);
 		}
-		
+
 		/** TODO: initialize renderer ?
 		 * see lib/cake/errorhandler.php
 		 * */
-		
+
 		//echo "testing the exception: " . $e;
 		//throw new Exception('TestException: ');
 	}

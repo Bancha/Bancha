@@ -6,7 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @subpackage    Lib.Network
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -21,10 +22,11 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 /**
  * BanchaResponseCollection
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Lib.Network
  */
 class BanchaResponseCollection {
-	
+
 /** @var array */
 	protected $responses = array();
 
@@ -46,10 +48,10 @@ class BanchaResponseCollection {
 			'method'	=> $request->action, // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
 		);
-		
+
 		return $this;
 	}
-	
+
 /**
  * Adds an exception to the BanchaResponse
  *
@@ -65,16 +67,25 @@ class BanchaResponseCollection {
 			'where'		=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
 			'trace'		=> $e->getTraceAsString(),
 		);
-		
+
 		return $this;
 	 }
-	 
+
 /**
  * Combines all CakeResponses into a single response and transforms it into JSON.
  *
  * @return CakeResponse
  */
 	public function getResponses() {
+		if (isset($this->responses[0]) && !is_array($this->responses[0]))
+		{
+			return new CakeResponse(array(
+				'body'		=>	$this->responses,
+				'status'	=> 200,
+				'type'		=> 'text/html',
+				'charset'	=> 'utf-8',
+			));
+		}
 		return new CakeResponse(array(
 			'body'			=> json_encode($this->responses),
 			'status'		=> 200,

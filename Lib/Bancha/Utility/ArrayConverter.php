@@ -6,6 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Lib.Utility
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -16,14 +18,15 @@
 /**
  * ArrayConverter
  *
- * @package Bancha.libs
+ * @package    Bancha
+ * @subpackage Lib.Utility
  */
 class ArrayConverter
 {
-	
+
 /** @var array */
 	private $data;
-	
+
 /**
  * Constructor
  *
@@ -33,7 +36,7 @@ class ArrayConverter
 	{
 		$this->data = $data;
 	}
-	
+
 /**
  * Returns the data array.
  *
@@ -43,7 +46,7 @@ class ArrayConverter
 	{
 		return $this->data;
 	}
-	
+
 /**
  * Renames the key from the given element.
  *
@@ -61,7 +64,7 @@ class ArrayConverter
 		}
 		return $this;
 	}
-	
+
 /**
  * Removes the given element if it exists and returns it value.
  *

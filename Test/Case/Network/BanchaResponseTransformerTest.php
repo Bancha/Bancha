@@ -23,7 +23,7 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  */
 class BanchaResponseTransformerTest extends CakeTestCase
 {
-	
+
 	public function testTransformIndexAction()
 	{
 		$cakeResponse = array(
@@ -40,13 +40,13 @@ class BanchaResponseTransformerTest extends CakeTestCase
 				),
 			)
 		);
-		
+
 		$request = new CakeRequest();
 		$request->addParams(array(
 			'controller'	=> 'Articles',
 			'action'		=> 'index',
 		));
-		
+
 		$expectedResponse = array(
 			array(
 				'id'	=> 304,
@@ -57,10 +57,10 @@ class BanchaResponseTransformerTest extends CakeTestCase
 				'title'	=> 'bar',
 			)
 		);
-		
+
 		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
 	}
-	
+
 	public function testTransformViewAction()
 	{
 		$cakeResponse = array(
@@ -69,23 +69,23 @@ class BanchaResponseTransformerTest extends CakeTestCase
 				'title'	=> 'foo',
 			),
 		);
-		
+
 		$request = new CakeRequest();
 		$request->addParams(array(
 			'controller'	=> 'Articles',
 			'action'			=> 'view'
 		));
-		
+
 		$expectedResponse = array(
 			array(
 				'id'	=> 304,
 				'title'	=> 'foo',
 			),
 		);
-		
+
 		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
 	}
-	
+
 	public function testTransformAddAction()
 	{
 		$cakeResponse = array(
@@ -94,21 +94,21 @@ class BanchaResponseTransformerTest extends CakeTestCase
 				'title'	=> 'foo',
 			),
 		);
-		
+
 		$request = new CakeRequest();
 		$request->addParams(array(
 			'controller'	=> 'Articles',
 			'action'		=> 'add'
 		));
-		
+
 		$expectedResponse = array(
 			'id'	=> 304,
 			'title'	=> 'foo',
 		);
-		
+
 		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
 	}
-	
+
 	public function testTransformEditAction()
 	{
 		$cakeResponse = array(
@@ -117,34 +117,58 @@ class BanchaResponseTransformerTest extends CakeTestCase
 				'title'	=> 'foo',
 			),
 		);
-		
+
 		$request = new CakeRequest();
 		$request->addParams(array(
 			'controller'	=> 'Articles',
 			'action'		=> 'edit'
 		));
-		
+
 		$expectedResponse = array(
 			'id'	=> 304,
 			'title'	=> 'foo',
 		);
-		
+
 		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
 	}
-	
+
 	public function testTransformDeleteAction()
 	{
 		$cakeResponse = array();
-		
+
 		$request = new CakeRequest();
 		$request->addParams(array(
 			'controller'	=> 'Articles',
 			'action'		=> 'delete'
 		));
-		
+
 		$expectedResponse = array();
-		
+
 		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
 	}
-	
+
+	public function testTransformExtUploadAction()
+	{
+		$cakeResponse = array(
+			'Article'	=> array(
+				'id'	=> 304,
+				'title'	=> 'foo',
+			),
+		);
+
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'		=> 'add',
+			'extUpload'		=> true,
+		));
+
+		$expectedResponse = '<html><body><textarea>' . json_encode(array(
+			'id'	=> 304,
+			'title'	=> 'foo',
+		)) . '</textarea></body></html>';
+
+		$this->assertEquals($expectedResponse, BanchaResponseTransformer::transform($cakeResponse, $request));
+	}
+
 }

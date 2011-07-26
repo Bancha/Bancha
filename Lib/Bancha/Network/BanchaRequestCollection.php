@@ -6,6 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Lib.Network
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -23,22 +25,23 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 /**
  * BanchaRequestCollection
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Lib.Network
  */
 class BanchaRequestCollection {
-	
-	/** @var string */
+
+/** @var string */
 	protected $rawPostData;
-	
-	/** @var array */
+
+/** @var array */
 	protected $postData;
-	
-	/**
-	 * Constructor.
-	 *
-	 * @param string $rawPostData Content of $HTTP_RAW_POST_DATA.
-	 * @param array $postData Content of $_POST.
-	 */
+
+/**
+ * Constructor.
+ *
+ * @param string $rawPostData Content of $HTTP_RAW_POST_DATA.
+ * @param array $postData Content of $_POST.
+ */
 	public function __construct($rawPostData = '', $postData = array())
 	{
 		$this->rawPostData = $rawPostData;
@@ -57,7 +60,7 @@ class BanchaRequestCollection {
 			$data = json_decode($this->rawPostData, true);
 			// TODO: improve detection (not perfect, but should it should be correct in most cases.)
 			if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
-				$data = array($data); 
+				$data = array($data);
 			}
 			$data = Set::sort($data, '{n}.tid', 'asc');
 		}
@@ -65,20 +68,22 @@ class BanchaRequestCollection {
 		{
 			$data = array($this->postData);
 		}
-		
+
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
-				
+
 				$_SERVER['REQUEST_METHOD'] = 'POST';
-				
+
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				$requests[$i]['controller'] = $transformer->getController();
 				$requests[$i]['action']		= $transformer->getAction();
 				$requests[$i]['named']		= $transformer->getPaging();
 				$requests[$i]['pass']		= $transformer->getPassParams();
 				$requests[$i]['tid']		= $transformer->getTid();
-				
+				$requests[$i]['plugin']		= null;
+				$requests[$i]['extUpload']	= $transformer->getExtUpload();
+
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);
 				}

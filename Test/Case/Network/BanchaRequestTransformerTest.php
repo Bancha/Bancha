@@ -23,7 +23,7 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
  */
 class BanchaRequestTransformerTest extends CakeTestCase
 {
-	
+
 /**
  * In the Ext JS request the name of the controller is stored as "action". We need to transform this.
  *
@@ -36,7 +36,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertNotNull($transformer->getController());
 		$this->assertEquals('Test', $transformer->getController());
 	}
-	
+
 	public function testGetControllerForm()
 	{
 		$transformer = new BanchaRequestTransformer(array(
@@ -45,7 +45,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertNotNull($transformer->getController());
 		$this->assertEquals('Test', $transformer->getController());
 	}
-	
+
 /**
  * First the name of action is stored in the "method" property in the Ext JS request, second Ext JS use different names
  * for CRUD operations. We need to transform them.
@@ -67,7 +67,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertNotNull($transformer->getAction());
 		$this->assertEquals($cakeAction, $transformer->getAction());
 	}
-	
+
 /**
  * @dataProvider getActionProvider
  */
@@ -80,7 +80,16 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertNotNull($transformer->getAction());
 		$this->assertEquals($cakeAction, $transformer->getAction());
 	}
-	
+
+	public function testGetExtUpload()
+	{
+		$transformer = new BanchaRequestTransformer(array(
+			'extUpload'		=> true,
+		));
+		$this->assertNotNull($transformer->getExtUpload());
+		$this->assertEquals(true, $transformer->getExtUpload());
+	}
+
 /**
  * If the Ext JS request contains an URL, we need to extract is from the request, because we need to pass it to the
  * Constructor of CakeRequest.
@@ -94,7 +103,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertNotNull($transformer->getUrl());
 		$this->assertEquals('/test/action', $transformer->getUrl());
 	}
-	
+
 /**
  * There are some params which are passed directly to the action method inside the controller. CakePHP stores them in
  * the 'pass' array inside the request. For the CRUD operations the only 'pass' parameter is 'id'. Therefore we extract
@@ -109,7 +118,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		));
 		$this->assertEquals(array('id' => 42), $transformer->getPassParams());
 	}
-	
+
 	public function testGetPassParamsForm()
 	{
 		$transformer = new BanchaRequestTransformer(array(
@@ -118,13 +127,13 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		));
 		$this->assertEquals(array('id' => 42), $transformer->getPassParams());
 	}
-	
+
 /**
- * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with 
+ * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with
  * page, limit and order. The sort in Ext looks like [property: X, direction: Y], in Cake like [Controller.X => Y].
  *
  * @dataProvider getPagingProvider
- */	
+ */
 	public function testGetPaging($extData, $cakePaginate)
 	{
 		$data = array(
@@ -139,7 +148,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals($paging['limit'], $cakePaginate['limit']);
 		$this->assertEquals($paging['order'], $cakePaginate['order']);
 	}
-	
+
 	public function testGetTid()
 	{
 		$data = array(
@@ -149,7 +158,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$transformer = new BanchaRequestTransformer($data);
 		$this->assertEquals(42, $transformer->getTid());
 	}
-	
+
 	public function testGetTidForm()
 	{
 		$data = array(
@@ -159,7 +168,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$transformer = new BanchaRequestTransformer($data);
 		$this->assertEquals(42, $transformer->getTid());
 	}
-	
+
 /**
  * The data array (which represent POST parameters) in CakePHP only contains the actual data values but not the special
  * parameters. Thus we need to clean the data array from action, controller, paginate and pass parameters. We therefore
@@ -193,7 +202,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertFalse(isset($data['tid']));
 		$this->assertEquals('bar', $data['foo']);
 	}
-	
+
 	public function testGetCleanedDataArrayForm()
 	{
 		$data = array(
@@ -212,7 +221,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 		$this->assertEquals('bar', $data['foo']);
 		$this->assertFalse(isset($data['extTID']));
 	}
-	
+
 /**
  * Provides the action names from Ext JS and CakePHP for use in testGetAction().
  *
@@ -227,7 +236,7 @@ class BanchaRequestTransformerTest extends CakeTestCase
 			array('read', array(), 'index'),
 		);
 	}
-	
+
 /**
  * Data provider for testGetRequestsPagination().
  *
@@ -277,5 +286,5 @@ class BanchaRequestTransformerTest extends CakeTestCase
 			),
 		);
 	}
-	
+
 }
