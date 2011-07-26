@@ -869,8 +869,8 @@ Ext.define('Bancha', {
          * @class Bancha.scaffold.Grid
          * @singleton
          * 
-         * This class helps in creating Ext.grid.Panel's.
-         * This class uses many data from the given model, including field configs and validation rules. 
+         * This class is a factory for creating Ext.grid.Panel's. It uses many data from
+         * ithe given model, ncluding field configs and validation rules. 
          * 
          * If enableCreate or enableUpdate is true, this class will use 
          * {@link Bancha.scaffold.Form} to create the editor fields.
@@ -1046,7 +1046,8 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the create button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is following object:
+             *   
+             * Default scope is following object:
              *     {  
              *      store:       the grids store  
              *      cellEditing: the grids cell editing plugin  
@@ -1089,7 +1090,8 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is the store.
+             *   
+             * Default scope is the store.
              */
             onSave: function() { // scope is the store
                 var valid = true,
@@ -1119,7 +1121,8 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the reset button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is the store.
+             *   
+             * Default scope is the store.
              */
             onReset: function() { // scope is the store
                 // reject all changes
@@ -1137,8 +1140,11 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the delete button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
+             *   
+             * Scope can be defined in destroyButtonConfig.items[0].scope, but normally 
+             * you don't need a scope here, since the arguments already provide everything.
              */
-            onDelete: function(grid, rowIndex, colIndex) {
+            onDestroy: function(grid, rowIndex, colIndex) {
                 var store = grid.getStore(),
                     rec = store.getAt(rowIndex),
                     name = Ext.getClassName(rec);
@@ -1183,10 +1189,57 @@ Ext.define('Bancha', {
              * (only if enableCreate or enableUpdate is true).
              */
             enableReset: true,
+             /**
+              * @property
+              * Default create button config, used if enableCreate is true.  
+              * If not defined scope and handler properties will be set by 
+              * the build function.
+              */
+             createButtonConfig:  {
+                 iconCls: 'icon-add',
+                 text: 'Create'
+             },
+             /**
+              * @property
+              * Default save button config, used if enableCreate and/or 
+              * enableUpdate are true.  
+              * If not defined scope and handler properties will be set by 
+              * the build function.
+              */
+             saveButtonConfig: { 
+                  iconCls: 'icon-save',
+                  text: 'Save'
+             },
+             /**
+              * @property
+              * Default reset button config, used if enableReset is true.  
+              * If not defined scope and handler properties will be set by 
+              * the build function.
+              */
+             resetButtonConfig: {
+                 iconCls: 'icon-reset',
+                 text: 'Reset'
+             },
+             /**
+              * @property
+              * Default last column config, used if enableDestroy is true to render a destroy 
+              * button at the end of the line.  
+              * The button handler is expected at destroyButtonConfig.items[0].handler, if it is 
+              * equal Ext.emptyFn it will be replace, otherwise the custom config is used.
+              */
+             destroyButtonConfig: {
+                xtype:'actioncolumn', 
+                width:50,
+                items: [{
+                    icon: 'img/icons/delete.png',
+                    tooltip: 'Delete',
+                    handler: Ext.emptyFn // will be replaced by button handler
+                }]
+            },
             /**
              * Builds grid columns from the Bancha metadata, for scaffolding purposes.  
              * Please use {@link #createPanel} or {@link #buildConfig} if you want 
-             * support for create,update and/or delete!
+             * support for create,update and/or destroy!
              * 
              * @param {Ext.data.Model|String} model The model class or model name
              * @param {Object} config (optional) Any applicable property of 
@@ -1198,7 +1251,8 @@ Ext.define('Bancha', {
              * @return {Array} Returns an array of Ext.grid.column.* configs
              */
             buildColumns: function(model, config) {
-                var columns = [];
+                var columns = [],
+                    button;
                 config = Ext.apply({},config,this); // get all defaults for this call
             
             
@@ -1231,15 +1285,11 @@ Ext.define('Bancha', {
                 });
             
                 if(config.enableDestroy) {
-                    columns.push({
-                        xtype:'actioncolumn', 
-                        width:50,
-                        items: [{
-                            icon: 'img/icons/delete.png',
-                            tooltip: 'Delete',
-                            handler: this.onDelete
-                        }]
-                    });
+                    button = Ext.clone(config.destroyButtonConfig);
+                    if(button.items[0].handler===Ext.emptyFn) {
+                        button.items[0].handler = config.onDestroy;
+                    }
+                    columns.push(button);
                 }
     
                 return columns;
@@ -1311,34 +1361,30 @@ Ext.define('Bancha', {
                     buttons = ['->'];
                 
                     if(config.enableCreate) {
-                        buttons.push({
-                            iconCls: 'icon-add',
-                            text: 'Create',
+                        button = Ext.apply({}, config.createButtonConfig, {
                             scope: {
                                 cellEditing: cellEditing,
                                 store      : store
                             },
                             handler: config.onCreate
                         });
+                        buttons.push(button);
                     }
                 
                     if(config.enableReset) {
-                        buttons.push({
-                            iconCls: 'icon-reset',
-                            text: 'Reset',
+                        button = Ext.apply({}, config.resetButtonConfig, {
                             scope: store,
                             handler: config.onReset
                         });
+                        buttons.push(button);
                     }
                     
-                    if(config.enableUpdate) {
-                        buttons.push({ // TODO expose button defaults
-                            iconCls: 'icon-save',
-                            text: 'Save',
-                            scope: store,
-                            handler: config.onSave
-                        });
-                    }
+                    // svae is used for create and update
+                    button = Ext.apply({}, config.saveButtonConfig, {
+                        scope: store,
+                        handler: config.onSave
+                    });
+                    buttons.push(button);
                 
                     gridConfig.dockedItems = [{
                         xtype: 'toolbar',
@@ -1370,7 +1416,7 @@ Ext.define('Bancha', {
              *              width: 200, // force a fixed with
              *          },
              *          onSave: function() {
-             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)"); //TODO testen
+             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)");
              *          },
              *          enableUpdate: true,
              *          formConfig: {
@@ -1394,8 +1440,8 @@ Ext.define('Bancha', {
          * @class Bancha.scaffold.Form
          * @singleton
          * 
-         * This class helps in creating Ext.form.Panel's.
-         * This class uses many data from the given model, including field configs and validation rules.  
+         * This class is a factory for creating Ext.form.Panel's. It uses many data from
+         * the given model, including field configs and validation rules.  
          * 
          * It's recognizing following validation rules on the model to add validations
          * to the form fields:
@@ -1664,7 +1710,10 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the save button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is created by {@link #scopeButtonHandler}
+             *   
+             * The default scope provides two functions:  
+             *  - this.getPanel() to get the form panel  
+             *  - this.getForm() to get the basic form
              */
             onSave: function(){
                 var form = this.getForm(),
@@ -1686,7 +1735,10 @@ Ext.define('Bancha', {
              * @property
              * Editable function to be called when the reset button is pressed.  
              * To change the default scaffolding behaviour just replace this function.  
-             * Scope is created by {@link #scopeButtonHandler}
+             *   
+             * The default scope provides two functions:  
+             *  - this.getPanel() to get the form panel  
+             *  - this.getForm() to get the basic form
              */
             onReset:  function() {
                 this.getForm().reset();
@@ -1696,6 +1748,27 @@ Ext.define('Bancha', {
              * If true a reset button will be added to all scaffolded form (Default: true)
              */
             enableReset: true,
+            /**
+             * @property
+             * Default save button config.  
+             * If not defined scope and handler properties will be set by 
+             * the build function.
+             */
+            saveButtonConfig: {
+                iconCls: 'icon-save',
+                text: 'Save',
+                formBind: true,
+            },
+            /**
+             * @property
+             * Default reset button config, used if enableReset is true.
+             * If not defined scope and handler properties will be set by 
+             * the build function.
+             */
+            resetButtonConfig: {
+                iconCls: 'icon-reset',
+                text: 'Reset'
+            },
             /**
              * @private
              * build the form api config, used only by buildConfig()
@@ -1753,52 +1826,27 @@ Ext.define('Bancha', {
             afterBuild: function(formConfig, model, recordId, config, additionalFormConfig) {
             },
             /**
-             * @method
-             * This function will rarely be used by application developers.
-             * It adds a scope around the button handler which provides two function:  
+             * @private
+             * Since the form panel doesn't give us an useful scope to get the form panel,
+             * this function will create an proper scope. The scope provides two functions:  
              *  - this.getPanel() to get the form panel  
              *  - this.getForm() to get the basic form  
              * 
-             * The buttonConfig.scope will be ignored.
              * @param {Function} handler A button handler function to apply the scope to
              * @param {Number|String} id The form panel id
              */
-            /*
-             * the third argument {String} buttonText is just for the singleton 
-             * and this is just for jasmine testing, so feel free to ignore it
-             */
-            scopeButtonHandler: (function() {
+            buildButtonScope: (function() {
                 var scopePrototype = {
-                        getPanel: function() {
-                            return this.panel || Ext.ComponentManager.get(this.id);
-                        },
-                        getForm: function() {
-                            return this.form || this.getPanel().getForm();
-                        }
-                    // IFDEBUG
+                    getPanel: function() {
+                        return this.panel || Ext.ComponentManager.get(this.id);
                     },
-                    singleton = {
-                    // ENDIF
-                    };
-                
-                return function(originalHandler, id, buttonText) {    
-                    var scope = Ext.apply({id:id},scopePrototype),
-                        handler = function() {
-                        return originalHandler.apply(scope,arguments);
-                    };
-                    /*
-                     * ONLY for jasmin testing we need a singleton here
-                     */
-                    // IFDEBUG
-                    if(buttonText && singleton[id] && singleton[id][buttonText]) {
-                        return singleton[id][buttonText];
-                    } else {
-                        singleton[id] = singleton[id] || {};
-                        singleton[id][buttonText] = handler;
+                    getForm: function() {
+                        return this.form || this.getPanel().getForm();
                     }
-                    // ENDIF
-                    
-                    return handler;
+                };
+                
+                return function(id) {    
+                    return Ext.apply({id:id},scopePrototype);
                 };
             }()),
             /**
@@ -1819,6 +1867,8 @@ Ext.define('Bancha', {
                     formConfig,
                     id,
                     validations,
+                    buttonScope,
+                    button,
                     buttons,
                     loadFn;
                 config = Ext.apply({},config,this); // get all defaults for this call
@@ -1860,21 +1910,26 @@ Ext.define('Bancha', {
                 // for scoping reason we have to force an id here
                 id = additionalFormConfig.id || Ext.id(null,'formpanel-');
                 
-                // build buttons
-                buttons = [{
-                    text: 'Save',
-                    iconCls: 'icon-save',
-                    formBind: true,
-                    handler: this.scopeButtonHandler(config.onSave,id,'Save')
-                }];
-                if(config.enableReset) {
-                    buttons.unshift({ // add at the front
-                        text: 'Reset',
-                        iconCls: 'icon-reset',
-                        handler: this.scopeButtonHandler(config.onReset,id,'Reset')
-                    });
-                }
                 
+                // build buttons
+                buttons = [];
+                buttonScope = this.buildButtonScope(id);
+                // reset button
+                if(config.enableReset) {
+                    button = Ext.apply({}, config.resetButtonConfig, {
+                        scope: buttonScope,
+                        handler: config.onReset
+                    });
+                    buttons.push(button); // add at the front
+                }
+                // save button
+                button = Ext.apply({}, config.saveButtonConfig, {
+                    scope: buttonScope,
+                    handler: config.onSave
+                });
+                
+                
+                // extend formConfig
                 Ext.apply(formConfig,{
                     id: id,
                     api: this.buildApiConfig(model),
