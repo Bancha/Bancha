@@ -8,6 +8,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @category      Tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -26,7 +28,8 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
 /**
  * BanchaCrudTest
  *
- * @package bancha.libs
+ * @package       Bancha
+ * @category      Tests
  */
 class BanchaCrudTest extends CakeTestCase {
 

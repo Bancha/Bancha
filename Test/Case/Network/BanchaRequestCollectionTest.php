@@ -6,7 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @category      tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -20,10 +21,10 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 /**
  * BanchaRequestCollectionTest
  *
- * @package bancha.libs
+ * @package       Bancha
+ * @category      tests
  */
-class BanchaRequestCollectionTest extends CakeTestCase
-{
+class BanchaRequestCollectionTest extends CakeTestCase {
 
 /**
  * Transforms one Ext JS request into a CakePHP request. Transforms the indexes from Ext JS syntax (action + method)
@@ -31,12 +32,16 @@ class BanchaRequestCollectionTest extends CakeTestCase
  *
  */
 	function testGetRequests() {
+		$client_id = uniqid();
+
 		// We need to provide a request which looks like an actual Ext JS request in JSON syntax.
 		// It is notated as a PHP array and transformed into JSON because it is easier to read that way.
 		$rawPostData = json_encode(array(
 			'action'	=> 'Test',
 			'method'	=> 'create',
-			'data'		=> null,
+			'data'		=> array(
+				'__bcid'		=> $client_id,
+			),
 			'type'		=> 'rpc',
 			'tid'		=> 1,
 		));
@@ -63,6 +68,8 @@ class BanchaRequestCollectionTest extends CakeTestCase
 
 		// TID is set?
 		$this->assertEquals(1, $requests[0]['tid']);
+
+		$this->assertEquals($client_id, $requests[0]['client_id']);
 	}
 
 /**
@@ -154,8 +161,11 @@ class BanchaRequestCollectionTest extends CakeTestCase
 		$this->assertEquals(1, $requests[0]['tid']);
 	}
 
-	public function testGetExtUploadForm()
-	{
+/**
+ * Tests if the extUpload parameter is correctly passed through the CakeRequest.
+ *
+ */
+	public function testGetExtUploadForm() {
 		$postData = array(
 			'extAction'	=> 'Test',
 			'extMethod'	=> 'update',

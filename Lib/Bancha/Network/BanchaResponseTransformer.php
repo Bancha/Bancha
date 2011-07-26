@@ -16,42 +16,46 @@
  */
 
 /**
- * BanchaResponseTransformer
+ * BanchaResponseTransformer. Performs transformations on CakePHP responses in order to match Ext JS responses.
  *
  * @package       Bancha
  * @subpackage    Lib.Network
  */
-class BanchaResponseTransformer
-{
+class BanchaResponseTransformer {
 
+/**
+ * Performs various transformations on a request. This is required because CakePHP stores models in a different format
+ * than expected from Ext JS.
+ *
+ * @param  array       $response A single response.
+ * @param  CakeRequest $request  Request object.
+ * @return array|string          Transformed response. If this is a response to an 'extUpload' request this is a string,
+ *                               otherwise this is an array.
+ */
 	public static function transform($response, CakeRequest $request) {
 		$data = array();
 		$modelName = null;
 
-		if ($request->controller)
-		{
+		// Build the model name based on the name of the controller.
+		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
 
-		if ('index' == $request->action && $modelName)
-		{
+		if ('index' == $request->action && $modelName) {
 			foreach ($response as $i => $element) {
 				$data[$i] = $element[$modelName];
 			}
 			$response = $data;
-		}
-		else if ('view' == $request->action && $modelName)
-		{
+
+		} else if ('view' == $request->action && $modelName) {
 			$response = array($response[$modelName]);
-		}
-		else if (in_array($request->action, array('add', 'edit')) && $modelName)
-		{
+		} else if (in_array($request->action, array('add', 'edit')) && $modelName) {
 			$response = $response[$modelName];
 		}
 
-		if (isset($request['extUpload']) && $request['extUpload'])
-		{
-			return '<html><body><textarea>' . json_encode($response) . '</textarea></body></html>';
+		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
+		if (isset($request['extUpload']) && $request['extUpload']) {
+			return '<html><body><textarea>' . str_replace('"', '\"', json_encode($response)) . '</textarea></body></html>';
 		}
 
 		return $response;

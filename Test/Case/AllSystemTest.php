@@ -1,6 +1,6 @@
 <?php
 /**
- * AllSystemTest file
+ * AllSystemTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -8,7 +8,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @category      tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -20,11 +21,12 @@
  */
 
 /**
- * AllSystemTest class
+ * AllSystemTest class.
  *
  * This test group will run all test in the Bancha/Test/Case/System directory
  *
- * @package       bancha.tests.groups
+ * @package       Bancha
+ * @category      tests
  */
 class AllSystemTest extends PHPUnit_Framework_TestSuite {
 

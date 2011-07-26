@@ -8,6 +8,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @category      Tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -21,22 +23,22 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 require_once dirname(__FILE__) . '/ArticlesController.php';
 
-// Tests if the Exception was thrown, the correct controller was choosen
 /**
- * BanchaCrudTest
+ * BanchaExceptionsTest. Tests if the Exception was thrown, the correct controller was choosen.
  *
- * @package bancha.libs
+ * @package       Bancha
+ * @category      Tests
  */
 class BanchaExceptionsTest extends CakeTestCase {
-	
+
 /**
- * Tests the exceptions
+ * Tests exception handling with debug mode 2.
  *
  */
 	public function testExceptionDebugTwo() {
-		
+
 		Configure::write('debug', 2);
-		
+
 		$rawPostData = json_encode(array(
 			'action'		=> 'ArticlesException',
 			'method'		=> 'view',
@@ -53,16 +55,22 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertEquals('exception', $responses[0]->type);
 		// $this->assertNotNull($responses[0]->data);
-		
+
 	}
-	
+
+/**
+ * Tests exception handling with debug mode 0.
+ *
+ * @return void
+ * @author Florian Eckerstorfer
+ */
 	public function testExceptionDebugZero() {
-		
+
 		Configure::write('debug', 0);
-		
+
 		$rawPostData = json_encode(array(
 			'action'		=> 'ArticlesException',
 			'method'		=> 'view',
@@ -79,16 +87,19 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertEquals(count($responses), 0);
 	}
-	
-	// Test of serveral requests:
-	// 3 exceptions
+
+/**
+ * Tests the exception handling.
+ *
+ */
 	public function testExceptions() {
-		
+
 		Configure::write('debug', 2);
-		
+
+		// Create some requests.
 		$rawPostData = json_encode(array(
 			array(
 				'action'		=> 'ArticlesException',
@@ -127,36 +138,38 @@ class BanchaExceptionsTest extends CakeTestCase {
 				),
 			)
 		));
-		
-		
+
+		// Create dispatcher and dispatch requests.
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertEquals(3, count($responses), 'Three requests result in three responses.');
-		
+
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertEquals('Invalid article [EXCEPTION]', $responses[0]->message);
 		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
 				$responses[0]->where, 'message');
-		
+
 		$this->assertEquals('exception', $responses[1]->type);
 		$this->assertEquals('Invalid article [EXCEPTION]', $responses[1]->message);
 		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
 				$responses[1]->where, 'message');
-				
+
 		$this->assertEquals('exception', $responses[2]->type);
 		$this->assertEquals('Invalid article [EXCEPTION]', $responses[2]->message);
 		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
 				$responses[2]->where, 'message');
 	}
-	// TODO: create 3 Controller (through 3 requests) and 1 of them throws an exception
+
 }
 
 /**
  * Articles Controller, uses view method to throw an exception
  *
+ * @package       Bancha
+ * @category      TestFixtures
  */
 class ArticlesExceptionController extends ArticlesController {
 
@@ -167,6 +180,7 @@ class ArticlesExceptionController extends ArticlesController {
  * @return void
  */
 	public function view($id = null) {
+		// we store the current line to test it later.
 		$GLOBALS['EXCEPTION_LINE'] = __LINE__; throw new Exception(__('Invalid article [EXCEPTION]'));
 	}
 }
