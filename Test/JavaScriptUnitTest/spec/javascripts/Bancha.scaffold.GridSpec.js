@@ -24,9 +24,13 @@ describe("Bancha.scaffold.Grid tests",function() {
             autoLoad: false // since we only want to unit-test and not laod data
         }
     });
-    
     beforeEach(function() {
         h.reset();
+        // re-enforce defaults
+        Ext.apply(gridScaf, testDefaults);
+    });
+    
+    afterEach(function() {
         // re-enforce defaults
         Ext.apply(gridScaf, testDefaults);
     });
@@ -90,61 +94,61 @@ describe("Bancha.scaffold.Grid tests",function() {
         });
     });
     
+    // expected columns
+    var expectedColumns = [{
+        flex     : 1,
+        xtype    : 'numbercolumn',
+        format   : '0',
+        text     : 'Id',
+        hidden   : true,
+        dataIndex: 'id'
+    }, {
+        flex     : 1,
+        xtype   : 'gridcolumn',
+        text     : 'Name',
+        dataIndex: 'name'
+    }, {
+        flex     : 1,
+        xtype    : 'gridcolumn',
+        text     : 'Login',
+        dataIndex: 'login'
+    }, {
+        flex     : 1,
+        xtype    : 'datecolumn',
+        text     : 'Created',
+        dataIndex: 'created'
+    }, {
+        flex     : 1,
+        xtype    : 'gridcolumn',
+        text     : 'Email',
+        dataIndex: 'email'
+    }, {
+        flex     : 1,
+        xtype    : 'gridcolumn',
+        text     : 'Avatar',
+        dataIndex: 'avatar'
+    }, {
+        flex     : 1,
+        xtype    : 'numbercolumn',
+        text     : 'Weight',
+        dataIndex: 'weight'
+    }, {
+        flex     : 1,
+        xtype    : 'numbercolumn',
+        format   : '0',
+        text     : 'Height',
+        dataIndex: 'height'
+    }];
+    
     it("should build a grid column config with #buildColumns (component test)", function() {
         // prepare
         h.initAndCreateSampleModel('GridColumnsConfigTest');
-
-        // expected columns
-        var expected = [{
-            flex     : 1,
-            xtype    : 'numbercolumn',
-            format   : '0',
-            text     : 'Id',
-            dataIndex: 'id',
-            hidden   : true
-        }, {
-            flex     : 1,
-            xtype   : 'gridcolumn',
-            text     : 'Name',
-            dataIndex: 'name'
-        }, {
-            flex     : 1,
-            xtype    : 'gridcolumn',
-            text     : 'Login',
-            dataIndex: 'login'
-        }, {
-            flex     : 1,
-            xtype    : 'datecolumn',
-            text     : 'Created',
-            dataIndex: 'created'
-        }, {
-            flex     : 1,
-            xtype    : 'gridcolumn',
-            text     : 'Email',
-            dataIndex: 'email'
-        }, {
-            flex     : 1,
-            xtype    : 'gridcolumn',
-            text     : 'Avatar',
-            dataIndex: 'avatar'
-        }, {
-            flex     : 1,
-            xtype    : 'numbercolumn',
-            text     : 'Weight',
-            dataIndex: 'weight'
-        }, {
-            flex     : 1,
-            xtype    : 'numbercolumn',
-            format   : '0',
-            text     : 'Height',
-            dataIndex: 'height'
-        }];
 
         // test
         var result = gridScaf.buildColumns('GridColumnsConfigTest');
 
         // compare
-        expect(result).toEqual(expected);
+        expect(result).toEqual(expectedColumns);
     });
     
     
@@ -154,7 +158,7 @@ describe("Bancha.scaffold.Grid tests",function() {
         h.initAndCreateSampleModel('GridColumnsConfigWithUpdateDeleteTest');
 
         // expected columns
-        var expected = [{
+        var expectedColumnsWithUpdateDestroy = [{
             flex     : 1,
             xtype    : 'numbercolumn',
             format   : '0',
@@ -214,7 +218,7 @@ describe("Bancha.scaffold.Grid tests",function() {
                 handler: gridScaf.onDestroy
             }]
         }];
-
+        
         // test
         var result = gridScaf.buildColumns('GridColumnsConfigWithUpdateDeleteTest', {
             enableUpdate  : true,
@@ -222,7 +226,7 @@ describe("Bancha.scaffold.Grid tests",function() {
         });
 
         // compare
-        expect(result).toEqual(expected);
+        expect(result).toEqual(expectedColumnsWithUpdateDestroy);
     });
     
     
@@ -237,7 +241,26 @@ describe("Bancha.scaffold.Grid tests",function() {
         expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigTest");
         
         // just a simple column check, buildColumns is already tested above
-        expect(result.columns.length).toEqual(8);
+        expect(result.columns).toEqual(expectedColumns);
+    });
+    
+    it("should clone all configs, so that you can create multiple grids from the same defaults (component test)", function() {
+        // prepare
+        h.initAndCreateSampleModel('GridConfigTwoTimesTest');
+
+        // first
+        var result = gridScaf.buildConfig('GridConfigTwoTimesTest');
+        // should have a store
+        expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigTwoTimesTest");
+        // just a simple column check, buildColumns is already tested above
+        expect(result.columns).toEqual(expectedColumns);
+        
+        // second
+        var result = gridScaf.buildConfig('GridConfigTwoTimesTest');
+        // should have a store
+        expect(result.store.getProxy().getModel()).toBeModelClass("GridConfigTwoTimesTest");
+        // just a simple column check, buildColumns is already tested above
+        expect(result.columns).toEqual(expectedColumns);
     });
     
     
@@ -377,14 +400,16 @@ describe("Bancha.scaffold.Grid tests",function() {
         });
     });
     
-    it("should create a GridPanel using #createPanel", function() {
+    it("should help when creating a new scaffold panel", function() {
         // prepare
         h.initAndCreateSampleModel('GridPanelTest');
         
-        // since this function is just a wrapper for #buildConfig,
-        // just test that it returns an grid panel
+        // since this function is using #buildConfig, 
+        // just test that it is applied
 
-        expect(gridScaf.createPanel('GridPanelTest')).toBeOfClass('Ext.grid.Panel');
+        expect(Ext.create('Ext.grid.Panel', {
+            scaffold: 'GridPanelTest'
+        })).property('columns.length').toEqual(8);
     });
 }); //eo scaffold grid functions
 

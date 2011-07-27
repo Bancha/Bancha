@@ -7,17 +7,16 @@
 /*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, BanchaSpecHelper */
 
-
 describe("Bancha.scaffold.Form tests",function() {
-    
     var h = BanchaSpecHelper, // shortcuts
         formScaf = Bancha.scaffold.Form; //shortcuf
         // take the defaults
         // (actually this is also copying all the function references, but it doesn't atter)
         testDefaults = Ext.clone(formScaf);
 
-    beforeEach(function() {
-        h.reset();
+    beforeEach(h.reset);
+    
+    afterEach(function() {
         // re-enforce defaults
         Ext.apply(formScaf, testDefaults);
     });
@@ -81,32 +80,28 @@ describe("Bancha.scaffold.Form tests",function() {
     
     var getButtonConfig = function(id) {
         return [{
-            scope: formScaf.buildButtonScope(id),
-            handler: formScaf.onReset,
             iconCls: 'icon-reset',
-            text: 'Reset'
-        }, {
+            text: 'Reset',
             scope: formScaf.buildButtonScope(id),
-            handler: formScaf.onSave,
+            handler: formScaf.onReset
+        }, {    
             iconCls: 'icon-save',
             text: 'Save',
             formBind: true,
+            scope: formScaf.buildButtonScope(id),
+            handler: formScaf.onSave
         }];
     };
     
-    it("should build a form config, where it recognizes the type from the field type, when no "+
-       "validation rules are set in the model (component test)", function() {
-        // prepare
-        h.initAndCreateSampleModel('FormConfigTest');
-        
-        var expected = {
-            id: 'FormConfigTest-id', // forced
+    var getSimpleFormExpected = function(modelName,config) {
+        return {
+            id: modelName+'-id', // forced
             // configs for BasicForm
             api: {
                 // The server-side method to call for load() requests
-                load: Bancha.getStubsNamespace().FormConfigTest.read,
+                load: Bancha.getStubsNamespace()[modelName].read,
                 // The server-side must mark the submit handler as a 'formHandler'
-                submit: Bancha.getStubsNamespace().FormConfigTest.submit
+                submit: Bancha.getStubsNamespace()[modelName].submit
             },
             paramOrder : [ 'data' ],
             items: [{
@@ -144,12 +139,33 @@ describe("Bancha.scaffold.Form tests",function() {
                 fieldLabel: 'Height',
                 name: 'height'
             }],
-            buttons: getButtonConfig('FormConfigTest-id')
-        }; // eo expected
+            buttons: getButtonConfig(modelName+'-id')
+        };
+    }; // eo getSimpleFormExpected
+    
+    it("should build a form config, where it recognizes the type from the field type, when no "+
+       "validation rules are set in the model (component test)", function() {
+        // prepare
+        h.initAndCreateSampleModel('FormConfigTest');
         
         expect(formScaf.buildConfig('FormConfigTest',false,false,{
             id: 'FormConfigTest-id'
-        })).toEqual(expected);
+        })).toEqualConfig(getSimpleFormExpected('FormConfigTest'));
+    });
+    
+    it("should clone all configs, so that you can create multiple forms from the same defaults (component test)", function() {
+        // prepare
+        h.initAndCreateSampleModel('FormConfigTwoTimesTest');
+        
+        // first
+        expect(formScaf.buildConfig('FormConfigTwoTimesTest',false,false,{
+            id: 'FormConfigTwoTimesTest-id'
+        })).toEqualConfig(getSimpleFormExpected('FormConfigTwoTimesTest'));
+        
+        // second
+        expect(formScaf.buildConfig('FormConfigTwoTimesTest',false,false,{
+            id: 'FormConfigTwoTimesTest-id'
+        })).toEqualConfig(getSimpleFormExpected('FormConfigTwoTimesTest'));
     });
     
     it("should build a form config, where it recognizes the type from the field type, when no "+
@@ -249,12 +265,12 @@ describe("Bancha.scaffold.Form tests",function() {
             }
         }, {
             id: 'FormConfigWithValidationTest-id'
-        })).toEqual(expected);
+        })).toEqualConfig(expected);
         
         
         expect(formScaf.buildConfig('FormConfigWithValidationTest',false,false,{
             id: 'FormConfigWithValidationTest-id',
-        }).buttons[0].handler).toEqual(expected.buttons[0].handler);
+        }).buttons[0].handler).toEqualConfig(expected.buttons[0].handler);
     });
     
     
@@ -281,7 +297,7 @@ describe("Bancha.scaffold.Form tests",function() {
         result = formScaf.buildConfig('FormConfigWithClassInterceptorsTest');
         
         // beforeBuild, afterBuild
-        expect(result.interceptors).toEqual(['before','after']);
+        expect(result.interceptors).toEqualConfig(['before','after']);
         
         // guessFieldConfg
         expect(result.items).toBeAnObject();
@@ -321,14 +337,16 @@ describe("Bancha.scaffold.Form tests",function() {
         });
     });
     
-    it("should create a FormPanel using #createPanel", function() {
+    it("should help when creating a new scaffold panel", function() {
         // prepare
         h.initAndCreateSampleModel('FormPanelTest');
         
-        // since this function is just a wrapper for #buildConfig,
-        // just test that it returns an form panel
+        // since this function is using #buildConfig, 
+        // just test that it is applied
 
-        expect(formScaf.createPanel('FormPanelTest')).toBeOfClass('Ext.form.Panel');
+        expect(Ext.create('Ext.form.Panel', {
+            scaffold: 'FormPanelTest'
+        })).property('items.items.length').toEqual(8);
     });
     
 }); //eo scaffold form functions

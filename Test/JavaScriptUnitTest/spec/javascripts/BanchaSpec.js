@@ -45,7 +45,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.init).toBeAFunction();
 
             // setup test data
-            Bancha.REMOTE_API = rs;
+            Bancha.REMOTE_API = Ext.clone(rs);
         
             // test
             Bancha.init();
@@ -162,7 +162,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             "when Bancha#createModel is called for a not yet loaded metadata of a model", function() {
             
             // prepare a remote api without the user metadata
-            Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+            Bancha.REMOTE_API = Ext.clone(rs);
             delete Bancha.REMOTE_API.metadata.User;
             
             // init
@@ -224,18 +224,16 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             mockProxy.verify();    
         });
 
-
         it("should create a model if not defined with Bancha.getModel", function() {
         
             // setup model metadata
-             h.init("GetModelCreateTestUser");
+            h.init("GetModelCreateTestUser");
          
-             // create model
-             var model = Bancha.getModel('GetModelCreateTestUser');
-             expect(model).toBeModelClass('GetModelCreateTestUser');
+            // create model
+            var model = Bancha.getModel('GetModelCreateTestUser');
+            expect(model).toBeModelClass('GetModelCreateTestUser');
              
         });
-        
         
         it("should just return the already defined models with Bancha.getModel", function() {
         

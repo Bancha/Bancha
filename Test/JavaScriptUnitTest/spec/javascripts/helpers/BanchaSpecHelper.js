@@ -48,12 +48,13 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
 
 
 BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName,additionalConfigs) {
-    Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+    var api = BanchaSpecHelper.SampleData.remoteApiDefinition;
+    Bancha.REMOTE_API = Ext.clone(api);
     
     if(Ext.isString(modelDefinitionsForName)) {
         // setup fake model
-        Bancha.REMOTE_API.metadata[modelDefinitionsForName] = Ext.apply({},additionalConfigs,Bancha.REMOTE_API.metadata.User);
-        Bancha.REMOTE_API.actions[modelDefinitionsForName] = Ext.clone(Bancha.REMOTE_API.actions.User);
+        Bancha.REMOTE_API.metadata[modelDefinitionsForName] = Ext.apply(Ext.clone(Bancha.REMOTE_API.metadata.User),additionalConfigs);
+        Bancha.REMOTE_API.actions[modelDefinitionsForName] = Ext.clone(api.actions.User);
     } else if(Ext.isDefined(modelDefinitionsForName)){
         throw 'modelDefinitionsFor is not a string';
     }
@@ -72,3 +73,25 @@ BanchaSpecHelper.reset = function() {
     delete Bancha.RemoteStubs;
     Bancha.initialized = false;
 };
+
+
+beforeEach(function() {
+    this.addMatchers({
+        toEqualConfig: function(expected) {
+            var config = Ext.clone(this.actual);
+            delete config.scaffold;
+            delete config.banchaLoadRecord;
+            delete config.scaffoldConfig;
+            delete config.enableCreate;
+            delete config.enableUpdate;
+            delete config.enableDestroy;
+            delete config.enableReset;
+            // test
+            expect(config).toEqual(expected);
+            // test is already done above
+            return true;
+        }
+    });
+});
+
+//eof
