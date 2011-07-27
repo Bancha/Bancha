@@ -1,8 +1,19 @@
 <?php
+/**
+ * BanchaBahavior file.
+ *
+ * @package    Bancha
+ * @subpackage Model.Behavior
+ */
 
 App::uses('ModelBehavior', 'Model');
 
-// TODO doku
+/**
+ * BanchaBahavior.
+ *
+ * @package    Bancha
+ * @subpackage Model.Behavior
+ */
 class BanchaBehavior extends ModelBehavior {
 
 	// TODO doku
@@ -10,8 +21,8 @@ class BanchaBehavior extends ModelBehavior {
 	private $actionIsAllowed;
 	private $schema;
 	private $model;
-	
-	private $types = array( 
+
+	private $types = array(
 		"integer" => "int",
 		"string" => "string",
 		"datetime" => "date",
@@ -20,7 +31,7 @@ class BanchaBehavior extends ModelBehavior {
 		"text" => "text",
 		"boolean" => "boolean"
 		);
-		
+
 		//  formater for the validation rules
 		private $formater = array(
 		'alpha' => '/^[a-zA-Z_]+$/',
@@ -45,11 +56,11 @@ class BanchaBehavior extends ModelBehavior {
 		$this->schema = $Model->schema();
 		$this->actionIsAllowed = $config;
 	}
-	
+
 	/** set the model explicit as cakephp does not instantiate the behavior for each model
-	 * 
+	 *
 	 */
-	
+
 	function setBehaviorModel(&$Model) {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
@@ -62,15 +73,15 @@ class BanchaBehavior extends ModelBehavior {
  * @return array all the metadata as array
  */
 	function extractBanchaMetaData() {
-		
+
 		//TODO persist: persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
 		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
 
 		$ExtMetaData = array();
 
-		// TODO check types (CakePHP vs ExtJS) and convert if necessary 
-		
+		// TODO check types (CakePHP vs ExtJS) and convert if necessary
+
 		/* cakePHP types 	MySQL types						ExtJS Types
 		 * 	primary_key 	NOT NULL auto_increment			???
 		 *	string 			varchar(255)
@@ -84,8 +95,8 @@ class BanchaBehavior extends ModelBehavior {
 		 *	binary 			blob
 		 *	boolean 		tinyint(1)
 		 */
-		
-		
+
+
 		$fields = $this->getColumnTypes();
 		$validations = $this->getValidations();
 		$associations = $this->getAssociated();
@@ -93,16 +104,16 @@ class BanchaBehavior extends ModelBehavior {
 
 		$ExtMetaData = array (
 			'idProperty' => 'id',
-			'fields' => $fields, 
-			'validations' => $validations, 
+			'fields' => $fields,
+			'validations' => $validations,
 			'associations' => $associations,
 			'sorters' => $sorters
 		);
 
 		return $ExtMetaData;
 	}
-	
-	
+
+
         /**
          * Custom validation rule for uploaded files.
          *
@@ -127,10 +138,10 @@ class BanchaBehavior extends ModelBehavior {
                 // Finally, use PHP’s own file validation method.
                 return is_uploaded_file($upload_info[‘tmp_name’]);
         }
-	
+
 /**
  * Return the Associations as ExtJS-Assoc Model
- * should look like this: 
+ * should look like this:
  *
  * 'Post', {
  *     fields: ['id', 'user_id', 'title', 'body'],
@@ -146,12 +157,12 @@ class BanchaBehavior extends ModelBehavior {
 		}
 		return $return;
 	}
-	
+
 /**
  * return the model columns as ExtJS Fields
- * 
- * should look like 
- * 
+ *
+ * should look like
+ *
  * 'User', {
  *   fields: [
  *     {name: 'id', type: 'int'},
@@ -183,111 +194,111 @@ class BanchaBehavior extends ModelBehavior {
 		$cols = array();
 		foreach ($columns as $field => $values) {
 			if(isset($values['notempty'])) {
-				$cols[] = array( 
-					'type' => 'presence', 
-					'name' => $field, 
+				$cols[] = array(
+					'type' => 'presence',
+					'name' => $field,
 				);
 			}
-			
+
 			if(isset($values['minLength'])) {
-				$cols[] = array( 
-					'type' => 'length', 
-					'name' => $field, 
+				$cols[] = array(
+					'type' => 'length',
+					'name' => $field,
 					'min' => $values['minLength']['rule'][1],
 				);
 			}
-			
+
 			if(isset($values['maxLength'])) {
-				$cols[] = array( 
-					'type' => 'length', 
-					'name' => $field, 
+				$cols[] = array(
+					'type' => 'length',
+					'name' => $field,
 					'max' => $values['maxLength']['rule'][1],
 				);
 			}
-			
+
 			if(isset($values['between'])) {
 				if(	isset($values['between']['rule'][1]) ||
 					isset($values['between']['rule'][2]) ) {
-					$cols[] = array( 
-					'type' => 'length', 
+					$cols[] = array(
+					'type' => 'length',
 					'name' => $field,
 					'min' => $values['between']['rule'][1],
 					'max' => $values['between']['rule'][2]
 				);
 				} else {
-					$cols[] = array( 
-						'type' => 'length', 
+					$cols[] = array(
+						'type' => 'length',
 						'name' => $field,
 					);
 				}
 			}
-			
+
 			//TODO there is no alpha in cakephp
 			if(isset($values['alpha'])) {
-				$cols[] = array( 
-					'type' => 'format', 
-					'name' => $field, 
+				$cols[] = array(
+					'type' => 'format',
+					'name' => $field,
 					'matcher' => $this->formater['alpha'],
 				);
 			}
-			
+
 			if(isset($values['alphaNumeric'])) {
-				$cols[] = array( 
-					'type' => 'format', 
-					'name' => $field,  
+				$cols[] = array(
+					'type' => 'format',
+					'name' => $field,
 					'matcher' => $this->formater['alphanum'],
 				);
 			}
-			
+
 			if(isset($values['email'])) {
-				$cols[] = array( 
-					'type' => 'format', 
-					'name' => $field,  
+				$cols[] = array(
+					'type' => 'format',
+					'name' => $field,
 					'matcher' => $this->formater['email'],
 				);
-			}			
-			
+			}
+
 			if(isset($values['url'])) {
-				$cols[] = array( 
-					'type' => 'format', 
-					'name' => $field,  
+				$cols[] = array(
+					'type' => 'format',
+					'name' => $field,
 					'matcher' => $this->formater['url'],
 				);
 			}
-			
+
 			//  numberformat = precision, min, max
 			if(isset($values['decimal'])) {
 				if(isset($values['decimal']['rule'][1])) {
-					$cols[] = array( 
-						'type' => 'numberformat', 
+					$cols[] = array(
+						'type' => 'numberformat',
 						'name' => $field,
 						'precision' => $values['decimal']['rule'][1],
 					);
 				} else {
-					$cols[] = array( 
-						'type' => 'numberformat', 
+					$cols[] = array(
+						'type' => 'numberformat',
 						'name' => $field,
-					);				
+					);
 				}
 			}
 
 			if(isset($values['range'])) {
-				$cols[] = array( 
-					'type' => 'numberformat', 
+				$cols[] = array(
+					'type' => 'numberformat',
 					'name' => $field,
 					'min' => $values['range']['rule'][1],
 					'max' => $values['range']['rule'][2],
 				);
 			}
-			// extension 
+			// extension
 			if(isset($values['extension'])) {
-				$cols[] = array( 
-					'type' => 'file', 
+				$cols[] = array(
+					'type' => 'file',
 					'name' => $field,
 					//TODO 'extension' => $values['extension']['rule'][1],
 				);
-			}		
-			
+			}
+
 		}
 		return $cols;
 	}
@@ -301,7 +312,7 @@ class BanchaBehavior extends ModelBehavior {
 	private function getSorters() {
 		// TODO TechDocu: only arrays are allowed as $order
 		$sorters = array();
-		if ( is_array($this->model->order) ) {			
+		if ( is_array($this->model->order) ) {
 			foreach($this->model->order as $key => $value) {
 				$token = strtok($key, ".");
 				$key = strtok(".");

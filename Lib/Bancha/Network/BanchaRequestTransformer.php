@@ -6,6 +6,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
+ * @package       Bancha
+ * @subpackage    Lib.Network
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -22,49 +24,54 @@ App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
  * This is a helper class which provides a convenient interface to extract, transform and retrieve data from an Ext JS
  * request in a format suited for CakePHP.
  *
- * @package bancha.libs
+ * @package    Bancha
+ * @subpackage Lib.Network
  */
 class BanchaRequestTransformer {
-	
+
 /** @var array */
 	private $data;
-	
+
 /** @var string */
 	protected $controller = null;
-	
+
 /** @var string */
 	protected $action = null;
-	
+
 /** @var string */
 	protected $url = null;
-	
+
 /** @var array */
 	protected $paginate = array();
-	
+
 /** @var boolean TRUE if the given request is a form request. */
 	protected $isFormRequest = false;
-	
-	/** @var boolean */
+
+/** @var boolean */
 	protected $tid;
+
+/** @var boolean TRUE if the given request is an upload request. */
+	protected $extUpload;
+
+/** @var integer Client ID is a unique ID for every client (= Instance of Ext JS) */
+	protected $client_id;
 
 /**
  * Constructor. Requires a single Ext JS request in PHP array format.
  *
  * @param array $data Single Ext JS request
  */
-	public function __construct(array $data = array())
-	{
+	public function __construct(array $data = array()) {
 		$this->data = $data;
 	}
-	
+
 /**
  * Returns the name of the controller. Thus returns the value of 'action' from the Ext JS request. Also removes the
  * 'action' property from the Ext JS request.
  *
  * @return string Name of the controller.
  */
-	public function getController()
-	{
+	public function getController() {
 		if (null != $this->controller)
 		{
 			return $this->controller;
@@ -82,7 +89,7 @@ class BanchaRequestTransformer {
 		}
 		return $this->controller;
 	}
-	
+
 /**
  * Returns the name of the action. Thus returns the value of 'method' from the Ext JS request. Because Ext JS and
  * CakePHP use different names for CRUD operations, this method also transforms it according to the following list:
@@ -95,25 +102,23 @@ class BanchaRequestTransformer {
  *
  * @return string Name of the action.
  */
-	public function getAction()
-	{
-		if (null != $this->action)
-		{
+	public function getAction() {
+		if (null != $this->action) {
 			return $this->action;
 		}
-		if (isset($this->data['method']))
-		{
+		if (isset($this->data['method'])) {
 			$this->action = $this->data['method'];
 			unset($this->data['method']);
-		}
-		else if (isset($this->data['extMethod']))
-		{
+		} else if (isset($this->data['extMethod'])) {
 			$this->action = $this->data['extMethod'];
 			unset($this->data['extMethod']);
 			$this->isFormRequest = true;
 		}
-		switch ($this->action)
-		{
+
+		switch ($this->action) {
+			case 'submit':
+				$this->action = (isset($this->data['data']['id']) || isset($this->data['id'])) ? 'edit' : 'add';
+				break;
 			case 'create':
 				$this->action = 'add';
 				break;
@@ -129,41 +134,68 @@ class BanchaRequestTransformer {
 		}
 		return $this->action;
 	}
-	
+
+/**
+ * Returns the extUpload request parameter.
+ *
+ */
+	public function getExtUpload() {
+		if (null != $this->extUpload) {
+			return $this->extUpload;
+		}
+		$this->extUpload = isset($this->data['extUpload']) ? $this->data['extUpload'] : false;
+		unset($this->data['extUpload']);
+		return $this->extUpload;
+	}
+
 /**
  * If an URL is provided in the Ext JS request, this method returns it and removes it from the Ext JS request.
  *
  * @return string URL provided in the Ext JS request or NULL if no URL is provided.
  */
-	public function getUrl()
-	{
-		if (null == $this->url && isset($this->data['url']))
-		{
+	public function getUrl() {
+		if (null == $this->url && isset($this->data['url'])) {
 			$this->url = $this->data['url'];
 			unset($this->data['url']);
 		}
 		return $this->url;
 	}
-	
-	public function getTid()
-	{
-		if (null != $this->tid)
-		{
+
+/**
+ * Returns the Transaction ID from the request.
+ *
+ * @return integer Transaction ID
+ */
+	public function getTid() {
+		if (null != $this->tid) {
 			return $this->tid;
 		}
-		if (isset($this->data['tid']))
-		{
+		if (isset($this->data['tid'])) {
 			$this->tid = $this->data['tid'];
 			unset($this->data['tid']);
-		}
-		else if (isset($this->data['extTID']))
-		{
+		} else if (isset($this->data['extTID'])) {
 			$this->tid = $this->data['extTID'];
 			unset($this->data['extTID']);
 		}
 		return $this->tid;
 	}
-	
+
+/**
+ * Returns the Client ID sent by requests as '__bcid' parameter.
+ *
+ * @return string Unique Client ID or NULL if consistent model is not used.
+ */
+	public function getClientId() {
+		if (null != $this->client_id) {
+			return $this->client_id;
+		}
+		if (isset($this->data['data']['__bcid'])) {
+			$this->client_id = $this->data['data']['__bcid'];
+			unset($this->data['data']['__bcid']);
+		}
+		return $this->client_id;
+	}
+
 /**
  * Returns the 'pass' parameters from the Ext JS request. 'pass' parameters are special parameters which are passed
  * directly to the controller/action by CakePHP. The only 'pass' parameter that exist for the CRUD operations is 'id'
@@ -171,68 +203,53 @@ class BanchaRequestTransformer {
  *
  * @return array Array with 'pass' parameters
  */
-	public function getPassParams()
-	{
-		if (!in_array($this->getAction(), array('edit', 'delete', 'view')))
-		{
+	public function getPassParams() {
+		if (!in_array($this->getAction(), array('edit', 'delete', 'view'))) {
 			return array();
 		}
-		
+
 		$pass = array();
-		if (isset($this->data['data']['id']))
-		{
+		if (isset($this->data['data']['id'])) {
 			$pass['id'] = $this->data['data']['id'];
 			unset($this->data['data']['id']);
-		}
-		else if (isset($this->data['id']))
-		{
+		} else if (isset($this->data['id'])) {
 			$pass['id'] = $this->data['id'];
 			unset($this->data['id']);
 			$this->isFormRequest = true;
 		}
 		return $pass;
 	}
-	
+
 /**
  * Returns the paging options in a format suited for CakePHP. If a page number is provided by the Ext JS request, it
  * returns this page number directly, otherwise, if provided, it calculates the page number from the start offset and
  * limit. It sets the default value for page to 1 and for limit to 25. This method also transforms the 'sort' array
  * from the Ext JS request.
  *
- * @return void
- * @author Florian Eckerstorfer
+ * @return array Array with three elements 'page', 'limit' and 'order'.
  */
-	public function getPaging()
-	{
-		if (null != $this->paginate)
-		{
+	public function getPaging() {
+		if (null != $this->paginate) {
 			return $this->paginate;
 		}
-		
+
 		$page = 1;
-		if (isset($this->data['data']['page']))
-		{
+		if (isset($this->data['data']['page'])) {
 			$page = $this->data['data']['page'];
 			unset($this->data['data']['page']);
-		}
-		else if (isset($this->data['data']['start']) && isset($this->data['data']['limit']))
-		{
+		} else if (isset($this->data['data']['start']) && isset($this->data['data']['limit'])) {
 			$page = floor($this->data['data']['start'] / $this->data['data']['limit']);
 			unset($this->data['data']['start']);
 		}
 		$limit = 25;
-		if (isset($this->data['data']['limit']))
-		{
+		if (isset($this->data['data']['limit'])) {
 			$limit = $this->data['data']['limit'];
 			unset($this->data['data']['limit']);
 		}
 		$order = array();
-		if (isset($this->data['data']['sort']))
-		{
-			foreach ($this->data['data']['sort'] as $sort)
-			{
-				if (isset($sort['property']) && isset($sort['direction']))
-				{
+		if (isset($this->data['data']['sort'])) {
+			foreach ($this->data['data']['sort'] as $sort) {
+				if (isset($sort['property']) && isset($sort['direction'])) {
 					$order[$this->getController() . '.' . $sort['property']] = strtolower($sort['direction']);
 				}
 			}
@@ -245,31 +262,29 @@ class BanchaRequestTransformer {
 		);
 		return $this->paginate;
 	}
-	
+
 /**
- * Returns the data array from the Ext JS request without all special elements. Therefore it calls all the get*() 
+ * Returns the data array from the Ext JS request without all special elements. Therefore it calls all the get*()
  * methods in the class, which not only return the values but also clean the request.
  *
  * @return array Cleaned data array.
  */
-	public function getCleanedDataArray()
-	{
+	public function getCleanedDataArray() {
 		$data = array();
 		// Call get*() methods to clean data array
 		$this->getController();
 		$this->getAction();
 		$this->getUrl();
+		$this->getClientId();
+		$this->getExtUpload();
 		$this->getPassParams();
 		$this->getPaging();
-		if (isset($this->data['data']))
-		{
+		if (isset($this->data['data'])) {
 			$data = $this->data['data'];
 		}
-		if ($this->isFormRequest)
-		{
+		if ($this->isFormRequest) {
 			$data = $this->data;
-			if (isset($data['extTID']))
-			{
+			if (isset($data['extTID'])) {
 				unset($data['extTID']);
 			}
 		}

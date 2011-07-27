@@ -1,6 +1,6 @@
 <?php
 /**
- * AllBehaviorsTest file
+ * AllTestsTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -8,7 +8,8 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       bancha.libs
+ * @package       Bancha
+ * @category      tests
  * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
@@ -20,11 +21,12 @@
  */
 
 /**
- * AllBehaviorsTest class
+ * AllTestsTest class
  *
- * This test group will run all test in the Bancha/Test/Cases/Model/Behaviours directory
+ * This test group will run all test in the Bancha/Test/Cases directory except for those in the System directory.
  *
- * @package       bancha.tests.groups
+ * @package       Bancha
+ * @category      tests
  */
 class AllTestsTest extends PHPUnit_Framework_TestSuite {
 
@@ -40,9 +42,7 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile($path . 'AllBehaviorsTest.php');
 		$suite->addTestFile($path . 'AllRoutingTest.php');
 		$suite->addTestFile($path . 'AllNetworkTest.php');
-		$suite->addTestFile($path . 'AllUtilityTest.php');
 
-		$suite->addTestDirectory($path);
 		return $suite;
 	}
 }
