@@ -54,6 +54,56 @@ Ext.define('Bancha.data.Model', {
 });
 
 
+/**
+ * @private
+ * This should only be used by Bancha internally, 
+ * it adds the consistent uid to all requests.
+ * @author Roland Schuetz <mail@rolandschuetz.at>
+ * @docauthor Roland Schuetz <mail@rolandschuetz.at>
+ */
+Ext.define('Bancha.data.writer.ConsistentJson', { // TODO testen
+    extend: 'Ext.data.writer.Json',
+    alias: 'writer.consistent',
+    
+    /**
+     * @config
+     * the name of the field to send the consistent uid in
+     */
+    uidProperty: '__bcid',
+    
+    /**
+     * @config {Bancha.data.Model} model
+     * the model to write for, needed to determine the value of 
+     * {@link Bancha.data.Model#forceConsistency model.forceConsistency}
+     */
+    model: undefined,
+    //inherit docs
+    writeRecords: function(request, data) {
+        
+        // IFDEBUG
+        if(!this.model) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: Bancha.data.writer.ConsistentJson needs a reference to the model.'
+            });
+        }
+        // ENDIF
+        
+        // set consistent uid if expected
+        if(this.model && this.model.forceConsistency) {
+            if (this.encode) {
+                request.params[this.uidProperty] = Bancha.getConsistentUid();
+            } else {
+                // send as jsonData
+                request.jsonData[this.uidProperty] = Bancha.getConsistentUid();
+            }
+        }
+        
+        // let the json writer do all the work:
+        return this.superclass.writeRecords.apply(this,arguments);
+    }
+});
+
 
 /*
  * Add some validation function for scaffolding
@@ -725,6 +775,35 @@ Ext.define('Bancha', {
         return null;
     },
     
+    /**
+     * @private
+     * Returns the UID of this instance or false in an error case.
+     * In debug mode it throws an error if no UID is defined.
+     */
+    getConsistentUid: function() {
+        var api = this.getRemoteApi();
+        // IFDEBUG
+        if(!this.initialized) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: Please inistalize Bancha before using it\'s getConsistentUid() method.'
+            });
+        }
+        
+        if(!(
+             Ext.isObject(api) && 
+             Ext.isObject(api.metadata) &&
+             Ext.isObject(api.metadata[_UID])
+             )) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: There is no Bancha consistent model uid defined in the metadata. '+
+                     'Maybe you use a non-Bancha backend or forgot to include the remote api on this site.'
+            });
+         }
+         // ENDIF
+         return (api && api.metadata && api.metadata[_UID]) ? api.metadata[_UID] : false;
+    },
     /**
      * @property {Function|False} onRemoteException
      * This function will be added to each model to handle remote errors.
