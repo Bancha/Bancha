@@ -142,18 +142,23 @@ class BanchaBehavior extends ModelBehavior {
 /**
  * Return the Associations as ExtJS-Assoc Model
  * should look like this:
- *
- * 'Post', {
- *     fields: ['id', 'user_id', 'title', 'body'],
- *	   belongsTo: 'User',
- *	   hasMany: 'Comments'
- *	}
+ * <code>
+ * associations: [
+ *        {type: 'hasMany', model: 'Post',    name: 'posts'},
+ *        {type: 'hasMany', model: 'Comment', name: 'comments'}
+ *   ]
+ * </code>
+ *   
+ *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
+ *   
+ *   in cakephp it is stored as this <code>Array ( [Article] => hasMany )</code>
  */
 	private function getAssociated() {
 		$assocs = $this->model->getAssociated();
 		$return = array();
 		foreach ($assocs as $field => $value) {
-			array_push($return, array ($value => $field));
+			$name = lcfirst(Inflector::pluralize($field)); //generate a handy name
+			$return[] = array ('type' => $value, 'model' => $field, 'name' => $name);
 		}
 		return $return;
 	}

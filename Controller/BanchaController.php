@@ -52,7 +52,12 @@ class BanchaController extends BanchaAppController {
 
 
 	/**
-	 * index method, sets $API for use in the view
+	 * the index method is called by default by cakePHP if no action is specified,
+	 * it will print the API for the Controllers which have the Bancha-
+	 * Behavior set. This will not include any model meta data. to specify which
+	 * model meta data should be printed you will have to pass the model names as
+	 * controller parameters as in cakePHP.e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
+	 * will load the metadata from the models Users and Tags
 	 *
 	 * @return void
 	 */
@@ -64,7 +69,6 @@ class BanchaController extends BanchaAppController {
 		 */
 
 		$API = array();
-		//$API['url'] =  'Bancha/router.php';
 		$API['url'] =  '/bancha.php';
 		$API['namespace'] = 'Bancha.RemoteStubs';
     	$API['type'] = "remoting";
@@ -130,8 +134,13 @@ class BanchaController extends BanchaAppController {
 	}
 
 	/**
-	 * this function returns the Metadata of the models passed as an argument.
-	 *
+	 * loadMetaData returns the Metadata of the models passed as an argument or 
+	 * in params['pass'] array which is created by cakephp from the arguments 
+	 * passed in the url. e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
+	 * will load the metadata from the models Users and Tags
+	 * 
+	 * @param models is an array of models of which metadata you want returned
+	 * @return array 
 	 */
 	public function loadMetaData($models = array() ) {
 		if(isset($this->params['pass'])) {
