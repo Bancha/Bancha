@@ -40,9 +40,9 @@ class BanchaResponseTransformer {
 		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
-
+		
 		if ('index' == $request->action && $modelName) {
-			foreach ($response as $i => $element) {
+			foreach ($response->body() as $i => $element) {
 				$data[$i] = $element[$modelName];
 			}
 			$response = $data;
