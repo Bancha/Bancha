@@ -46,7 +46,7 @@ class BanchaResponseCollection {
 			'tid'		=> $tid,
 			'action'	=> $request->controller, // controllers are called action in Ext JS
 			'method'	=> $request->action, // actions are called methods in Ext JS
-			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
+			'result'	=> BanchaResponseTransformer::transform($response, $request),
 		);
 		if ($request['extUpload'])
 		{
