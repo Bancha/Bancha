@@ -465,7 +465,8 @@ Ext.define('Bancha', {
      * ({@link Bancha#onModelReady} will init automatically)
      */
     init: function() {
-        var remoteApi;
+        var remoteApi,
+            regex;
         
         // IFDEBUG
         if(!Ext.isReady) {
@@ -498,12 +499,17 @@ Ext.define('Bancha', {
             remoteApi.metadata = {};
         }
         
-        // since json doesn't support regex, transform regex-strings to real reggex
+        // since json doesn't support regex and json_encode fucks excaping up, transform bancha strings to real reggex
+        regex = {
+            Alpha: /^[a-zA-Z_]+$/,
+            Alphanum: /^[a-zA-Z0-9_]+$/,
+            Email: /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/,
+            Url: /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i
+        };
         Ext.Object.each(remoteApi.metadata, function(key,model) {
             Ext.Object.each(model.validations, function(key,rule) {
-                if(rule.type==='format' && Ext.isString(rule.matcher)) {
-                    console.info(rule.matcher);
-                    rule.matcher = new RegExp(rule.matcher);
+                if(rule.type==='format' && Ext.isString(rule.matcher) && rule.matcher.substr(0,6)==='bancha' && regex[rule.matcher.substr(6)]) {
+                    rule.matcher = regex[rule.matcher.substr(6)];
                 }
             });
         });
