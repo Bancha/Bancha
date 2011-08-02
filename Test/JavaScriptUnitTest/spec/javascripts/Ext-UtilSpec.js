@@ -42,9 +42,7 @@ describe("Ext.data.validations tests", function() {
         var config = {type: 'numberformat', field: 'euro'};
         expect(validations.numberformat(config,34)).toBeTruthy();
         expect(validations.numberformat(config,3.4)).toBeTruthy();
-        
-        expect(validations.numberformat(config,'3.4')).toBeFalsy();
-        expect(validations.numberformat(config,'not a number')).toBeFalsy();
+        expect(validations.numberformat(config,'3.4')).toBeTruthy();
     });
     
     it("should validate min of numberformats", function() {
