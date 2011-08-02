@@ -25,8 +25,12 @@
 // TODO Native support for Ext.data.TreeStore with server-side TreeBehaviour
 // TODO serverside form validation
 // TODO selectboxes with serverside content (enum support also(?)) http://dev.sencha.com/deploy/ext-4.0.0/examples/form/combos.html
-// TODO samples sollten "$javascript->link('script.js', false);" verwenden, da dies auch aus vendors (und plugins!?) ausliest
 
+Ext.require([
+    'Ext.data.*',
+    'Ext.form.Panel',
+    'Ext.grid.Panel',
+]);
 
 /**
  * @class Bancha.data.Model
@@ -42,7 +46,6 @@
  */
 Ext.define('Bancha.data.Model', {
     extend: 'Ext.data.Model',
-    // TODO forceConsistency: use the consistent model
     /**
      * @cfg
      * If true the frontend forces consistency
@@ -51,25 +54,82 @@ Ext.define('Bancha.data.Model', {
 });
 
 
+/**
+ * @private
+ * This should only be used by Bancha internally, 
+ * it adds the consistent uid to all requests.
+ * @author Roland Schuetz <mail@rolandschuetz.at>
+ * @docauthor Roland Schuetz <mail@rolandschuetz.at>
+ */
+Ext.define('Bancha.data.writer.ConsistentJson', { // TODO testen
+    extend: 'Ext.data.writer.Json',
+    alias: 'writer.consistent',
+    
+    /**
+     * @config
+     * the name of the field to send the consistent uid in
+     */
+    uidProperty: '__bcid',
+    
+    /**
+     * @config {Bancha.data.Model} model
+     * the model to write for, needed to determine the value of 
+     * {@link Bancha.data.Model#forceConsistency model.forceConsistency}
+     */
+    model: undefined,
+    //inherit docs
+    writeRecords: function(request, data) {
+        
+        // IFDEBUG
+        if(!this.model) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: Bancha.data.writer.ConsistentJson needs a reference to the model.'
+            });
+        }
+        // ENDIF
+        
+        // set consistent uid if expected
+        if(this.model && this.model.forceConsistency) {
+            if (this.encode) {
+                request.params[this.uidProperty] = Bancha.getConsistentUid();
+            } else {
+                // send as jsonData
+                request.jsonData[this.uidProperty] = Bancha.getConsistentUid();
+            }
+        }
+        
+        // let the json writer do all the work:
+        return this.superclass.writeRecords.apply(this,arguments);
+    }
+});
+
+
 /*
  * Add some validation function for scaffolding
  */
 (function() {
     var filenameHasExtension = function(filename,validExtensions) {
+        if(!Ext.isDefined(validExtensions)) {
+            return true;
+        }
         var ext = filename.split('.').pop();
         return Ext.Array.contains(validExtensions,ext);
     };
     /**
      * @class Ext.form.field.VTypes
      * Custom VTypes for scaffolding support
+     * @author Roland Schuetz <mail@rolandschuetz.at>
+     * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
     Ext.apply(Ext.form.field.VTypes, {
         /**
          * @method
          * Validates that the file extension is of one of field.validExtensions
+         * or if field.validExtensions is undefined
          */
         fileExtension: function(val, field) {
-            return filenameHasExtension(val,field.validExtensions || []); // TODO tests schreiben
+            return filenameHasExtension(val,field.validExtensions);
         },
         /**
          * @property
@@ -86,6 +146,8 @@ Ext.define('Bancha.data.Model', {
     /**
      * @class Ext.data.validations
      * Custom validations for scaffolding support
+     * @author Roland Schuetz <mail@rolandschuetz.at>
+     * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
     Ext.apply(Ext.data.validations,{
         /**
@@ -103,25 +165,26 @@ Ext.define('Bancha.data.Model', {
          * Validates the value is a number in the range of minValue and maxValue.
          * Precision is not validated, it's just meta data for scaffolding.
          * For example:
-         *     validations: [{type: 'numberformat', field: 'euro', precision:2, min:0, max: 1000}]
+         *     {type: 'numberformat', field: 'euro', precision:2, min:0, max: 1000}
          */
-        numberformat: function(config, value) {// TODO tests schreiben
-            if(typeof value === 'number') {
+        numberformat: function(config, value) {
+            if(typeof value !== 'number') {
                 return false; // not a number
             }
-            if((config.min && config.min > value) || (config.max && value > config.max)) {
+            if((Ext.isDefined(config.min) && config.min > value) || (Ext.isDefined(config.max) && value > config.max)) {
                 return false; // not in the range
             }
             return true;
         },
         /**
          * @method
-         * Validates that the given filename is of the configured extension. 
+         * Validates that the given filename is of the configured extension. Also validates
+         * if no extension are defined.
          * For example:
-         *     validations: [{type: 'file', field: 'avatar', extension:['jpg','jpeg','gif','png']}]
+         *     {type: 'file', field: 'avatar', extension:['jpg','jpeg','gif','png']}
          */
         file: function(config, value) {
-            return filenameHasExtension(value,config.extension || []);// TODO tests schreiben
+            return filenameHasExtension(value,config.extension);
         }
     });
     
@@ -130,6 +193,8 @@ Ext.define('Bancha.data.Model', {
      * @class Ext.grid.Panel
      * The Ext.grid.Panel is extended for scaffolding. For an usage example see 
      * {@link Bancha.scaffold.Grid}
+     * @author Roland Schuetz <mail@rolandschuetz.at>
+     * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
     Ext.apply(Ext.grid.Panel, {
         /**
@@ -137,7 +202,7 @@ Ext.define('Bancha.data.Model', {
          * Define a Bancha model or model name to build the config from Bancha metadata.  
          * Guesses are made by model field configs and validation rules.
          *
-         * See {@link Bancha.scaffold.Form class explaination} for an example.
+         * See {@link Bancha.scaffold.Grid} for an example.
          */
         /**
          * @property {String|False} scaffold
@@ -153,12 +218,12 @@ Ext.define('Bancha.data.Model', {
         /**
          * @cfg {Boolean} enableUpdate
          * If true and scaffold is defined, a editor field is added to all columns for scaffolded grids.  
-         * See class descrition on how the fields are created.  
+         * See {@Bancha.scaffold.Grid} on how the fields are created.  
          * If undefined, the default from {@link Bancha.scaffold.Grid} is used.
          */
         /**
          * @cfg {Boolean} enableDestroy
-         * If true and scaffold is defined, a delete button is added to all rows for scaffolded grids.
+         * If true and scaffold is defined, a delete button is added to all rows for scaffolded grids.  
          * If undefined, the default from {@link Bancha.scaffold.Grid} is used.
          */
         /**
@@ -197,6 +262,8 @@ Ext.define('Bancha.data.Model', {
      * @class Ext.form.Panel
      * The Ext.form.Panel is extended for scaffolding. For an usage example see 
      * {@link Bancha.scaffold.Form}
+     * @author Roland Schuetz <mail@rolandschuetz.at>
+     * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
     Ext.apply(Ext.form.Panel, {
         /**
@@ -204,7 +271,7 @@ Ext.define('Bancha.data.Model', {
          * Define a Bancha model or model name to build the config from Bancha metadata.  
          * Guesses are made by model field configs and validation rules.
          *
-         * See {@link Bancha.scaffold.Grid class explaination} for an example.
+         * See {@link Bancha.scaffold.Form} for an example.
          */
         /**
          * @property {String|False} scaffold
@@ -430,6 +497,16 @@ Ext.define('Bancha', {
         if(!Ext.isDefined(remoteApi.metadata)) {
             remoteApi.metadata = {};
         }
+        
+        // since json doesn't support regex, transform regex-strings to real reggex
+        Ext.Object.each(remoteApi.metadata, function(key,model) {
+            Ext.Object.each(model.validations, function(key,rule) {
+                if(rule.type==='format' && Ext.isString(rule.matcher)) {
+                    console.info(rule.matcher);
+                    rule.matcher = new RegExp(rule.matcher);
+                }
+            });
+        });
         
         
         // IFDEBUG
@@ -709,6 +786,35 @@ Ext.define('Bancha', {
     },
     
     /**
+     * @private
+     * Returns the UID of this instance or false in an error case.
+     * In debug mode it throws an error if no UID is defined.
+     */
+    getConsistentUid: function() {
+        var api = this.getRemoteApi();
+        // IFDEBUG
+        if(!this.initialized) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: Please inistalize Bancha before using it\'s getConsistentUid() method.'
+            });
+        }
+        
+        if(!(
+             Ext.isObject(api) && 
+             Ext.isObject(api.metadata) &&
+             Ext.isObject(api.metadata[_UID])
+             )) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: There is no Bancha consistent model uid defined in the metadata. '+
+                     'Maybe you use a non-Bancha backend or forgot to include the remote api on this site.'
+            });
+         }
+         // ENDIF
+         return (api && api.metadata && api.metadata[_UID]) ? api.metadata[_UID] : false;
+    },
+    /**
      * @property {Function|False} onRemoteException
      * This function will be added to each model to handle remote errors.
      * (modelConfig.listeners.exception).  
@@ -876,7 +982,11 @@ Ext.define('Bancha', {
                     type: 'json',
                     root: 'data'
                 },
-                writer: {
+                writer: (modelConfig.forceConsistency) ? {
+                    type: 'consitentjson',
+                    writeAllFields: false,
+                    root: 'data'
+                } : {
                     type: 'json',
                     writeAllFields: false,
                     root: 'data'
@@ -909,7 +1019,7 @@ Ext.define('Bancha', {
         return (Ext.ClassManager.isCreated(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(modelName) : null;
     },
     
-    /**
+    /*
      * Scaffolding functions for Bancha, mostly for rapid prototyping
      */
     scaffold: {
@@ -918,6 +1028,9 @@ Ext.define('Bancha', {
          * @singleton
          * @class Bancha.scaffold.Util
          * Some scaffolding util function
+         * 
+         * @author Roland Schuetz <mail@rolandschuetz.at>
+         * @docauthor Roland Schuetz <mail@rolandschuetz.at>
          */
         Util: {
             /**
@@ -990,7 +1103,7 @@ Ext.define('Bancha', {
          * 
          * In most cases you will use our configurations on {@link Ext.grid.Panel}.
          * Here's an example usage:
-         *     Ext.create("Ext.grid.Panel", { // TODO testen
+         *     Ext.create("Ext.grid.Panel", {
          *         scaffold: 'User', // the model name
          *
          *         // basic scaffold configs can be set directly
@@ -1029,7 +1142,10 @@ Ext.define('Bancha', {
          * You have three possible interceptors:  
          *  - beforeBuild      : executed before {@link #buildGrid}  
          *  - guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig}   
-         *  - afterBuild       : executed after {@link #buildGrid} created the config  
+         *  - afterBuild       : executed after {@link #buildGrid} created the config
+         * 
+         * @author Roland Schuetz <mail@rolandschuetz.at>
+         * @docauthor Roland Schuetz <mail@rolandschuetz.at>
          */
         Grid: {  
              /**
@@ -1591,7 +1707,7 @@ Ext.define('Bancha', {
          * 
          * In most cases you will use our configurations on {@link Ext.form.Panel}.
          * Here's an example usage:
-         *     Ext.create("Ext.form.Panel", { // TODO testen
+         *     Ext.create("Ext.form.Panel", {
          *         scaffold: 'User', // the model name
          *
          *         // basic scaffold configs can be set directly
@@ -1640,6 +1756,9 @@ Ext.define('Bancha', {
          *  - beforeBuild     : executed before {@link #buildGrid}
          *  - guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
          *  - afterBuild      : executed after {@link #buildGrid} created the config
+         * 
+         * @author Roland Schuetz <mail@rolandschuetz.at>
+         * @docauthor Roland Schuetz <mail@rolandschuetz.at>
          */
         Form: {
             /**
@@ -1990,7 +2109,6 @@ Ext.define('Bancha', {
                 };
             },
             /**
-             * @property
              * You can replace this function! The function will be executed before each 
              * {@link #buildConfig} as interceptor. For params see {@link #buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
@@ -1998,7 +2116,6 @@ Ext.define('Bancha', {
             beforeBuild: function(model, recordId, config, additionalFormConfig) {
             },
             /**
-             * @property
              * You can replace this function! This function will be executed after each 
              * {@link #buildConfig} as interceptor
              * @param {Object} formConfig just build form panel config
@@ -2011,7 +2128,8 @@ Ext.define('Bancha', {
             afterBuild: function(formConfig, model, recordId, config, additionalFormConfig) {
             },
             /**
-             * @private
+             * You only need this is you're adding additional buttoms to the form inside the
+             * afterBuild function.  
              * Since the form panel doesn't give us an useful scope to get the form panel,
              * this function will create an proper scope. The scope provides two functions:  
              *  - this.getPanel() to get the form panel  
@@ -2044,8 +2162,19 @@ Ext.define('Bancha', {
              * @param {Number|String|False} recordId (optional) Record id of an row to load 
              * data from server, false to don't load anything (for creating new rows)
              * @param {Object|False} config (optional) Any property of 
-             * {@link Bancha.scaffold.Form} can be overrided for this call by declaring it
-             * in this config. See {@link #createPanel} config param.
+             * {@link Bancha.scaffold.Form} can be overrided for this call by declaring it 
+             * here. E.g.:
+             *      {
+             *          fieldDefaults: {
+             *              disabled: true; // disable all fields by default
+             *          },
+             *          onSave: function() {
+             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)");
+             *          }
+             *      }
+             *
+             * If you don't define an id here it will be created and can not be changed anymore afterwards.
+             *
              * @param {Object} additionalFormConfig (optional) Some additional Ext.form.Panel 
              * configs which are applied to the config
              * @return {Object} object with Ext.form.Panel configs
@@ -2165,36 +2294,6 @@ Ext.define('Bancha', {
                 
                 // return after interceptor
                 return config.afterBuild(formConfig, model, recordId, config, additionalFormConfig) || formConfig;
-            },
-            
-            /**
-             * Builds form configs from the metadata, for scaffolding purposes.  
-             * By default data is loaded from the server if an id is supplied and 
-             * onSvae it pushed the data to the server.  
-             *  
-             * Guesses are made by model field configs and validation rules.
-             * @param {Ext.data.Model|String} model the model class or model name
-             * @param {Number|String|False} recordId (optional) Record id of an row to load data from server, false to don't load anything (for creating new rows)
-             * @param {Object|False} config (optional) Any property of FormConfig can be overrided for this call by declaring it here. E.g
-             *      {
-             *          fieldDefaults: {
-             *              disabled: true; // disable all fields by default
-             *          },
-             *          onSave: function() {
-             *              Ext.MessageBox.alert("Wohoo","You're pressed the save button :)");
-             *          },
-             *          id: 'form'
-             *      }
-             *
-             * If you don't define an id here it will be created and can not be changed anymore afterwards.
-             *
-             * @param {Object} additionalFormConfig (optional) Some additional Ext.form.Panel configs which are applied to the new form panel
-             * @return {Object} Returns the new instance of Ext.form.Panel
-             */
-            createPanel: function(model, recordId, config, additionalFormConfig) {
-            
-                var config = this.buildConfig.apply(this,arguments);
-                return Ext.create('Ext.form.Panel', config);
             }
         } //eo Form
     } //eo scaffold
