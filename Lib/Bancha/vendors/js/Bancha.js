@@ -498,6 +498,16 @@ Ext.define('Bancha', {
             remoteApi.metadata = {};
         }
         
+        // since json doesn't support regex, transform regex-strings to real reggex
+        Ext.Object.each(remoteApi.metadata, function(key,model) {
+            Ext.Object.each(model.validations, function(key,rule) {
+                if(rule.type==='format' && Ext.isString(rule.matcher)) {
+                    console.info(rule.matcher);
+                    rule.matcher = new RegExp(rule.matcher);
+                }
+            });
+        });
+        
         
         // IFDEBUG
         if(Ext.isObject(remoteApi)===false) {
