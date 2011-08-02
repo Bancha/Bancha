@@ -78,7 +78,7 @@ class BanchaRequestTransformer {
 		}
 		if (isset($this->data['action']))
 		{
-			$this->controller = $this->data['action'];
+			$this->controller = Inflector::pluralize($this->data['action']);
 			unset($this->data['action']);
 		}
 		else if (isset($this->data['extAction']))
