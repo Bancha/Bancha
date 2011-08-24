@@ -42,7 +42,7 @@ class BanchaResponseTransformer {
 		}
 		
 		if ('index' == $request->action && $modelName) {
-			foreach ($response->body() as $i => $element) {
+			foreach ($response as $i => $element) {
 				$data[$i] = $element[$modelName];
 			}
 			$response = $data;
