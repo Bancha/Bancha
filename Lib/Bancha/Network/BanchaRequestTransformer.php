@@ -209,12 +209,12 @@ class BanchaRequestTransformer {
 		}
 
 		$pass = array();
-		if (isset($this->data['data']['id'])) {
-			$pass['id'] = $this->data['data']['id'];
-			unset($this->data['data']['id']);
-		} else if (isset($this->data['id'])) {
-			$pass['id'] = $this->data['id'];
-			unset($this->data['id']);
+		if (isset($this->data[0]['data']['id'])) {
+			$pass['id'] = $this->data[0]['data']['id'];
+			unset($this->data[0]['data']['id']);
+		} else if (isset($this->data[0]['id'])) {
+			$pass['id'] = $this->data[0]['id'];
+			unset($this->data[0]['id']);
 			$this->isFormRequest = true;
 		}
 		return $pass;
