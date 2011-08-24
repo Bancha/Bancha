@@ -57,6 +57,11 @@ class BanchaSingleDispatcher extends Dispatcher {
 				'action' => $request->params['action']
 			));
 		}
+		
+		if(isset($request->data[0]['data']['id'])) {
+			$request->params['pass'] = array( $request->data[0]['data']['id'] );
+		}
+		
 		$result = call_user_func_array(array(&$controller, $request->params['action']), $request->params['pass']);
 		$response = $controller->getResponse();
 
