@@ -204,17 +204,14 @@ class BanchaRequestTransformer {
  * @return array Array with 'pass' parameters
  */
 	public function getPassParams() {
-		if (!in_array($this->getAction(), array('edit', 'delete', 'view'))) {
-			return array();
-		}
 
 		$pass = array();
 		if (isset($this->data[0]['data']['id'])) {
 			$pass['id'] = $this->data[0]['data']['id'];
 			unset($this->data[0]['data']['id']);
-		} else if (isset($this->data[0]['id'])) {
-			$pass['id'] = $this->data[0]['id'];
-			unset($this->data[0]['id']);
+		} else if (isset($this->data['id'])) { // TODO check with tech docu
+			$pass['id'] = $this->data['id'];
+			unset($this->data['id']);
 			$this->isFormRequest = true;
 		}
 		return $pass;
