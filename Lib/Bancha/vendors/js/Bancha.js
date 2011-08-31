@@ -509,21 +509,7 @@ Ext.define('Bancha', {
             remoteApi.metadata = {};
         }
         
-        // since json doesn't support regex and json_encode fucks excaping up, transform bancha strings to real reggex
-        regex = {
-            Alpha: /^[a-zA-Z_]+$/,
-            Alphanum: /^[a-zA-Z0-9_]+$/,
-            Email: /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/,
-            Url: /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i
-        };
-        Ext.Object.each(remoteApi.metadata, function(key,model) {
-            Ext.Object.each(model.validations, function(key,rule) {
-                if(rule.type==='format' && Ext.isString(rule.matcher) && rule.matcher.substr(0,6)==='bancha' && regex[rule.matcher.substr(6)]) {
-                    rule.matcher = regex[rule.matcher.substr(6)];
-                }
-            });
-        });
-        
+        this.decodeMetadata(remoteApi);
         
         // IFDEBUG
         if(Ext.isObject(remoteApi)===false) {
@@ -542,7 +528,32 @@ Ext.define('Bancha', {
         
         this.initialized = true;
     },
+    /**
+     * Decodes all stuff that can not be directly send in the right format from the server
+     * Directly applies the changes
+     */
+    decodeMetadata: (function() {
     
+        // since json doesn't support regex and json_encode fucks excaping up, transform bancha strings to real reggex
+        var regex = {
+            Alpha: /^[a-zA-Z_]+$/,
+            Alphanum: /^[a-zA-Z0-9_]+$/,
+            Email: /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/,
+            Url: /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i
+        };
+        
+        
+        return function(remoteApi) {
+            Ext.Object.each(remoteApi.metadata, function(key,model) {
+                Ext.Object.each(model.validations, function(key,rule) {
+                    if(rule.type==='format' && Ext.isString(rule.matcher) && rule.matcher.substr(0,6)==='bancha' && regex[rule.matcher.substr(6)]) {
+                        rule.matcher = regex[rule.matcher.substr(6)];
+                    }
+                });
+            });
+        };
+    }()), //eo decodeMetadata
+     
     /**
      * Preloads the models metadata from the server to create a new model.  
      *  
@@ -614,6 +625,9 @@ Ext.define('Bancha', {
             // save result
             Ext.apply(Bancha.getRemoteApi().metadata,result);
             
+            // decode new stuff
+            this.decodeMetadata(Bancha.getRemoteApi());
+        
             // IFDEBUG
             if(!Ext.isFunction(callback) && Ext.isDefined(callback)) {
                 Ext.Error.raise({
@@ -1857,7 +1871,7 @@ Ext.define('Bancha', {
                     alphanum = /^[a-zA-Z0-9_]+$/.toString(),
                     email = /^(\w+)([\-+.][\w]+)*@(\w[\-\w]*\.){1,5}([A-Za-z]){2,6}$/.toString(),
                     url = /(((^https?)|(^ftp)):\/\/([\-\w]+\.)+\w{2,3}(\/[%\-\w]+(\.\w{2,})?)*(([\w\-\.\?\\\/+@&#;`~=%!]*)(\.\w{2,})?)*\/?)/i.toString();
-                        
+                
                 return function(field,validations,config) {
                     var name = field.name, // it's used so often, make a shortcut
                         msgAddition;
@@ -1903,16 +1917,16 @@ Ext.define('Bancha', {
                                 }
                                 // ENDIF
                                 switch(rule.matcher.toString()) {
-                                    case 'banchaAlpha':
+                                    case alpha:
                                         field.vtype = 'alpha';
                                         break;
-                                    case 'banchaAlphanum':
+                                    case alphanum:
                                         field.vtype = 'alphanum';
                                         break;
-                                     case 'banchaEmail':
+                                     case email:
                                         field.vtype = 'email';
                                         break;
-                                    case 'banchaUrl':
+                                    case url:
                                         field.vtype = 'url';
                                         break;
                                     default:
