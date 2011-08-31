@@ -129,7 +129,6 @@ class BanchaController extends BanchaAppController {
 			}
 			//TODO find better way to implement formhandler
 			array_push($API['actions'][$cont], array('name' => 'submit','len' => 1, 'formHandler'=> true));
-			array_push($API['actions'][$cont], array('name' => 'load','len' => 1, 'formHandler'=> true));
 		}
 
 		// add Bancha controller functions
