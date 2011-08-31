@@ -601,7 +601,7 @@ Ext.define('Bancha', {
         cb = function(result, event) {
             
             // IFDEBUG
-            if(data===null) {
+            if(result===null) {
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     result: result,
@@ -709,12 +709,12 @@ Ext.define('Bancha', {
             
             if(this.modelMetaDataIsLoaded(modelName)) {
                 // all metadata already present, call callback with model
-                callback.call(scope,this.getModel(modelName),this);
+                callback.call(scope,this.getModel(modelName));
             } else {
                 this.preloadModelMetaData(modelName, function() {
                     // all metadata already present, call callback with model
-                    callback.call(scope,this.getModel(modelName),this);
-                });
+                    callback.call(scope,this.getModel(modelName));
+                },this);
             }
             return;
         }
