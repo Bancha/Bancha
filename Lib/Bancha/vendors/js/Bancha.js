@@ -599,7 +599,6 @@ Ext.define('Bancha', {
         }
         
         cb = function(result, event) {
-            var data = Ext.decode(result);
             
             // IFDEBUG
             if(data===null) {
@@ -607,13 +606,13 @@ Ext.define('Bancha', {
                     plugin: 'Bancha',
                     result: result,
                     event: event,
-                    msg: 'Bancha: The Bancha.preloadModelMetaData('+modelNames.toString()+') expected to get the metadata from the server, instead got: '+result
+                    msg: 'Bancha: The Bancha.preloadModelMetaData('+modelNames.toString()+') expected to get the metadata from the server, instead got: '+Ext.encode(result)
                 });
             }
             // ENDIF
         
             // save result
-            Ext.apply(Bancha.getRemoteApi().metadata,data);
+            Ext.apply(Bancha.getRemoteApi().metadata,result);
             
             // IFDEBUG
             if(!Ext.isFunction(callback) && Ext.isDefined(callback)) {
@@ -636,7 +635,7 @@ Ext.define('Bancha', {
                 if(!Ext.isDefined(scope)) {
                     scope = window;
                 }
-                callback.call(scope,data);
+                callback.call(scope,result);
             }
         };
         
@@ -710,11 +709,11 @@ Ext.define('Bancha', {
             
             if(this.modelMetaDataIsLoaded(modelName)) {
                 // all metadata already present, call callback with model
-                callback.call(scope,this.getModel(modelName));
+                callback.call(scope,this.getModel(modelName),this);
             } else {
                 this.preloadModelMetaData(modelName, function() {
                     // all metadata already present, call callback with model
-                    callback.call(scope,this.getModel(modelName));
+                    callback.call(scope,this.getModel(modelName),this);
                 });
             }
             return;
@@ -758,7 +757,7 @@ Ext.define('Bancha', {
                 this.preloadModelMetaData(modelName, function() {
                     // when model is loaded try again
                     this.onInitializedOnModelReady([], loadingModels, loadedModels, callback, scope);
-                });
+                },this);
             }, this);
         }
     },
