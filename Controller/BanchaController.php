@@ -151,6 +151,7 @@ class BanchaController extends BanchaAppController {
 	 * @return array 
 	 */
 	public function loadMetaData() {
+		$models = array();
 		if(isset($this->params['data'][0])) {
 			$models = $this->params['data'][0];
 		}
