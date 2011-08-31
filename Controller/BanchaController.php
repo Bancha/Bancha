@@ -133,7 +133,9 @@ class BanchaController extends BanchaAppController {
 		}
 
 		// add Bancha controller functions
-		array_push($API['actions']['Bancha'], array('name'=>'loadMetaData', 'len'=>1));
+		$API['actions']['Bancha'] = array(
+			array('name'=>'loadMetaData', 'len'=>1)
+		);
 		
 		$this->set('API', $API);
 		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
