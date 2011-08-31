@@ -22,6 +22,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
         }]
     },
     metadata: {
+        _UID: '550e8400e29b11d4a7164466554400004',
         User: {
                 idProperty: 'id',
                 fields: [

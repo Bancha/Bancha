@@ -29,7 +29,7 @@
 Ext.require([
     'Ext.data.*',
     'Ext.form.Panel',
-    'Ext.grid.Panel',
+    'Ext.grid.Panel'
 ]);
 
 /**
@@ -61,7 +61,7 @@ Ext.define('Bancha.data.Model', {
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
-Ext.define('Bancha.data.writer.ConsistentJson', { // TODO testen
+Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen weiter unten
     extend: 'Ext.data.writer.Json',
     alias: 'writer.consistent',
     
@@ -378,6 +378,12 @@ Ext.define('Bancha', {
      * Only change this if you renamed the server-side BanchaController or it's method
      */
     metaDataLoadFunction: 'Bancha.loadMetaData',
+	/**
+	 * @private
+	 * @property
+	 * The name of uid property in the metadata array
+	 */
+	uidPropertyName: '_UID',
     /**
      * @property
      * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Bancha#init}  
@@ -601,7 +607,7 @@ Ext.define('Bancha', {
                     plugin: 'Bancha',
                     result: result,
                     event: event,
-                    msg: 'Bancha: The Bancha.preloadModelMetaData('+modelNames.toString()+') did expect to to get the metadata from the server, instead got: '+result
+                    msg: 'Bancha: The Bancha.preloadModelMetaData('+modelNames.toString()+') expected to get the metadata from the server, instead got: '+result
                 });
             }
             // ENDIF
@@ -813,7 +819,7 @@ Ext.define('Bancha', {
         if(!(
              Ext.isObject(api) && 
              Ext.isObject(api.metadata) &&
-             Ext.isObject(api.metadata[_UID])
+             Ext.isObject(api.metadata[this.uidPropertyName])
              )) {
             Ext.Error.raise({
                 plugin: 'Bancha',
@@ -822,7 +828,7 @@ Ext.define('Bancha', {
             });
          }
          // ENDIF
-         return (api && api.metadata && api.metadata[_UID]) ? api.metadata[_UID] : false;
+         return (api && api.metadata && api.metadata[this.uidPropertyName]) ? api.metadata[this.uidPropertyName] : false;
     },
     /**
      * @property {Function|False} onRemoteException
@@ -1620,7 +1626,7 @@ Ext.define('Bancha', {
              * @return {Object} Returns an Ext.grid.Panel configuration object
              */
             buildConfig: function(model, config, additionalGridConfig) {
-                var gridConfig, modelName, buttons, cellEditing, store;
+                var gridConfig, modelName, buttons, button, cellEditing, store;
                 config = Ext.apply({},config,Ext.clone(this)); // get all defaults for this call
             
                 // define model and modelName
@@ -2071,7 +2077,7 @@ Ext.define('Bancha', {
             saveButtonConfig: {
                 iconCls: 'icon-save',
                 text: 'Save',
-                formBind: true,
+                formBind: true
             },
             /**
              * @property
@@ -2110,10 +2116,11 @@ Ext.define('Bancha', {
                     });
                 }
                 // ENDIF
-                
+                //console.info("Stub load function:");
+                //console.info(stub.load);
                 return {
                     // The server-side method to call for load() requests
-                    load: stub.read, // as first and only param you must add data: {id: id} when loading
+                    load: stub.load, // as first and only param you must add data: {id: id} when loading
                     // The server-side must mark the submit handler as a 'formHandler'
                     submit: stub.submit
                 };
