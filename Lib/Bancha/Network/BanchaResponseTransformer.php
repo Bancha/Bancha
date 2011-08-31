@@ -40,7 +40,7 @@ class BanchaResponseTransformer {
 		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
-
+		
 		if ('index' == $request->action && $modelName) {
 			foreach ($response as $i => $element) {
 				$data[$i] = $element[$modelName];
@@ -59,6 +59,17 @@ class BanchaResponseTransformer {
 		}
 
 		return $response;
+	}
+	
+	/**
+	 * 
+	 * translates CakePHP CRUD to ExtJS CRUD method names
+	 * @param string $method
+	 */
+	public static function getMethod($method) {
+		if('index' == $method) {
+			return 'read';
+		}
 	}
 
 }

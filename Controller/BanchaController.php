@@ -121,13 +121,22 @@ class BanchaController extends BanchaAppController {
 			$cont = str_replace('Controller','',$cont);
 			$cont = Inflector::singularize($cont);
 			$API['actions'][$cont] = array();
+			//TODO check if methods exist
 			foreach( $this->map as $key => $value) {
 				if (array_search($key, $methods) !== false) {
 					array_push($API['actions'][$cont], array('name' => $value[0],'len' => $value[1]));
 				};
 			}
+			//TODO find better way to implement formhandler
+			array_push($API['actions'][$cont], array('name' => 'submit','len' => 1, 'formHandler'=> true));
+			array_push($API['actions'][$cont], array('name' => 'load','len' => 1, 'formHandler'=> true));
 		}
 
+		// add Bancha controller functions
+		$API['actions']['Bancha'] = array(
+			array('name'=>'loadMetaData', 'len'=>1)
+		);
+		
 		$this->set('API', $API);
 		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
 		//$this->render(null, 'ajax', null); //removes the html

@@ -33,12 +33,20 @@ class BanchaBehavior extends ModelBehavior {
 		);
 
 		//  formater for the validation rules
-		private $formater = array(
-		'alpha' => '/^[a-zA-Z_]+$/',
-		'alphanum' => '/^[a-zA-Z0-9_]+$/',
-		'email' => '/^(\w+)([\-+.][\w]+)*@(\w[\-\<wbr>w]*\.){1,5}([A-Za-z]){2,6}$/',
-		'url' => '/(((^https?)|(^ftp)):\/\/([\-\<wbr>w]+\.)+\w{2,3}(\/[%\-\w]+(\.\<wbr>w{2,})?)*(([\w\-\.\?\\\/+@&amp;#;`<wbr>~=%!]*)(\.\w{2,})?)*\/?)/i)',
-		);
+		// TODO comply with CakePHP validation rules
+//		private $formater = array(
+//		'alpha' => '/^[a-zA-Z_]+$/',
+//		'alphanum' => '/^[a-zA-Z0-9_]+$/',
+//		'email' => '/^(\w+)([\-+.][\w]+)*@(\w[\-\<wbr>w]*\.){1,5}([A-Za-z]){2,6}$/',
+//		'url' => '/(((^https?)|(^ftp)):\/\/([\-\<wbr>w]+\.)+\w{2,3}(\/[%\-\w]+(\.\<wbr>w{2,})?)*(([\w\-\.\?\\\/+@&amp;#;`<wbr>~=%!]*)(\.\w{2,})?)*\/?)/i)',
+//		);
+		
+	private $formater = array(
+		'alpha' => 'banchaAlpha',
+		'alphanum' => 'banchaAlphanum',
+		'email' => 'banchaEmail',
+		'url' => 'banchaUrl',
+	);
 
 /**
  *  TODO doku
@@ -137,6 +145,11 @@ class BanchaBehavior extends ModelBehavior {
 
                 // Finally, use PHP’s own file validation method.
                 return is_uploaded_file($upload_info[‘tmp_name’]);
+        }
+        
+        // TODO remove workarround for 'file' validation
+        function file($check) {
+        	return true;
         }
 
 /**
