@@ -254,8 +254,9 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
                 if(Ext.isDefined(this.enableDestroy)) { this.scaffoldConfig.enableDestroy = this.enableDestroy; }
                 if(Ext.isDefined(this.enableReset))   { this.scaffoldConfig.enableReset   = this.enableReset; }
                 // scaffold
-                Ext.apply(this,
-                    Bancha.scaffold.Grid.buildConfig(this.scaffold,this.scaffoldConfig,this));
+                var config = Bancha.scaffold.Grid.buildConfig(this.scaffold,this.scaffoldConfig,this.initialConfig);
+                Ext.apply(this,config);
+                Ext.apply(this.initialConfig,config);
             }
             // continue with standard behaviour
             this.callOverridden();
@@ -306,13 +307,14 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
     
     // add scaffolding support
     Ext.override(Ext.form.Panel, {
-        initComponent : function() {
+        initComponent: function() {
             if(this.scaffold) {
                 // push all basic configs in the scaffoldConfig
                 if(Ext.isDefined(this.enableReset))   { this.scaffoldConfig.enableReset   = this.enableReset; }
                 // scaffold
-                Ext.apply(this,
-                    Bancha.scaffold.Form.buildConfig(this.scaffold,this.banchaLoadRecord,this.scaffoldConfig,this));
+                var config = Bancha.scaffold.Form.buildConfig(this.scaffold,this.banchaLoadRecord,this.scaffoldConfig,this.initialConfig);
+                Ext.apply(this,config);
+                Ext.apply(this.initialConfig,config);
             }
             // continue with standard behaviour
             this.callOverridden();
@@ -832,7 +834,7 @@ Ext.define('Bancha', {
         if(!(
              Ext.isObject(api) && 
              Ext.isObject(api.metadata) &&
-             Ext.isObject(api.metadata[this.uidPropertyName])
+             Ext.isString(api.metadata[this.uidPropertyName])
              )) {
             Ext.Error.raise({
                 plugin: 'Bancha',
@@ -2133,7 +2135,7 @@ Ext.define('Bancha', {
                 //console.info(stub.load);
                 return {
                     // The server-side method to call for load() requests
-                    load: stub.load, // as first and only param you must add data: {id: id} when loading
+                    load: stub.read, // as first and only param you must add data: {id: id} when loading
                     // The server-side must mark the submit handler as a 'formHandler'
                     submit: stub.submit
                 };
