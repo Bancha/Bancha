@@ -36,21 +36,32 @@ class BanchaResponseTransformer {
 		$data = array();
 		$modelName = null;
 
+
 		// Build the model name based on the name of the controller.
 		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
 		
 		if ('index' == $request->action && $modelName) {
+			//if ($response == null) {
+			//	throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
+			//}
 			foreach ($response as $i => $element) {
 				$data[$i] = $element[$modelName];
 			}
 			$response = $data;
 
 		} else if ('view' == $request->action && $modelName) {
+			if ($response == null) {
+				throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
+			}
 			$response = array($response[$modelName]);
 		} else if (in_array($request->action, array('add', 'edit')) && $modelName) {
-			$response = $response[$modelName];
+			if ($response == null) {
+				throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
+			}
+			$response = $response->data;
+			$response = $response[0]['data'];
 		}
 
 		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
