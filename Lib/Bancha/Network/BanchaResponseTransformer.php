@@ -70,6 +70,8 @@ class BanchaResponseTransformer {
 		if('index' == $method) {
 			return 'read';
 		}
+		
+		return $method;
 	}
 
 }
