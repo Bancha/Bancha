@@ -148,13 +148,13 @@ class BanchaController extends BanchaAppController {
 	 * passed in the url. e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
 	 * will load the metadata from the models Users and Tags
 	 * 
-	 * @param models is an array of models of which metadata you want returned
 	 * @return array 
 	 */
-	public function loadMetaData($models = array() ) {
-		if(isset($this->params['pass'])) {
-			$models = $this->params['pass'];
+	public function loadMetaData() {
+		if(isset($this->params['data'][0])) {
+			$models = $this->params['data'][0];
 		}
+		
 		if ($models == null) {
 			return;
 		}
