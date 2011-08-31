@@ -25,6 +25,8 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+//
+Inflector::rules('plural', array('/^Bancha$/i' => 'Bancha'));
 
 // load Banchaplugin
 CakePlugin::load('Bancha');
