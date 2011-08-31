@@ -45,7 +45,7 @@ class BanchaResponseCollection {
 			'type'		=> 'rpc',
 			'tid'		=> $tid,
 			'action'	=> Inflector::singularize($request->controller), // controllers are called action in Ext JS
-			'method'	=> $request->action, // actions are called methods in Ext JS
+			'method'	=> BanchaResponseTransformer::getMethod($request->action), // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
 		);
 		if ($request['extUpload'])

@@ -60,5 +60,16 @@ class BanchaResponseTransformer {
 
 		return $response;
 	}
+	
+	/**
+	 * 
+	 * translates CakePHP CRUD to ExtJS CRUD method names
+	 * @param string $method
+	 */
+	public static function getMethod($method) {
+		if('index' == $method) {
+			return 'read';
+		}
+	}
 
 }
