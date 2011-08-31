@@ -1903,16 +1903,16 @@ Ext.define('Bancha', {
                                 }
                                 // ENDIF
                                 switch(rule.matcher.toString()) {
-                                    case alpha:
+                                    case 'banchaAlpha':
                                         field.vtype = 'alpha';
                                         break;
-                                    case alphanum:
+                                    case 'banchaAlphanum':
                                         field.vtype = 'alphanum';
                                         break;
-                                     case email:
+                                     case 'banchaEmail':
                                         field.vtype = 'email';
                                         break;
-                                    case url:
+                                    case 'banchaUrl':
                                         field.vtype = 'url';
                                         break;
                                     default:
