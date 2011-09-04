@@ -380,12 +380,12 @@ Ext.define('Bancha', {
      * Only change this if you renamed the server-side BanchaController or it's method
      */
     metaDataLoadFunction: 'Bancha.loadMetaData',
-	/**
-	 * @private
-	 * @property
-	 * The name of uid property in the metadata array
-	 */
-	uidPropertyName: '_UID',
+    /**
+     * @private
+     * @property
+     * The name of uid property in the metadata array
+     */
+    uidPropertyName: '_UID',
     /**
      * @property
      * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Bancha#init}  
@@ -1314,12 +1314,13 @@ Ext.define('Bancha', {
              * @param {String} columnName (optional) The name of the column
              * @param {Object} defaults (optional) Defaults like numbercolumnDefaults as property of this config. 
              * See {@link #buildConfig}'s config property
+             * @param {Array} (optional) validations An array of Ext.data.validations of the model
              * @return {Object} Returns an Ext.grid.column.* configuration object
              */
-            buildColumnConfig: function(type,columnName,defaults) { 
+            buildColumnConfig: function(type,columnName,defaults,validations) { 
                 defaults = defaults || {};
                 var column = this.buildDefaultColumnFromModelType(type,defaults),
-                    enableUpdate;
+                    enableUpdate, validations;
 
                 // infer name
                 if(columnName) {
@@ -1330,7 +1331,7 @@ Ext.define('Bancha', {
                 // add an editor
                 enableUpdate = (typeof defaults.enableUpdate !== 'undefined') ? defaults.enableUpdate : this.enableUpdate;
                 if(enableUpdate) {
-                    column.field = Bancha.scaffold.Form.buildFieldConfig(type,undefined,defaults.formConfig); // we don't need name definition in here
+                    column.field = Bancha.scaffold.Form.buildFieldConfig(type,columnName,defaults.formConfig, validations,true);
                 }
                 
                 // now make some crazy guesses ;)
@@ -1550,6 +1551,7 @@ Ext.define('Bancha', {
              */
             buildColumns: function(model, config) {
                 var columns = [],
+                    validations,
                     button;
                 config = Ext.apply({},config,Ext.clone(this)); // get all defaults for this call
             
@@ -1576,9 +1578,10 @@ Ext.define('Bancha', {
                     model = Ext.ModelManager.getModel(model);
                 }
             
+                validations = model.prototype.validations;
                 model.prototype.fields.each(function(field) {
                     columns.push(
-                        Bancha.scaffold.Grid.buildColumnConfig(field.type.type,field.name,config)
+                        Bancha.scaffold.Grid.buildColumnConfig(field.type.type,field.name,config,validations)
                     );
                 });
             
@@ -2013,20 +2016,21 @@ Ext.define('Bancha', {
              * @private
              * Creates a Ext.form.Field config from an model field type
              * @param {Sring} type The model field type
-             * @param {String} fieldName (optional) the name of the field
+             * @param {String} fieldName (optional) the name of the field, neccessary for applying validation rules
              * @param {Object} defaults (optional) Defaults like textfieldDefaults as 
-             * property of this config. See {@link #buildConfig}'s config property
+             *                 property of this config. See {@link #buildConfig}'s config property
              * @param {Array} validations An array of Ext.data.validations of the model
+             * @param {Object} isEditorfield (optional) True to don't add field label (usefull e.g. in an editor grid)
              * @return {Object} Returns a field config
              */
-            buildFieldConfig: function(type,fieldName,defaults,validations) {
+            buildFieldConfig: function(type,fieldName,defaults,validations, isEditorfield) {
                 defaults = Ext.applyIf({}, defaults, Ext.clone(this));
                 var field = this.buildDefaultFieldFromModelType(type,defaults);
                 
                 // infer name
-                if(fieldName) {
+                field.name = fieldName;
+                if (!isEditorfield) {
                     field.fieldLabel = Bancha.scaffold.Util.humanize(fieldName);
-                    field.name = fieldName;
                 }
                 
                 // add some additional validation rules from model validation rules
@@ -2037,6 +2041,11 @@ Ext.define('Bancha', {
                 // now make some crazy guesses ;)
                 if(typeof defaults.guessFieldConfigs === 'function') {
                     field = defaults.guessFieldConfigs(field,type);
+                }
+
+                // fileuploads are currently not siupported in editor fields (ext doesn't render them usable)
+                if(isEditorfield && field.xtype=='fileuploadfield') {
+                    field = undefined;
                 }
                 
                 return field;
@@ -2263,6 +2272,17 @@ Ext.define('Bancha', {
                     fields.push(
                         Bancha.scaffold.Form.buildFieldConfig(field.type.type, field.name, config, validations)
                     );
+                });
+                
+                // TODO probably not neccessary in extjs4!
+                // if one of the fields is a fileupload, mark the form
+                Ext.each(fields, function(field) {
+                    if(field.xtype==='fileuploadfield') {
+                        formConfig.isUpload = true;
+                        formConfig.fileUpload = true;
+                        return false;
+                    }
+                    return true;
                 });
 
                 // for scoping reason we have to force an id here
