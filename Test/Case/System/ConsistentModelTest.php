@@ -51,6 +51,7 @@ class ConsistentModelTest extends CakeTestCase {
  *
  */
 	public function testEditEditOneRequest() {
+		$this->markTestSkipped();
 		// Preparation: create article
 		$article = new Article();
 		$article->create();
@@ -103,6 +104,8 @@ class ConsistentModelTest extends CakeTestCase {
  *
  */
 	public function testEditEditMultipleRequests() {
+		
+		$this->markTestSkipped();
 		// Preparation: create article
 		$article = new Article();
 		$article->create();

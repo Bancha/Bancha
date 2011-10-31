@@ -60,8 +60,12 @@ class BanchaResponseTransformer {
 			if ($response == null) {
 				throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
 			}
-			$response = $response->data;
-			$response = $response[0]['data'];
+			//pr($response);
+			if( isset($response[0]['data']) ) {
+				$response = $response[0]['data'];
+			} else {
+				$response = $response;
+			}
 		}
 
 		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
