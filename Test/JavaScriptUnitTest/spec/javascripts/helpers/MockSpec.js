@@ -9,6 +9,11 @@
 
 describe("Mock", function() {
     
+    it("Expects the ExtJS Library to be present (in Bancha/Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments.js)", function() {
+        expect(Ext).toBeDefined();
+    });
+    
+    
     it("should validate if there was no expectations", function() {
         // simple
         var mock = Mock();
