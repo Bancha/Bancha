@@ -93,12 +93,16 @@ class BanchaController extends BanchaAppController {
 		//insert UID
 		$API['metadata']['_UID'] = str_replace('.','',uniqid('', true));
 
-
-		if(	in_array("all",$this->params['pass'] )) {
-			$metaDataModels = $banchaModels;
-		} else {
-			$metaDataModels = $this->params['pass'];
-		}
+	    // get requested models
+		if(isset($this->request->query["models"])&& strlen($this->request->query["models"])>2) {
+			if($this->request->query["models"] == "all") {
+			    $metaDataModels = $banchaModels;
+		    } else  {
+               $metaDataModels = explode(',', substr($this->request->query["models"],1,-1));
+		    }
+        } else {
+            $metaDataModels = array();
+        }
 
 		//load the MetaData into $API
 		foreach ($metaDataModels as $mod) {
