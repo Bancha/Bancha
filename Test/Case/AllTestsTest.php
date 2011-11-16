@@ -39,9 +39,7 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite = new CakeTestSuite('All Tests');
 
 		$path = dirname(__FILE__) . DS;
-		$suite->addTestFile($path . 'AllBehaviorsTest.php');
-		$suite->addTestFile($path . 'AllRoutingTest.php');
-		$suite->addTestFile($path . 'AllNetworkTest.php');
+		$suite->addTestDirectory($path);
 
 		return $suite;
 	}
