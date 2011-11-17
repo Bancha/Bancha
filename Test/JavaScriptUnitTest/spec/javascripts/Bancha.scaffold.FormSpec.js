@@ -94,7 +94,7 @@ describe("Bancha.scaffold.Form tests",function() {
     };
     
     var getSimpleFormExpected = function(modelName,config) {
-        return {
+        return Ext.apply({
             id: modelName+'-id', // forced
             // configs for BasicForm
             api: {
@@ -140,7 +140,7 @@ describe("Bancha.scaffold.Form tests",function() {
                 name: 'height'
             }],
             buttons: getButtonConfig(modelName+'-id')
-        };
+        },config);
     }; // eo getSimpleFormExpected
     
     it("should build a form config, where it recognizes the type from the field type, when no "+
@@ -190,6 +190,10 @@ describe("Bancha.scaffold.Form tests",function() {
         expect(Bancha.getStubsNamespace().FormConfigWithValidationTest.submit).toBeAFunction();
         
         var expected = {
+            // added from avatar validation rules
+            isUpload: true,
+            fileUpload: true,
+            
             id: 'FormConfigWithValidationTest-id', // forced
             // configs for BasicForm
             api: {

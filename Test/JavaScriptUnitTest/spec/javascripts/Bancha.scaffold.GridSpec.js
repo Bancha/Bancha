@@ -171,44 +171,44 @@ describe("Bancha.scaffold.Grid tests",function() {
             xtype    : 'gridcolumn',
             text     : 'Name',
             dataIndex: 'name',
-            field    : {xtype:'textfield'}
+            field    : {xtype:'textfield', name:'name'}
         }, {
             flex     : 1,
             xtype    : 'gridcolumn',
             text     : 'Login',
             dataIndex: 'login',
-            field    : {xtype:'textfield'}
+            field    : {xtype:'textfield', name:'login'}
         }, {
             flex     : 1,
             xtype    : 'datecolumn',
             text     : 'Created',
             dataIndex: 'created',
-            field    : {xtype:'datefield'}
+            field    : {xtype:'datefield', name:'created'}
         }, {
             flex     : 1,
             xtype    : 'gridcolumn',
             text     : 'Email',
             dataIndex: 'email',
-            field    : {xtype:'textfield'}
+            field    : {xtype:'textfield', name:'email'}
         }, {
             flex     : 1,
             xtype    : 'gridcolumn',
             text     : 'Avatar',
             dataIndex: 'avatar',
-            field    : {xtype:'textfield'}
+            field    : {xtype:'textfield', name:'avatar'}
         }, {
             flex     : 1,
             xtype    : 'numbercolumn',
             text     : 'Weight',
             dataIndex: 'weight',
-            field    : {xtype:'numberfield'}
+            field    : {xtype:'numberfield', name:'weight'}
         }, {
             flex     : 1,
             xtype    : 'numbercolumn',
             format   : '0',
             text     : 'Height',
             dataIndex: 'height',
-            field    : {xtype:'numberfield', allowDecimals : false}
+            field    : {xtype:'numberfield', allowDecimals : false, name:'height'}
         }, {
             xtype:'actioncolumn', 
             width:50,

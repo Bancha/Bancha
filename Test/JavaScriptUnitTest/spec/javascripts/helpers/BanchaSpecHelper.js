@@ -82,7 +82,8 @@ beforeEach(function() {
             var config = Ext.clone(this.actual);
             delete config.scaffold;
             delete config.banchaLoadRecord;
-            delete config.scaffoldConfig;
+            delete config.scaffold;
+            delete config.scaffoldConfig; // depricated
             delete config.enableCreate;
             delete config.enableUpdate;
             delete config.enableDestroy;
