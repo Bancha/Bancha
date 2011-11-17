@@ -895,7 +895,7 @@ Ext.define('Bancha', {
                 plugin: 'Bancha',
                 modelName: modelName,
                 modelConfig: modelConfig,
-                msg: 'Bancha: Couldn\'t create the model cause the model is not supported by the server.'
+                msg: 'Bancha: Couldn\'t create the model cause the model is not supported by the server (no remote model).'
             });
             // ENDIF
             return false;
