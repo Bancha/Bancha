@@ -187,6 +187,7 @@ describe("Bancha.scaffold.Form tests",function() {
             ]
         });
         
+		expect(Bancha.getStubsNamespace().FormConfigWithValidationTest.read).toBeAFunction();
         expect(Bancha.getStubsNamespace().FormConfigWithValidationTest.submit).toBeAFunction();
         
         var expected = {
@@ -198,7 +199,7 @@ describe("Bancha.scaffold.Form tests",function() {
             // configs for BasicForm
             api: {
                 load: Bancha.getStubsNamespace().FormConfigWithValidationTest.read,
-                submit: Bancha.getStubsNamespace().FormConfigWithValidationTest.submit // TODO this should be a function!
+                submit: Bancha.getStubsNamespace().FormConfigWithValidationTest.submit
             },
             paramOrder : [ 'data' ],
             items: [{

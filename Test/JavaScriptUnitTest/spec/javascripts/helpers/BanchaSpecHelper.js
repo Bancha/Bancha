@@ -14,9 +14,15 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
             "formHandler": true,
             "len":1
         },{
-            "name":"create",
+            "name":"read",
             "len":1
         },{
+            "name":"create",
+	        "len":1
+	    },{
+	        "name":"update",
+	        "len":1
+	    },{
             "name":"destroy",
             "len":1
         }]
