@@ -12,7 +12,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             h = BanchaSpecHelper; // helper shortcut
     
         beforeEach(h.reset);
-
+        
 
         it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
             h.init();
@@ -96,15 +96,15 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             var mock = Mock.Proxy();
             mock.expectRPC("loadMetaData",['PreloadTestUser','PreloadTestArticle']);
             Bancha.RemoteStubs.Bancha = mock;
-        
+            
             // execute test
             Bancha.preloadModelMetaData(['PreloadTestUser','PreloadTestArticle']);
             mock.verify();
             
             // now fake answer
-            var result = Ext.encode({
+            var result = {
                 PreloadTestUser: {
-                       fields: [
+                    fields: [
                         {name:'id', type:'int'},
                         {name:'name', type:'string'},
                         {name:'login', type:'string'},
@@ -132,9 +132,9 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                         {name:'name', type:'string'}
                     ]
                 }
-            });
+            };
             mock.callLastRPCCallback("loadMetaData",[result]);
-        
+            
             // now see if is is available
             expect(Bancha.modelMetaDataIsLoaded('PreloadTestUser')).toBeTruthy();
             expect(Bancha.modelMetaDataIsLoaded('PreloadTestArticle')).toBeTruthy();
@@ -253,8 +253,51 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
              
         });
 
+		it("should load all needed models on onModelReady and fire functions after the model is ready", function() {
+            h.init();
+      
+            // create direct stub mock
+            var mock = Mock.Proxy();
+            Bancha.RemoteStubs.Bancha = mock;
+        
+			// should be called after model is loaded
+			var onReadySpy = jasmine.createSpy();
+			
+			// if the model is not present it should load the model
+            mock.expectRPC("loadMetaData",['OnModelReadyTestModel']);
+            Bancha.onModelReady('OnModelReadyTestModel', onReadySpy);
+			// model should be loading from server now
+            mock.verify();
 
-        // TODO test functiosn for onModelReady
+			// it should NOT execute the function before the model is loaded
+			expect(onReadySpy.callCount).toEqual(0);
+			
+			// fake that the model is a remote model (supports CRUD operations to the server)
+			Bancha.getStubsNamespace().OnModelReadyTestModel = Bancha.getStubsNamespace().User;
+			
+            // now fake answer
+            var result = {
+            	OnModelReadyTestModel: {
+					idProperty: 'id',
+	                fields: [
+	                    {name:'id', type:'int'},
+	                    {name:'name', type:'string'}
+	                ]
+	            }
+            };
+            mock.callLastRPCCallback("loadMetaData",[result]);
+
+			// now the function should be called
+			expect(onReadySpy.callCount).toEqual(1);
+
+
+
+
+			
+			// when the model is loaded it should just execute the function
+            Bancha.onModelReady('OnModelReadyTestModel', onReadySpy);
+			expect(onReadySpy.callCount).toEqual(2);
+		});
         
 }); //eo describe basic functions
     
