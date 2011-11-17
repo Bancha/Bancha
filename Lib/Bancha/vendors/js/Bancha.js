@@ -1394,20 +1394,26 @@ Ext.define('Bancha', {
              */
             onSave: function() { // scope is the store
                 var valid = true,
+					msg = "",
+					name,
                     store = this;
                 
                 // check if all changes are valid
-                // Ext.Array.forEach(changes,function(el) {
                 store.each(function(el) {
                     if(!el.isValid()) {
                         valid = false;
+						name = el.get('name') || el.get('title') || (el.phantom ? "New entry" : el.getId());
+						msg += "<br><br><b>"+name+":</b>";
+						el.validate().each(function(error) {
+							msg += "<br>&nbsp;&nbsp;&nbsp;"+error.field+" "+error.message;
+						});
                     }
                 });
                 
                 if(!valid) {
                     Ext.MessageBox.show({
                         title: 'Invalid Data',
-                        msg: 'At least one record is not valid, please make sure that all inputs are correct.',
+                        msg: '<div style="text-align:left; padding-left:50px;">There are errors in your data:'+msg+"</div>",
                         icon: Ext.MessageBox.ERROR,
                         buttons: Ext.Msg.OK
                     });
