@@ -62,6 +62,11 @@ class BanchaController extends BanchaAppController {
 	 * @return void
 	 */
 	public function index() {
+	
+		// send as javascript
+		header('Content-type: text/javascript');
+	
+
 		/**
 		 * holds the ExtJS API array which is returned
 		 *
