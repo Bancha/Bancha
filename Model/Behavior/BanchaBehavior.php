@@ -290,12 +290,12 @@ class BanchaBehavior extends ModelBehavior {
 			}
 
 			//  numberformat = precision, min, max
-			if(isset($values['decimal'])) {
-				if(isset($values['decimal']['rule'][1])) {
+			if(isset($values['numeric'])) {
+				if(isset($values['numeric']['precision'])) {
 					$cols[] = array(
 						'type' => 'numberformat',
 						'name' => $field,
-						'precision' => $values['decimal']['rule'][1],
+						'precision' => $values['numeric']['precision'],
 					);
 				} else {
 					$cols[] = array(
@@ -318,7 +318,7 @@ class BanchaBehavior extends ModelBehavior {
 				$cols[] = array(
 					'type' => 'file',
 					'name' => $field,
-					//TODO 'extension' => $values['extension']['rule'][1],
+					'extension' => $values['extension']['rule'][1],
 				);
 			}
 
