@@ -110,7 +110,10 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
  */
 (function() {
     var filenameHasExtension = function(filename,validExtensions) {
-        if(!Ext.isDefined(validExtensions)) {
+        if(filename==='') {
+			return true; // no file defined
+		}
+		if(!Ext.isDefined(validExtensions)) {
             return true;
         }
         var ext = filename.split('.').pop();
@@ -126,7 +129,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
         /**
          * @method
          * Validates that the file extension is of one of field.validExtensions
-         * or if field.validExtensions is undefined
+         * Also true if field.validExtensions is undefined or if val is an empty string
          */
         fileExtension: function(val, field) {
             return filenameHasExtension(val,field.validExtensions);
@@ -183,7 +186,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
         /**
          * @method
          * Validates that the given filename is of the configured extension. Also validates
-         * if no extension are defined.
+         * if no extension are defined and empty values.
          * For example:
          *     {type: 'file', field: 'avatar', extension:['jpg','jpeg','gif','png']}
          */
