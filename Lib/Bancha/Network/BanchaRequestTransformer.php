@@ -36,6 +36,9 @@ class BanchaRequestTransformer {
 	protected $controller = null;
 
 /** @var string */
+	protected $model = null;
+
+/** @var string */
 	protected $action = null;
 
 /** @var string */
@@ -66,7 +69,7 @@ class BanchaRequestTransformer {
 	}
 
 /**
- * Returns the name of the controller. Thus returns the value of 'action' from the Ext JS request. Also removes the
+ * Returns the name of the controller. Thus returns the pluralized value of 'action' from the Ext JS request. Also removes the
  * 'action' property from the Ext JS request.
  *
  * @return string Name of the controller.
@@ -88,6 +91,20 @@ class BanchaRequestTransformer {
 			$this->isFormRequest = true;
 		}
 		return $this->controller;
+	}
+	/**
+	 * Returns the name of the expected model. Thus returns the value of 'action' from the Ext JS request. 
+	 *
+	 * @return string Name of the model.
+	 */
+	public function getModel() {
+		if (null != $this->model)
+		{
+			return $this->controller;
+		}
+		
+		$this->model = Inflector::singularize($this->getController());
+		return $this->model;
 	}
 
 /**
@@ -259,7 +276,33 @@ class BanchaRequestTransformer {
 		);
 		return $this->paginate;
 	}
-
+	
+	/**
+	 * Transform a Bancha request with one data element to cake structure
+	 * otherwise just return the original response
+	 *
+	 * @param $modelName The model name of the current request
+	 * @param $data The input request data from Bancha-ExtJS
+	 */
+	public function transformDataStructureToCake($modelName,$data) {
+		if( isset($data['data'][0]['data']) ) {
+			// this is standard extjs-bancha structure, transform to cake
+			$data = array(
+				$modelName => $data['data'][0]['data']
+			);
+			// add request doesn't have an id in cake...
+			if($this->getAction()=='add') {
+				// ... so delete it
+				unset($data[$modelName]['id']);
+			}
+		} else if( isset($data['data'])) {
+			// some data from ext to just pass through
+			$data = $data['data'];
+		} else {
+			$data = array();
+		}
+		return $data;
+	}
 /**
  * Returns the data array from the Ext JS request without all special elements. Therefore it calls all the get*()
  * methods in the class, which not only return the values but also clean the request.
@@ -267,7 +310,6 @@ class BanchaRequestTransformer {
  * @return array Cleaned data array.
  */
 	public function getCleanedDataArray() {
-		$data = array();
 		// Call get*() methods to clean data array
 		$this->getController();
 		$this->getAction();
@@ -276,9 +318,10 @@ class BanchaRequestTransformer {
 		$this->getExtUpload();
 		$this->getPassParams();
 		$this->getPaging();
-		if (isset($this->data['data'])) {
-			$data = $this->data['data'];
-		}
+		
+		// prepare data
+		$data = $this->transformDataStructureToCake($this->getModel(),$this->data);
+		
 		if ($this->isFormRequest) {
 			$data = $this->data;
 			if (isset($data['extTID'])) {
