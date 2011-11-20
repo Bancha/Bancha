@@ -11,10 +11,7 @@
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0 // TODO vom Precompiler ausfuellen lassen
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Andreas Kern <andreas.kern@gmail.com>
  * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Kung Wong <kung.wong@gmail.com>
  * @version       0.0.1 // TODO vom Precompiler ausfuellen lassen
  *
  * For more information go to http://banchaproject.org 
@@ -205,17 +202,20 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
      */
     Ext.apply(Ext.grid.Panel, {
         /**
-         * @property {Ext.data.Model|String|False} scaffold
-         * Define a Bancha model or model name to build the config from Bancha metadata.  
+         * @property {Object|String|False} scaffold
+         * Define a config object or model name to build the config from Bancha metadata.  
          * Guesses are made by model field configs and validation rules.
-         *
+         * 
+         * The config object must have the model name defined in config.target. Any property
+         * from {@link Bancha.scaffold.Grid} can be defined here.
+ 	     * 
          * See {@link Bancha.scaffold.Grid} for an example.
          */
         /**
          * @property {String|False} scaffold
          * If this panel was scaffolded this is the name of the used model, otherwise False.
          */
-        scaffold: false,
+        scaffold: false
         /**
          * @cfg {Boolean} enableCreate
          * If true and scaffold is defined, a create button will be added to all scaffolded grids.  
@@ -239,12 +239,6 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
          * (only if enableCreate or enableUpdate is true).  
          * If undefined, the default from {@link Bancha.scaffold.Grid} is used.
          */
-        /**
-         * @cfg {Object} scaffoldConfig
-         * If scaffold is defined this config will be used for building the scaffold grid, any 
-         * property from {@link Bancha.scaffold.Grid} can be defined here.
-         */
-        scaffoldConfig: {}
     });
     
     // add scaffolding support
@@ -257,7 +251,16 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
 			}
 			
 		    if(Ext.isObject(this.scaffold)) {
-                // push all basic configs in the scaffoldConfig
+			   // IFDEBUG
+		        if(!Ext.isDefined(this.scaffold.target)) {
+		            Ext.Error.raise({
+		                plugin: 'Bancha',
+		                msg: 'Bancha: When using the grid scaffolding please provide an model name in config.target.'
+		            });
+		        }
+		        // ENDIF
+		
+                // push all basic configs in the scaffold config
                 if(Ext.isDefined(this.enableCreate))  { this.scaffold.enableCreate  = this.enableCreate; }
                 if(Ext.isDefined(this.enableUpdate))  { this.scaffold.enableUpdate  = this.enableUpdate; }
                 if(Ext.isDefined(this.enableDestroy)) { this.scaffold.enableDestroy = this.enableDestroy; }
@@ -281,10 +284,13 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
      */
     Ext.apply(Ext.form.Panel, {
         /**
-         * @cfg {Ext.data.Model|String|False} scaffold
-         * Define a Bancha model or model name to build the config from Bancha metadata.  
+         * @cfg {Object|String|False} scaffold
+         * Define a config object or model name to build the config from Bancha metadata.  
          * Guesses are made by model field configs and validation rules.
          *
+         * The config object must have the model name defined in config.target. Any property
+         * from {@link Bancha.scaffold.Form} can be defined here.
+		 *
          * See {@link Bancha.scaffold.Form} for an example.
          */
         /**
@@ -305,13 +311,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
          * false to create a new record onSave (if default onSave is used).
          * (Default: false)
          */
-        banchaLoadRecord: false,
-        /**
-         * @cfg {Object} scaffoldConfig
-         * If scaffold is defined this config will be used for building the scaffold form, any
-         * property from {@link Bancha.scaffold.Form} can be overridded here.
-         */
-        scaffoldConfig: {}
+        banchaLoadRecord: false
     });
     
     // add scaffolding support
@@ -324,7 +324,16 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
 			}
 			
             if(Ext.isObject(this.scaffold)) {
-                // push all basic configs in the scaffoldConfig
+			   // IFDEBUG
+		        if(!Ext.isDefined(this.scaffold.target)) {
+		            Ext.Error.raise({
+		                plugin: 'Bancha',
+		                msg: 'Bancha: When using the form scaffolding please provide an model name in config.target.'
+		            });
+		        }
+		        // ENDIF
+		
+                // push all basic configs in the scaffold config
                 if(Ext.isDefined(this.enableReset))   { this.scaffold.enableReset   = this.enableReset; }
                 // scaffold
                 var config = Bancha.scaffold.Form.buildConfig(this.scaffold.target,this.banchaLoadRecord,this.scaffold,this.initialConfig);
@@ -1147,10 +1156,14 @@ Ext.define('Bancha', {
          * This class is a factory for creating Ext.grid.Panel's. It uses many data from
          * the given model, including field configs and validation rules. 
          * 
-         * In most cases you will use our configurations on {@link Ext.grid.Panel}.
-         * Here's an example usage:
+         * In most cases you will use our configurations on {@link Ext.grid.Panel}. The
+		 * simplest usage is:
          *     Ext.create("Ext.grid.Panel", {
          *         scaffold: 'User', // the model name
+		 *     });
+		 *
+         * A more complex usage example is:
+         *     Ext.create("Ext.grid.Panel", {
          *
          *         // basic scaffold configs can be set directly
          *         enableCreate : true,
@@ -1158,8 +1171,11 @@ Ext.define('Bancha', {
          *         enableReset  : true,
          *         enableDestroy: true,
          *     
-         *         // advanced configs can be set here:
-         *         scaffoldConfig: {
+         *         scaffold: {
+		 *             // define the model name here
+         *             target: 'User',
+		 *
+         *             // advanced configs can be set here:
          *             columnDefaults: {
          *                 width: 200
          *             },
@@ -1678,11 +1694,13 @@ Ext.define('Bancha', {
                 } else {
                     modelName = Ext.getClassName(model);
                 }
+				config.target = modelName;
             
+            	// call beforeBuild callback
+                gridConfig = config.beforeBuild(model,config,additionalGridConfig) || {};
+
                 // basic config
                 store = config.getStore(model,config);
-            
-                gridConfig = config.beforeBuild(model,config,additionalGridConfig) || {};
                 Ext.apply(gridConfig,{
                     store: store,
                     columns: this.buildColumns(model,config)
@@ -1743,10 +1761,9 @@ Ext.define('Bancha', {
                 }
                 
                 // the scaffold config of the grid is saved as well
-                gridConfig.scaffoldConfig = config;
+                gridConfig.scaffold = config;
             
                 // always force that the basic scaffold configs are set on the grid config
-                gridConfig.scaffold = Ext.ClassManager.getName(model);
                 gridConfig.enableCreate = config.enableCreate;
                 gridConfig.enableUpdate = config.enableUpdate;
                 gridConfig.enableReset = config.enableReset;
@@ -1763,18 +1780,25 @@ Ext.define('Bancha', {
          * This class is a factory for creating Ext.form.Panel's. It uses many data from
          * the given model, including field configs and validation rules.  
          * 
-         * In most cases you will use our configurations on {@link Ext.form.Panel}.
-         * Here's an example usage:
+         * In most cases you will use our configurations on {@link Ext.form.Panel}. The 
+         * simplest usage is:
          *     Ext.create("Ext.form.Panel", {
          *         scaffold: 'User', // the model name
+         *     });
+         * 
+         * A more complex usage example:
+         *     Ext.create("Ext.form.Panel", {
          *
          *         // basic scaffold configs can be set directly
          *         enableReset: true,
          *         // you can also define which record should be loaded for editing
          *         banchaLoadRecord: 3,
          *     
-         *         // advanced configs can be set here:
-         *         scaffoldConfig: {
+         *         scaffold: {
+		 *             // define the model name here
+         *             target: 'User',
+         * 
+         *             // advanced configs can be set here:
          *             textfieldDefaults: {
          *                 emptyText: 'Please fill this out'
          *             },
