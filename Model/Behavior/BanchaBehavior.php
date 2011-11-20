@@ -53,6 +53,20 @@ class BanchaBehavior extends ModelBehavior {
 		'url' => 'banchaUrl',
 	);
 
+	/**
+	 * since cakephp deletes $model->data after a save action 
+	 * we keep the necessary return values here, access through
+	 * $model->getResult();
+	 */
+	private $result = null;
+	
+	/**
+	 * If true the model also saves and validates records with missing
+	 * fields, like ExtJS is providing for edit operations.
+	 * If you set this to false please use $model->saveFields($data,$options)
+	 * to save edit-data from extjs.
+	 */
+	public $useOnlyDefinedFields = true;
 /**
  *  TODO doku
  *
@@ -68,6 +82,9 @@ class BanchaBehavior extends ModelBehavior {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
 		$this->actionIsAllowed = $config;
+		if(isset($config['useOnlyDefinedFields'])) {
+			$this->useOnlyDefinedFields = $config['useOnlyDefinedFields'];
+		}
 	}
 
 	/** set the model explicit as cakephp does not instantiate the behavior for each model
@@ -326,6 +343,127 @@ class BanchaBehavior extends ModelBehavior {
 		return $cols;
 	}
 
+	/**
+	 * After saving load the full record from the database to 
+	 * return to the frontend
+	 *
+	 * @param object $model Model using this behavior
+	 * @param boolean $created True if this save created a new record
+	 */
+	public function afterSave($model, $created) {
+		// get all the data bancha needs for the response
+		// and save it in the data property
+		if($created) {
+			// just add the id
+			$this->result = $model->data;
+			$this->result[$model->name]['id'] = $model->id;
+		} else {
+			// load the full record from the database
+			$currentRecursive = $model->recursive;
+			$model->recursive = -1;
+			$this->result = $model->read();
+			$model->recursive = $currentRecursive;
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Returns the result record of the last save operation
+	 * in ext format
+	 */
+	public function getResult() {
+		return $this->result;
+	}
+	
+	/**
+	 * Builds a field list with all defined fields
+	 */
+	private function buildFieldList($data) {
+		return array_keys(isset($data[$this->model->name]) ? $data[$this->model->name] : $data);
+	}
+	/**
+	 * See $this->useOnlyDefinedFields for explanation
+	 * 
+	 * @param $model the model
+	 * @param $options the validation options
+	 */
+	public function beforeValidate($model,$options) {
+		if($this->useOnlyDefinedFields) {
+			// if not yet defined, create a field list to validate only the changes (empty records will still invalidate)
+			$model->whitelist = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList']; // TODO how to not overwrite the whitelist?
+		}
+		
+		// start validating data
+		return true;
+	}
+	/**
+	 * See $this->useOnlyDefinedFields for explanation
+	 * 
+	 * @param $model the model
+	 * @param $options the save options
+	 */
+	public function beforeSave($model,$options) {
+		if($this->useOnlyDefinedFields) {
+			// if not yet defined, create a field list to save only the changes
+			$options['fieldList'] = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList'];
+		}
+		
+		// start saving data
+		return true;
+	}
+	/**
+	 * Saves a records, either add or edit. See $this->useOnlyDefinedFields for explanation
+	 * 
+	 * @param $model the model (set by cake)
+	 * @param $data the data to save (first user argument)
+	 * @param $options the save options
+	 * @return returns the result of the save operation
+	 */
+	public function saveFields($model,$data,$options=array()) {
+		// overwrite config for this commit
+		$config = $this->useOnlyDefinedFields;
+		$this->useOnlyDefinedFields = true;
+		
+		$result = $model->save($data,$options);
+		
+		// set back
+		$this->useOnlyDefinedFields = $config;
+		return $result;
+	}
+	
+	/**
+	 * Commits a save operation for all changed data and 
+	 * returns the result in an extjs format
+	 * for return value see also getResult()
+	 * 
+	 * @param $model the model is always the first param (cake does this automatically)
+	 * @param $data the data to save, first function argument
+	 */
+	public function saveFieldsAndReturn($model,$data) {
+		// save
+		$this->saveFields($model,$data);
+		
+		// return ext-formated result
+		return $this->getResult();
+	}
+	
+	/**
+	 * convenience methods, just delete and then return $this.getResult();
+	 */
+	public function deleteAndReturn($model) {
+		if (!$model->exists()) {
+			throw new NotFoundException(__('Invalid user'));
+		}
+		$model->delete();
+		return $this->getResult();
+	}
+	
+	public function afterDelete() {
+		// if no exception was thrown so far the request was successfull
+		$this->result = array('success'=>true);
+	}
+	
 /**
  * Returns an ExtJS formated array describing sortable fields
  * this is '$order' in cakephp
