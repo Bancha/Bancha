@@ -250,14 +250,20 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
     // add scaffolding support
     Ext.override(Ext.grid.Panel, {
         initComponent : function() {
-            if(this.scaffold) {
+            if(Ext.isString(this.scaffold)) {
+				this.scaffold = {
+					target: this.scaffold
+				};
+			}
+			
+		    if(Ext.isObject(this.scaffold)) {
                 // push all basic configs in the scaffoldConfig
-                if(Ext.isDefined(this.enableCreate))  { this.scaffoldConfig.enableCreate  = this.enableCreate; }
-                if(Ext.isDefined(this.enableUpdate))  { this.scaffoldConfig.enableUpdate  = this.enableUpdate; }
-                if(Ext.isDefined(this.enableDestroy)) { this.scaffoldConfig.enableDestroy = this.enableDestroy; }
-                if(Ext.isDefined(this.enableReset))   { this.scaffoldConfig.enableReset   = this.enableReset; }
+                if(Ext.isDefined(this.enableCreate))  { this.scaffold.enableCreate  = this.enableCreate; }
+                if(Ext.isDefined(this.enableUpdate))  { this.scaffold.enableUpdate  = this.enableUpdate; }
+                if(Ext.isDefined(this.enableDestroy)) { this.scaffold.enableDestroy = this.enableDestroy; }
+                if(Ext.isDefined(this.enableReset))   { this.scaffold.enableReset   = this.enableReset; }
                 // scaffold
-                var config = Bancha.scaffold.Grid.buildConfig(this.scaffold,this.scaffoldConfig,this.initialConfig);
+                var config = Bancha.scaffold.Grid.buildConfig(this.scaffold.target,this.scaffold,this.initialConfig);
                 Ext.apply(this,config);
                 Ext.apply(this.initialConfig,config);
             }
@@ -311,11 +317,17 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
     // add scaffolding support
     Ext.override(Ext.form.Panel, {
         initComponent: function() {
-            if(this.scaffold) {
+            if(Ext.isString(this.scaffold)) {
+				this.scaffold = {
+					target: this.scaffold
+				};
+			}
+			
+            if(Ext.isObject(this.scaffold)) {
                 // push all basic configs in the scaffoldConfig
-                if(Ext.isDefined(this.enableReset))   { this.scaffoldConfig.enableReset   = this.enableReset; }
+                if(Ext.isDefined(this.enableReset))   { this.scaffold.enableReset   = this.enableReset; }
                 // scaffold
-                var config = Bancha.scaffold.Form.buildConfig(this.scaffold,this.banchaLoadRecord,this.scaffoldConfig,this.initialConfig);
+                var config = Bancha.scaffold.Form.buildConfig(this.scaffold.target,this.banchaLoadRecord,this.scaffold,this.initialConfig);
                 Ext.apply(this,config);
                 Ext.apply(this.initialConfig,config);
             }
@@ -1607,7 +1619,10 @@ Ext.define('Bancha', {
             /**
              * @method
              * You can replace this function! The function will be executed before each 
-             * {@link #buildConfig} as interceptor. For params see {@link #buildConfig}
+             * {@link #buildConfig} as interceptor. 
+             * @param {Object} {Ext.data.Model} model see {@link #buildConfig}
+             * @param {Object} {Object} config see {@link #buildConfig}
+             * @param {Object} additionalGridConfig see {@link #buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
             beforeBuild: function(model, config, additionalGridConfig) {
@@ -1617,7 +1632,7 @@ Ext.define('Bancha', {
              * You can replace this fucntion! This function will be executed after each 
              * {@link #buildConfig} as interceptor.
              * @param {Object} columnConfig just build grid panel config
-             * @param {Object} {Ext.data.Model|String} model see {@link #buildConfig}
+             * @param {Object} {Ext.data.Model} model see {@link #buildConfig}
              * @param {Object} {Object} config (optional) see {@link #buildConfig}
              * @param {Object} additionalGridConfig (optional) see {@link #buildConfig}
              * @return {Object|undefined} object with final Ext.grid.Panel configs
@@ -1667,7 +1682,7 @@ Ext.define('Bancha', {
                 // basic config
                 store = config.getStore(model,config);
             
-                gridConfig = config.beforeBuild.apply(this,arguments) || {};
+                gridConfig = config.beforeBuild(model,config,additionalGridConfig) || {};
                 Ext.apply(gridConfig,{
                     store: store,
                     columns: this.buildColumns(model,config)
@@ -1730,7 +1745,7 @@ Ext.define('Bancha', {
                 // the scaffold config of the grid is saved as well
                 gridConfig.scaffoldConfig = config;
             
-                // allways force that the basic scaffold configs are set on the grid config
+                // always force that the basic scaffold configs are set on the grid config
                 gridConfig.scaffold = Ext.ClassManager.getName(model);
                 gridConfig.enableCreate = config.enableCreate;
                 gridConfig.enableUpdate = config.enableUpdate;
@@ -2160,7 +2175,11 @@ Ext.define('Bancha', {
             },
             /**
              * You can replace this function! The function will be executed before each 
-             * {@link #buildConfig} as interceptor. For params see {@link #buildConfig}
+             * {@link #buildConfig} as interceptor. 
+             * @param {Object} {Ext.data.Model} model see {@link #buildConfig}
+             * @param {Object} {Number|String} recordId see {@link #buildConfig}
+             * @param {Object} {Object} config see {@link #buildConfig}
+             * @param {Object} additionalFormConfig see {@link #buildConfig}
              * @return {Object|undefined} object with initial Ext.form.Panel configs
              */
             beforeBuild: function(model, recordId, config, additionalFormConfig) {
@@ -2241,9 +2260,10 @@ Ext.define('Bancha', {
                 config = Ext.apply({},config,Ext.clone(this)); // get all defaults for this call
                 additionalFormConfig = additionalFormConfig || {};
                 
-                // build initial config
-                formConfig = config.beforeBuild.apply(this,arguments) || {};
-
+				// add model and recordId to config
+				config.target = Ext.isString(model) ? model : Ext.ClassManager.getName(model);
+				config.recordId = Ext.isDefined(recordId) ? recordId : config.recordId;
+				
                 // IFDEBUG
                 if(!Ext.isDefined(model)) {
                     Ext.Error.raise({
@@ -2274,6 +2294,9 @@ Ext.define('Bancha', {
                     });
                 }
                 // ENDIF
+				
+                // build initial config
+                formConfig = config.beforeBuild(model,recordId,config,additionalFormConfig) || {};
 
                 // create all fields
                 validations = model.prototype.validations;
@@ -2327,10 +2350,9 @@ Ext.define('Bancha', {
                 });
                 
                 // the scaffold config of the grid is saved as well
-                formConfig.scaffoldConfig = config;
+                formConfig.scaffold = config;
 
-                // allways force that the basic scaffold configs are set on the grid config
-                formConfig.scaffold = Ext.ClassManager.getName(model);
+                // always force that the basic scaffold configs are set on the grid config
                 formConfig.enableReset = config.enableReset;
                 formConfig.banchaLoadRecord = config.recordId;
                 
