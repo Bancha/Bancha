@@ -411,6 +411,43 @@ describe("Bancha.scaffold.Grid tests",function() {
             scaffold: 'GridPanelTest'
         })).property('columns.length').toEqual(8);
     });
+	
+	it("should augment the class Ext.grid.Panel and use simple scaffold:modelname", function() {
+    	h.initAndCreateSampleModel('GridPanelExtensionTestUser');
+
+		var panel = Ext.create("Ext.grid.Panel", {
+			scaffold: 'GridPanelExtensionTestUser'
+		});
+		
+		// check if the grid really got scaffolded
+		expect(panel.columns.length).toEqual(8);
+	});
+	
+	it("should augment the class Ext.grid.Panel and use scaffold config object", function() {
+    	h.initAndCreateSampleModel('GridPanelExtensionConfigObjectTestUser');
+		
+		var onSave = function() {};
+		var panel = Ext.create("Ext.grid.Panel", {
+	    	enableCreate : true,
+	    	enableUpdate : true,
+	    	enableReset  : true,
+	    	enableDestroy: true,
+			scaffold: {
+				target: 'GridPanelExtensionConfigObjectTestUser',
+				onSave: onSave
+			}
+		});
+		
+		// check if the grid really got scaffolded including a delete button
+		expect(panel.columns.length).toEqual(9);
+		
+		// check that the create, save and reset buttons are created (plus one filler)
+		expect(panel.getDockedItems()[0].items.items.length).toEqual(4);
+		
+		// check that the onSave function is used
+		expect(panel.getDockedItems()[0].items.items[3].handler).toEqual(onSave);
+	});
+	
 }); //eo scaffold grid functions
 
 // eof

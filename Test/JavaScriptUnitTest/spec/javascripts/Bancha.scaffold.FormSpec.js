@@ -9,7 +9,7 @@
 
 describe("Bancha.scaffold.Form tests",function() {
     var h = BanchaSpecHelper, // shortcuts
-        formScaf = Bancha.scaffold.Form; //shortcuf
+        formScaf = Bancha.scaffold.Form; //shortcut
         // take the defaults
         // (actually this is also copying all the function references, but it doesn't atter)
         testDefaults = Ext.clone(formScaf);
@@ -354,6 +354,43 @@ describe("Bancha.scaffold.Form tests",function() {
         })).property('items.items.length').toEqual(8);
     });
     
+	it("should augment the class Ext.form.Panel and use simple scaffold:modelname", function() {
+    	h.initAndCreateSampleModel('FormPanelExtensionTestUser');
+
+		var panel = Ext.create("Ext.form.Panel", {
+			scaffold: 'FormPanelExtensionTestUser'
+		});
+		
+		// check if the form really got scaffolded
+		expect(panel.items.items.length).toEqual(8);
+	});
+	
+	it("should augment the class Ext.form.Panel and use scaffold config object", function() {
+    	h.initAndCreateSampleModel('FormPanelExtensionConfigObjectTestUser');
+		
+		var onSave = function() {};
+		var panel = Ext.create("Ext.form.Panel", {
+	    	enableReset: true,
+		    banchaLoadRecord: 3,
+			scaffold: {
+				target: 'FormPanelExtensionConfigObjectTestUser',
+				onSave: onSave
+			}
+		});
+		
+		Ext.panelD = panel;
+		// check if the model got used
+		expect(panel.items.items.length).toEqual(8);
+		
+		// check if the record id got used
+		expect(panel.scaffold.recordId).toEqual(3);
+		
+		// check that the reset button is created
+		expect(panel.getDockedItems()[0].items.items.length).toEqual(2);
+		
+		// check that the onSave function is used
+		expect(panel.getDockedItems()[0].items.items[1].handler).toEqual(onSave);
+	});
 }); //eo scaffold form functions
 
 //eof
