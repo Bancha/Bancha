@@ -66,12 +66,20 @@ class BanchaResponseCollection {
  * @return void
  */
 	public function addException($tid, Exception $e, CakeRequest $request) {
-		$this->responses[] = array(
-			'type'		=> 'exception',
-			'message'	=> $e->getMessage(),
-			'where'		=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
-			'trace'		=> $e->getTraceAsString(),
-		);
+		// only add exception information in debug mode
+		if(Configure::read('debug') > 0) {
+			$this->responses[] = array(
+				'type'		=> 'exception',
+				'message'	=> $e->getMessage(),
+				'where'		=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
+				'trace'		=> $e->getTraceAsString(),
+			);
+		} else {
+			$this->responses[] = array(
+				'type'		=> 'exception',
+				'message'	=> __("Unknown error."),
+			);
+		}
 
 		return $this;
 	 }
