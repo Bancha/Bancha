@@ -75,10 +75,8 @@ class BanchaDispatcher {
 						$request
 					);
 				} catch (Exception $e) {
-					// only with debug mode
-					if(Configure::read('debug') > 0) {
-						$transformer->addException($request['tid'], $e, $request);
-					} // if
+					// add exception
+					$transformer->addException($request['tid'], $e, $request);
 				} // try catch
 			} // if (!$skip_request)
 
@@ -95,8 +93,5 @@ class BanchaDispatcher {
 		}
 		$responses->send();
 	}
-
-	// exceptions abfangen mit try { catch
-	// stacktrace nur mitschicken bei debug != 0
 
 }
