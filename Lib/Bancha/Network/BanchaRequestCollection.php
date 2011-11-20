@@ -86,6 +86,7 @@ class BanchaRequestCollection {
 				$requests[$i]['plugin']		= null;
 				$requests[$i]['extUpload']	= $transformer->getExtUpload();
 				$requests[$i]['client_id']	= $transformer->getClientId();
+				$requests[$i]['isBancha']	= true; // additional property
 
 				// Handle all other parameters as POST parameters.
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
