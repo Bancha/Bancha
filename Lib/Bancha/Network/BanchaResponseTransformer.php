@@ -33,7 +33,6 @@ class BanchaResponseTransformer {
  *                               otherwise this is an array.
  */
 	public static function transform($response, CakeRequest $request) {
-		$data = array();
 		$modelName = null;
 
 
@@ -41,33 +40,13 @@ class BanchaResponseTransformer {
 		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
-		
-		if ('index' == $request->action && $modelName) {
-			//if ($response == null) {
-			//	throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
-			//}
-			foreach ($response as $i => $element) {
-				$data[$i] = $element[$modelName];
-			}
-			$response = $data;
-
-		} else if ('view' == $request->action && $modelName) {
-			if ($response == null) {
-				throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
-			}
-			$response = array($response[$modelName]);
-		} else if (in_array($request->action, array('add', 'edit')) && $modelName) {
-			if ($response == null) {
-				throw new CakeException("please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
-			}
-			//pr($response);
-			if( isset($response[0]['data']) ) {
-				$response = $response[0]['data'];
-			} else {
-				$response = $response;
-			}
+        
+		if ($response == null) {
+			throw new CakeException("Please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
 		}
-
+		
+		$response = BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
+		
 		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
 		if (isset($request['extUpload']) && $request['extUpload']) {
 			return '<html><body><textarea>' . str_replace('"', '\"', json_encode($response)) . '</textarea></body></html>';
@@ -75,6 +54,32 @@ class BanchaResponseTransformer {
 
 		return $response;
 	}
+    
+	/**
+	 * Transform a cake response to extjs structure (associated models are not supportet!)
+	 * otherwise just return the original response
+	 *
+	 * @param $modelName The model name of the current request
+	 * @param $response The input request from Bancha
+	 */
+	public static function transformDataStructureToExt($modelName,$response) {
+		if( isset($response[$modelName]) ) {
+			// this is standard cake single element structure
+			$response = array(
+				'data' => $response[$modelName]
+			);
+		} else if( isset($response['0'][$modelName]) ) {
+			// this is standard cake multiple element structure
+			$data = array();
+			foreach($response as $record) {
+				array_push($data, $record[$modelName]);
+			}
+			$response = array('data' => $data);
+		}
+		
+		return $response;
+	}
+	
 	
 	/**
 	 * 
@@ -84,6 +89,15 @@ class BanchaResponseTransformer {
 	public static function getMethod($method) {
 		if('index' == $method) {
 			return 'read';
+		}
+		if('edit' == $method) {
+			return 'update';
+		}
+		if('add' == $method) {
+			return 'create';
+		}
+		if('delete' == $method) {
+			return 'destroy';
 		}
 		
 		return $method;

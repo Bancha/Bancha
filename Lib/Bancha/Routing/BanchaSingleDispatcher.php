@@ -58,8 +58,10 @@ class BanchaSingleDispatcher extends Dispatcher {
 			));
 		}
 		
-		if(isset($request->data[0]['data']['id'])) {
-			$request->params['pass'] = array( $request->data[0]['data']['id'] );
+		// set the method param id (first argument)
+		$modelName = Inflector::singularize($controller->name);
+		if(isset($request->data[$modelName]['id'])) {
+			$request->params['pass'] = array( $request->data[$modelName]['id'] );
 		}
 		
 		$result = call_user_func_array(array(&$controller, $request->params['action']), $request->params['pass']);
