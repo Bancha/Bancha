@@ -33,7 +33,7 @@ class BanchaBehavior extends ModelBehavior {
 		"datetime" => "date",
 		"date" => "date",
 		"float" => "float",
-		"text" => "text",
+		"text" => "string",
 		"boolean" => "boolean"
 		);
 
@@ -192,8 +192,10 @@ class BanchaBehavior extends ModelBehavior {
 		$assocs = $this->model->getAssociated();
 		$return = array();
 		foreach ($assocs as $field => $value) {
-			$name = lcfirst(Inflector::pluralize($field)); //generate a handy name
-			$return[] = array ('type' => $value, 'model' => $field, 'name' => $name);
+			if($value != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
+				$name = lcfirst(Inflector::pluralize($field)); //generate a handy name
+				$return[] = array ('type' => $value, 'model' => $field, 'name' => $name);
+			}
 		}
 		return $return;
 	}

@@ -1228,6 +1228,7 @@ Ext.define('Bancha', {
                 'int'     : {xtype:'numbercolumn',format:'0'},
                 'float'   : {xtype:'numbercolumn'},
                 'boolean' : {xtype:'booleancolumn'},
+                'bool'    : {xtype:'booleancolumn'}, // a synonym
                 'date'    : {xtype:'datecolumn'}
             },
             /**
@@ -1360,8 +1361,9 @@ Ext.define('Bancha', {
                 }
                 
                 // add an editor
+                enableCreate = (typeof defaults.enableCreate !== 'undefined') ? defaults.enableCreate : this.enableCreate;
                 enableUpdate = (typeof defaults.enableUpdate !== 'undefined') ? defaults.enableUpdate : this.enableUpdate;
-                if(enableUpdate) {
+                if(enableCreate || enableUpdate) {
                     column.field = Bancha.scaffold.Form.buildFieldConfig(type,columnName,defaults.formConfig, validations,true);
                 }
                 
@@ -1706,8 +1708,8 @@ Ext.define('Bancha', {
                     columns: this.buildColumns(model,config)
                 });
             
-                // add update configs
-                if(config.enableUpdate) {
+                // add config for editable fields
+                if(config.enableCreate || config.enableUpdate) {
                     cellEditing = Ext.create('Ext.grid.plugin.CellEditing', {
                         clicksToEdit: 2
                     });
@@ -1853,6 +1855,7 @@ Ext.define('Bancha', {
                 'int'     : {xtype:'numberfield', allowDecimals:false},
                 'float'   : {xtype:'numberfield'},
                 'boolean' : {xtype:'checkboxfield'},
+                'bool'    : {xtype:'checkboxfield'}, // a synonym
                 'date'    : {xtype:'datefield'}
                 // TODO OPTIMIZE Add combobox support
             },
