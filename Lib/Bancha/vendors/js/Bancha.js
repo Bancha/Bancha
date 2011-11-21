@@ -108,9 +108,9 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
 (function() {
     var filenameHasExtension = function(filename,validExtensions) {
         if(filename==='') {
-			return true; // no file defined
-		}
-		if(!Ext.isDefined(validExtensions)) {
+            return true; // no file defined
+        }
+        if(!Ext.isDefined(validExtensions)) {
             return true;
         }
         var ext = filename.split('.').pop();
@@ -208,7 +208,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
          * 
          * The config object must have the model name defined in config.target. Any property
          * from {@link Bancha.scaffold.Grid} can be defined here.
- 	     * 
+          * 
          * See {@link Bancha.scaffold.Grid} for an example.
          */
         /**
@@ -245,21 +245,21 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
     Ext.override(Ext.grid.Panel, {
         initComponent : function() {
             if(Ext.isString(this.scaffold)) {
-				this.scaffold = {
-					target: this.scaffold
-				};
-			}
-			
-		    if(Ext.isObject(this.scaffold)) {
-			   // IFDEBUG
-		        if(!Ext.isDefined(this.scaffold.target)) {
-		            Ext.Error.raise({
-		                plugin: 'Bancha',
-		                msg: 'Bancha: When using the grid scaffolding please provide an model name in config.target.'
-		            });
-		        }
-		        // ENDIF
-		
+                this.scaffold = {
+                    target: this.scaffold
+                };
+            }
+            
+            if(Ext.isObject(this.scaffold)) {
+               // IFDEBUG
+                if(!Ext.isDefined(this.scaffold.target)) {
+                    Ext.Error.raise({
+                        plugin: 'Bancha',
+                        msg: 'Bancha: When using the grid scaffolding please provide an model name in config.target.'
+                    });
+                }
+                // ENDIF
+        
                 // push all basic configs in the scaffold config
                 if(Ext.isDefined(this.enableCreate))  { this.scaffold.enableCreate  = this.enableCreate; }
                 if(Ext.isDefined(this.enableUpdate))  { this.scaffold.enableUpdate  = this.enableUpdate; }
@@ -290,7 +290,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
          *
          * The config object must have the model name defined in config.target. Any property
          * from {@link Bancha.scaffold.Form} can be defined here.
-		 *
+         *
          * See {@link Bancha.scaffold.Form} for an example.
          */
         /**
@@ -318,21 +318,21 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
     Ext.override(Ext.form.Panel, {
         initComponent: function() {
             if(Ext.isString(this.scaffold)) {
-				this.scaffold = {
-					target: this.scaffold
-				};
-			}
-			
+                this.scaffold = {
+                    target: this.scaffold
+                };
+            }
+            
             if(Ext.isObject(this.scaffold)) {
-			   // IFDEBUG
-		        if(!Ext.isDefined(this.scaffold.target)) {
-		            Ext.Error.raise({
-		                plugin: 'Bancha',
-		                msg: 'Bancha: When using the form scaffolding please provide an model name in config.target.'
-		            });
-		        }
-		        // ENDIF
-		
+               // IFDEBUG
+                if(!Ext.isDefined(this.scaffold.target)) {
+                    Ext.Error.raise({
+                        plugin: 'Bancha',
+                        msg: 'Bancha: When using the form scaffolding please provide an model name in config.target.'
+                    });
+                }
+                // ENDIF
+        
                 // push all basic configs in the scaffold config
                 if(Ext.isDefined(this.enableReset))   { this.scaffold.enableReset   = this.enableReset; }
                 // scaffold
@@ -1157,11 +1157,11 @@ Ext.define('Bancha', {
          * the given model, including field configs and validation rules. 
          * 
          * In most cases you will use our configurations on {@link Ext.grid.Panel}. The
-		 * simplest usage is:
+         * simplest usage is:
          *     Ext.create("Ext.grid.Panel", {
          *         scaffold: 'User', // the model name
-		 *     });
-		 *
+         *     });
+         *
          * A more complex usage example is:
          *     Ext.create("Ext.grid.Panel", {
          *
@@ -1172,9 +1172,9 @@ Ext.define('Bancha', {
          *         enableDestroy: true,
          *     
          *         scaffold: {
-		 *             // define the model name here
+         *             // define the model name here
          *             target: 'User',
-		 *
+         *
          *             // advanced configs can be set here:
          *             columnDefaults: {
          *                 width: 200
@@ -1352,7 +1352,7 @@ Ext.define('Bancha', {
             buildColumnConfig: function(type,columnName,defaults,validations) { 
                 defaults = defaults || {};
                 var column = this.buildDefaultColumnFromModelType(type,defaults),
-                    enableUpdate, validations;
+                    enableCreate, enableUpdate;
 
                 // infer name
                 if(columnName) {
@@ -1364,7 +1364,7 @@ Ext.define('Bancha', {
                 enableCreate = (typeof defaults.enableCreate !== 'undefined') ? defaults.enableCreate : this.enableCreate;
                 enableUpdate = (typeof defaults.enableUpdate !== 'undefined') ? defaults.enableUpdate : this.enableUpdate;
                 if(enableCreate || enableUpdate) {
-                    column.field = Bancha.scaffold.Form.buildFieldConfig(type,columnName,defaults.formConfig, validations,true);
+                    column.field = Bancha.scaffold.Form.buildFieldConfig(type,columnName,defaults.formConfig, validations, true);
                 }
                 
                 // now make some crazy guesses ;)
@@ -1427,19 +1427,19 @@ Ext.define('Bancha', {
              */
             onSave: function() { // scope is the store
                 var valid = true,
-					msg = "",
-					name,
+                    msg = "",
+                    name,
                     store = this;
                 
                 // check if all changes are valid
                 store.each(function(el) {
                     if(!el.isValid()) {
                         valid = false;
-						name = el.get('name') || el.get('title') || (el.phantom ? "New entry" : el.getId());
-						msg += "<br><br><b>"+name+":</b>";
-						el.validate().each(function(error) {
-							msg += "<br>&nbsp;&nbsp;&nbsp;"+error.field+" "+error.message;
-						});
+                        name = el.get('name') || el.get('title') || (el.phantom ? "New entry" : el.getId());
+                        msg += "<br><br><b>"+name+":</b>";
+                        el.validate().each(function(error) {
+                            msg += "<br>&nbsp;&nbsp;&nbsp;"+error.field+" "+error.message;
+                        });
                     }
                 });
                 
@@ -1696,9 +1696,9 @@ Ext.define('Bancha', {
                 } else {
                     modelName = Ext.getClassName(model);
                 }
-				config.target = modelName;
+                config.target = modelName;
             
-            	// call beforeBuild callback
+                // call beforeBuild callback
                 gridConfig = config.beforeBuild(model,config,additionalGridConfig) || {};
 
                 // basic config
@@ -1797,7 +1797,7 @@ Ext.define('Bancha', {
          *         banchaLoadRecord: 3,
          *     
          *         scaffold: {
-		 *             // define the model name here
+         *             // define the model name here
          *             target: 'User',
          * 
          *             // advanced configs can be set here:
@@ -2095,7 +2095,7 @@ Ext.define('Bancha', {
                 }
 
                 // fileuploads are currently not siupported in editor fields (ext doesn't render them usable)
-                if(isEditorfield && field.xtype=='fileuploadfield') {
+                if(isEditorfield && field.xtype==='fileuploadfield') {
                     field = undefined;
                 }
                 
@@ -2287,10 +2287,10 @@ Ext.define('Bancha', {
                 config = Ext.apply({},config,Ext.clone(this)); // get all defaults for this call
                 additionalFormConfig = additionalFormConfig || {};
                 
-				// add model and recordId to config
-				config.target = Ext.isString(model) ? model : Ext.ClassManager.getName(model);
-				config.recordId = Ext.isDefined(recordId) ? recordId : config.recordId;
-				
+                // add model and recordId to config
+                config.target = Ext.isString(model) ? model : Ext.ClassManager.getName(model);
+                config.recordId = Ext.isDefined(recordId) ? recordId : config.recordId;
+                
                 // IFDEBUG
                 if(!Ext.isDefined(model)) {
                     Ext.Error.raise({
@@ -2321,7 +2321,7 @@ Ext.define('Bancha', {
                     });
                 }
                 // ENDIF
-				
+                
                 // build initial config
                 formConfig = config.beforeBuild(model,recordId,config,additionalFormConfig) || {};
 
