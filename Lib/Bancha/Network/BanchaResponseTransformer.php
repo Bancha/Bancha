@@ -35,14 +35,13 @@ class BanchaResponseTransformer {
 	public static function transform($response, CakeRequest $request) {
 		$modelName = null;
 
-
 		// Build the model name based on the name of the controller.
 		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
         
-		if ($response == null) {
-			throw new CakeException("Please configure the $modelName Controllers {$request->action} function to include a return statement as described in the bancha documentation");
+		if ($response === null) { // use the triple operator to not catch empty arrays
+			throw new CakeException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 		
 		$response = BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
@@ -61,6 +60,8 @@ class BanchaResponseTransformer {
 	 *
 	 * @param $modelName The model name of the current request
 	 * @param $response The input request from Bancha
+	 * @param $controller The used controller
+	 * @return extjs formated data array
 	 */
 	public static function transformDataStructureToExt($modelName,$response) {
 		if( isset($response[$modelName]) ) {
@@ -68,6 +69,7 @@ class BanchaResponseTransformer {
 			$response = array(
 				'data' => $response[$modelName]
 			);
+			
 		} else if( isset($response['0'][$modelName]) ) {
 			// this is standard cake multiple element structure
 			$data = array();
@@ -75,6 +77,18 @@ class BanchaResponseTransformer {
 				array_push($data, $record[$modelName]);
 			}
 			$response = array('data' => $data);
+			
+		} else if( isset($response['records']['0'][$modelName]) ) {
+			// this is a paging response
+			
+			// the records have standard cake structure, so get them
+			$data = BanchaResponseTransformer::transformDataStructureToExt($modelName,$response['records']);
+
+			// create response including the total number of records
+			$response = array(
+				'data'  => $data['data'],
+				'total' => $response['count']
+			);
 		}
 		
 		return $response;

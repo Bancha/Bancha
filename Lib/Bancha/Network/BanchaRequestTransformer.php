@@ -246,28 +246,28 @@ class BanchaRequestTransformer {
 		if (null != $this->paginate) {
 			return $this->paginate;
 		}
-
+		
 		$page = 1;
-		if (isset($this->data['data']['page'])) {
-			$page = $this->data['data']['page'];
-			unset($this->data['data']['page']);
-		} else if (isset($this->data['data']['start']) && isset($this->data['data']['limit'])) {
-			$page = floor($this->data['data']['start'] / $this->data['data']['limit']);
-			unset($this->data['data']['start']);
+		if (isset($this->data['data']['0']['page'])) {
+			$page = $this->data['data']['0']['page'];
+			unset($this->data['data']['0']['page']);
+		} else if (isset($this->data['data']['0']['start']) && isset($this->data['data']['0']['limit'])) {
+			$page = floor($this->data['data']['0']['start'] / $this->data['data']['0']['limit']);
+			unset($this->data['data']['0']['start']);
 		}
-		$limit = 25;
-		if (isset($this->data['data']['limit'])) {
-			$limit = $this->data['data']['limit'];
-			unset($this->data['data']['limit']);
+		$limit = 500;
+		if (isset($this->data['data']['0']['limit'])) {
+			$limit = $this->data['data']['0']['limit'];
+			unset($this->data['data']['0']['limit']);
 		}
 		$order = array();
-		if (isset($this->data['data']['sort'])) {
-			foreach ($this->data['data']['sort'] as $sort) {
+		if (isset($this->data['data']['0']['sort'])) {
+			foreach ($this->data['data']['0']['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
 					$order[$this->getController() . '.' . $sort['property']] = strtolower($sort['direction']);
 				}
 			}
-			unset($this->data['data']['sort']);
+			unset($this->data['data']['0']['sort']);
 		}
 		$this->paginate = array(
 			'page'			=> $page,
