@@ -235,7 +235,17 @@ class BanchaBehavior extends ModelBehavior {
 		}
 		$cols = array();
 		foreach ($columns as $field => $values) {
-			if(isset($values['notempty'])) {
+			
+			// check is the input is required
+			$presence = false;
+			foreach($values as $rule) {
+				if((isset($rule['required']) && $rule['required']) ||
+				   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
+					$presence = true;
+					break;
+				}
+			}
+			if(isset($values['notempty']) || $presence) {
 				$cols[] = array(
 					'type' => 'presence',
 					'name' => $field,
