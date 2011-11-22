@@ -47,7 +47,7 @@ class BanchaResponseTransformer {
 		$response = BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
 		
 		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
-		if (isset($request['extUpload']) && $request['extUpload']) {
+		if (isset($request['isFormRequest']) && $request['isFormRequest']) {
 			return '<html><body><textarea>' . str_replace('"', '\"', json_encode($response)) . '</textarea></body></html>';
 		}
 
@@ -100,21 +100,19 @@ class BanchaResponseTransformer {
 	 * translates CakePHP CRUD to ExtJS CRUD method names
 	 * @param string $method
 	 */
-	public static function getMethod($method) {
-		if('index' == $method) {
-			return 'read';
+	public static function getMethod($request) {
+		switch($request->action) {
+			case 'index':
+				return ($request['isFormRequest']) ? 'load' : 'read';
+			case 'edit':
+				return ($request['isFormRequest']) ? 'submit' : 'update';
+			case 'add':
+				return ($request['isFormRequest']) ? 'submit' : 'create';
+			case 'delete':
+				return 'destroy';
+			default:
+				return $request->action;
 		}
-		if('edit' == $method) {
-			return 'update';
-		}
-		if('add' == $method) {
-			return 'create';
-		}
-		if('delete' == $method) {
-			return 'destroy';
-		}
-		
-		return $method;
 	}
 
 }
