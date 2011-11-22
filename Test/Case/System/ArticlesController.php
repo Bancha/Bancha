@@ -88,7 +88,7 @@ class ArticlesController extends AppController {
 			sleep(SLEEP_TIME);
 		}
 		
-		return $this->Article->getResult();
+		return $this->Article->getLastSaveResult();
 	}
 
 /**
