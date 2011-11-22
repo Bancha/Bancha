@@ -78,16 +78,25 @@ class BanchaRequestCollection {
 
 				// Create CakeRequest and fill it with values from the transformer.
 				$requests[$i] = new CakeRequest($transformer->getUrl());
-				$requests[$i]['controller'] = $transformer->getController();
-				$requests[$i]['action']		= $transformer->getAction();
-				$requests[$i]['named']		= $transformer->getPaging();
-				$requests[$i]['pass']		= $transformer->getPassParams();
-				$requests[$i]['tid']		= $transformer->getTid();
-				$requests[$i]['plugin']		= null;
-				$requests[$i]['extUpload']	= $transformer->getExtUpload();
-				$requests[$i]['client_id']	= $transformer->getClientId();
-				$requests[$i]['isBancha']	= true; // additional property
-
+				
+				// the CakeRequest uses the envirement variable $_POST in his
+				// during the startup called _processPost() (currently line 153). 
+				// This is unclean and adds false data in our case. So delete this data.
+				$requests[$i]->data = array();
+				
+				// now set params for the request
+				$requests[$i]['controller'] 	= $transformer->getController();
+				$requests[$i]['action']			= $transformer->getAction();
+				$requests[$i]['named']			= $transformer->getPaging();
+				$requests[$i]['pass']			= $transformer->getPassParams();
+				$requests[$i]['plugin']			= null;
+				// bancha-specific
+				$requests[$i]['tid']			= $transformer->getTid();
+				$requests[$i]['extUpload']		= $transformer->getExtUpload();
+				$requests[$i]['client_id']		= $transformer->getClientId();
+				$requests[$i]['isFormRequest']	= $transformer->isFormRequest();
+				$requests[$i]['isBancha']		= true; // additional property for cleaner controller syntax
+				
 				// Handle all other parameters as POST parameters.
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);
