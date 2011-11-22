@@ -146,7 +146,7 @@ class BanchaRequestTransformer {
 				$this->action = 'delete';
 				break;
 			case 'read':
-				$this->action = (isset($this->data['data']['id']) || isset($this->data['id'])) ? 'view' : 'index';
+				$this->action = (isset($this->data['data']['0']['data']['id']) || isset($this->data['data']['0']['id'])) ? 'view' : 'index';
 				break;
 		}
 		return $this->action;
