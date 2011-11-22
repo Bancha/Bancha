@@ -42,6 +42,15 @@ class BanchaCrudTest extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
+	/**
+	 * Please make sure that the project default database is empty!
+	 */
+	public function testTestSetUp() {
+		$controller = new ArticlesController();
+		$controller->loadModel("User");
+		$this->assertEquals(0,count($controller->User->find('all')),"\n\n\n\nPlease make sure that the project default database User table is empty!\n\n\n\n");
+		$this->assertEquals(0,count($controller->Article->find('all')),"\n\n\n\nPlease make sure that the project default database Article table is empty!\n\n\n\n");
+	}
 /**
  * Tests the 'add' CRUD operation using the full CakePHP stack.
  *
@@ -53,27 +62,27 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'create',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(
+			'data'			=> array(array('data'=>array(
 				'title'			=> 'Hello World',
 				'body'			=> 'foobar',
 				'published'		=> false,
 				'user_id'		=> 1,
-			),
+			))),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		$this->assertNotNull($responses[0]->result->Article->id);
-		$this->assertEquals('Hello World', $responses[0]->result->Article->title);
-		$this->assertEquals(false, $responses[0]->result->Article->published);
-		$this->assertEquals(1, $responses[0]->result->Article->user_id);
+		$this->assertNotNull($responses[0]->result->data->id);
+		$this->assertEquals('Hello World', $responses[0]->result->data->title);
+		$this->assertEquals(false, $responses[0]->result->data->published);
+		$this->assertEquals(1, $responses[0]->result->data->user_id);
 		$this->assertEquals(1, $responses[0]->tid);
 
 		// Clean up operations: delete article
 		$article = new Article();
-		$article->id = $responses[0]->result->Article->id;
+		$article->id = $responses[0]->result->data->id;
 		$article->delete();
 	}
 
@@ -83,7 +92,6 @@ class BanchaCrudTest extends CakeTestCase {
  *
  */
 	public function testEdit() {
-		$this->markTestSkipped("something is wrong with the DB");
 		// Preparation: create article
 		$article = new Article();
 		$article->create();
@@ -96,21 +104,20 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'update',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(
+			'data'			=> array(array('data'=>array(
 				'id'			=> $article->id,
 				'title'			=> 'foobar',
 				'published'		=> true,
-			),
+			))),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		print_r($responses);
 
-		$this->assertEquals($article->id, $responses[0]->result->Article->id);
-		$this->assertEquals('foobar', $responses[0]->result->Article->title);
-		$this->assertEquals(true, $responses[0]->result->Article->published);
+		$this->assertEquals($article->id, $responses[0]->result->data->id);
+		$this->assertEquals('foobar', $responses[0]->result->data->title);
+		$this->assertEquals(true, $responses[0]->result->data->published);
 		$this->assertEquals(1, $responses[0]->tid);
 
 		// Clean up operations: delete article
@@ -123,7 +130,6 @@ class BanchaCrudTest extends CakeTestCase {
  *
  */
 	public function testDelete() {
-		$this->markTestSkipped("something is wrong with the DB");
 		// Preparation: create article
 		$article = new Article();
 		$article->create();
@@ -135,14 +141,14 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array('id' => $article->id)
+			'data'			=> array(array('data'=>array('id' => $article->id)))
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
-		$this->assertEquals(array(), $responses[0]->result);
+		$this->assertEquals(true, $responses[0]->result->success);
 		$this->assertEquals(1, $responses[0]->tid);
 	}
 
@@ -151,22 +157,17 @@ class BanchaCrudTest extends CakeTestCase {
  * delete after the test.
  *
  */
-	public function testIndex() {		
-		$this->markTestSkipped("something is wrong with the DB");
-		
+	public function testIndex() {
 		// Preparation: create articles
 		$article1 = new Article();
 		$article1->create();
-		$article1->save(array('title' => 'foo'));
+		$this->assertTrue(!!$article1->save(array('title' => 'foo')));
 		$article2 = new Article();
 		$article2->create();
-		$article2->save(array('title' => 'bar'));
+		$this->assertTrue(!!$article2->save(array('title' => 'bar')));
 		$article3 = new Article();
 		$article3->create();
-		$article3->save(array('title' => 'foobar'));
-		$article4 = new Article();
-		$article4->create();
-		$article4->save(array('title' => 'hello world'));
+		$this->assertTrue(!!$article3->save(array('title' => 'foobar')));
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(
@@ -174,26 +175,66 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(
-				'limit'			=> 2
-			),
+			'data'			=> array(array(
+				'page'			=> 1,
+				'limit'			=> 2,
+			)),
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
-		$this->assertEquals(2, count($responses[0]->result));
-
-		//$this->assertEquals($article1->id, $responses[0]->result[0]->id);
-		//$this->assertEquals($article2->id, $responses[0]->result[1]->id);
+		// test
+		
+		// only first and second element should be loaded
+		$this->assertEquals(2, count($responses[0]->result->data));
+		$this->assertEquals($article1->id, $responses[0]->result->data[0]->id);
+		$this->assertEquals($article2->id, $responses[0]->result->data[1]->id);
+		
+		// the counter should be 3
+		$this->assertEquals(3, $responses[0]->result->total);
+		
+		// tid should be passed through
 		$this->assertEquals(1, $responses[0]->tid);
 
+
+
+
+
+		// Test page two
+		$rawPostData = json_encode(array(
+			'action'		=> 'Articles',
+			'method'		=> 'read',
+			'tid'			=> 2,
+			'type'			=> 'rpc',
+			'data'			=> array(array(
+				'page'			=> 2,
+				'limit'			=> 2,
+			)),
+		));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+
+		// test
+
+		// only third element should be loaded
+		$this->assertEquals(1, count($responses[0]->result->data));
+		$this->assertEquals($article3->id, $responses[0]->result->data[0]->id);
+
+		// the counter should be 3
+		$this->assertEquals(3, $responses[0]->result->total);
+
+		// tid should be passed through
+		$this->assertEquals(2, $responses[0]->tid);
+		
+		
 		// Clean up operations: delete articles
 		$article1->delete();
 		$article2->delete();
 		$article3->delete();
-		$article4->delete();
 	}
 
 /**
@@ -201,11 +242,14 @@ class BanchaCrudTest extends CakeTestCase {
  *
  */
 	public function testView() {
-		$this->markTestSkipped("something is wrong with the DB");
-		// Preparation: create article
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo'));
+        $this->markTestSkipped("This functionallity is not yet implemented.");
+		// Preparation: create articles
+		$article1 = new Article();
+		$article1->create();
+		$this->assertTrue(!!$article1->save(array('title' => 'foo')));
+		$article2 = new Article();
+		$article2->create();
+		$this->assertTrue(!!$article2->save(array('title' => 'bar')));
 
 		// Build a HTTP request that looks like in Ext JS.
 		$rawPostData = json_encode(array(
@@ -213,19 +257,21 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array('id' => $article->id)
+			'data'			=> array(array('data'=>array('id' => $article1->id)))
 		));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
-		$this->assertEquals($article->id, $responses[0]->result[0]->id);
-		$this->assertEquals('foo', $responses[0]->result[0]->title);
+		
+		$this->assertEquals(1, count($responses[0]->result->data));
+		$this->assertEquals($article1->id, $responses[0]->result->data[0]->id);
+		$this->assertEquals('foo', $responses[0]->result->data[0]->title);
 		$this->assertEquals(1, $responses[0]->tid);
-
-		// Clean up operations: delete article
-		$article->delete();
+		
+		// Clean up operations: delete articles
+		$article1->delete();
+		$article2->delete();
 	}
 
 }
