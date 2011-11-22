@@ -38,7 +38,7 @@ class BanchaDispatcher {
  * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
  */
 	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
-		$transformer = new BanchaResponseCollection();
+		$collection = new BanchaResponseCollection();
 
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
@@ -69,13 +69,13 @@ class BanchaDispatcher {
 				// because we need to full response, not only the body of the response.
 				$dispatcher = new BanchaSingleDispatcher();
 				try {
-					$transformer->addResponse(
+					$collection->addResponse(
 						$request['tid'],
 						$dispatcher->dispatch($request, array('return' => true)),
 						$request
 					);
 				} catch (Exception $e) {
-					$transformer->addException($request['tid'], $e, $request);
+					$collection->addException($request['tid'], $e, $request);
 				} // try catch
 			} // if (!$skip_request)
 
@@ -86,7 +86,7 @@ class BanchaDispatcher {
 		} // foreach
 
 		// Combine the responses and return or output them.
-		$responses = $transformer->getResponses();
+		$responses = $collection->getResponses();
 		if (isset($additionalParams['return']) && $additionalParams['return']) {
 			return $responses->body();
 		}
