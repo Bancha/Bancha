@@ -44,19 +44,13 @@ class BanchaResponseTransformer {
 			throw new CakeException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 		
-		$response = BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
-		
-		// If this is an 'extUpload' request, we wrap the response in a valid HTML body.
-		if (isset($request['isFormRequest']) && $request['isFormRequest']) {
-			return '<html><body><textarea>' . str_replace('"', '\"', json_encode($response)) . '</textarea></body></html>';
-		}
-
-		return $response;
+		return BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
 	}
     
 	/**
 	 * Transform a cake response to extjs structure (associated models are not supportet!)
-	 * otherwise just return the original response
+	 * otherwise just return the original response.
+	 * See also https://github.com/Bancha/Bancha/wiki/Supported-Controller-Method-Results
 	 *
 	 * @param $modelName The model name of the current request
 	 * @param $response The input request from Bancha
@@ -64,9 +58,21 @@ class BanchaResponseTransformer {
 	 * @return extjs formated data array
 	 */
 	public static function transformDataStructureToExt($modelName,$response) {
+		
+		if($response===false) {
+			// this was an unsuccessfull operation, return that to ext
+			return array(
+				'success' => false,
+			);
+		}
+		
+		// expect a successfull operation, but check
+		$sucess = isset($response) ? $response : true;
+		
 		if( isset($response[$modelName]) ) {
 			// this is standard cake single element structure
 			$response = array(
+				'success' => $sucess,
 				'data' => $response[$modelName]
 			);
 			
@@ -76,7 +82,10 @@ class BanchaResponseTransformer {
 			foreach($response as $record) {
 				array_push($data, $record[$modelName]);
 			}
-			$response = array('data' => $data);
+			$response = array(
+				'success' => $sucess,
+				'data' => $data
+			);
 			
 		} else if( isset($response['records']['0'][$modelName]) ) {
 			// this is a paging response
@@ -86,6 +95,7 @@ class BanchaResponseTransformer {
 
 			// create response including the total number of records
 			$response = array(
+				'success' => $sucess,
 				'data'  => $data['data'],
 				'total' => $response['count']
 			);
