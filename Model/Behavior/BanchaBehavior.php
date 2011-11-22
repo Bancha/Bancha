@@ -56,7 +56,7 @@ class BanchaBehavior extends ModelBehavior {
 	/**
 	 * since cakephp deletes $model->data after a save action 
 	 * we keep the necessary return values here, access through
-	 * $model->getResult();
+	 * $model->getLastSaveResult();
 	 */
 	private $result = null;
 	
@@ -447,7 +447,7 @@ class BanchaBehavior extends ModelBehavior {
 	/**
 	 * Commits a save operation for all changed data and 
 	 * returns the result in an extjs format
-	 * for return value see also getResult()
+	 * for return value see also getLastSaveResult()
 	 * 
 	 * @param $model the model is always the first param (cake does this automatically)
 	 * @param $data the data to save, first function argument
@@ -457,18 +457,18 @@ class BanchaBehavior extends ModelBehavior {
 		$this->saveFields($model,$data);
 		
 		// return ext-formated result
-		return $this->getResult();
+		return $this->getLastSaveResult();
 	}
 	
 	/**
-	 * convenience methods, just delete and then return $this.getResult();
+	 * convenience methods, just delete and then return $this.getLastSaveResult();
 	 */
 	public function deleteAndReturn($model) {
 		if (!$model->exists()) {
 			throw new NotFoundException(__('Invalid user'));
 		}
 		$model->delete();
-		return $this->getResult();
+		return $this->getLastSaveResult();
 	}
 	
 	public function afterDelete() {
