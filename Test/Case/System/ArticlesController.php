@@ -14,10 +14,10 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function index() {
-		$this->Article->recursive = 0;
-		$articles = $this->paginate();
-		$this->set('articles', $articles);
-		return $articles;
+		$this->Article->recursive = -1; // modified, cause we don't need associated data
+		$articles = $this->paginate();																// added
+		$this->set('articles', $articles);															// modified
+		return array_merge($this->request['paging']['Article'],array('records'=>$articles)); 		// added
 	}
 
 /**
@@ -31,9 +31,8 @@ class ArticlesController extends AppController {
 		if (!$this->Article->exists()) {
 			throw new NotFoundException(__('Invalid article'));
 		}
-		$data = $this->Article->read(null, $id);
-		$this->set('article', $data);
-		return $data;
+		$this->set('article', $this->Article->read(null, $id));
+		return $this->Article->data;																// added
 	}
 
 /**
@@ -42,19 +41,21 @@ class ArticlesController extends AppController {
  * @return void
  */
 	public function add() {
-		$data = array();
 		if ($this->request->is('post')) {
 			$this->Article->create();
-			if ($data = $this->Article->save($this->request->data)) {
-				$data['Article']['id'] = $this->Article->id;
-				// $this->flash(__('Article saved.'), array('action' => 'index'));
+			
+			if($this->request->params['isBancha']) return $this->Article->saveFieldsAndReturn($this->request->data);	 // added
+			
+			if ($this->Article->save($this->request->data)) {
+				$this->Session->setFlash(__('The article has been saved'));
+				$this->redirect(array('action' => 'index'));
 			} else {
+				$this->Session->setFlash(__('The article could not be saved. Please, try again.'));
 			}
 		}
 		$users = $this->Article->User->find('list');
 		$tags = $this->Article->Tag->find('list');
 		$this->set(compact('users', 'tags'));
-		return $data;
 	}
 
 /**
@@ -69,10 +70,11 @@ class ArticlesController extends AppController {
 			throw new NotFoundException(__('Invalid article'));
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
-			if ($data = $this->Article->save($this->request->data)) {
-				// $this->flash(__('The article has been saved.'), array('action' => 'index'));
-				$data['Article']['id'] = $id;
+			if ($this->Article->save($this->request->data)) {
+				//$this->Session->setFlash(__('The article has been saved'));
+				//$this->redirect(array('action' => 'index'));
 			} else {
+				//$this->Session->setFlash(__('The article could not be saved. Please, try again.'));
 			}
 		} else {
 			$this->request->data = $this->Article->read(null, $id);
@@ -80,14 +82,13 @@ class ArticlesController extends AppController {
 		$users = $this->Article->User->find('list');
 		$tags = $this->Article->Tag->find('list');
 		$this->set(compact('users', 'tags'));
-
-		if (defined('SLEEP_TIME'))
-		{
+		
+		if (defined('SLEEP_TIME')) {
 			echo "\n\nSLEEP for " . SLEEP_TIME . " SECONDS\n\n";
 			sleep(SLEEP_TIME);
 		}
-
-		return $data;
+		
+		return $this->Article->getResult();
 	}
 
 /**
@@ -104,12 +105,14 @@ class ArticlesController extends AppController {
 		if (!$this->Article->exists()) {
 			throw new NotFoundException(__('Invalid article'));
 		}
+		
+		if($this->request->params['isBancha']) return $this->Article->deleteAndReturn();	 // added
+		
 		if ($this->Article->delete()) {
-			// $this->flash(__('Article deleted'), array('action' => 'index'));
-			return array();
+			$this->Session->setFlash(__('Article deleted'));
+			$this->redirect(array('action'=>'index'));
 		}
-		// $this->flash(__('Article was not deleted'), array('action' => 'index'));
+		$this->Session->setFlash(__('Article was not deleted'));
 		$this->redirect(array('action' => 'index'));
 	}
-
 }
