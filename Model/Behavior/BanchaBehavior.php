@@ -382,9 +382,9 @@ class BanchaBehavior extends ModelBehavior {
 
 	/**
 	 * Returns the result record of the last save operation
-	 * in ext format
+	 * mixed $results The record data of the last saved record
 	 */
-	public function getResult() {
+	public function getLastSaveResult() {
 		return $this->result;
 	}
 	
