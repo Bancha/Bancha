@@ -86,12 +86,23 @@ class BanchaRequestTransformer {
 		}
 		else if (isset($this->data['extAction']))
 		{
-			$this->controller = $this->data['extAction'];
+			$this->controller = Inflector::pluralize($this->data['extAction']);
 			unset($this->data['extAction']);
 			$this->isFormRequest = true;
 		}
 		return $this->controller;
 	}
+	
+	/**
+	 * Returns true if this is a ExtJS formHandler request
+	 */
+	public function isFormRequest() {
+		// let getController() do the work
+		$this->getController();
+		
+		return $this->isFormRequest;
+	}
+	
 	/**
 	 * Returns the name of the expected model. Thus returns the value of 'action' from the Ext JS request. 
 	 *
@@ -110,11 +121,13 @@ class BanchaRequestTransformer {
 /**
  * Returns the name of the action. Thus returns the value of 'method' from the Ext JS request. Because Ext JS and
  * CakePHP use different names for CRUD operations, this method also transforms it according to the following list:
- * - create -> add
- * - update -> edit
- * - destroy -> delete
- * - read -> view (if an ID is provided in the Data array).
- * - read -> index (if no ID is provided in the Data array).
+ * - create    -> add
+ * - update    -> edit
+ * - destroy   -> delete
+ * - read/load -> view (if an ID is provided in the Data array).
+ * - read/load -> index (if no ID is provided in the Data array).
+ * - submit    -> add (if no ID is provided in the Data array).
+ * - submit    -> edit (if an ID is provided in the Data array).
  * This method also removes the 'method' property from the Ext JS request.
  *
  * @return string Name of the action.
@@ -134,7 +147,7 @@ class BanchaRequestTransformer {
 
 		switch ($this->action) {
 			case 'submit':
-				$this->action = (isset($this->data['data']['id']) || isset($this->data['id'])) ? 'edit' : 'add';
+				$this->action = (!empty($this->data['data']['0']['data']['id']) || !empty($this->data['id'])) ? 'edit' : 'add';
 				break;
 			case 'create':
 				$this->action = 'add';
@@ -145,8 +158,9 @@ class BanchaRequestTransformer {
 			case 'destroy':
 				$this->action = 'delete';
 				break;
+			case 'load': // the same as case read
 			case 'read':
-				$this->action = (isset($this->data['data']['0']['data']['id']) || isset($this->data['data']['0']['id'])) ? 'view' : 'index';
+				$this->action = (!empty($this->data['data']['0']['data']['id']) || !empty($this->data['id'])) ? 'view' : 'index';
 				break;
 		}
 		return $this->action;
@@ -223,10 +237,12 @@ class BanchaRequestTransformer {
 	public function getPassParams() {
 
 		$pass = array();
+		// normal requests
 		if (isset($this->data[0]['data']['id'])) {
 			$pass['id'] = $this->data[0]['data']['id'];
 			unset($this->data[0]['data']['id']);
-		} else if (isset($this->data['id'])) { // TODO check with tech docu
+		// form upload requests
+		} else if ($this->isFormRequest && isset($this->data['id'])) {
 			$pass['id'] = $this->data['id'];
 			unset($this->data['id']);
 			$this->isFormRequest = true;
@@ -285,6 +301,18 @@ class BanchaRequestTransformer {
 	 * @param $data The input request data from Bancha-ExtJS
 	 */
 	public function transformDataStructureToCake($modelName,$data) {
+		
+		// form uploads save all fields directly in the data array
+		if($this->isFormRequest) {
+			if(isset($data['extType'])) {
+				unset($data['extType']);
+			}
+			return array(
+				$modelName => $data
+			);
+		}
+		
+		// non-form request
 		if( isset($data['data'][0]['data']) ) {
 			// this is standard extjs-bancha structure, transform to cake
 			$data = array(
@@ -319,16 +347,8 @@ class BanchaRequestTransformer {
 		$this->getPassParams();
 		$this->getPaging();
 		
-		// prepare data
-		$data = $this->transformDataStructureToCake($this->getModel(),$this->data);
-		
-		if ($this->isFormRequest) {
-			$data = $this->data;
-			if (isset($data['extTID'])) {
-				unset($data['extTID']);
-			}
-		}
-		return $data;
+		// prepare and return data
+		return $this->transformDataStructureToCake($this->getModel(),$this->data);
 	}
 
 }
