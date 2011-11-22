@@ -242,7 +242,6 @@ class BanchaCrudTest extends CakeTestCase {
  *
  */
 	public function testView() {
-        $this->markTestSkipped("This functionallity is not yet implemented.");
 		// Preparation: create articles
 		$article1 = new Article();
 		$article1->create();
@@ -264,10 +263,34 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
+		// test
 		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals($article1->id, $responses[0]->result->data[0]->id);
-		$this->assertEquals('foo', $responses[0]->result->data[0]->title);
+		$this->assertEquals($article1->id, $responses[0]->result->data->id);
+		$this->assertEquals('foo', $responses[0]->result->data->title);
 		$this->assertEquals(1, $responses[0]->tid);
+		
+		
+		// now look for the other one
+		// Build a HTTP request that looks like in Ext JS.
+		$rawPostData = json_encode(array(
+			'action'		=> 'Articles',
+			'method'		=> 'read',
+			'tid'			=> 2,
+			'type'			=> 'rpc',
+			'data'			=> array(array('data'=>array('id' => $article2->id)))
+		));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		// test
+		$this->assertEquals(1, count($responses[0]->result->data));
+		$this->assertEquals($article2->id, $responses[0]->result->data->id);
+		$this->assertEquals('bar', $responses[0]->result->data->title);
+		$this->assertEquals(2, $responses[0]->tid);
+		
+		
 		
 		// Clean up operations: delete articles
 		$article1->delete();
