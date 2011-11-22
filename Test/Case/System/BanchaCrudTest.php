@@ -243,6 +243,7 @@ class BanchaCrudTest extends CakeTestCase {
  */
 	public function testView() {
 		// Preparation: create articles
+		$articleForCake = new Article(); // quite strange, but cake seems to use this object!???
 		$article1 = new Article();
 		$article1->create();
 		$this->assertTrue(!!$article1->save(array('title' => 'foo')));
