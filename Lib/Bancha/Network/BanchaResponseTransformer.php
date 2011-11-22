@@ -67,7 +67,7 @@ class BanchaResponseTransformer {
 		}
 		
 		// expect a successfull operation, but check
-		$sucess = isset($response) ? $response : true;
+		$sucess = isset($response['success']) ? !!$response['success'] : true;
 		
 		if( isset($response[$modelName]) ) {
 			// this is standard cake single element structure
