@@ -85,16 +85,16 @@ class BanchaResponseCollection {
 	 }
 
 /**
- * Combines all CakeResponses into a single response and transforms it into JSON. If the first response does not contain
- * an array, we assume that 'extUpload' is active and therefore we do not transform the response into JSON.
+ * Combines all CakeResponses into a single response and transforms it into JSON. If it is an formHandler request
+ * we format the response as html, see http://www.sencha.com/products/extjs/extdirect
  *
  * @return CakeResponse
  */
 	public function getResponses() {
-		// Response to ExtUpload request
-		if (isset($this->responses[0]['extUpload']) && $this->responses[0]['extUpload']) {
+		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
+		if (isset($this->responses['0']['extUpload']) && $this->responses['0']['extUpload']) {
 			return new CakeResponse(array(
-				'body'		=>	$this->responses[0]['result'],
+				'body'		=>	'<html><body><textarea>' . json_encode($this->responses['0']) . '</textarea></body></html>',
 				'status'	=> 200,
 				'type'		=> 'text/html',
 				'charset'	=> 'utf-8',
