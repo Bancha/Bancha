@@ -1009,6 +1009,7 @@ Ext.define('Bancha', {
             idProperty: idProperty,
             proxy: {
                 type: 'direct',
+				batchActions: false, // don't batch requests, cake can't handle multiple records (the requests will be by batched by Ext.Direct)
                 api: {
                     /* IFPRODUCTION
                     // if method is not supported by remote it get's set to undefined
@@ -1048,8 +1049,7 @@ Ext.define('Bancha', {
                 },
                 listeners: {
                     exception: this.onRemoteException || Ext.emptyFn
-                },
-                cacheString: '_dc' // TODO later
+                }
             }
         };
         metaData = Ext.clone(this.getModelMetaData(modelName));
