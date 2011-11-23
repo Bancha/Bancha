@@ -31,32 +31,31 @@ class BanchaDispatcherTest extends CakeTestCase {
 /**
  * Tests the dispatch() method of BanchaDispatcher with the 'return'-option. Thus dispatch() doesn't send the response
  * to the browser but returns it instead. We are able to mock the BanchaRequest object, but we are not able to mock
- * the other objects used by the Dispatcher. Especially we need to provide an actual controller class. MyController is
+ * the other objects used by the Dispatcher. Especially we need to provide an actual controller class. TestsController is
  * defined at the bottom of this file.
  *
  * This tests dispatches two actions and tests if the expected content is available in the combined response.
  *
  */
 	public function testDispatchWithReturn() {
-		$this->markTestSkipped("-> Undefined property: stdClass::result");
-		$rawPostData = array(
+		$rawPostData = json_encode(array(
 			array(
-				'action'	=> 'My',
+				'action'	=> 'Test', // will be pluralized
 				'method'	=> 'testaction1',
 				'data'		=> array(),
 				'type'		=> 'rpc',
 				'tid'		=> 1,
 			),
 			array(
-				'action'	=> 'My',
+				'action'	=> 'Test',
 				'method'	=> 'testaction2',
 				'data'		=> array(),
 				'type'		=> 'rpc',
 				'tid'		=> 2,
 			)
-		);
+		));
 
-		$collection = new BanchaRequestCollection(json_encode($rawPostData));
+		$collection = new BanchaRequestCollection($rawPostData);
 
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
@@ -71,26 +70,25 @@ class BanchaDispatcherTest extends CakeTestCase {
  *
  */
 	public function testDispatchWithoutReturn() {
-		$this->markTestSkipped("-> Undefined property: stdClass::result");
 		
-		$rawPostData = array(
+		$rawPostData = json_encode(array(
 			array(
-				'action'	=> 'My',
+				'action'	=> 'Test',
 				'method'	=> 'testaction1',
 				'data'		=> null,
 				'type'		=> 'rpc',
 				'tid'		=> 1,
 			),
 			array(
-				'action'	=> 'My',
+				'action'	=> 'Test',
 				'method'	=> 'testaction2',
 				'data'		=> null,
 				'type'		=> 'rpc',
 				'tid'		=> 2,
 			)
-		);
+		));
 
-		$collection = new BanchaRequestCollection(json_encode($rawPostData));
+		$collection = new BanchaRequestCollection($rawPostData);
 
 		$dispatcher = new BanchaDispatcher();
 		ob_start(); // capture output, because we want to test without return
@@ -101,7 +99,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		if (isset($_SERVER['HTTP_HOST'])) {
 			header("Content-Type: text/html; charset=utf-8");
 		}
-
+		
 		$this->assertEquals('Hello World!', $responses[0]->result->text);
 		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
@@ -109,12 +107,12 @@ class BanchaDispatcherTest extends CakeTestCase {
 }
 
 /**
- * MyController class
+ * TestsController class
  *
  * @package       Bancha
  * @category      TestFixtures
  */
-class MyController extends AppController {
+class TestsController extends AppController {
 
 	public function testaction1() {
 		return array('text' => 'Hello World!');
