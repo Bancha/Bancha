@@ -68,7 +68,7 @@ class BanchaResponseCollection {
 	public function addException($tid, Exception $e, CakeRequest $request) {
 		// only add exception information in debug mode
 		if(Configure::read('debug') > 0) {
-			$this->responses[] = array(
+			$response = array(
 				'type'			=> 'exception',
 				'exceptionType'	=> get_class($e), // added by Bancha
 				'message'		=> $e->getMessage(),
@@ -76,12 +76,19 @@ class BanchaResponseCollection {
 				'trace'			=> $e->getTraceAsString(),
 			);
 		} else {
-			$this->responses[] = array(
+			$response = array(
 				'type'			=> 'exception',
 				'message'		=> __("Unknown error."),
 			);
 		}
-
+		
+		// extUpload request exceptions also has to be returns in the html tag, see getResponses()
+		if ($request['extUpload'])
+		{
+			$response['extUpload'] = true;
+		}
+		$this->responses[] = $response;
+		
 		return $this;
 	 }
 
@@ -95,6 +102,7 @@ class BanchaResponseCollection {
 		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
 		if (isset($this->responses['0']['extUpload']) && $this->responses['0']['extUpload']) {
 			return new CakeResponse(array(
+				// TODO Is this right implemented? http://www.sencha.com/forum/showthread.php?156689
 				'body'		=>	'<html><body><textarea>' . json_encode($this->responses) . '</textarea></body></html>',
 				'status'	=> 200,
 				'type'		=> 'text/html',
