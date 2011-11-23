@@ -304,7 +304,7 @@ class BanchaRequestTransformer {
 	public function transformDataStructureToCake($modelName,$data) {
 		
 		// form uploads save all fields directly in the data array
-		if($this->isFormRequest) {
+		if($this->isFormRequest()) {
 			if(isset($data['extType'])) {
 				unset($data['extType']);
 			}
@@ -314,7 +314,7 @@ class BanchaRequestTransformer {
 		}
 		
 		// non-form request
-		if( isset($data['data'][0]['data']) && !is_array($data['data'][0]['data'])) {
+		if( isset($data['data'][0]['data']) && !isset($data['data'][0]['data'][0])) {
 			// this is standard extjs-bancha structure, transform to cake
 			$data = array(
 				$modelName => $data['data'][0]['data']
@@ -324,7 +324,7 @@ class BanchaRequestTransformer {
 				// ... so delete it
 				unset($data[$modelName]['id']);
 			}
-		} else if( isset($data['data'][0]['data']) && is_array($data['data'][0]['data'])) {
+		} else if( isset($data['data'][0]['data'][0]) && is_array($data['data'][0]['data'][0])) {
 			// looks like someone is using the store with batchActions:true
 			if(Configure::read('Bancha.allowMultiRecordRequests') != true) {
 				throw new CakeException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?

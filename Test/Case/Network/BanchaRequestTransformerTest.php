@@ -24,13 +24,115 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
  * @category      tests
  */
 class BanchaRequestTransformerTest extends CakeTestCase {
-
+	
 /**
- * Test input transformation from ext to cake
+ * Test input transformation of simple data
  */
-	public function testTransformDataStructureToCake() {
-		// TODO currently everything is only checked through system tests
+	public function testTransformDataStructureToCake_SimpleData() {
+		
+		// setup
+		$transformer = new BanchaRequestTransformer();
+		
+		
+		// test 1 inside a data property
+		$expected = array(
+			'message' => 'value'
+		);
+		$input = array(
+			'data' => $expected
+		);
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		
+		
+		// test 2 no data
+		$input = array(
+			'ignore' => 'me',
+		);
+		$expected = array();
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
 	}
+/**
+ * Test input transformation for form data
+ */
+	public function testTransformDataStructureToCake_FormInput() {
+
+		// setup
+		$transformer = new BanchaRequestTransformer(array(
+			'extAction' => 'Article', // currently a form action is recognized by the 'extAction' property
+		));
+
+		// in form the data is directly in the $data array
+		$input = array(
+			'id' => 3,
+			'title' => 'foo',
+			'body' => 'bar',
+		);
+		
+		// result is a one-element cake record
+		$expected = array(
+			'Article' => array(
+				'id' => 3,
+				'title' => 'foo',
+				'body' => 'bar',
+			)
+		);
+		
+		// test
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+	}
+	
+/**
+ * Test input transformation of one record
+ */
+	public function testTransformDataStructureToCake_OneRecord() {
+		
+		$input = array('data' => array(
+			array(
+				'data' => array(
+					'id' => 1,
+					'name' => 'foo',
+				),
+			)
+		));
+		
+		$expected = array(
+			'Article' => array(
+				'id' => 1,
+				'name' => 'foo',
+			),
+		);
+		
+		$transformer = new BanchaRequestTransformer();
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+	}
+	
+/**
+ * When is is a create action, delete the ext-generated id, so that cake recognizes that is a new record
+ */
+	public function testTransformDataStructureToCake_OneRecord_CreateAction() {
+		
+		$input = array('data' => array(
+			array(
+				'data' => array(
+					'id' => 1,
+					'name' => 'foo',
+				),
+			)
+		));
+		
+		$expected = array(
+			'Article' => array(
+				// id is issing
+				'name' => 'foo',
+			),
+		);
+		
+		$transformer = new BanchaRequestTransformer(array(
+			'method' => 'create'
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+	}
+
 	
 /**
  * Test input transformation of multiple records
