@@ -57,7 +57,7 @@ class BanchaCrudTest extends CakeTestCase {
  */
 	public function testAdd() {
 		// Build a request like it looks in Ext JS.
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'create',
 			'tid'			=> 1,
@@ -68,7 +68,7 @@ class BanchaCrudTest extends CakeTestCase {
 				'published'		=> false,
 				'user_id'		=> 1,
 			))),
-		));
+		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
@@ -104,7 +104,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->save(array('title' => 'foo'));
 
 		// Buld a request like it looks in Ext JS.
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'update',
 			'tid'			=> 1,
@@ -114,7 +114,7 @@ class BanchaCrudTest extends CakeTestCase {
 				'title'			=> 'foobar',
 				'published'		=> true,
 			))),
-		));
+		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
@@ -295,13 +295,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->save(array('title' => 'foo'));
 
 		// Let's begin with the real test.
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array('id' => $article->id)))
-		));
+		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
@@ -339,7 +339,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertTrue(!!$article3->save(array('title' => 'foobar')));
 
 		// Build a request like it looks in Ext JS.
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 1,
@@ -348,7 +348,7 @@ class BanchaCrudTest extends CakeTestCase {
 				'page'			=> 1,
 				'limit'			=> 2,
 			)),
-		));
+		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
@@ -374,7 +374,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 
 		// Test page two
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 2,
@@ -383,7 +383,7 @@ class BanchaCrudTest extends CakeTestCase {
 				'page'			=> 2,
 				'limit'			=> 2,
 			)),
-		));
+		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
@@ -423,13 +423,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertTrue(!!$article2->save(array('title' => 'bar')));
 
 		// Build a HTTP request that looks like in Ext JS.
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array('id' => $article1->id)))
-		));
+		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
@@ -451,13 +451,14 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		// now look for the other one
 		// Build a HTTP request that looks like in Ext JS.
-		$rawPostData = json_encode(array(
+		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 2,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array('id' => $article2->id)))
-		));
+		)));
+		
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
