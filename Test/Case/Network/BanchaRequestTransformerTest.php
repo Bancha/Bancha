@@ -26,6 +26,58 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 class BanchaRequestTransformerTest extends CakeTestCase {
 
 /**
+ * Test input transformation from ext to cake
+ */
+	public function testTransformDataStructureToCake() {
+		// TODO currently everything is only checked through system tests
+	}
+	
+/**
+ * Test input transformation of multiple records
+ */
+	public function testTransformDataStructureToCake_MultipleRecords() {
+		// currently this is only supported when following config is true
+		$currentConfig = Configure::read('Bancha.allowMultiRecordRequests');
+		Configure::write('Bancha.allowMultiRecordRequests',true);
+		
+		
+		// test
+		$input = array('data' => array(
+			array('data' => array(
+				array( // first
+					'id' => 1,
+					'name' => 'foo',
+				),
+				array( // second
+					'id' => 2,
+					'name' => 'bar',
+				),
+			)
+		)));
+		
+		$expected = array(
+			'0' => array(
+				'Article' => array(
+					'id' => 1,
+					'name' => 'foo',
+				),
+			),
+			'1' => array(
+				'Article' => array(
+					'id' => 2,
+					'name' => 'bar',
+				),
+			),
+		);
+		$transformer = new BanchaRequestTransformer();
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		
+		
+		// tear down
+		Configure::write('Bancha.allowMultiRecordRequests',$currentConfig);
+	}
+	
+/**
  * In the Ext JS request the name of the controller is stored as "action". We need to transform this.
  *
  */

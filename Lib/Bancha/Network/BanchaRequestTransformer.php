@@ -295,7 +295,8 @@ class BanchaRequestTransformer {
 	
 	/**
 	 * Transform a Bancha request with one data element to cake structure
-	 * otherwise just return the original response
+	 * otherwise just return the original response.
+	 * This function has no side-effects.
 	 *
 	 * @param $modelName The model name of the current request
 	 * @param $data The input request data from Bancha-ExtJS
@@ -313,7 +314,7 @@ class BanchaRequestTransformer {
 		}
 		
 		// non-form request
-		if( isset($data['data'][0]['data']) ) {
+		if( isset($data['data'][0]['data']) && !is_array($data['data'][0]['data'])) {
 			// this is standard extjs-bancha structure, transform to cake
 			$data = array(
 				$modelName => $data['data'][0]['data']
@@ -323,6 +324,26 @@ class BanchaRequestTransformer {
 				// ... so delete it
 				unset($data[$modelName]['id']);
 			}
+		} else if( isset($data['data'][0]['data']) && is_array($data['data'][0]['data'])) {
+			// looks like someone is using the store with batchActions:true
+			if(Configure::read('Bancha.allowMultiRecordRequests') != true) {
+				throw new CakeException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
+					'You are currently sending multiple records from ExtJS to CakePHP, this is probably because '.
+					'of an store proxy with batchActions:true. Please never batch records on the proxy level '.
+					'(Ext.Direct is batching them). So if you are using a store proxy please set the config '.
+					'batchActions to false.<br /> If you are sending multiple requests by purpose please set '.
+					'<i>Configure::write(\'Bancha.allowMultiRecordRequests\',true)</i> in core.php and you will '.
+					'no longer see this exception.');
+			}
+			// parse multi-request
+			$result = array();
+			foreach($data['data'][0]['data'] as $entry) {
+				$result[] = array(
+					$modelName => $entry
+				);
+			}
+			$data = $result;
+			
 		} else if( isset($data['data'])) {
 			// some data from ext to just pass through
 			$data = $data['data'];

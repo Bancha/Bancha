@@ -61,8 +61,57 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		$this->assertEquals('CakeException', $responses[0]->exceptionType);
 	}
 	
+/**
+ * Currently is is not expected that cakes gets multiple records from ext in one request.
+ * If this is happening tell the developer that he probably did an error.
+ * This exception is trown in BanchaRequestTransformer::transformDataStructureToCake()
+ *
+ * @expectedException CakeException
+ */
+	public function testMultipleRecordInputException() {
+		$this->getResultForMethod('returnTrue', array(array(
+			'data' => array(
+				array( // first
+					'id' => 1,
+					'name' => 'foo',
+				),
+				array( // second
+					'id' => 2,
+					'name' => 'bar',
+				),
+			)
+		)));
+	}
 
+	
+/**
+ * See testMultipleRecordInputException()
+ * See also BanchaRequestTransformerTest::testTransformDataStructureToCake_MultipleRecords
+ */
+	public function testDeactivatedMultipleRecordInputException() {
+		
+		// the developer can deactivate this by setting this config
+		Configure::write('Bancha.allowMultiRecordRequests',true);
+		
+		// we expect no exception
+		$this->getResultForMethod('returnTrue', array(array(
+			'data' => array(
+				array( // first
+					'id' => 1,
+					'name' => 'foo',
+				),
+				array( // second
+					'id' => 2,
+					'name' => 'bar',
+				),
+			)
+		)));
+	}
 }
+
+
+
+
 
 /**
  * DebugExceptionsController, has many errors a developer can make
@@ -78,8 +127,11 @@ class DebugExceptionsController extends ArticlesController {
 	public function getNoResult() {
 	}
 	
-	public function throwNotFoundExceptionMethod($id = null) {
-		throw new NotFoundException('Invalid article');
+/**
+ * simple test function
+ */
+	public function returnTrue() {
+		return true;
 	}
 }
 
