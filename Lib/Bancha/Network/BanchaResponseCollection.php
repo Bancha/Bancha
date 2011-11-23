@@ -6,14 +6,14 @@
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
- * @package       Bancha
- * @subpackage    Lib.Network
- * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
- * @link          http://banchaproject.org Bancha Project
- * @since         Bancha v1.0
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author        Kung Wong <kung.wong@gmail.com>
+ * @package	   Bancha
+ * @subpackage	Lib.Network
+ * @copyright	 Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link		  http://banchaproject.org Bancha Project
+ * @since		 Bancha v1.0
+ * @license	   MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author		Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author		Kung Wong <kung.wong@gmail.com>
  */
 
 App::uses('CakeResponse', 'Network');
@@ -22,7 +22,7 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 /**
  * BanchaResponseCollection
  *
- * @package    Bancha
+ * @package	Bancha
  * @subpackage Lib.Network
  */
 class BanchaResponseCollection {
@@ -69,15 +69,16 @@ class BanchaResponseCollection {
 		// only add exception information in debug mode
 		if(Configure::read('debug') > 0) {
 			$this->responses[] = array(
-				'type'		=> 'exception',
-				'message'	=> $e->getMessage(),
-				'where'		=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
-				'trace'		=> $e->getTraceAsString(),
+				'type'			=> 'exception',
+				'exceptionType'	=> get_class($e), // added by Bancha
+				'message'		=> $e->getMessage(),
+				'where'			=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
+				'trace'			=> $e->getTraceAsString(),
 			);
 		} else {
 			$this->responses[] = array(
-				'type'		=> 'exception',
-				'message'	=> __("Unknown error."),
+				'type'			=> 'exception',
+				'message'		=> __("Unknown error."),
 			);
 		}
 
