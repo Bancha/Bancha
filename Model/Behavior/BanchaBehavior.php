@@ -437,6 +437,16 @@ class BanchaBehavior extends ModelBehavior {
 		$config = $this->useOnlyDefinedFields;
 		$this->useOnlyDefinedFields = true;
 		
+		// this should never be the case, cause Bancha cannot handle validation errors currently
+		$model->set($data);
+		if(!$model->validates()) {
+			if(Configure::read('debug') > 0) {
+				print_r($model->invalidFields());
+			}
+			throw new BadRequestException("The record doesn't validate. Since Bancha can't send validation errors to the client yet please handle this in your application stack.");
+			// We expect to automatically send validation errors to the client in the right format in version 1.1
+		}
+		
 		$result = $model->save($data,$options);
 		
 		// set back
