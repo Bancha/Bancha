@@ -520,72 +520,72 @@ class BanchaCrudTest extends CakeTestCase {
 
 
 
-	/**
-	 * Test the bancha stack, especially the dispatching with a multi-request 
-	 *
-	 */
-		public function testMultiRequest() {
-			// Preparation: create article (for second request)
-			$article = new Article();
-			$article->create();
-			$article->save(array('title' => 'foo'));
-			
-			// Build a request like it looks in Ext JS.
-			$rawPostData = json_encode(array(array(
-				'action'		=> 'Article',
-				'method'		=> 'create',
-				'tid'			=> 1,
-				'type'			=> 'rpc',
-				'data'			=> array(array('data'=>array(
-					'title'			=> 'Hello World',
-					'body'			=> 'foobar',
-					'published'		=> false,
-					'user_id'		=> 1,
-				))),
-			),array(
-				'action'		=> 'Article',
-				'method'		=> 'update',
-				'tid'			=> 2,
-				'type'			=> 'rpc',
-				'data'			=> array(array('data'=>array(
-					'id'			=> $article->id,
-					'title'			=> 'foobar',
-					'published'		=> true,
-				))),
-			)));
-			$dispatcher = new BanchaDispatcher();
-			$responses = json_decode($dispatcher->dispatch(
-				new BanchaRequestCollection($rawPostData), array('return' => true)
-			));
+/**
+ * Test the bancha stack, especially the dispatching with a multi-request 
+ *
+ */
+	public function testMultiRequest() {
+		// Preparation: create article (for second request)
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+		
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'Article',
+			'method'		=> 'create',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(array('data'=>array(
+				'title'			=> 'Hello World',
+				'body'			=> 'foobar',
+				'published'		=> false,
+				'user_id'		=> 1,
+			))),
+		),array(
+			'action'		=> 'Article',
+			'method'		=> 'update',
+			'tid'			=> 2,
+			'type'			=> 'rpc',
+			'data'			=> array(array('data'=>array(
+				'id'			=> $article->id,
+				'title'			=> 'foobar',
+				'published'		=> true,
+			))),
+		)));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
 
-			// general response checks (check dispatcher, collections and transformers)
-			$this->assertEquals('Article', $responses[0]->action);
-			$this->assertEquals('create', $responses[0]->method);
-			$this->assertEquals('rpc', $responses[0]->type);
-			$this->assertEquals(1, $responses[0]->tid);
-			
-			$this->assertEquals('Article', $responses[1]->action);
-			$this->assertEquals('update', $responses[1]->method);
-			$this->assertEquals('rpc', $responses[1]->type);
-			$this->assertEquals(2, $responses[1]->tid);
-			
-			$this->assertEquals(2, count($responses));
-			
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('create', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
+		$this->assertEquals(1, $responses[0]->tid);
+		
+		$this->assertEquals('Article', $responses[1]->action);
+		$this->assertEquals('update', $responses[1]->method);
+		$this->assertEquals('rpc', $responses[1]->type);
+		$this->assertEquals(2, $responses[1]->tid);
+		
+		$this->assertEquals(2, count($responses));
+		
 
-			// test data for first request
-			$this->assertNotNull($responses[0]->result->data->id);
-			$this->assertEquals('Hello World', $responses[0]->result->data->title);
-			$this->assertEquals(false, $responses[0]->result->data->published);
-			$this->assertEquals(1, $responses[0]->result->data->user_id);
-			
-			// test data for second request
-			$this->assertEquals($article->id, $responses[1]->result->data->id);
-			$this->assertEquals('foobar', $responses[1]->result->data->title);
-			$this->assertEquals(true, $responses[1]->result->data->published);
-			
-			// Clean up operations: delete articles
-			$article->delete(); // second
-			$article->id = $responses[0]->result->data->id; // first
-			$article->delete();
-		}
+		// test data for first request
+		$this->assertNotNull($responses[0]->result->data->id);
+		$this->assertEquals('Hello World', $responses[0]->result->data->title);
+		$this->assertEquals(false, $responses[0]->result->data->published);
+		$this->assertEquals(1, $responses[0]->result->data->user_id);
+		
+		// test data for second request
+		$this->assertEquals($article->id, $responses[1]->result->data->id);
+		$this->assertEquals('foobar', $responses[1]->result->data->title);
+		$this->assertEquals(true, $responses[1]->result->data->published);
+		
+		// Clean up operations: delete articles
+		$article->delete(); // second
+		$article->id = $responses[0]->result->data->id; // first
+		$article->delete();
+	}
 }
