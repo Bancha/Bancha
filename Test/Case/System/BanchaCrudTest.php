@@ -58,7 +58,7 @@ class BanchaCrudTest extends CakeTestCase {
 	public function testAdd() {
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'create',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -98,9 +98,8 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->save(array('title' => 'foo'));
 
 		// Buld a request like it looks in Ext JS.
-		//TODO possible wrong format object->data->ARTICLE->id etc
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'update',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -123,7 +122,141 @@ class BanchaCrudTest extends CakeTestCase {
 		// Clean up operations: delete article
 		$article->delete();
 	}
+	
+/**
+ * Test the load functionality using the full stack of CakePHP components. In preparation we need to create a dummy
+ * article, which we need to delete at the end of the test case.
+ *
+ */
+	public function testLoad() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo','body' => 'la la la'));
 
+		// Buld a request like it looks in Ext JS for a form submit
+		$postData = array(
+			// articles id
+			'id'			=> $article->id,
+			
+			// ext stuff
+			'extTID'		=> 1,
+			'extAction'		=> 'Article',
+			'extMethod'		=> 'load',
+			'extType'		=> 'rpc',
+		);
+		
+		// it's no upload, so use the default way to decode the response
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection('',$postData), array('return' => true)
+		));
+		
+		// test data (expected in default ext structure)
+		$this->assertEquals($article->id, $responses[0]->result->data->id);
+		$this->assertEquals('foo', $responses[0]->result->data->title); // expect record data
+		$this->assertEquals('la la la', $responses[0]->result->data->body); // expect record data
+		$this->assertEquals(1, count($responses));
+		$this->assertEquals(1, $responses[0]->tid);
+		
+		// Clean up operations: delete article
+		$article->delete();
+	}
+/**
+ * Test the submit functionality using the full stack of CakePHP components. In preparation we need to create a dummy
+ * article, which we need to delete at the end of the test case.
+ *
+ */
+	public function testSubmit() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+
+		// Buld a request like it looks in Ext JS for a form submit
+		$postData = array(
+			// articles data
+			'id'			=> $article->id,
+			'body'			=> 'changed',
+			
+			// ext stuff
+			'extTID'		=> 1,
+			'extAction'		=> 'Article',
+			'extMethod'		=> 'submit',
+			'extType'		=> 'rpc',
+		);
+		
+		// it's no upload, so use the default way to decode the response
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection('',$postData), array('return' => true)
+		));
+		
+		// test data (expected in default ext structure)
+		$this->assertEquals($article->id, $responses[0]->result->data->id);
+		$this->assertEquals('foo', $responses[0]->result->data->title); // expect the full record in the answer
+		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
+		$this->assertEquals(false, $responses[0]->result->data->published);
+		$this->assertEquals(1, count($responses));
+		$this->assertEquals(1, $responses[0]->tid);
+
+		// test if the data really got changed
+		$article->read();
+		$this->assertEquals('changed', $article->data['Article']['body']);
+		
+		// Clean up operations: delete article
+		$article->delete();
+	}
+/**
+ * Test the submit functionality using the full stack of CakePHP components. In preparation we need to create a dummy
+ * article, which we need to delete at the end of the test case.
+ *
+ */
+	public function testSubmit_WithUpload() {
+		// Preparation: create article
+		$article = new Article();
+		$article->create();
+		$article->save(array('title' => 'foo'));
+
+		// Buld a request like it looks in Ext JS for a form submit
+		$postData = array(
+			// articles data
+			'id'			=> $article->id,
+			'body'			=> 'changed',
+			
+			// ext stuff
+			'extTID'		=> 1,
+			'extAction'		=> 'Article',
+			'extMethod'		=> 'submit',
+			'extType'		=> 'rpc',
+			'extUpload'		=> true,  // <----------------- this time it's an upload
+		);
+		$dispatcher = new BanchaDispatcher();
+		$result = $dispatcher->dispatch(
+			new BanchaRequestCollection('',$postData), array('return' => true)
+		);
+
+		// the response should be surounded by some html (because of the upload)
+		$this->assertEquals(1,preg_match("/\<html\>\<body\>\<textarea\>(.*)\<\/textarea\>\<\/body\>\<\/html\>/",$result));
+
+		// decode by excluding the html part
+		$responses = json_decode(substr($result,22,-25));
+		
+		// test data (expected in default ext structure)
+		$this->assertEquals($article->id, $responses[0]->result->data->id);
+		$this->assertEquals('foo', $responses[0]->result->data->title); // expect the full record in the answer
+		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
+		$this->assertEquals(false, $responses[0]->result->data->published);
+		$this->assertEquals(1, count($responses));
+		$this->assertEquals(1, $responses[0]->tid);
+
+		// test if the data really got changed
+		$article->read();
+		$this->assertEquals('changed', $article->data['Article']['body']);
+
+		// Clean up operations: delete article
+		$article->delete();
+	}
 /**
  * Test deleting an entity using the full stack of CakePHP components. We need to create a test article, which we
  * need to delete at the end of the test case.
@@ -137,7 +270,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// Let's begin with the real test.
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -171,7 +304,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -204,7 +337,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// Test page two
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 2,
 			'type'			=> 'rpc',
@@ -253,7 +386,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// Build a HTTP request that looks like in Ext JS.
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
@@ -274,7 +407,7 @@ class BanchaCrudTest extends CakeTestCase {
 		// now look for the other one
 		// Build a HTTP request that looks like in Ext JS.
 		$rawPostData = json_encode(array(
-			'action'		=> 'Articles',
+			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 2,
 			'type'			=> 'rpc',
