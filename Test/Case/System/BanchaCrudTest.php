@@ -78,7 +78,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('Hello World', $responses[0]->result->data->title);
 		$this->assertEquals(false, $responses[0]->result->data->published);
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('create', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
 
 		// Clean up operations: delete article
 		$article = new Article();
@@ -117,7 +123,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals($article->id, $responses[0]->result->data->id);
 		$this->assertEquals('foobar', $responses[0]->result->data->title);
 		$this->assertEquals(true, $responses[0]->result->data->published);
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('update', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
 
 		// Clean up operations: delete article
 		$article->delete();
@@ -156,8 +168,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals($article->id, $responses[0]->result->data->id);
 		$this->assertEquals('foo', $responses[0]->result->data->title); // expect record data
 		$this->assertEquals('la la la', $responses[0]->result->data->body); // expect record data
-		$this->assertEquals(1, count($responses));
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('load', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
 		
 		// Clean up operations: delete article
 		$article->delete();
@@ -196,9 +213,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals($article->id, $responses[0]->result->data->id);
 		$this->assertEquals('foo', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
-		$this->assertEquals(false, $responses[0]->result->data->published);
-		$this->assertEquals(1, count($responses));
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('submit', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
 
 		// test if the data really got changed
 		$article->read();
@@ -247,8 +268,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('foo', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
 		$this->assertEquals(false, $responses[0]->result->data->published);
-		$this->assertEquals(1, count($responses));
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('submit', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
 
 		// test if the data really got changed
 		$article->read();
@@ -281,8 +307,18 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
+		// test result
 		$this->assertEquals(true, $responses[0]->result->success);
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('destroy', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
+		
+		// test if the record really got deleted
+		$this->assertEquals(false, $article->exists());
 	}
 
 /**
@@ -318,7 +354,7 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
-		// test
+		// test data
 		
 		// only first and second element should be loaded
 		$this->assertEquals(2, count($responses[0]->result->data));
@@ -327,11 +363,13 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		// the counter should be 3
 		$this->assertEquals(3, $responses[0]->result->total);
-		
-		// tid should be passed through
+
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('read', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
-
-
+		$this->assertEquals(1, count($responses));
 
 
 
@@ -351,7 +389,7 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
-		// test
+		// test data
 
 		// only third element should be loaded
 		$this->assertEquals(1, count($responses[0]->result->data));
@@ -397,11 +435,18 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		// test
+		// test data
 		$this->assertEquals(1, count($responses[0]->result->data));
 		$this->assertEquals($article1->id, $responses[0]->result->data->id);
 		$this->assertEquals('foo', $responses[0]->result->data->title);
+		
+		
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('read', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
 		
 		
 		// now look for the other one
