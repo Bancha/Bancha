@@ -485,7 +485,7 @@ class BanchaBehavior extends ModelBehavior {
 	
 	public function afterDelete() {
 		// if no exception was thrown so far the request was successfull
-		$this->result = array('success'=>true);
+		$this->result = true;
 	}
 	
 /**

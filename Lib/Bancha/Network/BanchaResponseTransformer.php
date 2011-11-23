@@ -59,10 +59,11 @@ class BanchaResponseTransformer {
 	 */
 	public static function transformDataStructureToExt($modelName,$response) {
 		
-		if($response===false) {
-			// this was an unsuccessfull operation, return that to ext
+		// understand primitive responses
+		if($response===true || $response===false) {
+			// this was an un-/successfull operation, return that to ext
 			return array(
-				'success' => false,
+				'success' => $response,
 			);
 		}
 		
