@@ -57,7 +57,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
 				   ->addResponse(2, new CakeResponse($response2), $request2)
 				   ->addException(3, $response3, $request3);
-		// getResponses() is an array with JSON objects.
+		// getResponses() is an CakeResponse with JSON as body.
 		$actualResponse = json_decode($collection->getResponses()->body());
 
 		// Successfull response
@@ -87,20 +87,20 @@ class BanchaResponseCollectionTest extends CakeTestCase {
  *
  */
 	public function testGetResponses_extUpload() {
-		//TODO fix encoding, e.g. remove json_encode
-		$this->markTestSkipped("encoding problems with json response body");
 		
 		$response1 = array(
 			'body'	=> array('message' => 'Hello World'),
 		);
 		$request = new CakeRequest();
-		$request->addParams(array('extUpload' => 1));
-
+		$request->addParams(array('controller' => 'foo', 'action' => 'bar', 'extUpload' => true));
+		
 		$collection = new BanchaResponseCollection();
-		$collection->addResponse(1, new CakeResponse($response1), $request);
+		$collection->addResponse(2, new CakeResponse($response1), $request);
 
-		$this->assertEquals('<html><body><textarea>' . json_encode($response1['body']) . '</textarea></body></html>',
-				$collection->getResponses()->body());
+		$expected = '<html><body><textarea>[{"type":"rpc","tid":2,"action":"foo","method":"bar",'.
+					'"result":'.json_encode($response1['body']).',"extUpload":true}]</textarea></body></html>';
+		
+		$this->assertEquals($expected, $collection->getResponses()->body());
 	}
 
 }
