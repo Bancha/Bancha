@@ -60,7 +60,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		// action -> controller
 		// controller should be pluralized
 		$this->assertEquals($requests[0]['controller'], 'Tests');
-		// method -> actio AND "create" -> "add"
+		// method -> action AND "create" -> "add"
 		$this->assertEquals($requests[0]['action'], 'add');
 
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
@@ -126,7 +126,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 	function testGetRequestsForm() {
 		$postData = array(
 			'extAction'	=> 'Test',
-			'extMethod'	=> 'update',
+			'extMethod'	=> 'submit',
 			'extTID'	=> 1,
 			'id'		=> 42,
 			'title'		=> 'Hello World'
@@ -144,23 +144,19 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$this->assertTrue($requests[0]->is('post'));
 
 		// action -> controller
-		//???
-		$this->assertEquals($requests[0]['controller'], 'Test');
-		// method -> action AND "update" -> "edit"
+		$this->assertEquals($requests[0]['controller'], 'Tests');
+		// method -> action AND "submit" + id -> "edit"
 		$this->assertEquals($requests[0]['action'], 'edit');
 
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
 		$this->assertTrue(isset($requests[0]['pass']));
 		$this->assertTrue(isset($requests[0]['named']));
-
-		//TODO fix this test
-		$this->markTestIncomplete("adapt test to new datastructure");
 		
 		// ID needs to be added to the 'pass' array.
 		$this->assertEquals(42, $requests[0]['pass']['id']);
 
 		// Title needs to be added to the data array.
-		$this->assertEquals('Hello World', $requests[0]->data('title'));
+		$this->assertEquals('Hello World', $requests[0]->data('Test.title'));
 
 		// TID is set?
 		$this->assertEquals(1, $requests[0]['tid']);
@@ -168,12 +164,11 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 
 /**
  * Tests if the extUpload parameter is correctly passed through the CakeRequest.
- *
  */
 	public function testGetExtUploadForm() {
 		$postData = array(
 			'extAction'	=> 'Test',
-			'extMethod'	=> 'update',
+			'extMethod'	=> 'submit',
 			'extTID'	=> 1,
 			'id'		=> 42,
 			'title'		=> 'Hello World',
