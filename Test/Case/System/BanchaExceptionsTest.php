@@ -30,18 +30,24 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  * @category      Tests
  */
 class BanchaExceptionsTest extends CakeTestCase {
-
+	private $standardDebugLevel;
+	
+	
+	public function setUp() {
+		 $this->standardDebugLevel = Configure::read('debug');
+	}
+	
 /**
  * Tests exception handling with debug mode 2.
  *
  */
-	public function testExceptionDebugTwo() {
+	public function testExceptionDebugMode() {
 
 		Configure::write('debug', 2);
 
 		$rawPostData = json_encode(array(
 			'action'		=> 'ArticlesException',
-			'method'		=> 'view',
+			'method'		=> 'throwExceptionMethod',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(
@@ -56,9 +62,12 @@ class BanchaExceptionsTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 
+		// set debug level back to normal
+		Configure::write('debug', $this->standardDebugLevel);
+		
+		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
-		// $this->assertNotNull($responses[0]->data);
-
+		$this->assertEquals('Exception', $responses[0]->exceptionType); // this is the class anme, see bottom
 	}
 
 /**
@@ -67,13 +76,13 @@ class BanchaExceptionsTest extends CakeTestCase {
  * @return void
  * @author Florian Eckerstorfer
  */
-	public function testExceptionDebugZero() {
+	public function testExceptionProductionMode() {
 
 		Configure::write('debug', 0);
 
 		$rawPostData = json_encode(array(
 			'action'		=> 'ArticlesException',
-			'method'		=> 'view',
+			'method'		=> 'throwExceptionMethod',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(
@@ -87,8 +96,14 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
-		$this->assertEquals(count($responses), 0);
+		
+		// set debug level back to normal
+		Configure::write('debug', $this->standardDebugLevel);
+		
+		// show that there was an exception, but with no information!
+		$this->assertEquals('exception', $responses[0]->type);
+		$this->assertFalse(isset($responses[0]->exceptionType)); // don't send exception info
+		$this->assertEquals(__('Unknown error.',true),$responses[0]->message); // don't give usefull info to possible hackers
 	}
 
 /**
@@ -97,48 +112,31 @@ class BanchaExceptionsTest extends CakeTestCase {
  */
 	public function testExceptions() {
 		
-		$this->markTestSkipped();
-
 		Configure::write('debug', 2);
 
 		// Create some requests.
 		$rawPostData = json_encode(array(
 			array(
-				'action'		=> 'ArticlesException',
-				'method'		=> 'view',
+				'action'		=> 'ThisControllerDoesNotExist',
+				'method'		=> 'index',
 				'tid'			=> 1,
 				'type'			=> 'rpc',
-				'data'			=> array(
-					'title'			=> 'Hello World',
-					'body'			=> 'foobar',
-					'published'		=> false,
-					'user_id'		=> 1,
-				),
+				'data'			=> array(),
 			),
 			array(
 				'action'		=> 'ArticlesException',
-				'method'		=> 'view',
+				'method'		=> 'throwNotFoundExceptionMethod',
 				'tid'			=> 2,
 				'type'			=> 'rpc',
-				'data'			=> array(
-					'title'			=> 'Hello World1',
-					'body'			=> 'foobar1',
-					'published'		=> false,
-					'user_id'		=> 2,
-				),
+				'data'			=> array(),
 			),
 			array(
 				'action'		=> 'ArticlesException',
-				'method'		=> 'view',
+				'method'		=> 'throwExceptionMethod',
 				'tid'			=> 3,
 				'type'			=> 'rpc',
-				'data'			=> array(
-					'title'			=> 'Hello World2',
-					'body'			=> 'foobar2',
-					'published'		=> false,
-					'user_id'		=> 1,
-				),
-			)
+				'data'			=> array(),
+			),
 		));
 
 		// Create dispatcher and dispatch requests.
@@ -146,21 +144,28 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
+	
+	
+		// set debug level back to normal
+		Configure::write('debug', $this->standardDebugLevel);
+	
 		$this->assertEquals(3, count($responses), 'Three requests result in three responses.');
 
+		// controller class not found
 		$this->assertEquals('exception', $responses[0]->type);
-		$this->assertEquals('Invalid article [EXCEPTION]', $responses[0]->message);
-		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
-				$responses[0]->where, 'message');
-
+		$this->assertEquals('MissingControllerException', $responses[0]->exceptionType);
+		$this->assertEquals('Controller class ThisControllerDoesNotExistsController could not be found.', $responses[0]->message);
+		$this->assertTrue(!empty($responses[0]->where), 'message');
+		
+		// application controller method exception catched
 		$this->assertEquals('exception', $responses[1]->type);
-		$this->assertEquals('Invalid article [EXCEPTION]', $responses[1]->message);
-		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
-				$responses[1]->where, 'message');
+		$this->assertEquals('NotFoundException', $responses[1]->exceptionType);
+		$this->assertEquals('Invalid article', $responses[1]->message);
 
+		// another application level error
 		$this->assertEquals('exception', $responses[2]->type);
-		$this->assertEquals('Invalid article [EXCEPTION]', $responses[2]->message);
+		$this->assertEquals('Exception', $responses[2]->exceptionType);
+		$this->assertEquals('Method specific error message, see bottom of this test', $responses[2]->message);
 		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
 				$responses[2]->where, 'message');
 	}
@@ -173,17 +178,20 @@ class BanchaExceptionsTest extends CakeTestCase {
  * @package       Bancha
  * @category      TestFixtures
  */
-class ArticlesExceptionController extends ArticlesController {
+class ArticlesExceptionsController extends ArticlesController {
 
 /**
- * view method
+ * throwExceptionMethod method
  *
  * @param string $id
  * @return void
  */
-	public function view($id = null) {
+	public function throwExceptionMethod($id = null) {
 		// we store the current line to test it later.
-		$GLOBALS['EXCEPTION_LINE'] = __LINE__; throw new Exception(__('Invalid article [EXCEPTION]'));
+		$GLOBALS['EXCEPTION_LINE'] = __LINE__; throw new Exception('Method specific error message, see bottom of this test');
+	}
+	public function throwNotFoundExceptionMethod($id = null) {
+		throw new NotFoundException('Invalid article');
 	}
 }
 
