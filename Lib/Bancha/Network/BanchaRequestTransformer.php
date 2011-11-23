@@ -235,14 +235,14 @@ class BanchaRequestTransformer {
  * @return array Array with 'pass' parameters
  */
 	public function getPassParams() {
-
+		
 		$pass = array();
 		// normal requests
-		if (isset($this->data[0]['data']['id'])) {
-			$pass['id'] = $this->data[0]['data']['id'];
-			unset($this->data[0]['data']['id']);
+		if (isset($this->data['data'][0]['data']['id'])) {
+			$pass['id'] = $this->data['data'][0]['data']['id'];
+			unset($this->data['data'][0]['data']['id']);
 		// form upload requests
-		} else if ($this->isFormRequest && isset($this->data['id'])) {
+		} else if ($this->isFormRequest() && isset($this->data['id'])) {
 			$pass['id'] = $this->data['id'];
 			unset($this->data['id']);
 			$this->isFormRequest = true;

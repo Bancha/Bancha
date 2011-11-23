@@ -46,7 +46,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			'extAction'		=> 'Test',
 		));
 		$this->assertNotNull($transformer->getController());
-		$this->assertEquals('Test', $transformer->getController());
+		$this->assertEquals('Tests', $transformer->getController());
 	}
 
 /**
@@ -73,10 +73,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 /**
  * Same as {@see testGetAction()} but for form requests.
  *
- * @dataProvider getActionProvider
+ * @dataProvider getActionFormProvider
  */
 	public function testGetActionForm($extAction, $extData, $cakeAction) {
-		$this->markTestSkipped("can't extract id");
 		$transformer = new BanchaRequestTransformer(array_merge(
 			array('extMethod'		=> $extAction),
 			$extData
@@ -112,7 +111,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
- * If the Ext JS request contains an URL, we need to extract is from the request, because we need to pass it to the
+ * If the Ext JS request contains an URL, we need to extract it from the request, because we need to pass it to the
  * Constructor of CakeRequest.
  *
  */
@@ -131,10 +130,10 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  *
  */
 	public function testGetPassParams() {
-		$input = array(array(
+		$input = array(
 				'method'	=> 'update',
-				'data'		=> array('id' => 42),
-		));
+				'data'		=> array(array('data'=>array('id' => 42))),
+		);
 		$transformer = new BanchaRequestTransformer($input);
 		$this->assertEquals(array('id' => 42), $transformer->getPassParams());
 	}
@@ -145,7 +144,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function testGetPassParamsForm() {
 		$transformer = new BanchaRequestTransformer(array(
+			'extAction'	=> 'Test',
 			'extMethod'	=> 'update',
+			'extTID'	=> 'update',
 			'id' => 42,
 		));
 		$this->assertEquals(array('id' => 42), $transformer->getPassParams());
@@ -160,7 +161,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	public function testGetPaging($extData, $cakePaginate) {
 		$data = array(
 			'action'	=> 'Test',
-			'data'		=> $extData,
+			'data'		=> array($extData),
 		);
 
 		$transformer = new BanchaRequestTransformer($data);
@@ -235,7 +236,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	public function testGetCleanedDataArrayForm() {
 		$data = array(
 			'extAction'	=> 'Test',
-			'extMethod'	=> 'read',
+			'extMethod'	=> 'load',
 			'id'		=> 42,
 			'foo'		=> 'bar',
 			'extTID'	=> 1,
@@ -247,7 +248,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		$this->assertFalse(isset($data['action']));
 		$this->assertFalse(isset($data['method']));
 		$this->assertFalse(isset($data['id']));
-		$this->assertEquals('bar', $data['foo']);
+		$this->assertEquals('bar', $data['Test']['foo']);
 		$this->assertFalse(isset($data['extTID']));
 		$this->assertFalse(isset($data['extUpload']));
 	}
@@ -258,11 +259,25 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function getActionProvider() {
 		return array(
-			array('create', array(), 'add'),
-			array('update', array('id' => 42), 'edit'),
-			array('destroy', array('id' => 42), 'delete'),
-			array('read', array('id' => 42), 'view'),
-			array('read', array(), 'index'),
+			array('create',  array(),                                 'add'),
+			array('update',  array(array('data'=>array('id' => 42))), 'edit'),
+			array('destroy', array(array('data'=>array('id' => 42))), 'delete'),
+			array('read',    array(array('data'=>array('id' => 42))), 'view'),
+			array('read',    array(),                                 'index'),
+			array('special', array(),                                 'special'), // non-standard crud actions stay the same
+		);
+	}
+	
+/**
+ * Provides the action names from Ext JS and CakePHP for use in testGetActionForm().
+ *
+ */
+	public function getActionFormProvider() {
+		return array(
+			array('load',    array('id' => 42),                       'view'),
+			array('submit',  array(),                                 'add'),
+			array('submit',  array('id' => 42),                       'edit'),
+			array('special', array(),                                 'special'), // non-standard crud actions stay the same
 		);
 	}
 
@@ -275,9 +290,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			// Default values
 			array(
 				array(),
-				array(
+				array( // defaults
 					'page'		=> 1,
-					'limit'		=> 25,
+					'limit'		=> 500,
 					'order'		=> array(),
 				),
 			),
