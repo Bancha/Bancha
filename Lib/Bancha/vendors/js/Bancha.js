@@ -2118,10 +2118,10 @@ Ext.define('Bancha', {
                     form.submit({
                         waitMsg: msg,
                         success: function(form, action) {
-                            Ext.MessageBox.alert('Success', action.result.msg);
+                            Ext.MessageBox.alert('Success', action.result.msg || 'Successfully saved data.');
                         },
                         failure: function(form, action) {
-                            Ext.MessageBox.alert('Failed', action.result.msg);
+                            Ext.MessageBox.alert('Failed', action.result.msg || 'Count not save data, unknown error.');
                         }
                     });
                 }
