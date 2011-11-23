@@ -409,6 +409,45 @@ class BanchaCrudTest extends CakeTestCase {
 	}
 
 /**
+ * Test if the whole stack also works if no results for index exist
+ */
+	public function testIndex_Empty() {
+
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'Article',
+			'method'		=> 'read',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(array(
+				'page'			=> 1,
+				'limit'			=> 10,
+			)),
+		)));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		// test empty data
+		$this->assertTrue(is_array($responses[0]->result->data));
+		$this->assertEquals(0, count($responses[0]->result->data));
+		
+		// test success
+		$this->assertTrue($responses[0]->result->success);
+
+		// the counter should be 0
+		$this->assertEquals(0, $responses[0]->result->total);
+
+		// general response checks (check dispatcher, collections and transformers)
+		$this->assertEquals('Article', $responses[0]->action);
+		$this->assertEquals('read', $responses[0]->method);
+		$this->assertEquals('rpc', $responses[0]->type);
+		$this->assertEquals(1, $responses[0]->tid);
+		$this->assertEquals(1, count($responses));
+	}
+
+/**
  * Tests the view action. We need to create an article, which we need to delete after the test.
  *
  */

@@ -87,7 +87,10 @@ class BanchaResponseTransformer {
 				'data' => $data
 			);
 			
-		} else if( isset($response['records']['0'][$modelName]) ) {
+		} else if( isset($response['records']) && 
+				(isset($response['records']['0'][$modelName]) || 							// paginagted records
+				(is_array($response['records']) && isset($response['count']) 
+											&& $response['count']==0))) {         // pagination with zero records
 			// this is a paging response
 			
 			// the records have standard cake structure, so get them
@@ -96,7 +99,7 @@ class BanchaResponseTransformer {
 			// create response including the total number of records
 			$response = array(
 				'success' => $sucess,
-				'data'  => $data['data'],
+				'data'  => isset($data['data']) ? $data['data'] : $data, // second option is for empty responses
 				'total' => $response['count']
 			);
 		}
