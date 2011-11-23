@@ -94,7 +94,7 @@ class BanchaResponseCollection {
 		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
 		if (isset($this->responses['0']['extUpload']) && $this->responses['0']['extUpload']) {
 			return new CakeResponse(array(
-				'body'		=>	'<html><body><textarea>' . json_encode($this->responses['0']) . '</textarea></body></html>',
+				'body'		=>	'<html><body><textarea>' . json_encode($this->responses) . '</textarea></body></html>',
 				'status'	=> 200,
 				'type'		=> 'text/html',
 				'charset'	=> 'utf-8',
