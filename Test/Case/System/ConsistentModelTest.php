@@ -51,51 +51,58 @@ class ConsistentModelTest extends CakeTestCase {
  *
  */
 	public function testEditEditOneRequest() {
-		$this->markTestSkipped();
 		// Preparation: create article
 		$article = new Article();
 		$article->create();
 		$article->save(array('title' => 'foo'));
-
+	
 		$dispatcher = new BanchaDispatcher();
-
 		$client_id = uniqid();
+		$article_id = $article->id;
 
+		// test
 		$rawPostData = json_encode(array(
 			array(
-				'action'		=> 'Articles',
+				'action'		=> 'Article',
 				'method'		=> 'update',
 				'tid'			=> 2,
 				'type'			=> 'rpc',
-				'data'			=> array(
+				'data'			=> array(array('data' => array(
 					'__bcid'		=> $client_id,
-					'id'			=> $article->id,
+					'id'			=> $article_id,
 					'title'			=> 'foobar',
 					'published'		=> true,
-				),
+				))),
 			),
 			array(
-				'action'		=> 'Articles',
+				'action'		=> 'Article',
 				'method'		=> 'update',
 				'tid'			=> 1,
 				'type'			=> 'rpc',
-				'data'			=> array(
+				'data'			=> array(array('data' => array(
 					'__bcid'		=> $client_id,
-					'id'			=> $article->id,
+					'id'			=> $article_id,
 					'title'			=> 'barfoo',
 					'published'		=> true,
-					),
+				))),
 			),
 		));
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
-		$data = $article->read(null, $article->id);
+		
+		// check that both requests got executed successfully
+		$this->assertEquals('barfoo',$responses[0]->result->data->title);
+		$this->assertEquals('foobar',$responses[1]->result->data->title);
+		
+		// check that record was changed correctly
+		$article = ClassRegistry::init('Article');
+		$data = $article->read(null, $article_id);
 		$this->assertEquals('foobar', $data['Article']['title']);
-
-		// Clean up operations: delete article
-		$article->delete();
+		ClassRegistry::flush();
+		
+		// clean data
+		$article->delete($article_id);
 	}
 
 /**
@@ -104,8 +111,8 @@ class ConsistentModelTest extends CakeTestCase {
  *
  */
 	public function testEditEditMultipleRequests() {
+		$this->markTestSkipped("Consistancy is not yet fully implemented.");
 		
-		$this->markTestSkipped();
 		// Preparation: create article
 		$article = new Article();
 		$article->create();

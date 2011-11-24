@@ -42,26 +42,7 @@ class BanchaDispatcher {
 
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
-			// Ensure consitency if Client ID is given.
-			$ensure_consitency = false;
 			$skip_request = false;
-			if ($request['client_id']) {
-				$ensure_consitency = true;
-			}
-			if ($ensure_consitency) {
-				$current_tid = null;
-				$client_file = TMP . 'bancha-clients/' . $request['client_id'] . '.txt';
-				if (file_exists($client_file)) {
-					$current_tid = trim(file_get_contents($client_file));
-				}
-
-				if ($current_tid && $request['tid'] >= $current_tid) {
-					$skip_request = true;
-				}
-
-				$current_tid = $request['tid'];
-				file_put_contents($client_file, $current_tid);
-			}
 
 			if (!$skip_request) {
 				// Call dispatcher for the given CakeRequest.
@@ -78,11 +59,6 @@ class BanchaDispatcher {
 					$collection->addException($request['tid'], $e, $request);
 				} // try catch
 			} // if (!$skip_request)
-
-			if ($ensure_consitency) {
-				// Remove current TID from client file in order to allow execution of next request from this client.
-				file_put_contents($client_file, '');
-			}
 		} // foreach
 
 		// Combine the responses and return or output them.
