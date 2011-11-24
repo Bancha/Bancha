@@ -40,9 +40,9 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$rawPostData = json_encode(array(
 			'action'	=> 'Test',
 			'method'	=> 'create',
-			'data'		=> array(
+			'data'		=> array(array('data'=>array(
 				'__bcid'		=> $client_id,
-			),
+			))),
 			'type'		=> 'rpc',
 			'tid'		=> 1,
 		));
@@ -71,6 +71,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		// TID is set?
 		$this->assertEquals(1, $requests[0]['tid']);
 
+		// consistency id is recognized?
 		$this->assertEquals($client_id, $requests[0]['client_id']);
 	}
 
