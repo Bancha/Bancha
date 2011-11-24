@@ -14,6 +14,7 @@
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Kung Wong <kung.wong@gmail.com>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */

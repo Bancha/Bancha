@@ -14,8 +14,7 @@
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- * @author        Kung Wong <kung.wong@gmail.com>
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');

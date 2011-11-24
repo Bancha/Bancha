@@ -13,6 +13,7 @@
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
 App::uses('Inflector', 'Utility');
