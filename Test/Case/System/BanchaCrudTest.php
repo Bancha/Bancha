@@ -47,7 +47,7 @@ class BanchaCrudTest extends CakeTestCase {
 	 * Please make sure that the project default database is empty!
 	 */
 	public function testTestSetUp() {
-		$controller = new ArticlesController();
+		$controller = new ArticlesController(); // this also makes sure that the article class is already loaded
 		$controller->loadModel("User");
 		$this->assertEquals(0,count($controller->User->find('all')),"\n\n\n\nPlease make sure that the project default database User table is empty!\n\n\n\n");
 		$this->assertEquals(0,count($controller->Article->find('all')),"\n\n\n\nPlease make sure that the project default database Article table is empty!\n\n\n\n");
@@ -454,7 +454,6 @@ class BanchaCrudTest extends CakeTestCase {
  */
 	public function testView() {
 		// Preparation: create articles
-		$articleForCake = new Article(); // quite strange, but cake seems to use this object!???
 		$article1 = new Article();
 		$article1->create();
 		$this->assertTrue(!!$article1->save(array('title' => 'foo')));
@@ -530,6 +529,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$article = new Article();
 		$article->create();
 		$article->save(array('title' => 'foo'));
+		$article_id = $article->id;
 		
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -549,7 +549,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 2,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array(
-				'id'			=> $article->id,
+				'id'			=> $article_id,
 				'title'			=> 'foobar',
 				'published'		=> true,
 			))),
@@ -580,13 +580,12 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
 		
 		// test data for second request
-		$this->assertEquals($article->id, $responses[1]->result->data->id);
+		$this->assertEquals($article_id, $responses[1]->result->data->id);
 		$this->assertEquals('foobar', $responses[1]->result->data->title);
 		$this->assertEquals(true, $responses[1]->result->data->published);
 		
 		// Clean up operations: delete articles
-		$article->delete(); // second
-		$article->id = $responses[0]->result->data->id; // first
-		$article->delete();
+		$article->delete($responses[0]->result->data->id);
+		$article->delete($article_id);
 	}
 }
