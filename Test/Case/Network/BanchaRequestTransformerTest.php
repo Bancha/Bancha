@@ -257,9 +257,12 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function testGetClientId() {
 		$transformer = new BanchaRequestTransformer(array(
-			'data'		=> array(
-				'__bcid'	=> '123456',
-			),
+			'data' => array(array(
+				'data' => array(
+					'__bcid' => '123456',
+					'other'  => 'recordFields',
+				),
+			)),
 		));
 		$this->assertNotNull($transformer->getClientId());
 		$this->assertEquals('123456', $transformer->getClientId());

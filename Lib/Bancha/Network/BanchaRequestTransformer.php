@@ -221,9 +221,9 @@ class BanchaRequestTransformer {
 		if (null != $this->client_id) {
 			return $this->client_id;
 		}
-		if (isset($this->data['data']['__bcid'])) {
-			$this->client_id = $this->data['data']['__bcid'];
-			unset($this->data['data']['__bcid']);
+		if (isset($this->data['data'][0]['data']['__bcid'])) {
+			$this->client_id = $this->data['data'][0]['data']['__bcid'];
+			unset($this->data['data'][0]['data']['__bcid']);
 		}
 		return $this->client_id;
 	}
