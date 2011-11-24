@@ -60,12 +60,12 @@ $rawPostData = json_encode(array(
 		'method'		=> 'update',
 		'tid'			=> $tid,
 		'type'			=> 'rpc',
-		'data'			=> array(
+		'data'			=> array(array('data'=>array(
 			'__bcid'		=> $client_id,
 			'id'			=> $article_id,
 			'title'			=> $title,
 			'published'		=> true,
-		),
+		))),
 	),
 ));
 $responses = json_decode($dispatcher->dispatch(
