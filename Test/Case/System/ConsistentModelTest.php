@@ -52,6 +52,7 @@ class ConsistentModelTest extends CakeTestCase {
  *
  */
 	public function testEditEditOneRequest() {
+		$this->markTestSkipped("Consistancy is not yet implemented.");
 		// Preparation: create article
 		$article = new Article();
 		$article->create();
@@ -112,7 +113,7 @@ class ConsistentModelTest extends CakeTestCase {
  *
  */
 	public function testEditEditMultipleRequests() {
-		$this->markTestSkipped("Consistancy is not yet fully implemented.");
+		$this->markTestSkipped("Consistancy is not yet implemented.");
 		
 		// Preparation: create article
 		$article = new Article();
