@@ -42,10 +42,10 @@ class BanchaController extends BanchaAppController {
 	 *
 	 * @var array
 	 */
-	public $map = array(
+	public $mapCrud = array(
 			'index' => array('getAll', 0),
-			'view' => array('read', 1),
 			'add' => array('create', 1),
+			'view' => array('read', 1),
 			'edit' => array('update', 1),
 			'delete' => array('destroy', 1)
 	);
@@ -131,13 +131,19 @@ class BanchaController extends BanchaAppController {
 			$cont = Inflector::singularize($cont);
 			$API['actions'][$cont] = array();
 			//TODO check if methods exist
-			foreach( $this->map as $key => $value) {
+			foreach( $this->mapCrud as $key => $value) {
 				if (array_search($key, $methods) !== false) {
 					array_push($API['actions'][$cont], array('name' => $value[0],'len' => $value[1]));
 				};
 			}
-			//TODO find better way to implement formhandler
-			array_push($API['actions'][$cont], array('name' => 'submit','len' => 1, 'formHandler'=> true));
+			
+			// form handler functions
+			if ((array_search('index', $methods) !== false)  || (array_search('read', $methods) !== false)) {
+				array_push($API['actions'][$cont], array('name' => 'load','len' => 1, 'formHandler'=> true));
+			}
+			if ((array_search('add', $methods) !== false)  || (array_search('edit', $methods) !== false)) {
+				array_push($API['actions'][$cont], array('name' => 'submit','len' => 1, 'formHandler'=> true));
+			}
 		}
 
 		// add Bancha controller functions
