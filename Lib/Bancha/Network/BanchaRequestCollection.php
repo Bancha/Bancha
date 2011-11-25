@@ -92,7 +92,7 @@ class BanchaRequestCollection {
 				$requests[$i]['plugin']			= null;
 				// bancha-specific
 				$requests[$i]['tid']			= $transformer->getTid();
-				$requests[$i]['extUpload']		= $transformer->getExtUpload();
+				$requests[$i]['extUpload']		= false; // quick fix disabled
 				$requests[$i]['client_id']		= $transformer->getClientId();
 				$requests[$i]['isFormRequest']	= $transformer->isFormRequest();
 				$requests[$i]['isBancha']		= true; // additional property for cleaner controller syntax
