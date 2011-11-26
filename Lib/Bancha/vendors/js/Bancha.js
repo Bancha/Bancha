@@ -2391,7 +2391,7 @@ Ext.define('Bancha', {
                     loadFn = function(component,options) {
                         component.load({
                             params: {
-                                id: recordId
+                                data: { data: { id:recordId } } // bancha expects it this way
                             }
                         });
                     };
