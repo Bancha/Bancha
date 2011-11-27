@@ -12,7 +12,7 @@
  * @since         Bancha v1.0 // TODO vom Precompiler ausfuellen lassen
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @version       0.0.1 // TODO vom Precompiler ausfuellen lassen
+ * @version       0.9.0 // TODO vom Precompiler ausfuellen lassen
  *
  * For more information go to http://banchaproject.org 
  */
@@ -415,11 +415,17 @@ Ext.define('Bancha', {
     /* End Definitions */
     
     
+	/**
+	 * @property
+	 * This property only exists in the debug version to indicate 
+	 * to jasmine tests that this is a debug version
+	 */
+	debugVersion: true,
     /**
      * @property
      * Bancha Project version
      */
-    version: '0.0.1',
+    version: '0.9.0',
     /**
      * @property
      * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')  
