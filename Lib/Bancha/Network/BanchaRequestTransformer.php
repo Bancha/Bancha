@@ -125,8 +125,8 @@ class BanchaRequestTransformer {
  * - create    -> add
  * - update    -> edit
  * - destroy   -> delete
- * - read/load -> view (if an ID is provided in the Data array).
- * - read/load -> index (if no ID is provided in the Data array).
+ * - read      -> view (if an ID is provided in the Data array).
+ * - read      -> index (if no ID is provided in the Data array).
  * - submit    -> add (if no ID is provided in the Data array).
  * - submit    -> edit (if an ID is provided in the Data array).
  * This method also removes the 'method' property from the Ext JS request.
@@ -159,7 +159,6 @@ class BanchaRequestTransformer {
 			case 'destroy':
 				$this->action = 'delete';
 				break;
-			case 'load': // the same as case read
 			case 'read':
 				$this->action = (!empty($this->data['data']['0']['data']['id']) || !empty($this->data['id'])) ? 'view' : 'index';
 				break;

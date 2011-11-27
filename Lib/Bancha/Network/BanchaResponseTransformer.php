@@ -119,7 +119,7 @@ class BanchaResponseTransformer {
 		switch($request->action) {
 			case 'index': // fall through, it's the same as view
 			case 'view':
-				return ($request['isFormRequest']) ? 'load' : 'read';
+				return 'read';
 			case 'edit':
 				return ($request['isFormRequest']) ? 'submit' : 'update';
 			case 'add':

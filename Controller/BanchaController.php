@@ -138,9 +138,6 @@ class BanchaController extends BanchaAppController {
 			}
 			
 			// form handler functions
-			if ((array_search('index', $methods) !== false)  || (array_search('read', $methods) !== false)) {
-				array_push($API['actions'][$cont], array('name' => 'load','len' => 1, 'formHandler'=> true));
-			}
 			if ((array_search('add', $methods) !== false)  || (array_search('edit', $methods) !== false)) {
 				array_push($API['actions'][$cont], array('name' => 'submit','len' => 1, 'formHandler'=> true));
 			}
