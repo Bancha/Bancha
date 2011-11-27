@@ -137,50 +137,6 @@ class BanchaCrudTest extends CakeTestCase {
 	}
 	
 /**
- * Test the load functionality using the full stack of CakePHP components. In preparation we need to create a dummy
- * article, which we need to delete at the end of the test case.
- *
- */
-	public function testLoad() {
-		// Preparation: create article
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo','body' => 'la la la'));
-
-		// Buld a request like it looks in Ext JS for a form submit
-		$postData = array(
-			// articles id
-			'id'			=> $article->id,
-			
-			// ext stuff
-			'extTID'		=> 1,
-			'extAction'		=> 'Article',
-			'extMethod'		=> 'load',
-			'extType'		=> 'rpc',
-		);
-		
-		// it's no upload, so use the default way to decode the response
-		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection('',$postData), array('return' => true)
-		));
-		
-		// test data (expected in default ext structure)
-		$this->assertEquals($article->id, $responses[0]->result->data->id);
-		$this->assertEquals('foo', $responses[0]->result->data->title); // expect record data
-		$this->assertEquals('la la la', $responses[0]->result->data->body); // expect record data
-		
-		// general response checks (check dispatcher, collections and transformers)
-		$this->assertEquals('Article', $responses[0]->action);
-		$this->assertEquals('load', $responses[0]->method);
-		$this->assertEquals('rpc', $responses[0]->type);
-		$this->assertEquals(1, $responses[0]->tid);
-		$this->assertEquals(1, count($responses));
-		
-		// Clean up operations: delete article
-		$article->delete();
-	}
-/**
  * Test the submit functionality using the full stack of CakePHP components. In preparation we need to create a dummy
  * article, which we need to delete at the end of the test case.
  *
@@ -235,6 +191,7 @@ class BanchaCrudTest extends CakeTestCase {
  *
  */
 	public function testSubmit_WithUpload() {
+		$this->markTestSkipped("File uploads are currently not supported.");
 		// Preparation: create article
 		$article = new Article();
 		$article->create();

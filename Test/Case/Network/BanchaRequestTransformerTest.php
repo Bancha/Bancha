@@ -394,7 +394,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	public function testGetCleanedDataArrayForm() {
 		$data = array(
 			'extAction'	=> 'Test',
-			'extMethod'	=> 'load',
+			'extMethod'	=> 'submit',
 			'id'		=> 42,
 			'foo'		=> 'bar',
 			'extTID'	=> 1,
@@ -432,7 +432,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function getActionFormProvider() {
 		return array(
-			array('load',    array('id' => 42),                       'view'),
 			array('submit',  array(),                                 'add'),
 			array('submit',  array('id' => 42),                       'edit'),
 			array('special', array(),                                 'special'), // non-standard crud actions stay the same
