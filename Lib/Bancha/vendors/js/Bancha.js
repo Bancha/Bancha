@@ -54,12 +54,40 @@ Ext.define('Bancha.data.Model', {
 /**
  * @private
  * This should only be used by Bancha internally, 
+ * it converts javascript dates in a cake format... not really elegant yet
+ *
+ * @author Roland Schuetz <mail@rolandschuetz.at>
+ * @docauthor Roland Schuetz <mail@rolandschuetz.at>
+ */
+Ext.define('Bancha.data.writer.JsonWithDateTime', {
+    extend: 'Ext.data.writer.Json',
+    alias: 'writer.jsondate',
+    
+    writeRecords: function(request, data) {
+		var format = 'Y-m-d' // date format;
+		Ext.Array.forEach(data,function(recData,recIndex) {
+			Ext.Object.each(recData,function(fieldName,fieldValue) {
+				if(Ext.isDate(fieldValue)) {
+					// convert date back in cake date format
+					data[recIndex][fieldName] = Ext.Date.format(fieldValue,format);
+				}
+			})
+		})
+		
+        // let the json writer do the real work:
+        return this.superclass.writeRecords.apply(this,arguments);
+    }
+});
+
+/**
+ * @private
+ * This should only be used by Bancha internally, 
  * it adds the consistent uid to all requests.
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
 Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen weiter unten
-    extend: 'Ext.data.writer.Json',
+    extend: 'Bancha.data.writer.JsonWithDateTime',
     alias: 'writer.consistent',
     
     /**
@@ -1044,7 +1072,7 @@ Ext.define('Bancha', {
                     writeAllFields: false,
                     root: 'data'
                 } : {
-                    type: 'json',
+                    type: 'jsondate',
                     writeAllFields: false,
                     root: 'data'
                 },
@@ -1847,6 +1875,13 @@ Ext.define('Bancha', {
          *         }
          *     });
          *
+		 * It currently creates fields for:
+		 *  - string
+		 *  - integer
+		 *  - float (precision is read from metadata)
+		 *  - boolean (checkboxes)
+		 *  - date
+		 * 
          * It's recognizing following validation rules on the model to add validations
          * to the form fields:
          *  - format
