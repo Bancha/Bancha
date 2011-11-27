@@ -173,10 +173,8 @@ class TestUserOrder extends CakeTestModel {
 	public $validate = array( // TODO example for validation rule "url" missing
 	   'id' => array(
             'numeric' => array(
-                'rule' => array('numeric')
-            ),
-            'decimal' => array(
-                'rule' => array('decimal', 0)
+                'rule' => array('numeric'),
+				'precision' => 0
             ),
 	   ),
 	   'name' => array(
@@ -218,16 +216,17 @@ class TestUserOrder extends CakeTestModel {
             ),
         ),
         'weight' => array(
-            'decimal' => array(
+            'numeric' => array(
                 'rule' => array('decimal', 2)
             ),
         ),
         'height' => array(
-            'decimal' => array(
-                'rule' => array('decimal', 0)
+            'numeric' => array(
+                'rule' => array('numeric', 0),
+				'precision' => 0
             ),
             'range' => array(
-                'rule' => array('range', 50, 300),
+                'rule' => array('range', 49, 301),
                 'message' => 'Please enter a value between 50 and 300cm.'
             )
         ),

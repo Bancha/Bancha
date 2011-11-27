@@ -411,6 +411,7 @@ class BanchaCrudTest extends CakeTestCase {
  */
 	public function testView() {
 		// Preparation: create articles
+		$articleForCake = new Article(); // cake uses this model, but better use fixtures
 		$article1 = new Article();
 		$article1->create();
 		$this->assertTrue(!!$article1->save(array('title' => 'foo')));

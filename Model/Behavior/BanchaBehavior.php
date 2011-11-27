@@ -348,13 +348,42 @@ class BanchaBehavior extends ModelBehavior {
 					);
 				}
 			}
-
+			
 			if(isset($values['range'])) {
+				// this rule is a bit ambiguous in cake, it tests like this: 
+				// return ($check > $lower && $check < $upper);
+				// since ext understands it like this:
+				// return ($check >= $lower && $check <= $upper);
+				// we have to change the value
+				$min = $values['range']['rule'][1];
+				$max = $values['range']['rule'][2];
+				
+				if(isset($values['numeric']['precision'])) {
+					// increment/decrease by the smallest possible value
+					$amount = 1*pow(10,-$values['numeric']['precision']);
+					$min += $amount;
+					$max -= $amount;
+				} else {
+					
+					// if debug tell dev about problem
+					if(Configure::read('debug')>0) {
+						throw new CakeException(
+							"Bancha: You are currently using the validation rule 'range' for ".$this->model->name."->".$field.
+							". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
+							"map the validation rules. \nUsage: array('rule' => array('numeric'),'precision'=> ? ) \n".
+							"This error is only displayed in debug mode."
+						);
+					}
+					
+					// best guess
+					$min += 1;
+					$max += 1;
+				}
 				$cols[] = array(
 					'type' => 'numberformat',
 					'name' => $field,
-					'min' => $values['range']['rule'][1],
-					'max' => $values['range']['rule'][2],
+					'min' => $min,
+					'max' => $max,
 				);
 			}
 			// extension
