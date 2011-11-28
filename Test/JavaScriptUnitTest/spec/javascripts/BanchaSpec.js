@@ -25,11 +25,13 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         });
     
     
-        it("should return an expection when calling getRemoteApi() before init()", function() {
-            expect(function() {
-                Bancha.getRemoteApi();
-            }).toThrowExtErrorMsg("Bancha: The remote api Bancha.REMOTE_API is not yet defined, "+
-                                  "please define the api before using Bancha.getRemoteApi().");
+        it("should in debug mode return an expection when calling getRemoteApi() before init()", function() {
+            if(Bancha.debugVersion) {
+				expect(function() {
+                	Bancha.getRemoteApi();
+            	}).toThrowExtErrorMsg("Bancha: The remote api Bancha.REMOTE_API is not yet defined, "+
+                                  	"please define the api before using Bancha.getRemoteApi().");
+			}
         });
     
     
