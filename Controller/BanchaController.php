@@ -67,16 +67,20 @@ class BanchaController extends BanchaAppController {
 		header('Content-type: text/javascript');
 	
 
+		$namespace = Configure::read('Bancha.namespace');
+		if(empty($namespace)) {
+			$namespace = 'Bancha.RemoteStubs'; // default
+		}
 		/**
 		 * holds the ExtJS API array which is returned
 		 *
 		 * @var array
 		 */
-
-		$API = array();
-		$API['url'] =  '/bancha.php';
-		$API['namespace'] = 'Bancha.RemoteStubs';
-    	$API['type'] = "remoting";
+		$API = array(
+			'url' =>  '/bancha.php',
+			'namespace' => $namespace,
+    		'type' => "remoting"
+		);
 
 
 
@@ -149,7 +153,11 @@ class BanchaController extends BanchaAppController {
 		);
 		
 		$this->set('API', $API);
-		print("Ext.ns('Bancha'); Bancha.REMOTE_API =" . json_encode($API));
+		$remoteApiNamespace = Configure::read('Bancha.remote_api');
+		if(empty($remoteApiNamespace)) {
+			$remoteApiNamespace = 'Bancha.REMOTE_API';
+		}
+		print("Ext.ns('Bancha'); ".$remoteApiNamespace." =" . json_encode($API));
 		//$this->render(null, 'ajax', null); //removes the html
 	}
 
