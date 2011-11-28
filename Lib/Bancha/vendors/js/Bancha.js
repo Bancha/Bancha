@@ -65,16 +65,16 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
     alias: 'writer.jsondate',
     
     writeRecords: function(request, data) {
-		var format = 'Y-m-d' // date format;
-		Ext.Array.forEach(data,function(recData,recIndex) {
-			Ext.Object.each(recData,function(fieldName,fieldValue) {
-				if(Ext.isDate(fieldValue)) {
-					// convert date back in cake date format
-					data[recIndex][fieldName] = Ext.Date.format(fieldValue,format);
-				}
-			})
-		})
-		
+        var format = 'Y-m-d' // date format;
+        Ext.Array.forEach(data,function(recData,recIndex) {
+            Ext.Object.each(recData,function(fieldName,fieldValue) {
+                if(Ext.isDate(fieldValue)) {
+                    // convert date back in cake date format
+                    data[recIndex][fieldName] = Ext.Date.format(fieldValue,format);
+                }
+            })
+        })
+        
         // let the json writer do the real work:
         return this.superclass.writeRecords.apply(this,arguments);
     }
@@ -1046,7 +1046,7 @@ Ext.define('Bancha', {
             idProperty: idProperty,
             proxy: {
                 type: 'direct',
-				batchActions: false, // don't batch requests, cake can't handle multiple records (the requests will be by batched by Ext.Direct)
+                batchActions: false, // don't batch requests, cake can't handle multiple records (the requests will be by batched by Ext.Direct)
                 api: {
                     /* IFPRODUCTION
                     // if method is not supported by remote it get's set to undefined
@@ -1074,7 +1074,7 @@ Ext.define('Bancha', {
                 reader: {
                     type: 'json',
                     root: 'data',
-					messageProperty: 'message'
+                    messageProperty: 'message'
                 },
                 writer: (modelConfig.forceConsistency) ? {
                     type: 'consitentjson',
@@ -1532,7 +1532,7 @@ Ext.define('Bancha', {
                 if (!rec.phantom) {
                     rec.destroy({
                         success: function(record,operation) {
-	
+    
                             Ext.MessageBox.show({
                                 title: name + ' record deleted',
                                 msg: name + ' record was successfully deleted.',
@@ -1540,27 +1540,27 @@ Ext.define('Bancha', {
                                 buttons: Ext.Msg.OK
                             });
                         },
-						failure: function(record,operation) {
-							
-			                // since it couldn't be deleted, add again
-			                store.add(rec);
-							
-							// inform user
+                        failure: function(record,operation) {
+                            
+                            // since it couldn't be deleted, add again
+                            store.add(rec);
+                            
+                            // inform user
                             Ext.MessageBox.show({
                                 title: name + ' record could not be deleted',
                                 msg: operation.getError() || (name + ' record could not be deleted.'),
                                 icon: Ext.MessageBox.ERROR,
                                 buttons: Ext.Msg.OK
                             });
-						},
-						callback: function(record,operation) {
-							
-							// TODO how to solve this?
-							// http://www.sencha.com/forum/showthread.php?157580-Don-t-resend-fails-rec.destroy()-with-Ext.Direct&p=680442#post680442
-							grid.setLoading(false); // destroy old mask
+                        },
+                        callback: function(record,operation) {
+                            
+                            // TODO how to solve this?
+                            // http://www.sencha.com/forum/showthread.php?157580-Don-t-resend-fails-rec.destroy()-with-Ext.Direct&p=680442#post680442
+                            grid.setLoading(false); // destroy old mask
                             grid.setLoading("Currently we can not handle any respones after delete, so after this action <br />the grid is not usable anymore. Sry.");
-							
-						}
+                            
+                        }
                     });
                 }
             },
