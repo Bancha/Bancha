@@ -46,6 +46,7 @@ Ext.define('Bancha.data.Model', {
     /**
      * @cfg
      * If true the frontend forces consistency
+     * This is not yet supported! See https://github.com/Bancha/Bancha/wiki/Roadmap
      */
     forceConsistency: false
 });
@@ -230,7 +231,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
      */
     Ext.apply(Ext.grid.Panel, {
         /**
-         * @property {Object|String|False} scaffold
+         * @cfg {Object|String|False} scaffold
          * Define a config object or model name to build the config from Bancha metadata.  
          * Guesses are made by model field configs and validation rules.
          * 
@@ -240,8 +241,8 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
          * See {@link Bancha.scaffold.Grid} for an example.
          */
         /**
-         * @property {String|False} scaffold
-         * If this panel was scaffolded this is the name of the used model, otherwise False.
+         * @property {Object|False} scaffold
+         * If this panel was scaffolded, all initial configs are stored here, otherwise False.
          */
         scaffold: false
         /**
@@ -322,8 +323,8 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
          * See {@link Bancha.scaffold.Form} for an example.
          */
         /**
-         * @property {String|False} scaffold
-         * If this panel was scaffolded this is the name of the used model, otherwise False.
+         * @property {Object|False} scaffold
+         * If this panel was scaffolded, all initial configs are stored here, otherwise False.
          */
         scaffold: false,
         /**
@@ -382,8 +383,8 @@ Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen
  * 
  * example usage:
  *     <!-- include Bancha and the remote API -->
- *     <script type="text/javascript" src="path/to/cakephp/Bancha/api.js"></script>
- *     <script type="text/javascript" src="path/to/bancha.js"></script>
+ *     <script type="text/javascript" src="path/to/cakephp/webroot/js/Bancha.js"></script>
+ *     <script type="text/javascript" src="path/to/cakephp/webroot/Bancha.js"></script>
  *     <script>
  *         // when Bancha is ready, the model meta data is loaded
  *         // from the server and the model is created....
@@ -415,12 +416,12 @@ Ext.define('Bancha', {
     /* End Definitions */
     
     
-	/**
-	 * @property
-	 * This property only exists in the debug version to indicate 
-	 * to jasmine tests that this is a debug version
-	 */
-	debugVersion: true,
+    /**
+     * @property
+     * This property only exists in the debug version to indicate 
+     * to jasmine tests that this is a debug version
+     */
+    debugVersion: true,
     /**
      * @property
      * Bancha Project version
@@ -446,7 +447,7 @@ Ext.define('Bancha', {
     uidPropertyName: '_UID',
     /**
      * @property
-     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Bancha#init}  
+     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Bancha#init}.  
      * null means no namespace, this is not recommanded. The namespace can be set in CakePHP: Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
      */
     namespace: null,
@@ -589,6 +590,8 @@ Ext.define('Bancha', {
         this.initialized = true;
     },
     /**
+     * @private
+     * @method
      * Decodes all stuff that can not be directly send in the right format from the server
      * Directly applies the changes
      */
@@ -920,7 +923,7 @@ Ext.define('Bancha', {
     
     /**
      * This method creates a {@link Bancha.data.Model} with your additional model configs, 
-     * if you don't have any additional configs just use the convienient method {@link #getModel}.  
+     * if you don't have any additional configs just use the convienience method {@link #getModel}.  
      * 
      * In the debug version it will raise an Ext.Error if the model can't be 
      * or is already created, in production it will only return false.
@@ -1238,7 +1241,7 @@ Ext.define('Bancha', {
          *
          * You have three possible interceptors:  
          *  - beforeBuild      : executed before {@link #buildGrid}  
-         *  - guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig}   
+         *  - guessColumnConfig: executed after a column config is created, see {@link #guessColumnConfig}  
          *  - afterBuild       : executed after {@link #buildGrid} created the config
          * 
          * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -1881,25 +1884,25 @@ Ext.define('Bancha', {
          *         }
          *     });
          *
-		 * It currently creates fields for:
-		 *  - string
-		 *  - integer
-		 *  - float (precision is read from metadata)
-		 *  - boolean (checkboxes)
-		 *  - date
-		 * 
+         * It currently creates fields for:  
+         *  - string  
+         *  - integer  
+         *  - float (precision is read from metadata)  
+         *  - boolean (checkboxes)  
+         *  - date  
+         * 
          * It's recognizing following validation rules on the model to add validations
-         * to the form fields:
-         *  - format
-         *  - file
-         *  - length
-         *  - numberformat
-         *  - presence
+         * to the form fields:  
+         *  - format  
+         *  - file  
+         *  - length  
+         *  - numberformat  
+         *  - presence  
          *
-         * You have three possible interceptors:
-         *  - beforeBuild     : executed before {@link #buildGrid}
-         *  - guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig} 
-         *  - afterBuild      : executed after {@link #buildGrid} created the config
+         * You have three possible interceptors:  
+         *  - beforeBuild     : executed before {@link #buildGrid}  
+         *  - guessFieldConfig: executed after a field config is created, see {@link #guessFieldConfig}  
+         *  - afterBuild      : executed after {@link #buildGrid} created the config  
          * 
          * @author Roland Schuetz <mail@rolandschuetz.at>
          * @docauthor Roland Schuetz <mail@rolandschuetz.at>
@@ -2178,10 +2181,10 @@ Ext.define('Bancha', {
                     form.submit({
                         waitMsg: msg,
                         success: function(form, action) {
-                            Ext.MessageBox.alert('Success', action.result.msg || 'Successfully saved data.');
+                            Ext.MessageBox.alert('Success', action.result.msg || 'Successfully saved data.');
                         },
                         failure: function(form, action) {
-                            Ext.MessageBox.alert('Failed', action.result.msg || 'Count not save data, unknown error.');
+                            Ext.MessageBox.alert('Failed', action.result.msg || 'Could not save data, unknown error.');
                         }
                     });
                 }
