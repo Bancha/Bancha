@@ -1545,17 +1545,21 @@ Ext.define('Bancha', {
 			                // since it couldn't be deleted, add again
 			                store.add(rec);
 							
-							// http://www.sencha.com/forum/showthread.php?157580-Don-t-resend-fails-rec.destroy()-with-Ext.Direct&p=680442#post680442
-							grid.setLoading(false); // destroy old mask
-							grid.setLoading("Delete operation failed. Please reload the page to use this table again. Sry.");
-							
 							// inform user
                             Ext.MessageBox.show({
                                 title: name + ' record could not be deleted',
-                                msg: operation.getError() || name + ' record could not be deleted.',
+                                msg: operation.getError() || (name + ' record could not be deleted.'),
                                 icon: Ext.MessageBox.ERROR,
                                 buttons: Ext.Msg.OK
                             });
+						},
+						callback: function(record,operation) {
+							
+							// TODO how to solve this?
+							// http://www.sencha.com/forum/showthread.php?157580-Don-t-resend-fails-rec.destroy()-with-Ext.Direct&p=680442#post680442
+							grid.setLoading(false); // destroy old mask
+                            grid.setLoading("Currently we can not handle any respones after delete, so after this action <br />the grid is not usable anymore. Sry.");
+							
 						}
                     });
                 }
