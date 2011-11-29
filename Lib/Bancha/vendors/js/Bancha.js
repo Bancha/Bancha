@@ -19,10 +19,6 @@
 /*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, window */
 
-// TODO Native support for Ext.data.TreeStore with server-side TreeBehaviour
-// TODO serverside form validation
-// TODO selectboxes with serverside content (enum support also(?)) http://dev.sencha.com/deploy/ext-4.0.0/examples/form/combos.html
-
 Ext.require([
     'Ext.data.*',
     'Ext.form.Panel',
@@ -87,7 +83,7 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
-Ext.define('Bancha.data.writer.ConsistentJson', { // TODO das testen + 2. testen weiter unten
+Ext.define('Bancha.data.writer.ConsistentJson', {
     extend: 'Bancha.data.writer.JsonWithDateTime',
     alias: 'writer.consistent',
     
@@ -2399,7 +2395,7 @@ Ext.define('Bancha', {
                     );
                 });
                 
-                // TODO probably not neccessary in extjs4!
+                // probably not neccessary in extjs4!
                 // if one of the fields is a fileupload, mark the form
                 Ext.each(fields, function(field) {
                     if(field.xtype==='fileuploadfield') {
@@ -2431,7 +2427,6 @@ Ext.define('Bancha', {
                     handler: config.onSave
                 });    
                 buttons.push(button);
-                // TODO OPTIMIZE find and replace '[scaffold-buttons]' in the formConfig!?
                 
                 // extend formConfig
                 Ext.apply(formConfig,additionalFormConfig,{
