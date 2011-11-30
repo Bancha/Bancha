@@ -19,7 +19,7 @@ So with Ext JS and CakePHP in the background we aim to become the most elegant a
 More information:
 -----------------
 
-*   [Overview](http://http://banchaproject.org/)
+*   [Overview](http://banchaproject.org/)
 *   [Installation and Usage](https://github.com/Bancha/Bancha/wiki/Installation-and-Usage)
 *   [Updates on Twitter](http://twitter.com/#!/banchaproject)
 
