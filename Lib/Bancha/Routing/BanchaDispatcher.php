@@ -53,7 +53,7 @@ class BanchaDispatcher {
 				try {
 					$collection->addResponse(
 						$request['tid'],
-						$dispatcher->dispatch($request, array('return' => true)),
+						$dispatcher->dispatch($request, new CakeResponse(array('charset' => Configure::read('App.encoding'))), array('return' => true)), // second argument is expected to be overwritten by BanchaSingleDisptacher::_invoke
 						$request
 					);
 				} catch (Exception $e) {

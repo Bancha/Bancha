@@ -29,59 +29,40 @@ App::uses('Dispatcher', 'Routing');
 class BanchaSingleDispatcher extends Dispatcher {
 
 /**
- * Initializes the components and models a controller will be using.
- * Triggers the controller action, and invokes the rendering if Controller::$autoRender is true and echo's the output.
- * Otherwise the return value of the controller action are returned.
- *
- * Works like {@see Dispatcher::_invoke()} but returns the full response instead the body only.
- *
- * Bancha needs to overwrite this method because we need the full response object not only the body of the response
- * object on return.
- *
- * @param Controller $controller Controller to invoke
- * @param CakeRequest $request The request object to invoke the controller for.
- * @return string CakeResponse object or void.
- * @throws MissingActionException when the action being called is missing.
+* Initializes the components and models a controller will be using.
+* Triggers the controller action, and invokes the rendering if Controller::$autoRender is true and echo's the output.
+* Otherwise the return value of the controller action are returned.
+*
+* Works like {@see Dispatcher::_invoke()} but returns the full response instead the body only.
+*
+* Bancha needs to overwrite this method because we need the full response object not only the body of the response
+* object on return.
+*
+* @param Controller $controller Controller to invoke
+* @param CakeRequest $request The request object to invoke the controller for.
+* @param CakeResponse $response The response object to receive the output
+* @return void
  */
-	protected function _invoke(Controller $controller, CakeRequest $request) {
+	protected function _invoke(Controller $controller, CakeRequest $request, CakeResponse $response) {
 		$controller->constructClasses();
 		$controller->startupProcess();
 
-		$methods = array_flip($controller->methods);
-
-		if (!isset($methods[$request->params['action']])) {
-			if ($controller->scaffold !== false) {
-				return new Scaffold($controller, $request);
-			}
-			throw new MissingActionException(array(
-				'controller' => Inflector::camelize($request->params['controller']) . "Controller",
-				'action' => $request->params['action']
-			));
+		$render = true;
+		$result = $controller->invokeAction($request);
+		if ($result instanceof CakeResponse) {
+			$render = false;
+			$response = $result;
 		}
-		
-		// set the method param id (first argument)
-		$modelName = Inflector::singularize($controller->name);
-		if(isset($request->data[$modelName]['id'])) {
-			$request->params['pass'] = array( $request->data[$modelName]['id'] );
-		}
-		
-		$result = call_user_func_array(array(&$controller, $request->params['action']), $request->params['pass']);
-		$response = $controller->getResponse();
 
-		if ($controller->autoRender) {
-			$controller->render();
+		if ($render && $controller->autoRender) {
+			$response = $controller->render();
 		} elseif ($response->body() === null) {
 			$response->body($result);
 		}
 		$controller->shutdownProcess();
-		if (isset($request->params['action'])) {
-			$action = $request->params['action'];
-		}
-		if (isset($request->params['method'])) {
 
-		}
 		if (isset($request->params['return'])) {
-			return $response;
+			return $response; // <-------------- only this line is changed, original: return $response->body();
 		}
 		$response->send();
 	}
