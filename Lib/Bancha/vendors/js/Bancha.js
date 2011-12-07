@@ -1625,7 +1625,7 @@ Ext.define('Bancha', {
                 xtype:'actioncolumn', 
                 width:50,
                 items: [{
-                    icon: 'img/icons/delete.png',
+                    icon: '/img/icons/delete.png',
                     tooltip: 'Delete',
                     handler: Ext.emptyFn // will be replaced by button handler
                 }]
