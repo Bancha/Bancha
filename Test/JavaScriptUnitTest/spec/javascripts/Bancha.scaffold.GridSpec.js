@@ -213,7 +213,7 @@ describe("Bancha.scaffold.Grid tests",function() {
             xtype:'actioncolumn', 
             width:50,
             items: [{
-                icon: 'img/icons/delete.png',
+                icon: '/img/icons/delete.png',
                 tooltip: 'Delete',
                 handler: gridScaf.onDestroy
             }]
