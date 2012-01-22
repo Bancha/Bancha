@@ -119,6 +119,11 @@ var BanchaSetup = {
 	},
 	checkSetup: function() {
 		
+		// check if it is opened from right location
+		if(document.location.href && document.location.href.substr(-24)!=="/bancha/setup-check.html") {
+			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html')
+		}
+		
 		// try to load ExtJS
 		BanchaSetup.loadScript('../js/ext-all.js',BanchaSetup.checkSetup_onExtIsLoaded);
 	},
@@ -156,7 +161,7 @@ var BanchaSetup = {
 		}
 		
 		// try to loadthe Bancha remote api
-		BanchaSetup.loadScript('../bancha-api.js?models=all',BanchaSetup.checkSetup_onBanchaRemoteApiIsLoaded);
+		BanchaSetup.loadScript('../bancha-api.js',BanchaSetup.checkSetup_onBanchaRemoteApiIsLoaded);
 	},
 	checkSetup_onBanchaRemoteApiIsLoaded: function(isLoaded,statusCode) {
 

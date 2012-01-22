@@ -25,6 +25,8 @@
 Router::parseExtensions('js');
 //Router::connect('/bancha-api\.js', array('controller' => 'bancha', 'action' => 'index'));
 
+Router::connect('/bancha-api', array('controller' => 'bancha', 'action' => 'index'));
+
 Router::connect('/bancha-api/models/:metaDataForModels', array('controller' => 'bancha', 'action' => 'index'),array('pass'=>array('metaDataForModels')));
 
 
