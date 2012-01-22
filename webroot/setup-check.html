@@ -161,14 +161,14 @@ var BanchaSetup = {
 	checkSetup_onBanchaRemoteApiIsLoaded: function(isLoaded,statusCode) {
 
 		// check if Bancha remote api is loaded
-		BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', statusCode+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 3</a>.');
+		BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', statusCode+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 2</a>.');
 		if(isLoaded===false) {
 			return;
 		}
 
 		// check if Bancha lib works
-		var executed = (typeof window.Bancha === 'object');
-		BanchaSetup.writeLog(executed,'Execute Bancha library', 'Could not execute the Bancha library, there seems to be an javascript error inside plugins/Bancha/webroot/js/Bancha.js. Please make sure you are using the official Bancha library. If so please report this case, this should not happen.');
+		var executed = (Bancha.REMOTE_API && Bancha.REMOTE_API.actions && typeof Bancha.REMOTE_API.actions.Bancha === 'object');
+		BanchaSetup.writeLog(executed,'Init Bancha Remote API', 'Could not init Bancha Remote API. Please make sure you are using the official Bancha library. If so please <a href="https://github.com/Bancha/Bancha/issues" target="_blank">report this case</a>, this should not happen.');
 		if(executed===false) {
 			return;
 		}

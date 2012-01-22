@@ -61,18 +61,19 @@ class BanchaController extends BanchaAppController {
 	 *
 	 * @return void
 	 */
-	public function index() {
-	
+	public function index($metaDataForModels='') {
+		
 		// send as javascript
 		header('Content-type: text/javascript');
 	
-
+		// get namespace
 		$namespace = Configure::read('Bancha.namespace');
 		if(empty($namespace)) {
 			$namespace = 'Bancha.RemoteStubs'; // default
 		}
+		
 		/**
-		 * holds the ExtJS API array which is returned
+		 * The ExtJS API array which is returned
 		 *
 		 * @var array
 		 */
@@ -103,16 +104,16 @@ class BanchaController extends BanchaAppController {
 		$API['metadata']['_UID'] = str_replace('.','',uniqid('', true));
 
 	    // get requested models
-		if(isset($this->request->query["models"])&& strlen($this->request->query["models"])>2) {
-			if($this->request->query["models"] == "all") {
+		if(strlen($metaDataForModels)>2) {
+			if($metaDataForModels == "all" || $metaDataForModels == "[all]") {
 			    $metaDataModels = $banchaModels;
 		    } else  {
-               $metaDataModels = explode(',', substr($this->request->query["models"],1,-1));
+               $metaDataModels = explode(',', substr($metaDataForModels,1,-1));
 		    }
         } else {
             $metaDataModels = array();
         }
-
+		
 		//load the MetaData into $API
 		foreach ($metaDataModels as $mod) {
 			if(! in_array($mod, $banchaModels)) {
