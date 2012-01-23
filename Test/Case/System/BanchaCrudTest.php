@@ -3,14 +3,14 @@
  * BanchaCrudTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @package       Bancha
  * @category      Tests
- * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -21,20 +21,21 @@
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
-if(!class_exists('BanchaBehavior')) { // otherwise phing makes problems
-	require_once dirname(__FILE__) . '/../../../Model/Behavior/BanchaBehavior.php';
-}
-
 // TODO: refactor to use real test models.
 require_once dirname(__FILE__) . '/ArticlesController.php';
 
 /**
  * BanchaCrudTest
  *
+ * All these tests are using the full stack of CakePHP components, not only testing 
+ * the functionallity of Bancha, but also that it is compatible to the current
+ * CakePHP library (since bancha is using some internal methods)
+ * 
  * @package       Bancha
  * @category      Tests
  */
 class BanchaCrudTest extends CakeTestCase {
+	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
 
 	public function setUp() {
 		parent::setUp();
@@ -45,20 +46,9 @@ class BanchaCrudTest extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
-	/**
-	 * Please make sure that the project default database is empty!
-	 */
-	public function testTestSetUp() {
-		$controller = new ArticlesController(); // this also makes sure that the article class is already loaded
-		$controller->loadModel("User");
-		$this->assertEquals(0,count($controller->User->find('all')),"\n\n\n\nPlease make sure that the project default database User table is empty!\n\n\n\n");
-		$this->assertEquals(0,count($controller->Article->find('all')),"\n\n\n\nPlease make sure that the project default database Article table is empty!\n\n\n\n");
-	}
-/**
- * Tests the 'add' CRUD operation using the full CakePHP stack.
- *
- */
+
 	public function testAdd() {
+		
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -95,17 +85,10 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->delete();
 	}
 
-/**
- * Test the edit functionality using the full stack of CakePHP components. In preparation we need to create a dummy
- * article, which we need to delete at the end of the test case.
- *
- */
 	public function testEdit() {
-		// Preparation: create article
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo'));
-
+		// used fixture:
+		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
+		
 		// Buld a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -113,19 +96,19 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array(
-				'id'			=> $article->id,
+				'id'			=> 988,
 				'title'			=> 'foobar',
-				'published'		=> true,
+				'published'		=> 1,
 			))),
 		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-
-		$this->assertEquals($article->id, $responses[0]->result->data->id);
+	
+		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('foobar', $responses[0]->result->data->title);
-		$this->assertEquals(true, $responses[0]->result->data->published);
+		$this->assertEquals(1, $responses[0]->result->data->published); // check that all fields are added
 		
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
@@ -133,26 +116,19 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
 		$this->assertEquals(1, count($responses));
-
-		// Clean up operations: delete article
-		$article->delete();
 	}
 	
-/**
- * Test the submit functionality using the full stack of CakePHP components. In preparation we need to create a dummy
- * article, which we need to delete at the end of the test case.
- *
- */
+	/**
+	 * test form submission including the different request form of ext.direct
+	 */
 	public function testSubmit() {
-		// Preparation: create article
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo'));
+		// used fixture:
+		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
 
 		// Buld a request like it looks in Ext JS for a form submit
 		$postData = array(
 			// articles data
-			'id'			=> $article->id,
+			'id'			=> 988,
 			'body'			=> 'changed',
 			
 			// ext stuff
@@ -169,8 +145,8 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 		
 		// test data (expected in default ext structure)
-		$this->assertEquals($article->id, $responses[0]->result->data->id);
-		$this->assertEquals('foo', $responses[0]->result->data->title); // expect the full record in the answer
+		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
 		
 		// general response checks (check dispatcher, collections and transformers)
@@ -181,28 +157,21 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 
 		// test if the data really got changed
-		$article->read();
+		$article = ClassRegistry::init('Article');
+		$article->read(null,988);
 		$this->assertEquals('changed', $article->data['Article']['body']);
-		
-		// Clean up operations: delete article
-		$article->delete();
 	}
-/**
- * Test the submit functionality using the full stack of CakePHP components. In preparation we need to create a dummy
- * article, which we need to delete at the end of the test case.
- *
- */
+	
+	
 	public function testSubmit_WithUpload() {
 		$this->markTestSkipped("File uploads are currently not supported.");
-		// Preparation: create article
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo'));
+		// used fixture:
+		// array('id' => 988, 'title' => 'Title 1', 'body' => 'Text 3, ...)
 
 		// Buld a request like it looks in Ext JS for a form submit
 		$postData = array(
 			// articles data
-			'id'			=> $article->id,
+			'id'			=> 988,
 			'body'			=> 'changed',
 			
 			// ext stuff
@@ -224,10 +193,9 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode(substr($result,22,-25));
 		
 		// test data (expected in default ext structure)
-		$this->assertEquals($article->id, $responses[0]->result->data->id);
-		$this->assertEquals('foo', $responses[0]->result->data->title); // expect the full record in the answer
+		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
-		$this->assertEquals(false, $responses[0]->result->data->published);
 		
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
@@ -237,30 +205,24 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 
 		// test if the data really got changed
-		$article->read();
+		$article = ClassRegistry::init('Article');
+		$article->read(null,988);
 		$this->assertEquals('changed', $article->data['Article']['body']);
-
-		// Clean up operations: delete article
-		$article->delete();
 	}
-/**
- * Test deleting an entity using the full stack of CakePHP components. We need to create a test article, which we
- * need to delete at the end of the test case.
- *
- */
+	
+	
 	public function testDelete() {
 		// Preparation: create article
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo'));
+		// used fixture:
+		// array('id' => 988, 'title' => 'Title 1', ...)
 
-		// Let's begin with the real test.
+		// deletion as ext.direct request
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array('id' => $article->id)))
+			'data'			=> array(array('data'=>array('id' => 988)))
 		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
@@ -278,26 +240,19 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 		
 		// test if the record really got deleted
+		$article = ClassRegistry::init('Article');
+		$article->id = 988;
 		$this->assertEquals(false, $article->exists());
 	}
 
-/**
- * Test the index action, which lists entities. Before the real test starts we need to create some articles, which we
- * delete after the test.
- *
- */
-	public function testIndex() {
-		// Preparation: create articles
-		$article1 = new Article();
-		$article1->create();
-		$this->assertTrue(!!$article1->save(array('title' => 'foo')));
-		$article2 = new Article();
-		$article2->create();
-		$this->assertTrue(!!$article2->save(array('title' => 'bar')));
-		$article3 = new Article();
-		$article3->create();
-		$this->assertTrue(!!$article3->save(array('title' => 'foobar')));
 
+	public function testIndex() {
+		// used fixtures:
+		// array('id' => 988, 'title' => 'Title 1', ...)
+		// array('id' => 989, 'title' => 'Title 2', ...)
+		// array('id' => 990, 'title' => 'Title 3', ...)
+	
+	
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -318,8 +273,8 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		// only first and second element should be loaded
 		$this->assertEquals(2, count($responses[0]->result->data));
-		$this->assertEquals($article1->id, $responses[0]->result->data[0]->id);
-		$this->assertEquals($article2->id, $responses[0]->result->data[1]->id);
+		$this->assertEquals(988, $responses[0]->result->data[0]->id);
+		$this->assertEquals(989, $responses[0]->result->data[1]->id);
 		
 		// the counter should be 3
 		$this->assertEquals(3, $responses[0]->result->total);
@@ -353,25 +308,25 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// only third element should be loaded
 		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals($article3->id, $responses[0]->result->data[0]->id);
+		$this->assertEquals(990, $responses[0]->result->data[0]->id);
+		$this->assertEquals('Title 3', $responses[0]->result->data[0]->title);
 
 		// the counter should be 3
 		$this->assertEquals(3, $responses[0]->result->total);
 
 		// tid should be passed through
 		$this->assertEquals(2, $responses[0]->tid);
-		
-		
-		// Clean up operations: delete articles
-		$article1->delete();
-		$article2->delete();
-		$article3->delete();
 	}
 
 /**
  * Test if the whole stack also works if no results for index exist
  */
 	public function testIndex_Empty() {
+		// delete fixtures
+		$article = ClassRegistry::init('Article');
+		$article->delete(988);
+		$article->delete(989);
+		$article->delete(990);
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -389,7 +344,7 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
-		// test empty data
+		// test empty data result
 		$this->assertTrue(is_array($responses[0]->result->data));
 		$this->assertEquals(0, count($responses[0]->result->data));
 		
@@ -407,27 +362,21 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 	}
 
-/**
- * Tests the view action. We need to create an article, which we need to delete after the test.
- *
- */
-	public function testView() {
-		// Preparation: create articles
-		$articleForCake = new Article(); // cake uses this model, but better use fixtures
-		$article1 = new Article();
-		$article1->create();
-		$this->assertTrue(!!$article1->save(array('title' => 'foo')));
-		$article2 = new Article();
-		$article2->create();
-		$this->assertTrue(!!$article2->save(array('title' => 'bar')));
 
-		// Build a HTTP request that looks like in Ext JS.
+	public function testView() {
+		// used fixtures:
+		// array('id' => 988, 'title' => 'Title 1', ...)
+		// array('id' => 989, 'title' => 'Title 2', ...)
+
+		// load one record, in ExtJS syntax
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array('id' => $article1->id)))
+			'data'			=> array(array(
+				'data'	=> array('id' => 988)
+			))
 		)));
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
@@ -436,8 +385,8 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		// test data
 		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals($article1->id, $responses[0]->result->data->id);
-		$this->assertEquals('foo', $responses[0]->result->data->title);
+		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals('Title 1', $responses[0]->result->data->title);
 		
 		
 		// general response checks (check dispatcher, collections and transformers)
@@ -448,14 +397,15 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 		
 		
-		// now look for the other one
-		// Build a HTTP request that looks like in Ext JS.
+		// now look for a second one
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',
 			'tid'			=> 2,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array('id' => $article2->id)))
+			'data'			=> array(array(
+				'data'	=>array('id' => 989)
+			))
 		)));
 		
 		$dispatcher = new BanchaDispatcher();
@@ -465,15 +415,9 @@ class BanchaCrudTest extends CakeTestCase {
 		
 		// test
 		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals($article2->id, $responses[0]->result->data->id);
-		$this->assertEquals('bar', $responses[0]->result->data->title);
+		$this->assertEquals(989, $responses[0]->result->data->id);
+		$this->assertEquals('Title 2', $responses[0]->result->data->title);
 		$this->assertEquals(2, $responses[0]->tid);
-		
-		
-		
-		// Clean up operations: delete articles
-		$article1->delete();
-		$article2->delete();
 	}
 
 
@@ -485,11 +429,8 @@ class BanchaCrudTest extends CakeTestCase {
  *
  */
 	public function testMultiRequest() {
-		// Preparation: create article (for second request)
-		$article = new Article();
-		$article->create();
-		$article->save(array('title' => 'foo'));
-		$article_id = $article->id;
+		// used fixture:
+		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
 		
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -509,9 +450,9 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 2,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array(
-				'id'			=> $article_id,
+				'id'			=> 988,
 				'title'			=> 'foobar',
-				'published'		=> true,
+				'published'		=> false,
 			))),
 		)));
 		$dispatcher = new BanchaDispatcher();
@@ -540,12 +481,9 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
 		
 		// test data for second request
-		$this->assertEquals($article_id, $responses[1]->result->data->id);
+		$this->assertEquals(988, $responses[1]->result->data->id);
 		$this->assertEquals('foobar', $responses[1]->result->data->title);
-		$this->assertEquals(true, $responses[1]->result->data->published);
-		
-		// Clean up operations: delete articles
-		$article->delete($responses[0]->result->data->id);
-		$article->delete($article_id);
+		$this->assertEquals(0, $responses[1]->result->data->published);
+		$this->assertEquals('Text 1', $responses[1]->result->data->body); // should be a full record
 	}
 }

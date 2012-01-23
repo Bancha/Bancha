@@ -1,38 +1,28 @@
 <?php
 /**
- * Short description for file.
+ * Bancha test ficture
  *
- * PHP 5
- *
- * CakePHP(tm) Tests <http://book.cakephp.org/view/1196/Testing>
- * Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice
+ * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://book.cakephp.org/view/1196/Testing CakePHP(tm) Tests
- * @package       cake.tests.fixtures
- * @since         CakePHP(tm) v 1.2.0.4667
+ * @package       Bancha
+ * @category      Tests
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
 /**
- * Short description for class.
+ * Creates sample users
  *
- * @package       cake.tests.fixtures
+ * @package       Bancha.tests.fixtures
  */
 class UserFixture extends CakeTestFixture {
-
-/**
- * name property
- *
- * @var string 'User'
- * @access public
- */
-	public $name = 'User';
-	
-	public $table = false;
 
 /**
  * fields property

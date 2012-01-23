@@ -2,14 +2,14 @@
 
 /**
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @package       Bancha
  * @subpackage    Controller
- * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -19,10 +19,13 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+// todo this should not not be necessary
+App::import('Controller', 'Bancha.BanchaApp');
 
 /**
  * Bancha Controller
- * This class exports the ExtJS API of all other Controllers for use in ExtJS Frontends
+ * This class exports the ExtJS API for remotable models and controller.
+ * This is only internally used by the client side of Bancha.
  *
  * @package    Bancha
  * @subpackage Controller
@@ -61,18 +64,19 @@ class BanchaController extends BanchaAppController {
 	 *
 	 * @return void
 	 */
-	public function index() {
-	
+	public function index($metaDataForModels='') {
+		
 		// send as javascript
 		header('Content-type: text/javascript');
 	
-
+		// get namespace
 		$namespace = Configure::read('Bancha.namespace');
 		if(empty($namespace)) {
 			$namespace = 'Bancha.RemoteStubs'; // default
 		}
+		
 		/**
-		 * holds the ExtJS API array which is returned
+		 * The ExtJS API array which is returned
 		 *
 		 * @var array
 		 */
@@ -89,11 +93,11 @@ class BanchaController extends BanchaAppController {
 		$models = App::objects('Model');
 		$banchaModels = array();
 
-		//load all Models and add those with BanchaBehavior to $banchaModels
+		//load all Models and add those with Banchas BanchaRemotableBehavior into $banchaModels
 		foreach ($models as $model) {
 			$this->loadModel($model);
 			if (is_array($this->{$model}->actsAs )) {
-				if( in_array( 'Bancha', $this->{$model}->actsAs )) {
+				if( in_array( 'Bancha.BanchaRemotable', $this->{$model}->actsAs )) {
 					array_push($banchaModels, $model);
 				}
 			}
@@ -103,16 +107,16 @@ class BanchaController extends BanchaAppController {
 		$API['metadata']['_UID'] = str_replace('.','',uniqid('', true));
 
 	    // get requested models
-		if(isset($this->request->query["models"])&& strlen($this->request->query["models"])>2) {
-			if($this->request->query["models"] == "all") {
+		if(strlen($metaDataForModels)>2) {
+			if($metaDataForModels == "all" || $metaDataForModels == "[all]") {
 			    $metaDataModels = $banchaModels;
 		    } else  {
-               $metaDataModels = explode(',', substr($this->request->query["models"],1,-1));
+               $metaDataModels = explode(',', substr($metaDataForModels,1,-1));
 		    }
         } else {
             $metaDataModels = array();
         }
-
+		
 		//load the MetaData into $API
 		foreach ($metaDataModels as $mod) {
 			if(! in_array($mod, $banchaModels)) {

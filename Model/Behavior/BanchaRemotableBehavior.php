@@ -3,14 +3,14 @@
  * AllBehaviorsTest file
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
  *
  * @package       Bancha
  * @subpackage    Model.Behavior
- * @copyright     Copyright 2011 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
@@ -34,7 +34,7 @@ if ( false === function_exists('lcfirst') ) {
  * @package    Bancha
  * @subpackage Model.Behavior
  */
-class BanchaBehavior extends ModelBehavior {
+class BanchaRemotableBehavior extends ModelBehavior {
 
 	// TODO doku
 	// alla array('create'=>true,...,'shareMetaData'=>true);

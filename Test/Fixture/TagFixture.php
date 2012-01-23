@@ -18,11 +18,11 @@
  */
 
 /**
- * Creates sample articles
+ * Creates sample tags
  *
  * @package       Bancha.tests.fixtures
  */
-class ArticleFixture extends CakeTestFixture {
+class TagFixture extends CakeTestFixture {
 
 /**
  * fields property
@@ -31,12 +31,9 @@ class ArticleFixture extends CakeTestFixture {
  * @access public
  */
 	public $fields = array(
-		'id' => array('type' => 'integer', 'key' => 'primary'),
-		'title' => array('type' => 'string', 'null' => true),
-		'date' => array('type' => 'datetime', 'null' => true),
-		'body' => array('type' => 'string', 'null' => true),
-		'published' => array('type' => 'integer', 'default' => 0),
-		'user_id' => array('type' => 'integer', 'null' => false),
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'collate' => NULL, 'comment' => ''),
+		'string' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
 	);
 
 /**
@@ -46,8 +43,5 @@ class ArticleFixture extends CakeTestFixture {
  * @access public
  */
 	public $records = array(
-		array('id' => 988, 'title' => 'Title 1', 'date' => '2011-11-24 03:40:04', 'body' => 'Text 1', 'published' => true, 'user_id' => 2),
-		array('id' => 989, 'title' => 'Title 2', 'date' => '2011-12-24 03:40:04', 'body' => 'Text 2', 'published' => false, 'user_id' => 3),
-		array('id' => 990, 'title' => 'Title 3', 'date' => '2010-12-24 03:40:04', 'body' => 'Text 3', 'published' => false, 'user_id' => 3),
 	);
 }

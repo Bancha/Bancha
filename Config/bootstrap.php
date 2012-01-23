@@ -29,7 +29,7 @@
 Inflector::rules('plural', array('/^Bancha$/i' => 'Bancha'));
 
 // load Banchaplugin
-CakePlugin::load('Bancha');
+CakePlugin::load(array('Bancha' => array('routes' => true)));
 
 // set namespace for ExtJS
 Configure::write('Bancha.namespace','Bancha.RemoteStubs');
