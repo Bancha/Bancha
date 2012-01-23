@@ -462,23 +462,29 @@ Ext.define('Bancha', {
      * @return {Object} The object if found, otherwise undefined.
      */
     objectFromPath: function (path, lookIn) {
+		if(typeof path === 'number') { // for array indexes
+			path = path+''; // to string
+		}
+		if(typeof path !== 'string') {
+			return undefined;
+		}
         if (!lookIn) {
             //get the global object so it don't use hasOwnProperty on window (IE incompatible)
             var first = path.indexOf('.'),
                 globalObjName,
                 globalObj;
             if (first === -1) {
-                // the whole path is only one object so eturn the result
+                // the whole path is only one object, so return the object
                 return window[path];
             }
-            // else the first part as global object name
+            // else use the first part as global object name
             globalObjName = path.slice(0, first);
             globalObj = window[globalObjName];
             if (typeof globalObj === 'undefined') {
                 // path seems to be false
                 return undefined;
             }
-            // set the ne lookIn and the path
+            // set the new lookIn and the path
             lookIn = globalObj;
             path = path.slice(first + 1);
         }

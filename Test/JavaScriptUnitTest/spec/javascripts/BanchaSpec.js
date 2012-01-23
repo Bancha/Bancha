@@ -13,7 +13,38 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
     
         beforeEach(h.reset);
         
-
+		it("internally uses objectFromPath to retrieve objects", function() {
+			// simple unit tests
+			window.BanchaObjectFromPathTest = {
+				object: {
+					property: 2
+				},
+				array: ['a','b', {
+					property: 3
+				}]
+			};
+			
+			// successfulles
+			expect(Bancha.objectFromPath('BanchaObjectFromPathTest.object.property')).toEqual(2);
+			expect(Bancha.objectFromPath('object.property',BanchaObjectFromPathTest)).toEqual(2);
+			expect(Bancha.objectFromPath('property',BanchaObjectFromPathTest['object'])).toEqual(2);
+			
+			expect(Bancha.objectFromPath('BanchaObjectFromPathTest.array.2.property')).toEqual(3);
+			expect(Bancha.objectFromPath('2.property',BanchaObjectFromPathTest.array)).toEqual(3);
+			expect(Bancha.objectFromPath('1',BanchaObjectFromPathTest.array)).toEqual('b');
+			expect(Bancha.objectFromPath(1,BanchaObjectFromPathTest.array)).toEqual('b');
+			
+			expect(Bancha.objectFromPath('BanchaObjectFromPathTest')).toEqual(BanchaObjectFromPathTest);
+			
+			// can't find these pathes
+			expect(Bancha.objectFromPath('')).toBeFalsy();
+			expect(Bancha.objectFromPath('',BanchaObjectFromPathTest)).toBeFalsy();
+			expect(Bancha.objectFromPath()).toBeFalsy();
+			expect(Bancha.objectFromPath({})).toBeFalsy();
+			expect(Bancha.objectFromPath(undefined)).toBeFalsy();
+			expect(Bancha.objectFromPath(null)).toBeFalsy();
+		});
+		
         it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
             h.init();
     
