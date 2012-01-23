@@ -13,14 +13,14 @@ Bancha combines Ext JS 4 and CakePHP 2. Basically it:
 *   automatically implements CRUD for all remotable models
 *   is well-tested with PHPUnit and Jasmine
 
-So with ExtJS and CakePHP in the background we aim to become the most elegant and powerful JavaScript to PHP comunication framework.
+So with Ext JS and CakePHP in the background we aim to become the most elegant and powerful JavaScript to PHP comunication framework.
 
 
 More information:
 -----------------
 
 *   [Overview](http://banchaproject.org/)
-*   [Installation and Usage](https://github.com/Bancha/Bancha/wiki/Installation-and-Usage)
+*   [Installation and Usage](https://github.com/Bancha/Bancha/wiki/)
 *   [Updates on Twitter](http://twitter.com/#!/banchaproject)
 
 

@@ -49,7 +49,7 @@ class BanchaResponseTransformer {
 	}
     
 	/**
-	 * Transform a cake response to extjs structure (associated models are not supportet!)
+	 * Transform a cake response to extjs structure (associated models are not supported!)
 	 * otherwise just return the original response.
 	 * See also https://github.com/Bancha/Bancha/wiki/Supported-Controller-Method-Results
 	 *
