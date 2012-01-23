@@ -21,10 +21,6 @@
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
-if(!class_exists('BanchaBehavior')) { // otherwise phing makes problems
-	require_once dirname(__FILE__) . '/../../../Model/Behavior/BanchaBehavior.php';
-}
-
 // TODO: refactor to use real test models.
 require_once dirname(__FILE__) . '/ArticlesController.php';
 

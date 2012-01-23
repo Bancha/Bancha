@@ -39,7 +39,7 @@ class AllBehaviorsTest extends PHPUnit_Framework_TestSuite {
 		$suite = new CakeTestSuite('Model Behavior and all behaviors');
 
 		$path = dirname(__FILE__) . DS . 'Model' . DS;
-		$suite->addTestFile($path . 'BanchaBehaviorTest.php');
+		$suite->addTestFile($path . 'BanchaRemotableBehaviorTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;

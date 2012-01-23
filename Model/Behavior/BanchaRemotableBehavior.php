@@ -34,7 +34,7 @@ if ( false === function_exists('lcfirst') ) {
  * @package    Bancha
  * @subpackage Model.Behavior
  */
-class BanchaBehavior extends ModelBehavior {
+class BanchaRemotableBehavior extends ModelBehavior {
 
 	// TODO doku
 	// alla array('create'=>true,...,'shareMetaData'=>true);

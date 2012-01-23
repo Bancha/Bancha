@@ -19,6 +19,7 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+// todo this not not be necessary
 App::import('Controller', 'Bancha.BanchaApp');
 
 /**
@@ -91,11 +92,11 @@ class BanchaController extends BanchaAppController {
 		$models = App::objects('Model');
 		$banchaModels = array();
 
-		//load all Models and add those with BanchaBehavior to $banchaModels
+		//load all Models and add those with Banchas BanchaRemotableBehavior into $banchaModels
 		foreach ($models as $model) {
 			$this->loadModel($model);
 			if (is_array($this->{$model}->actsAs )) {
-				if( in_array( 'Bancha', $this->{$model}->actsAs )) {
+				if( in_array( 'Bancha.BanchaRemotable', $this->{$model}->actsAs )) {
 					array_push($banchaModels, $model);
 				}
 			}
