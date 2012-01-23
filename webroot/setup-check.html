@@ -84,6 +84,9 @@
 /*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, window, alert */
 
+if(typeof window.Ext !== 'object') {
+	alert('This script requires a internet connection to load Ext Core.');
+}
 
 var BanchaSetup = {
 	
@@ -192,7 +195,11 @@ var BanchaSetup = {
 	checkSetup_onBanchaRemoteApiIsLoaded: function(isLoaded,ajaxResponse) {
 
 		// check if Bancha remote api is loaded
-		BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 2</a>.');
+		if(ajaxResponse.status==404) {
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 2</a>');
+		} else {
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
+		}
 		if(isLoaded===false) {
 			return;
 		}
