@@ -723,6 +723,7 @@ Ext.define('Bancha', {
     },
     /**
      * Checks if the model is supported by the server
+     * Todo: This currently doesn't check if the exposed Object is an Controller method or an exposed model
      * @param {String} modelName The name of the model
      * @return {Boolean} True is the model is remotable
      */
