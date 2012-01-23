@@ -19,6 +19,7 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+App::import('Controller', 'Bancha.BanchaApp');
 
 /**
  * Bancha Controller

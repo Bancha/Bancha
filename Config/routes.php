@@ -19,16 +19,11 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
+
+
 /**
  * connect the remote api
  */
 Router::parseExtensions('js');
-//Router::connect('/bancha-api\.js', array('controller' => 'bancha', 'action' => 'index'));
-
-Router::connect('/bancha-api', array('controller' => 'bancha', 'action' => 'index'));
-
-Router::connect('/bancha-api/models/:metaDataForModels', array('controller' => 'bancha', 'action' => 'index'),array('pass'=>array('metaDataForModels')));
-
-
-
-//Router::connect('/bancha-api.js?models=*', array('controller' => 'bancha', 'action' => 'index'));
+Router::connect('/bancha-api', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'));
+Router::connect('/bancha-api/models/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'),array('pass'=>array('metaDataForModels')));
