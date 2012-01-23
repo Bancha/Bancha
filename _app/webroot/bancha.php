@@ -25,6 +25,17 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+
+
+/**
+ * this is for the check setup page
+ */
+if($_GET['setup-check']) {
+	// send as javascript
+	header('Content-type: text/javascript');
+	exit('{BanchaDispatcherIsSetup:true}');
+}
+
 /**
  * Use the DS to separate the directories in other defines
  */
