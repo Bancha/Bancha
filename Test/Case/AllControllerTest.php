@@ -1,6 +1,6 @@
 <?php
 /**
- * AllTestsTest file.
+ * AllControllerTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -21,14 +21,14 @@
  */
 
 /**
- * AllTestsTest class
+ * AllControllerTest class.
  *
- * This test group will run all test in the Bancha/Test/Cases directory except for those in the System directory.
+ * This test group will run all test in the Bancha/Test/Cases/Controller directory
  *
  * @package       Bancha
  * @category      tests
  */
-class AllTestsTest extends PHPUnit_Framework_TestSuite {
+class AllControllerTest extends PHPUnit_Framework_TestSuite {
 
 /**
  * Suite define the tests for this suite
@@ -36,16 +36,12 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
  * @return void
  */
 	public static function suite() {
-		$suite = new CakeTestSuite('All Tests');
+		$suite = new CakeTestSuite('Controller classes');
 
-		$path = dirname(__FILE__) . DS;
-		$suite->addTestFile($path . DS . 'AllBehaviorsTest.php');
-		$suite->addTestFile($path . DS . 'AllControllerTest.php');
-		$suite->addTestFile($path . DS . 'AllNetworkTest.php');
-		$suite->addTestFile($path . DS . 'AllRoutingTest.php');
-		$suite->addTestFile($path . DS . 'AllSystemTest.php');
-		
-		//$suite->addTestDirectory($path);
+		$path = dirname(__FILE__) . DS . 'Controller';
+		$suite->addTestFile($path . DS . 'BanchaControllerTest.php');
+
+		$suite->addTestDirectory($path);
 		return $suite;
 	}
 }
