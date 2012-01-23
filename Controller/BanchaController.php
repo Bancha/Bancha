@@ -19,12 +19,13 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-// todo this not not be necessary
+// todo this should not not be necessary
 App::import('Controller', 'Bancha.BanchaApp');
 
 /**
  * Bancha Controller
- * This class exports the ExtJS API of all other Controllers for use in ExtJS Frontends
+ * This class exports the ExtJS API for remotable models and controller.
+ * This is only internally used by the client side of Bancha.
  *
  * @package    Bancha
  * @subpackage Controller
