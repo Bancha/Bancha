@@ -1,0 +1,251 @@
+<html> 
+<head>
+<title>Bancha Project - Combining ExtJS and CakePHP</title> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<meta http-equiv="Content-Style-Type" content="text/css" /> 
+<meta http-equiv="Content-Script-Type" content="text/javascript" /> 
+<meta name="description" content="" /> 
+<meta name="keywords" content="" /> 
+<link href='http://fonts.googleapis.com/css?family=Droid+Serif:regular,bold' rel='stylesheet' type='text/css' /> 
+<!-- 1140px Grid styles for IE --> 
+<!--[if lte IE 9]><link rel="stylesheet" href="http://banchaproject.org//tl_files/Bancha/styles/ie.css" type="text/css" media="screen" /><![endif]--> 
+<!-- The 1140px Grid - http://cssgrid.net/ --> 
+<link rel="stylesheet" href="http://banchaproject.org//tl_files/Bancha/styles/1140.css" type="text/css" media="screen" /> 
+<!--css3-mediaqueries-js - http://code.google.com/p/css3-mediaqueries-js/ - Enables media queries in some unsupported browsers--> 
+<script type="text/javascript" src="http://banchaproject.org//tl_files/Bancha/scripts/css3-mediaqueries.js"></script> 
+<link rel="stylesheet" href="http://banchaproject.org//tl_files/Bancha/styles/master.css" type="text/css" media="screen" /> 
+<meta name="robots" content="index,follow" />
+<!--[if lte IE 7]><link rel="stylesheet" href="http://banchaproject.org/system/iefixes.css" type="text/css" media="screen" /><![endif]-->
+
+<style type="text/css">
+	#log {
+		width: 650;
+		min-height:300px;
+		margin: auto;
+		padding:10px;
+		border:1px solid black;
+	
+		text-align:left;
+		font-size:13px;
+		color: black;
+	}
+	#log img {
+		vertical-align:bottom;
+	}
+	#log .explanation {
+		font-style: italic;
+		margin-left:18px;
+	}
+</style>
+</head>
+<body id="top" style="text-align:center;"> 
+<div class="wrapper">
+    <br />
+    <a href="http://banchaproject.org/"><img src="http://banchaproject.org/tl_files/Bancha/images/logo.png" alt="Bancha" /></a>
+    <br /><br />
+
+	<p>
+       Setup check:
+    </p>
+    <div id="log"></div>
+    
+    <br />
+	
+    <!-- for footer alignment -->
+	<div class="push"></div> 
+</div>
+<div class="footer"> 
+	<small>&copy; 2011-2012 Roland Sch&uuml;tz. <a href="http://banchaproject.org/impressum.html">Impressum</a>. Icons by <a href="http://www.famfamfam.com/lab/icons/silk/" target="_blank">FamFamFam</a>.</small>
+</div>
+
+
+<!-- include ExtJS Core -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js"></script>
+
+<!-- test setup -->
+<script type="text/Javascript">
+/*!
+ *
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @package       Bancha
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link          http://banchaproject.org Bancha Project
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @version       1.0.0
+ *
+ * For more information go to http://banchaproject.org 
+ */
+/*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
+/*global Ext, Bancha, window, alert */
+
+if(typeof window.Ext !== 'object') {
+	alert('This script requires a internet connection to load Ext Core.');
+}
+
+var BanchaSetup = {
+	
+	
+	// helper functions
+	log: Ext.get('log'),
+	writeLog: function(result,name,/*optional*/ explanation) {
+		this.log.insertHtml(
+			'beforeEnd',
+			'<img src="http://docs.banchaproject.org/setup-check/icons/' +(result==='party' ? 'cake.png" alt="ALL DONE" />' : (result==='warn' ? 'error.png" alt="WARNING" />' : (result===true ? 'accept.png" alt="OK" />' : 'cancel.png" alt="ERROR" />')))+
+			' '+name+
+			((explanation && result!==true) ? '<div class="explanation">'+explanation+'</div>' : '')+
+			'<br>'
+		);
+	},
+	bugReportText: 'Please <a href="https://github.com/Bancha/Bancha/issues" target="_blank">report this bug</a>, this should not happen.',
+	loadScript: function(location,callback) {
+		// check if the file exists (404)
+		Ext.Ajax.request({
+			url: location,
+			success:function(ajaxResponse) {
+				BanchaSetup.loadScript_fileExists(location,function(isLoaded) {
+					callback(isLoaded,ajaxResponse);
+				});
+			},
+			failure:function(ajaxResponse) {
+				callback(false,ajaxResponse);
+			}
+		});
+	},
+	loadScript_fileExists: function(location,callback) {
+		var script_tag = document.createElement('script'),
+			isLoaded = false,
+			executedCallback = false;
+		
+		// load
+		script_tag.setAttribute('type', 'text/javascript');
+		script_tag.setAttribute('src', location);
+		document.getElementsByTagName('head')[0].appendChild(script_tag);
+		
+		script_tag.onload = script_tag.onerror = script_tag.onreadystatechange = function() {
+		    if(!this.readyState ||
+		        this.readyState === "loaded" || this.readyState === "complete") {
+		        // script successfully loaded
+		        isLoaded = true;
+			}
+			
+			// no first state change
+			if(!executedCallback) {
+				callback(isLoaded);
+			}
+		};
+	},
+	
+	
+	// setup checks
+	checkSetup: function() {
+		
+		// check if it is opened from right location
+		if(document.location.href && document.location.href.substr(-24)!=="/bancha/setup-check.html") {
+			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html');
+		}
+		
+		// try to load ExtJS
+		BanchaSetup.loadScript('../js/ext-all.js',BanchaSetup.checkSetup_onExtIsLoaded);
+	},
+	checkSetup_onExtIsLoaded: function(isLoaded,ajaxResponse) {
+		
+		// check if ext is loaded
+		BanchaSetup.writeLog(isLoaded,'Load ExtJS library', ajaxResponse.status+': Could not load the ExtJS library, please place ext-all.js and ext-all-dev.js in the app/webroot/js/ folder');
+		if(isLoaded===false) {
+			return;
+		}
+		
+		// check if ext lib works
+		var executed = (window.Ext && typeof window.Ext.grid === 'object'); // The grid namespace only exists in ExtJS 8not in the Core)
+		BanchaSetup.writeLog(executed,'Execute ExtJS library', 'Could not execute the ExtJS library, there seems to be an javascript error inside ext-all.js. Please make sure you are using the official Sencha ExtJS 4 library.');
+		if(executed===false) {
+			return;
+		}
+		
+		// ugly hack, so ExtJS is init AFTER Ext Core was already loaded to the document
+		Ext.EventManager.fireDocReady();
+		
+		// try to load Bancha
+		BanchaSetup.loadScript('js/Bancha.js',BanchaSetup.checkSetup_onBanchaIsLoaded);
+	},
+	checkSetup_onBanchaIsLoaded: function(isLoaded,ajaxResponse) {
+		
+		// check if Bancha is loaded
+		BanchaSetup.writeLog(isLoaded,'Load Bancha library', ajaxResponse.status+': Could not load the Bancha library. '+BanchaSetup.bugReportText);
+		if(isLoaded===false) {
+			return;
+		}
+		
+		// check if Bancha lib works
+		var executed = (typeof window.Bancha === 'object');
+		BanchaSetup.writeLog(executed,'Execute Bancha library', 'Could not execute the Bancha library, there seems to be an javascript error inside plugins/Bancha/webroot/js/Bancha.js. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
+		if(executed===false) {
+			return;
+		}
+		
+		// try to load the Bancha remote api
+		BanchaSetup.loadScript('../bancha-api.js',BanchaSetup.checkSetup_onBanchaRemoteApiIsLoaded);
+	},
+	checkSetup_onBanchaRemoteApiIsLoaded: function(isLoaded,ajaxResponse) {
+
+		// check if Bancha remote api is loaded
+		if(ajaxResponse.status==404) {
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 2</a>');
+		} else {
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
+		}
+		if(isLoaded===false) {
+			return;
+		}
+
+		// check if Bancha lib works
+		var executed = (Bancha.REMOTE_API && Bancha.REMOTE_API.actions && typeof Bancha.REMOTE_API.actions.Bancha === 'object');
+		BanchaSetup.writeLog(executed,'Bancha Remote API available', 'Could not init Bancha Remote API. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
+		if(executed===false) {
+			return;
+		}
+
+		// check remote stubs include Bancha API
+		Bancha.init();
+		var banchaApiAvailable = (Bancha.RemoteStubs && Bancha.RemoteStubs.Bancha && typeof Bancha.RemoteStubs.Bancha.loadMetaData === 'function');
+		BanchaSetup.writeLog(banchaApiAvailable,'Init Bancha, Bancha API available', 'Could not find Bancha API for loading model meta data. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
+		if(banchaApiAvailable===false) {
+			return;
+		}
+		
+		// try to check bancha dispatcher
+		BanchaSetup.loadScript('../bancha.php?setup-check=true',BanchaSetup.checkSetup_onBanchaDispatcherIsLoaded);
+		
+	},
+	checkSetup_onBanchaDispatcherIsLoaded: function(isLoaded,ajaxResponse) {
+
+		// check if Bancha Dispatcher is copied to webroot
+		BanchaSetup.writeLog(isLoaded,'Ping Bancha Dispatcher', ajaxResponse.status+': Could not find Bancha Dispatcher, please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> into <i>app/webroot/</i>.');
+		if(isLoaded===false) {
+			return;
+		}
+
+		// check if Bancha Dispatcher is the official one
+		var response = Ext.decode(ajaxResponse.responseText),
+			works = response.BanchaDispatcherIsSetup===true;
+		BanchaSetup.writeLog(works,'Bancha Dispatcher works', 'Could not validate Bancha Dispatcher. Please copy the official Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> into <i>app/webroot/</i>. If  you did so: '+BanchaSetup.bugReportText);
+		if(works===false) {
+			return;
+		}
+		
+		BanchaSetup.writeLog('party','Congratulations! You have successfully installed Bancha.');
+	}
+}; //eo BanchaSetup
+
+Ext.onReady(BanchaSetup.checkSetup,BanchaSetup);
+
+</script>
+
+</body>
+</html>

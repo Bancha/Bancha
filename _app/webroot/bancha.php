@@ -25,6 +25,17 @@
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
+
+
+/**
+ * this is for the check setup page
+ */
+if($_GET['setup-check']) {
+	// send as javascript
+	header('Content-type: text/javascript');
+	exit('{BanchaDispatcherIsSetup:true}');
+}
+
 /**
  * Use the DS to separate the directories in other defines
  */
@@ -83,12 +94,23 @@
 	if (!include(CORE_PATH . 'Cake' . DS . 'bootstrap.php')) {
 		trigger_error("CakePHP core could not be found.  Check the value of CAKE_CORE_INCLUDE_PATH in APP/webroot/index.php.  It should point to the directory containing your " . DS . "cake core directory and your " . DS . "vendors root directory.", E_USER_ERROR);
 	}
+	
 	// load bootstrap of bancha
-	if (!include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
+	$failedLoadingBootstrap = true;
+	if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
+		// Bancha is in the general plugins folder
+		$failedLoadingBootstrap = !include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php');
+	} else if (file_exists(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
+		// Bancha is in the app Plugin folder
+		$failedLoadingBootstrap = !include(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php');
+	}
+	if ($failedLoadingBootstrap) {
 		trigger_error("Bancha bootstrap could not be loaded.  
 		Check the value of ROOT in APP/webroot/index.php.  
 		It should point to the directory containing your " . DS . " ROOT directory and your " . DS . "vendors root directory.", E_USER_ERROR);
 	}
+	
+	
 	if (isset($_GET['url']) && $_GET['url'] === 'favicon.ico') {
 		return;
 	} else {

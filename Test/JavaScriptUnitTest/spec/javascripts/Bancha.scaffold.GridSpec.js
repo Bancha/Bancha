@@ -1,8 +1,8 @@
 /*!
  * Bancha.scaffold.Grid Tests
- * Copyright(c) 2011 Roland Schuetz
+ * Copyright(c) 2011-2012 Roland Schuetz
  * @author Roland Schuetz <mail@rolandschuetz.at>
- * @copyright (c) 2011 Roland Schuetz
+ * @copyright (c) 2011-2012 Roland Schuetz
  */
 /*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, BanchaSpecHelper */
@@ -213,7 +213,7 @@ describe("Bancha.scaffold.Grid tests",function() {
             xtype:'actioncolumn', 
             width:50,
             items: [{
-                icon: 'img/icons/delete.png',
+                icon: '/img/icons/delete.png',
                 tooltip: 'Delete',
                 handler: gridScaf.onDestroy
             }]

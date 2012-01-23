@@ -1,6 +1,6 @@
 <?php
 /**
- * AllBehaviorsTest file
+ * AllControllerTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -21,14 +21,14 @@
  */
 
 /**
- * AllBehaviorsTest class
+ * AllControllerTest class.
  *
- * This test group will run all test in the Bancha/Test/Cases/Model/Behaviours directory
+ * This test group will run all test in the Bancha/Test/Cases/Controller directory
  *
  * @package       Bancha
  * @category      tests
  */
-class AllBehaviorsTest extends PHPUnit_Framework_TestSuite {
+class AllControllerTest extends PHPUnit_Framework_TestSuite {
 
 /**
  * Suite define the tests for this suite
@@ -36,10 +36,10 @@ class AllBehaviorsTest extends PHPUnit_Framework_TestSuite {
  * @return void
  */
 	public static function suite() {
-		$suite = new CakeTestSuite('Model Behavior and all behaviors');
+		$suite = new CakeTestSuite('Controller classes');
 
-		$path = dirname(__FILE__) . DS . 'Model' . DS;
-		$suite->addTestFile($path . 'BanchaRemotableBehaviorTest.php');
+		$path = dirname(__FILE__) . DS . 'Controller';
+		$suite->addTestFile($path . DS . 'BanchaControllerTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;

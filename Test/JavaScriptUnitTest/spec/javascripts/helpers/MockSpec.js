@@ -1,8 +1,8 @@
 /*!
  * Mock object for easier testing
- * Copyright(c) 2011 Roland Schuetz
+ * Copyright(c) 2011-2012 Roland Schuetz
  * @author Roland Schuetz <mail@rolandschuetz.at>
- * @copyright (c) 2011 Roland Schuetz
+ * @copyright (c) 2011-2012 Roland Schuetz
  */
 /*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
 /*global Ext, describe, it, beforeEach, expect, fail, jasmine, Mock, ExtSpecHelper */
