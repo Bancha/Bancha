@@ -13,7 +13,7 @@
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v1.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
  * @author        Andreas Kern <andreas.kern@gmail.com>
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Kung Wong <kung.wong@gmail.com>
@@ -21,6 +21,7 @@
 
 // todo this should not not be necessary
 App::import('Controller', 'Bancha.BanchaApp');
+App::uses('BanchaException', 'Bancha.Bancha/Exception');
 
 /**
  * Bancha Controller
@@ -30,6 +31,7 @@ App::import('Controller', 'Bancha.BanchaApp');
  * @package    Bancha
  * @subpackage Controller
  * @author Andreas Kern
+ * @author Florian Eckerstorfer <florian@theroadtojoy.at>
  */
 class BanchaController extends BanchaAppController {
 
@@ -81,9 +83,9 @@ class BanchaController extends BanchaAppController {
 		 * @var array
 		 */
 		$API = array(
-			'url' =>  '/bancha.php',
-			'namespace' => $namespace,
-    		'type' => "remoting"
+			'url'		=> '/bancha.php',
+			'namespace'	=> $namespace,
+    		'type'		=> 'remoting',
 		);
 
 
@@ -97,18 +99,18 @@ class BanchaController extends BanchaAppController {
 		foreach ($models as $model) {
 			$this->loadModel($model);
 			if (is_array($this->{$model}->actsAs )) {
-				if( in_array( 'Bancha.BanchaRemotable', $this->{$model}->actsAs )) {
+				if (in_array('Bancha.BanchaRemotable', $this->{$model}->actsAs)) {
 					array_push($banchaModels, $model);
 				}
 			}
 		}
 
-		//insert UID
-		$API['metadata']['_UID'] = str_replace('.','',uniqid('', true));
+		// insert UID
+		$API['metadata']['_UID'] = str_replace('.', '', uniqid('', true));
 
 	    // get requested models
-		if(strlen($metaDataForModels)>2) {
-			if($metaDataForModels == "all" || $metaDataForModels == "[all]") {
+		if (strlen($metaDataForModels)>2) {
+			if ('all' === $metaDataForModels || '[all]' === $metaDataForModels) {
 			    $metaDataModels = $banchaModels;
 		    } else  {
                $metaDataModels = explode(',', substr($metaDataForModels,1,-1));
@@ -119,36 +121,57 @@ class BanchaController extends BanchaAppController {
 		
 		//load the MetaData into $API
 		foreach ($metaDataModels as $mod) {
-			if(! in_array($mod, $banchaModels)) {
+			if (!in_array($mod, $banchaModels)) {
 				throw new MissingModelException($mod);
 			}
 			$this->{$mod}->setBehaviorModel($mod);
 			$API['metadata'][$mod] = $this->{$mod}->extractBanchaMetaData();
 		}
-		/**
-		 * loop through the Controllers and adds the apropriate methods
-		 *
-		 * TODO implement scaffolding;
-		 */
 
-		foreach($banchaModels as $cont) {
-			$cont = Inflector::pluralize($cont);
-			include(APP . DS . 'Controller' . DS . $cont . 'Controller.php');
-			$methods = get_class_methods($cont . 'Controller');;
-			$cont = str_replace('Controller','',$cont);
-			$cont = Inflector::singularize($cont);
-			$API['actions'][$cont] = array();
-			//TODO check if methods exist
-			foreach( $this->mapCrud as $key => $value) {
-				if (array_search($key, $methods) !== false) {
-					array_push($API['actions'][$cont], array('name' => $value[0],'len' => $value[1]));
-				};
+		foreach($banchaModels as $model_name) {
+			// Generate controller name and load it.
+			$controller_name = Inflector::pluralize($model_name) . 'Controller';
+			include(APP . DS . 'Controller' . DS . $controller_name . '.php');
+
+			if (!class_exists($controller_name))
+			{
+				throw new BanchaException(sprintf('Controller "%s" does not exist.', $controller_name));
 			}
-			
-			// form handler functions
-			if ((array_search('add', $methods) !== false)  || (array_search('edit', $methods) !== false)) {
-				array_push($API['actions'][$cont], array('name' => 'submit','len' => 1, 'formHandler'=> true));
-			}
+
+			// Retrieve methods using Reflection API.
+			$reflection = new ReflectionClass($controller_name);
+			$methods = $reflection->getMethods();
+
+			$API['actions'][$model_name] = array();
+
+			foreach ($methods as $method)
+			{
+				// Case 1: CRUD method
+				if (isset($this->mapCrud[$method->name])) {
+					array_push($API['actions'][$model_name], array(
+						'name'	=> $method->name,
+						'len'	=> $method->getNumberOfParameters(),
+					));
+				}
+				// Case 2: Form handler
+				elseif ('add' === $method->name || 'edit' == $method->name)
+				{
+					array_push($API['actions'][$model_name], array(
+						'name'			=> 'submit',
+						'len' 			=> 1,
+						'formHandler'	=> true,
+					));
+				}
+				// Case 3: Bancha Remoteable
+				elseif (preg_match('/@banchaRemotable/', $method->getDocComment()))
+				{
+					array_push($API['actions'][$model_name], array(
+						'name'	=> $method->name,
+						'len'	=> $method->getNumberOfParameters(),
+					));
+				}
+			} // end foreach models
+
 		}
 
 		// add Bancha controller functions
