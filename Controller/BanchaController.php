@@ -70,6 +70,7 @@ class BanchaController extends BanchaAppController {
 	 * @return void
 	 */
 	public function index($modelFilter='') {
+		$modelFilter = urldecode($modelFilter);
 		$banchaApi = new BanchaApi();
 		
 		// send as javascript
