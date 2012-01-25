@@ -149,8 +149,8 @@ class BanchaController extends BanchaAppController {
 				// Case 1: CRUD method
 				if (isset($this->mapCrud[$method->name])) {
 					array_push($API['actions'][$model_name], array(
-						'name'	=> $method->name,
-						'len'	=> $method->getNumberOfParameters(),
+						'name'	=> $this->mapCrud[$method->name][0],
+						'len'	=> $this->mapCrud[$method->name][1],
 					));
 				}
 				// Case 2: Form handler
