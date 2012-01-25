@@ -25,9 +25,7 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  */
 class BanchaApiTest extends CakeTestCase {
 
-
-	public function testGetRemotableModels()
-	{
+	public function testGetRemotableModels() {
 		$api = new BanchaApi();
 		$remotableModels = $api->getRemotableModels();
 		$this->assertContains('Article', $remotableModels);
@@ -87,7 +85,6 @@ class BanchaApiTest extends CakeTestCase {
 	{
 		$api = new BanchaApi();
 		$metadata = $api->getMetadata(array('User', 'Article'));
-		print_r($metadata);
 		$this->assertCount(3, $metadata);
 		$this->assertArrayHasKey('User', $metadata);
 		$this->assertArrayHasKey('Article', $metadata);
@@ -95,6 +92,49 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertTrue(is_array($metadata['User']));
 		$this->assertTrue(is_array($metadata['Article']));
 		$this->assertTrue(strlen($metadata['_UID']) > 0);
+	}
+
+	public function testGetControllerClassByModelClass()
+	{
+		$api = new BanchaApi();
+		$this->assertEquals('UsersController', $api->getControllerClassByModelClass('User'));
+	}
+
+	public function testGetCrudActionsOfController()
+	{
+		$api = new BanchaApi();
+		$crudActions = $api->getCrudActionsOfController('UsersController');
+		$this->assertCount(6, $crudActions);
+		$this->assertEquals('getAll', $crudActions[0]['name']);
+		$this->assertEquals(0, $crudActions[0]['len']);
+		$this->assertEquals('read', $crudActions[1]['name']);
+		$this->assertEquals(1, $crudActions[1]['len']);
+		$this->assertEquals('submit', $crudActions[5]['name']);
+		$this->assertEquals(1, $crudActions[5]['len']);
+		$this->assertEquals(true, $crudActions[5]['formHandler']);
+	}
+
+	public function testGetRemotableMethods()
+	{
+		$api = new BanchaApi();
+		$remotableMethods = $api->getRemotableMethods();
+		$this->assertCount(2, $remotableMethods['HelloWorld']);
+		$this->assertEquals('hello', $remotableMethods['HelloWorld'][0]['name']);
+		$this->assertEquals(0, $remotableMethods['HelloWorld'][0]['len']);
+		$this->assertEquals('helloyou', $remotableMethods['HelloWorld'][1]['name']);
+		$this->assertEquals(1, $remotableMethods['HelloWorld'][1]['len']);
+	}
+
+	/**
+	 * description
+	 */
+	public function testGetRemotableModelActions()
+	{
+		$api = new BanchaApi();
+		$remotableActions = $api->getRemotableModelActions($api->getRemotableModels());
+		$this->assertCount(4, $remotableActions);
+		$this->assertCount(6, $remotableActions['Article']);
+		$this->assertEquals('getAll', $remotableActions['Article'][0]['name']);
 	}
 
 }

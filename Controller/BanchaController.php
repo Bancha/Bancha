@@ -69,7 +69,7 @@ class BanchaController extends BanchaAppController {
 	 *                                  all models or a comma separated list of models.
 	 * @return void
 	 */
-	public function index($metaDataForModels='') {
+	public function index($modelFilter='') {
 		$banchaApi = new BanchaApi();
 		
 		// send as javascript
@@ -81,72 +81,23 @@ class BanchaController extends BanchaAppController {
 			$namespace = 'Bancha.RemoteStubs'; // default
 		}
 		
-		// The ExtJS API array which is returned
-		$API = array(
+		$remotableModels = $banchaApi->getRemotableModels();
+        $requestedModels = $banchaApi->filterRemotableModels($remotableModels, $modelFilter);
+		
+		$api = array(
 			'url'		=> '/bancha.php',
 			'namespace'	=> $namespace,
     		'type'		=> 'remoting',
-		);
-
-
-		$banchaModels = $banchaApi->getRemotableModels();
-
-        $metaDataModels = $banchaApi->filterRemotableModels($banchaModels, $metaDataForModels);
-		
-		//load the MetaData into $API
-		$API['metadata'] = $banchaApi->getMetadata($metaDataModels);
-
-		foreach($banchaModels as $model_name) {
-			// Generate controller name and load it.
-			$controller_name = Inflector::pluralize($model_name) . 'Controller';
-			include(APP . DS . 'Controller' . DS . $controller_name . '.php');
-
-			if (!class_exists($controller_name))
-			{
-				throw new BanchaException(sprintf('Controller "%s" does not exist.', $controller_name));
-			}
-
-			// Retrieve methods using Reflection API.
-			$reflection = new ReflectionClass($controller_name);
-			$methods = $reflection->getMethods();
-
-			$API['actions'][$model_name] = array();
-
-			foreach ($methods as $method)
-			{
-				// Case 1: CRUD method
-				if (isset($this->mapCrud[$method->name])) {
-					array_push($API['actions'][$model_name], array(
-						'name'	=> $this->mapCrud[$method->name][0],
-						'len'	=> $this->mapCrud[$method->name][1],
-					));
-				}
-				// Case 2: Form handler
-				elseif ('add' === $method->name || 'edit' == $method->name)
-				{
-					array_push($API['actions'][$model_name], array(
-						'name'			=> 'submit',
-						'len' 			=> 1,
-						'formHandler'	=> true,
-					));
-				}
-				// Case 3: Bancha Remoteable
-				elseif (preg_match('/@banchaRemotable/', $method->getDocComment()))
-				{
-					array_push($API['actions'][$model_name], array(
-						'name'	=> $method->name,
-						'len'	=> $method->getNumberOfParameters(),
-					));
-				}
-			} // end foreach models
-
-		}
-
-		// add Bancha controller functions
-		$API['actions']['Bancha'] = array(
-			array(
-				'name'	=> 'loadMetaData',
-				'len'	=> 1
+    		'metadata'	=> $banchaApi->getMetadata($requestedModels),
+    		'actions'	=> array_merge_recursive(
+				$banchaApi->getRemotableModelActions($remotableModels),
+				$banchaApi->getRemotableMethods(),
+				array('Bancha' => array(
+					array(
+						'name'	=> 'loadMetaData',
+						'len'	=> 1,
+					),
+				))
 			)
 		);
 		
@@ -156,7 +107,7 @@ class BanchaController extends BanchaAppController {
 		}
 
 		$this->set('remoteApiNamespace', $remoteApiNamespace);
-		$this->set('banchaApi', json_encode($API));
+		$this->set('banchaApi', json_encode($api));
 		$this->render();
 	}
 
