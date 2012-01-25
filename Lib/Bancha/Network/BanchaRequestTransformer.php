@@ -265,8 +265,6 @@ class BanchaRequestTransformer {
 		
 		$page = 1;
 
-		// print_r($this->data);
-
 		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['page'])) {
 			$page = $this->data['data'][0]['page'];
 			unset($this->data['data'][0]['page']);

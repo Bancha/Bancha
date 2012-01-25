@@ -21,13 +21,19 @@
  * @package       Bancha
  * @category      tests
  */
-// class BanchaControllerTest extends ControllerTestCase {
-// 	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
+class BanchaControllerTest extends ControllerTestCase {
+
+	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
+
+	public function testIndex()
+	{
+		
+	}
 
 
-// 	// TODO add tests here, see http://book.cakephp.org/2.0/en/development/testing.html#testing-controllers
+	// TODO add tests here, see http://book.cakephp.org/2.0/en/development/testing.html#testing-controllers
 	
 	
-// }
+}
 
     

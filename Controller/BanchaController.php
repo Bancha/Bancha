@@ -22,6 +22,7 @@
 // todo this should not not be necessary
 App::import('Controller', 'Bancha.BanchaApp');
 App::uses('BanchaException', 'Bancha.Bancha/Exception');
+App::uses('BanchaApi', 'Bancha.Bancha');
 
 /**
  * Bancha Controller
@@ -64,9 +65,12 @@ class BanchaController extends BanchaAppController {
 	 * controller parameters as in cakePHP.e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
 	 * will load the metadata from the models Users and Tags
 	 *
+	 * @param string $metaDataForModels Models that should be exposed through the Bancha API. Either all or [all] for
+	 *                                  all models or a comma separated list of models.
 	 * @return void
 	 */
 	public function index($metaDataForModels='') {
+		$banchaApi = new BanchaApi();
 		
 		// send as javascript
 		header('Content-type: text/javascript');
@@ -77,11 +81,7 @@ class BanchaController extends BanchaAppController {
 			$namespace = 'Bancha.RemoteStubs'; // default
 		}
 		
-		/**
-		 * The ExtJS API array which is returned
-		 *
-		 * @var array
-		 */
+		// The ExtJS API array which is returned
 		$API = array(
 			'url'		=> '/bancha.php',
 			'namespace'	=> $namespace,
@@ -89,44 +89,12 @@ class BanchaController extends BanchaAppController {
 		);
 
 
+		$banchaModels = $banchaApi->getRemotableModels();
 
-		/****** parse Models **********/
-
-		$models = App::objects('Model');
-		$banchaModels = array();
-
-		//load all Models and add those with Banchas BanchaRemotableBehavior into $banchaModels
-		foreach ($models as $model) {
-			$this->loadModel($model);
-			if (is_array($this->{$model}->actsAs )) {
-				if (in_array('Bancha.BanchaRemotable', $this->{$model}->actsAs)) {
-					array_push($banchaModels, $model);
-				}
-			}
-		}
-
-		// insert UID
-		$API['metadata']['_UID'] = str_replace('.', '', uniqid('', true));
-
-	    // get requested models
-		if (strlen($metaDataForModels)>2) {
-			if ('all' === $metaDataForModels || '[all]' === $metaDataForModels) {
-			    $metaDataModels = $banchaModels;
-		    } else  {
-               $metaDataModels = explode(',', substr($metaDataForModels,1,-1));
-		    }
-        } else {
-            $metaDataModels = array();
-        }
+        $metaDataModels = $banchaApi->filterRemotableModels($banchaModels, $metaDataForModels);
 		
 		//load the MetaData into $API
-		foreach ($metaDataModels as $mod) {
-			if (!in_array($mod, $banchaModels)) {
-				throw new MissingModelException($mod);
-			}
-			$this->{$mod}->setBehaviorModel($mod);
-			$API['metadata'][$mod] = $this->{$mod}->extractBanchaMetaData();
-		}
+		$API['metadata'] = $banchaApi->getMetadata($metaDataModels);
 
 		foreach($banchaModels as $model_name) {
 			// Generate controller name and load it.
@@ -176,16 +144,20 @@ class BanchaController extends BanchaAppController {
 
 		// add Bancha controller functions
 		$API['actions']['Bancha'] = array(
-			array('name'=>'loadMetaData', 'len'=>1)
+			array(
+				'name'	=> 'loadMetaData',
+				'len'	=> 1
+			)
 		);
 		
-		$this->set('API', $API);
 		$remoteApiNamespace = Configure::read('Bancha.remote_api');
 		if(empty($remoteApiNamespace)) {
 			$remoteApiNamespace = 'Bancha.REMOTE_API';
 		}
-		print("Ext.ns('Bancha'); ".$remoteApiNamespace." =" . json_encode($API));
-		//$this->render(null, 'ajax', null); //removes the html
+
+		$this->set('remoteApiNamespace', $remoteApiNamespace);
+		$this->set('banchaApi', json_encode($API));
+		$this->render();
 	}
 
 	/**
