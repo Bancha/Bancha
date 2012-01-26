@@ -108,7 +108,7 @@ class BanchaController extends BanchaAppController {
 		}
 
 		$this->set('remoteApiNamespace', $remoteApiNamespace);
-		$this->set('banchaApi', json_encode($api));
+		$this->set('banchaApi', $api);
 		$this->render();
 	}
 
