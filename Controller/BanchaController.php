@@ -36,26 +36,9 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  */
 class BanchaController extends BanchaAppController {
 
-	var $name = 'Bancha'; //turns html on again
+	var $name = 'Bancha';
 	var $autoRender = false; //we don't need a view for this
 	var $autoLayout = false;
-	//var $viewClass = 'Bancha.BanchaExt';
-
-
-	/**
-	 *  CRUD mapping between cakephp and extjs
-	 * 	TODO check if the right arguments are passed
-	 *
-	 * @var array
-	 */
-	public $mapCrud = array(
-			'index' => array('getAll', 0),
-			'add' => array('create', 1),
-			'view' => array('read', 1),
-			'edit' => array('update', 1),
-			'delete' => array('destroy', 1)
-	);
-
 
 	/**
 	 * the index method is called by default by cakePHP if no action is specified,
@@ -65,7 +48,7 @@ class BanchaController extends BanchaAppController {
 	 * controller parameters as in cakePHP.e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
 	 * will load the metadata from the models Users and Tags
 	 *
-	 * @param string $metaDataForModels Models that should be exposed through the Bancha API. Either all or [all] for
+	 * @param string $metadataFilter Models that should be exposed through the Bancha API. Either all or [all] for
 	 *                                  all models or a comma separated list of models.
 	 * @return void
 	 */
@@ -75,7 +58,6 @@ class BanchaController extends BanchaAppController {
 		
 		// send as javascript
 		$this->response->type('js');
-		// header('Content-type: text/javascript');
 	
 		// get namespace
 		$namespace = Configure::read('Bancha.namespace');

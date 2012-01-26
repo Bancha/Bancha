@@ -133,7 +133,7 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertEquals('hello', $remotableMethods['HelloWorld'][0]['name']);
 		$this->assertEquals(0, $remotableMethods['HelloWorld'][0]['len']);
 		$this->assertEquals('helloyou', $remotableMethods['HelloWorld'][1]['name']);
-		$this->assertEquals(1, $remotableMethods['HelloWorld'][1]['len']);
+		$this->assertEquals(2, $remotableMethods['HelloWorld'][1]['len']);
 	}
 
 	/**

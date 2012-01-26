@@ -235,6 +235,7 @@ class BanchaRequestTransformer {
  * @return array Array with 'pass' parameters
  */
 	public function getPassParams() {
+		$pass = array();
 		// normal requests
 		if (isset($this->data['data'][0]['data']['id'])) {
 			$pass['id'] = $this->data['data'][0]['data']['id'];
@@ -244,8 +245,8 @@ class BanchaRequestTransformer {
 			$pass['id'] = $this->data['id'];
 			unset($this->data['id']);
 			$this->isFormRequest = true;
-		} else {
-			$pass = $this->transformDataStructureToCake($this->getModel(), $this->data);
+		} else if(2 === count($this->data) && isset($this->data['type']) && 'rpc' == $this->data['type'] && isset($this->data['data'])) {
+			$pass = $this->data['data'];
 		}
 		return $pass;
 	}

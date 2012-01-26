@@ -316,10 +316,11 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function testGetPassParamsRemotable() {
 		$input = array(
-			'data'	=> array('name' => 'florian'),
+			'data'	=> array('florian'),
+			'type'	=> 'rpc',
 		);
 		$transformer = new BanchaRequestTransformer($input);
-		$this->assertEquals(array('name' => 'florian'), $transformer->getPassParams());
+		$this->assertEquals(array('florian'), $transformer->getPassParams());
 	}
 
 /**

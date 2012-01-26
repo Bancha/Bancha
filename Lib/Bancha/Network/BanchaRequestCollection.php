@@ -88,7 +88,6 @@ class BanchaRequestCollection {
 				$requests[$i]['controller'] 	= $transformer->getController();
 				$requests[$i]['action']			= $transformer->getAction();
 				$requests[$i]['named']			= $transformer->getPaging();
-				$requests[$i]['pass']			= $transformer->getPassParams();
 				$requests[$i]['plugin']			= null;
 				// bancha-specific
 				$requests[$i]['tid']			= $transformer->getTid();
@@ -96,6 +95,10 @@ class BanchaRequestCollection {
 				$requests[$i]['client_id']		= $transformer->getClientId();
 				$requests[$i]['isFormRequest']	= $transformer->isFormRequest();
 				$requests[$i]['isBancha']		= true; // additional property for cleaner controller syntax
+				
+				// $requests[$i]['pass']			= array();
+				$requests[$i]['pass']			= $transformer->getPassParams();
+				// print_r($requests[$i]['pass']);
 				
 				// Handle all other parameters as POST parameters.
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
