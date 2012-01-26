@@ -74,7 +74,8 @@ class BanchaController extends BanchaAppController {
 		$banchaApi = new BanchaApi();
 		
 		// send as javascript
-		header('Content-type: text/javascript');
+		$this->response->type('js');
+		// header('Content-type: text/javascript');
 	
 		// get namespace
 		$namespace = Configure::read('Bancha.namespace');
@@ -109,7 +110,7 @@ class BanchaController extends BanchaAppController {
 
 		$this->set('remoteApiNamespace', $remoteApiNamespace);
 		$this->set('banchaApi', $api);
-		$this->render();
+		$this->render('index');
 	}
 
 	/**

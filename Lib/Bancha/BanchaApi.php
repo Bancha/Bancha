@@ -55,8 +55,9 @@ class BanchaApi {
 		if ('all' === $filter || '[all]' === $filter) {
 			return $models;
 		}
+
 		// First remove the [ and ], then split by comma and trim each element.
-		if (1 !== strpos($filter, '[') && 1 !== strpos($filter, ']'))
+		if (false !== strpos($filter, '[') && false !== strpos($filter, ']'))
 		{
 			$filter = substr($filter, 1, -1);
 		}

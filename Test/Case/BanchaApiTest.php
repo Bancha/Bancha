@@ -51,6 +51,11 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertCount(1, $filteredModels);
 		$this->assertContains('User', $filteredModels);
 
+		// expose one model (alternative syntax)
+		$filteredModels = $api->filterRemotableModels($remotableModels, 'User');
+		$this->assertCount(1, $filteredModels);
+		$this->assertContains('User', $filteredModels);
+
 		// expose two models
 		$filteredModels = $api->filterRemotableModels($remotableModels, '[User,Article]');
 		$this->assertCount(2, $filteredModels);
@@ -58,6 +63,12 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertContains('Article', $filteredModels);
 
 		$filteredModels = $api->filterRemotableModels($remotableModels, '[ User, Article]');
+		$this->assertCount(2, $filteredModels);
+		$this->assertContains('User', $filteredModels);
+		$this->assertContains('Article', $filteredModels);
+
+		// expose two models (alternative syntax)
+		$filteredModels = $api->filterRemotableModels($remotableModels, 'User,Article');
 		$this->assertCount(2, $filteredModels);
 		$this->assertContains('User', $filteredModels);
 		$this->assertContains('Article', $filteredModels);
