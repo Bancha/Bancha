@@ -6,7 +6,7 @@
  * @package       Bancha
  * @category      TestFixtures
  */
-class ArticlesController extends AppController {
+class Articles2Controller extends AppController {
 
 /**
  * index method

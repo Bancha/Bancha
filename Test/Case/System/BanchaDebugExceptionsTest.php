@@ -20,7 +20,9 @@
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
-require_once dirname(__FILE__) . '/ArticlesController.php';
+App::uses('ArticlesController', 'Controller');
+
+// require_once dirname(__FILE__) . '/ArticlesController.php';
 
 /**
  * BanchaDebugExceptionsTest. Tests if the Exception to help the user develop are thrown correctly
