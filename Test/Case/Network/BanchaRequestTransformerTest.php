@@ -311,6 +311,18 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
+ * For remotable methods the parameter which need to be passed to the method are sent a little bit different than for
+ * CRUD actions.
+ */
+	public function testGetPassParamsRemotable() {
+		$input = array(
+			'data'	=> array('name' => 'florian'),
+		);
+		$transformer = new BanchaRequestTransformer($input);
+		$this->assertEquals(array('name' => 'florian'), $transformer->getPassParams());
+	}
+
+/**
  * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with
  * page, limit and order. The sort in Ext looks like [property: X, direction: Y], in Cake like [Controller.X => Y].
  *
