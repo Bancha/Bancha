@@ -56,7 +56,11 @@ class BanchaApi {
 			return $models;
 		}
 		// First remove the [ and ], then split by comma and trim each element.
-		$filteredModels = array_map('trim', explode(',', substr($filter, 1, -1)));
+		if (1 !== strpos($filter, '[') && 1 !== strpos($filter, ']'))
+		{
+			$filter = substr($filter, 1, -1);
+		}
+		$filteredModels = array_map('trim', explode(',', $filter));
 		foreach ($filteredModels as $filteredModel)
 		{
 			if (!in_array($filteredModel, $models))
