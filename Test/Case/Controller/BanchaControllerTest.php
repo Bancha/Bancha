@@ -26,8 +26,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	public function testIndexNoMetadata()
 	{
-		$this->testAction('/bancha-api.js');
-		$response = $this->view;
+		$response = $this->testAction('/bancha-api.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
 		$this->assertEquals('/bancha.php', $api->url);
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
@@ -43,8 +42,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	public function testIndexOneMetadata()
 	{
-		$this->testAction('/bancha-api/models/User.js');
-		$response = $this->view;
+		$response = $this->testAction('/bancha-api/models/User.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
 		$this->assertEquals('/bancha.php', $api->url);
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
@@ -62,8 +60,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	public function testIndexAllMetadata()
 	{
-		$this->testAction('/bancha-api/models/all.js');
-		$response = $this->view;
+		$response = $this->testAction('/bancha-api/models/all.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
 		$this->assertEquals('/bancha.php', $api->url);
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);

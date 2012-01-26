@@ -36,7 +36,7 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  */
 class BanchaController extends BanchaAppController {
 
-	var $name = 'Bancha.Bancha'; //turns html on again
+	var $name = 'Bancha'; //turns html on again
 	var $autoRender = false; //we don't need a view for this
 	var $autoLayout = false;
 	//var $viewClass = 'Bancha.BanchaExt';
@@ -69,8 +69,8 @@ class BanchaController extends BanchaAppController {
 	 *                                  all models or a comma separated list of models.
 	 * @return void
 	 */
-	public function index($modelFilter='') {
-		$modelFilter = urldecode($modelFilter);
+	public function index($metadataFilter='') {
+		$metadataFilter = urldecode($metadataFilter);
 		$banchaApi = new BanchaApi();
 		
 		// send as javascript
@@ -84,13 +84,13 @@ class BanchaController extends BanchaAppController {
 		}
 		
 		$remotableModels = $banchaApi->getRemotableModels();
-        $requestedModels = $banchaApi->filterRemotableModels($remotableModels, $modelFilter);
+        $metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 		
 		$api = array(
 			'url'		=> '/bancha.php',
 			'namespace'	=> $namespace,
     		'type'		=> 'remoting',
-    		'metadata'	=> $banchaApi->getMetadata($requestedModels),
+    		'metadata'	=> $banchaApi->getMetadata($metadataModels),
     		'actions'	=> array_merge_recursive(
 				$banchaApi->getRemotableModelActions($remotableModels),
 				$banchaApi->getRemotableMethods(),
@@ -108,9 +108,7 @@ class BanchaController extends BanchaAppController {
 			$remoteApiNamespace = 'Bancha.REMOTE_API';
 		}
 
-		$this->set('remoteApiNamespace', $remoteApiNamespace);
-		$this->set('banchaApi', $api);
-		$this->render('index');
+		$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", $remoteApiNamespace, json_encode($api)));
 	}
 
 	/**
