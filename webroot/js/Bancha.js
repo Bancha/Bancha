@@ -778,8 +778,21 @@ Ext.define('Bancha', {
      * !!!don't use this function directly!!!
      */
     onInitializedOnModelReady: function(modelNamesToLoad, loadingModels, loadedModels, callback, scope) {
+		
+        // IFDEBUG
+        if(!Ext.isFunction(callback)) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: Please define a callback as the second param for Bancha.onModelReady(modelName,callback).'
+            });
+        }
+        // ENDIF
+
+		// defaults
         var modelsToLoad  = [],
             modelName;
+        callback = callback || Ext.emptyFn;	
+        scope = scope || {}; // sandbox is no scope is set, way easier to debug then window	
         loadingModels = loadingModels || {};
         loadedModels  = loadedModels  || {};
         
