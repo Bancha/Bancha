@@ -29,7 +29,7 @@ App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 App::uses('AppModel', 'Model');
 App::uses('Article', 'Model');
-require_once dirname(__FILE__) . '/ArticlesController.php';
+// require_once dirname(__FILE__) . '/ArticlesController.php';
 
 if (isset($_SERVER['argv'][1]))
 {

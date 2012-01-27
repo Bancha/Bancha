@@ -235,7 +235,6 @@ class BanchaRequestTransformer {
  * @return array Array with 'pass' parameters
  */
 	public function getPassParams() {
-		
 		$pass = array();
 		// normal requests
 		if (isset($this->data['data'][0]['data']['id'])) {
@@ -246,6 +245,8 @@ class BanchaRequestTransformer {
 			$pass['id'] = $this->data['id'];
 			unset($this->data['id']);
 			$this->isFormRequest = true;
+		} else if(2 === count($this->data) && isset($this->data['type']) && 'rpc' == $this->data['type'] && isset($this->data['data'])) {
+			$pass = $this->data['data'];
 		}
 		return $pass;
 	}
@@ -264,26 +265,27 @@ class BanchaRequestTransformer {
 		}
 		
 		$page = 1;
-		if (isset($this->data['data']['0']['page'])) {
-			$page = $this->data['data']['0']['page'];
-			unset($this->data['data']['0']['page']);
-		} else if (isset($this->data['data']['0']['start']) && isset($this->data['data']['0']['limit'])) {
-			$page = floor($this->data['data']['0']['start'] / $this->data['data']['0']['limit']);
-			unset($this->data['data']['0']['start']);
+
+		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['page'])) {
+			$page = $this->data['data'][0]['page'];
+			unset($this->data['data'][0]['page']);
+		} else if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['start']) && isset($this->data['data'][0]['limit'])) {
+			$page = floor($this->data['data'][0]['start'] / $this->data['data'][0]['limit']);
+			unset($this->data['data'][0]['start']);
 		}
 		$limit = 500;
-		if (isset($this->data['data']['0']['limit'])) {
-			$limit = $this->data['data']['0']['limit'];
-			unset($this->data['data']['0']['limit']);
+		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['limit'])) {
+			$limit = $this->data['data'][0]['limit'];
+			unset($this->data['data'][0]['limit']);
 		}
 		$order = array();
-		if (isset($this->data['data']['0']['sort'])) {
-			foreach ($this->data['data']['0']['sort'] as $sort) {
+		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['sort'])) {
+			foreach ($this->data['data'][0]['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
 					$order[$this->getController() . '.' . $sort['property']] = strtolower($sort['direction']);
 				}
 			}
-			unset($this->data['data']['0']['sort']);
+			unset($this->data['data'][0]['sort']);
 		}
 		$this->paginate = array(
 			'page'			=> $page,
@@ -369,7 +371,7 @@ class BanchaRequestTransformer {
 		$this->getPaging();
 		
 		// prepare and return data
-		return $this->transformDataStructureToCake($this->getModel(),$this->data);
+		return $this->transformDataStructureToCake($this->getModel(), $this->data);
 	}
 
 }
