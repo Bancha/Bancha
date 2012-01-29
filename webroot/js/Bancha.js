@@ -12,7 +12,7 @@
  * @since         Bancha v 0.0.2
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @version       0.9.0 // TODO vom Precompiler ausfuellen lassen
+ * @version       PRECOMPILER_ADD_RELEASE_VERSION
  *
  * For more information go to http://banchaproject.org 
  */
@@ -424,7 +424,7 @@ Ext.define('Bancha', {
      * @property
      * Bancha Project version
      */
-    version: '0.9.0',
+    version: 'PRECOMPILER_ADD_RELEASE_VERSION',
     /**
      * @property
      * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')  
