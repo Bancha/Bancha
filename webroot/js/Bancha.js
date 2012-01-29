@@ -412,12 +412,14 @@ Ext.define('Bancha', {
     /* End Definitions */
     
     
+    // IFDEBUG
     /**
      * @property
      * This property only exists in the debug version to indicate 
      * to jasmine tests that this is a debug version
      */
-    debugVersion: true,
+    debugVersion: true, 
+    // ENDIF
     /**
      * @property
      * Bancha Project version
@@ -2082,6 +2084,7 @@ Ext.define('Bancha', {
                                 break;
                             case 'numberformat':    
                                 // numberformat validation works only only on numberfields
+                                // IFDEBUG
                                 if(field.xtype!=='numberfield') {
                                     Ext.Error.raise({
                                         plugin: 'Bancha',
