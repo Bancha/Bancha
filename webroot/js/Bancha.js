@@ -379,8 +379,8 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
  * 
  * example usage:
  *     <!-- include Bancha and the remote API -->
- *     <script type="text/javascript" src="path/to/cakephp/webroot/js/Bancha.js"></script>
- *     <script type="text/javascript" src="path/to/cakephp/webroot/Bancha.js"></script>
+ *     <script type="text/javascript" src="/Bancha/js/Bancha-dev.js"></script>
+ *     <script type="text/javascript" src="/bancha-api/models/all.js"></script>
  *     <script>
  *         // when Bancha is ready, the model meta data is loaded
  *         // from the server and the model is created....
