@@ -95,7 +95,7 @@ if($_GET['setup-check']) {
 		trigger_error("CakePHP core could not be found.  Check the value of CAKE_CORE_INCLUDE_PATH in APP/webroot/index.php.  It should point to the directory containing your " . DS . "cake core directory and your " . DS . "vendors root directory.", E_USER_ERROR);
 	}
 	
-	// load bootstrap of bancha
+	// load bootstrap of bancha after cake and app bootstrap is loaded above
 	$failedLoadingBootstrap = true;
 	if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
 		// Bancha is in the general plugins folder

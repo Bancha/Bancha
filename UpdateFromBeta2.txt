@@ -1,0 +1,8 @@
+Bancha - Combining ExtJS and CakePHP
+====================================
+
+When you upgrade from Beta2 to Beta3 please go through the Installation again, many things changed:
+https://github.com/Bancha/Bancha/wiki/Installation
+
+After that, check that the remote model definition has changed to:
+$actsAs = array('Bancha.BanchaRemoteable');

@@ -1,7 +1,7 @@
 /*!
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
@@ -9,10 +9,10 @@
  * @package       Bancha
  * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
- * @since         Bancha v1.0 // TODO vom Precompiler ausfuellen lassen
+ * @since         Bancha v 0.0.2
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @version       0.9.0 // TODO vom Precompiler ausfuellen lassen
+ * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
  * For more information go to http://banchaproject.org 
  */
@@ -379,8 +379,8 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
  * 
  * example usage:
  *     <!-- include Bancha and the remote API -->
- *     <script type="text/javascript" src="path/to/cakephp/webroot/js/Bancha.js"></script>
- *     <script type="text/javascript" src="path/to/cakephp/webroot/Bancha.js"></script>
+ *     <script type="text/javascript" src="/Bancha/js/Bancha-dev.js"></script>
+ *     <script type="text/javascript" src="/bancha-api/models/all.js"></script>
  *     <script>
  *         // when Bancha is ready, the model meta data is loaded
  *         // from the server and the model is created....
@@ -412,17 +412,19 @@ Ext.define('Bancha', {
     /* End Definitions */
     
     
+    // IFDEBUG
     /**
      * @property
      * This property only exists in the debug version to indicate 
      * to jasmine tests that this is a debug version
      */
-    debugVersion: true,
+    debugVersion: true, 
+    // ENDIF
     /**
      * @property
      * Bancha Project version
      */
-    version: '0.9.0',
+    version: 'PRECOMPILER_ADD_RELEASE_VERSION',
     /**
      * @property
      * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')  
@@ -778,8 +780,21 @@ Ext.define('Bancha', {
      * !!!don't use this function directly!!!
      */
     onInitializedOnModelReady: function(modelNamesToLoad, loadingModels, loadedModels, callback, scope) {
+		
+        // IFDEBUG
+        if(!Ext.isFunction(callback)) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: Please define a callback as the second param for Bancha.onModelReady(modelName,callback).'
+            });
+        }
+        // ENDIF
+
+		// defaults
         var modelsToLoad  = [],
             modelName;
+        callback = callback || Ext.emptyFn;	
+        scope = scope || {}; // sandbox is no scope is set, way easier to debug then window	
         loadingModels = loadingModels || {};
         loadedModels  = loadedModels  || {};
         
@@ -2069,6 +2084,7 @@ Ext.define('Bancha', {
                                 break;
                             case 'numberformat':    
                                 // numberformat validation works only only on numberfields
+                                // IFDEBUG
                                 if(field.xtype!=='numberfield') {
                                     Ext.Error.raise({
                                         plugin: 'Bancha',
