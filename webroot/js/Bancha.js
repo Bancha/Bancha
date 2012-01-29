@@ -12,7 +12,7 @@
  * @since         Bancha v 0.0.2
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @version       PRECOMPILER_ADD_RELEASE_VERSION
+ * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
  * For more information go to http://banchaproject.org 
  */
