@@ -69,7 +69,7 @@ class BanchaController extends BanchaAppController {
         $metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 		
 		$api = array(
-			'url'		=> '/bancha.php',
+			'url'		=> $this->request->webroot.'bancha.php',
 			'namespace'	=> $namespace,
     		'type'		=> 'remoting',
     		'metadata'	=> $banchaApi->getMetadata($metadataModels),

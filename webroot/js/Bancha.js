@@ -1032,7 +1032,7 @@ Ext.define('Bancha', {
                     Ext.Error.raise({
                         plugin: 'Bancha',
                         modelName: modelName,
-                        msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'Controller->'+ map[method]+'(...).'
+                        msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'sController->'+ map[method]+'(...). (If you have special inflection rules, the serverside is maybe looking for a different controller name, this is jsut a guess)'
                     });
                 };
             
@@ -1047,7 +1047,7 @@ Ext.define('Bancha', {
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
-                    msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'Controller->'+ map[method]+'(...).'
+                    msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'sController->'+ map[method]+'(...). (If you have special inflection rules, the serverside is maybe looking for a different controller name, this is jsut a guess)'
                 });
             };
             
