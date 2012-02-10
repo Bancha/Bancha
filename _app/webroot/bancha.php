@@ -97,12 +97,12 @@ if(isset($_GET['setup-check']) && $_GET['setup-check']) {
 	
 	// load bootstrap of bancha after cake and app bootstrap is loaded above
 	$failedLoadingBootstrap = true;
-	if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
+	if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 		// Bancha is in the general plugins folder
-		$failedLoadingBootstrap = !include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php');
-	} else if (file_exists(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php')) {
+		$failedLoadingBootstrap = !include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php');
+	} else if (file_exists(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 		// Bancha is in the app Plugin folder
-		$failedLoadingBootstrap = !include(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php');
+		$failedLoadingBootstrap = !include(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php');
 	}
 	if ($failedLoadingBootstrap) {
 		trigger_error("Bancha bootstrap could not be loaded.  
