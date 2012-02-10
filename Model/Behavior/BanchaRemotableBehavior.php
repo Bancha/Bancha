@@ -35,13 +35,12 @@ if ( false === function_exists('lcfirst') ) {
  * @subpackage Model.Behavior
  */
 class BanchaRemotableBehavior extends ModelBehavior {
-
-	// TODO doku
-	// alla array('create'=>true,...,'shareMetaData'=>true);
-	private $actionIsAllowed;
 	private $schema;
 	private $model;
 
+	/**
+	 * a mapping table from cake to extjs data types
+	 */
 	private $types = array(
 		"integer" => "int",
 		"string" => "string",
@@ -50,17 +49,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		"float" => "float",
 		"text" => "string",
 		"boolean" => "boolean"
-		);
+	);
 
-		//  formater for the validation rules
-		// TODO comply with CakePHP validation rules
-//		private $formater = array(
-//		'alpha' => '/^[a-zA-Z_]+$/',
-//		'alphanum' => '/^[a-zA-Z0-9_]+$/',
-//		'email' => '/^(\w+)([\-+.][\w]+)*@(\w[\-\<wbr>w]*\.){1,5}([A-Za-z]){2,6}$/',
-//		'url' => '/(((^https?)|(^ftp)):\/\/([\-\<wbr>w]+\.)+\w{2,3}(\/[%\-\w]+(\.\<wbr>w{2,})?)*(([\w\-\.\?\\\/+@&amp;#;`<wbr>~=%!]*)(\.\w{2,})?)*\/?)/i)',
-//		);
-		
+	/**
+	 * a mapping table from cake to extjs validation rules
+	 */
 	private $formater = array(
 		'alpha' => 'banchaAlpha',
 		'alphanum' => 'banchaAlphanum',
@@ -76,37 +69,41 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	private $result = null;
 	
 	/**
-	 * If true the model also saves and validates records with missing
-	 * fields, like ExtJS is providing for edit operations.
-	 * If you set this to false please use $model->saveFields($data,$options)
-	 * to save edit-data from extjs.
+	 * the default behavor configuration
 	 */
-	public $useOnlyDefinedFields = true;
+	private $_defaults = array(
+		/*
+		 * If true the model also saves and validates records with missing
+		 * fields, like ExtJS is providing for edit operations.
+		 * If you set this to false please use $model->saveFields($data,$options)
+		 * to save edit-data from extjs.
+		 */
+		'useOnlyDefinedFields' => true,
+	);
 /**
- *  TODO doku
+ * Sets up the BanchaRemotable behavior. For config options see 
+ * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
  *
  * @param object $Model instance of model
  * @param array $config array of configuration settings.
  * @return void
- * @access public
  */
-	function setup(&$Model, $config = array()) {
-		if(is_string($config)) {
-			// TODO in array form umwandeln
-		}
+	public function setup(&$Model, $config = array()) {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
-		$this->actionIsAllowed = $config;
-		if(isset($config['useOnlyDefinedFields'])) {
-			$this->useOnlyDefinedFields = $config['useOnlyDefinedFields'];
+		
+		// apply configs
+		if(!is_array($config)) {
+			throw new CakeException("Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration");
 		}
+		$settings = array_merge($this->_defaults, $config);
+		$this->settings[$this->model->alias] = $settings;
 	}
 
-	/** set the model explicit as cakephp does not instantiate the behavior for each model
-	 *
+	/**
+	 * set the model explicit as cakephp does not instantiate the behavior for each model
 	 */
-
-	function setBehaviorModel(&$Model) {
+	public function setBehaviorModel(&$Model) {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
 	}
@@ -117,7 +114,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @param AppModel $model
  * @return array all the metadata as array
  */
-	function extractBanchaMetaData() {
+	public function extractBanchaMetaData() {
 
 		//TODO persist: persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
@@ -159,43 +156,43 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 
-        /**
-         * Custom validation rule for uploaded files.
-         *
-         *  @param Array $data CakePHP File info.
-         *  @param Boolean $required Is this field required?
-         *  @return Boolean
-        */
-        function validateFile($data, $required = false) {
-                // Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
-                $upload_info = array_shift($data);
+	/**
+	 * Custom validation rule for uploaded files.
+	 *
+	 *  @param Array $data CakePHP File info.
+	 *  @param Boolean $required Is this field required?
+	 *  @return Boolean
+	*/
+	public function validateFile($data, $required = false) {
+		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
+		$upload_info = array_shift($data);
 
-                // No file uploaded.
-                if ($required && $upload_info[’size’] == 0) {
-                        return false;
-                }
+		// No file uploaded.
+		if ($required && $upload_info[’size’] == 0) {
+				return false;
+		}
 
-                // Check for Basic PHP file errors.
-                if ($upload_info[‘error’] !== 0) {
-                        return false;
-                }
+		// Check for Basic PHP file errors.
+		if ($upload_info[‘error’] !== 0) {
+			return false;
+		}
 
-                // Finally, use PHP’s own file validation method.
-                return is_uploaded_file($upload_info[‘tmp_name’]);
-        }
-        
-        // TODO remove workarround for 'file' validation
-        function file($check) {
-        	return true;
-        }
+		// Finally, use PHP’s own file validation method.
+		return is_uploaded_file($upload_info[‘tmp_name’]);
+	}
+		
+	// TODO remove workarround for 'file' validation
+	public function file($check) {
+		return true;
+	}
 
 /**
  * Return the Associations as ExtJS-Assoc Model
  * should look like this:
  * <code>
  * associations: [
- *        {type: 'hasMany', model: 'Post',    name: 'posts'},
- *        {type: 'hasMany', model: 'Comment', name: 'comments'}
+ *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
+ *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
  *   ]
  * </code>
  *   
@@ -439,13 +436,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return array_keys(isset($data[$this->model->name]) ? $data[$this->model->name] : $data);
 	}
 	/**
-	 * See $this->useOnlyDefinedFields for explanation
+	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
 	 * 
 	 * @param $model the model
 	 * @param $options the validation options
 	 */
 	public function beforeValidate($model,$options) {
-		if($this->useOnlyDefinedFields) {
+		if($this->settings[$this->model->alias]['useOnlyDefinedFields']) {
 			// if not yet defined, create a field list to validate only the changes (empty records will still invalidate)
 			$model->whitelist = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList']; // TODO how to not overwrite the whitelist?
 		}
@@ -454,13 +451,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return true;
 	}
 	/**
-	 * See $this->useOnlyDefinedFields for explanation
+	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
 	 * 
 	 * @param $model the model
 	 * @param $options the save options
 	 */
 	public function beforeSave($model,$options) {
-		if($this->useOnlyDefinedFields) {
+		if($this->settings[$this->model->alias]['useOnlyDefinedFields']) {
 			// if not yet defined, create a field list to save only the changes
 			$options['fieldList'] = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList'];
 		}
@@ -469,21 +466,24 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return true;
 	}
 	/**
-	 * Saves a records, either add or edit. See $this->useOnlyDefinedFields for explanation
+	 * Saves a records, either add or edit. 
+	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
 	 * 
 	 * @param $model the model (set by cake)
 	 * @param $data the data to save (first user argument)
 	 * @param $options the save options
 	 * @return returns the result of the save operation
 	 */
-	public function saveFields($model,$data,$options=array()) {
+	public function saveFields($model,$data=null,$options=array()) {
 		// overwrite config for this commit
-		$config = $this->useOnlyDefinedFields;
-		$this->useOnlyDefinedFields = true;
+		$config = $this->settings[$this->model->alias]['useOnlyDefinedFields'];
+		$this->settings[$this->model->alias]['useOnlyDefinedFields'] = true;
 		
 		// this should never be the case, cause Bancha cannot handle validation errors currently
 		// We expect to automatically send validation errors to the client in the right format in version 1.1
-		$model->set($data);
+		if($data) {
+			$model->set($data);
+		}
 		if(!$model->validates()) {
 			$msg =  "The record doesn't validate. Since Bancha can't send validation errors to the ".
 					"client yet, please handle this in your application stack.";
@@ -493,10 +493,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			throw new BadRequestException($msg);
 		}
 		
-		$result = $model->save($data,$options);
+		$result = $model->save($model->data,$options);
 		
 		// set back
-		$this->useOnlyDefinedFields = $config;
+		$this->settings[$this->model->alias]['useOnlyDefinedFields'] = $config;
 		return $result;
 	}
 	
