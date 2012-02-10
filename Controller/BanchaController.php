@@ -31,22 +31,30 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  *
  * @package    Bancha
  * @subpackage Controller
- * @author Andreas Kern
- * @author Florian Eckerstorfer <florian@theroadtojoy.at>
+ * @author     Andreas Kern <andreas.kern@gmail.com>
+ * @author     Florian Eckerstorfer <florian@theroadtojoy.at>
+ * @author     Roland Schuetz <mail@rolandschuetz.at>
  */
 class BanchaController extends BanchaAppController {
 
-	var $name = 'Bancha';
-	var $autoRender = false; //we don't need a view for this
-	var $autoLayout = false;
-
+	public $name = 'Bancha';
+	public $autoRender = false; //we don't need a view for this
+	public $autoLayout = false;
+	
+	// enable auth component if configured
+	public function __construct($request = null, $response = null) {
+		if(is_array(Configure::read('Bancha.Api.AuthConfig'))) {
+			$this->components['Auth'] = Configure::read('Bancha.Api.AuthConfig');
+		}
+		parent::__construct($request, $response);
+	}
+	
 	/**
 	 * the index method is called by default by cakePHP if no action is specified,
 	 * it will print the API for the Controllers which have the Bancha-
 	 * Behavior set. This will not include any model meta data. to specify which
-	 * model meta data should be printed you will have to pass the model names as
-	 * controller parameters as in cakePHP.e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
-	 * will load the metadata from the models Users and Tags
+	 * model meta data should be printed you will have to pass the model name or 'all'
+	 * For more see [how to adopt the layout](https://github.com/Bancha/Bancha/wiki/Installation)
 	 *
 	 * @param string $metadataFilter Models that should be exposed through the Bancha API. Either all or [all] for
 	 *                                  all models or a comma separated list of models.
@@ -58,19 +66,13 @@ class BanchaController extends BanchaAppController {
 		
 		// send as javascript
 		$this->response->type('js');
-	
-		// get namespace
-		$namespace = Configure::read('Bancha.namespace');
-		if(empty($namespace)) {
-			$namespace = 'Bancha.RemoteStubs'; // default
-		}
 		
 		$remotableModels = $banchaApi->getRemotableModels();
         $metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 		
 		$api = array(
 			'url'		=> $this->request->webroot.'bancha.php',
-			'namespace'	=> $namespace,
+			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
     		'type'		=> 'remoting',
     		'metadata'	=> $banchaApi->getMetadata($metadataModels),
     		'actions'	=> array_merge_recursive(
