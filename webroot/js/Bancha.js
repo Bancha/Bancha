@@ -1538,7 +1538,7 @@ Ext.define('Bancha', {
              * Scope can be defined in destroyButtonConfig.items[0].scope, but normally 
              * you don't need a scope here, since the arguments already provide everything.
              */
-            onDestroy: function(grid, rowIndex, colIndex) {
+            onDelete: function(grid, rowIndex, colIndex) {
                 var store = grid.getStore(),
                     rec = store.getAt(rowIndex),
                     name = Ext.getClassName(rec);
@@ -1712,7 +1712,7 @@ Ext.define('Bancha', {
                 if(config.enableDestroy) {
                     button = Ext.clone(config.destroyButtonConfig);
                     if(button.items[0].handler===Ext.emptyFn) {
-                        button.items[0].handler = config.onDestroy;
+                        button.items[0].handler = config.onDelete;
                     }
                     columns.push(button);
                 }
