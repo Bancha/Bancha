@@ -1063,7 +1063,7 @@ Ext.define('Bancha', {
             extend: 'Bancha.data.Model',
             idProperty: idProperty,
             proxy: {
-                type: 'direct',
+                type: 'direct', // TODO batch requests: http://www.sencha.com/forum/showthread.php?156917
                 batchActions: false, // don't batch requests, cake can't handle multiple records (the requests will be by batched by Ext.Direct)
                 api: {
                     /* IFPRODUCTION
@@ -1147,7 +1147,7 @@ Ext.define('Bancha', {
             /**
              * make the first letter of an String upper case
              * @param {String} str
-             * @return {String} str with first letter upper case
+             * @return {String} str with first letter upper case
              * @member Bancha.scaffold.Util
              */
             toFirstUpper: function(str) {
@@ -1169,7 +1169,7 @@ Ext.define('Bancha', {
              * "John Smith" -> "John Smith"  
              *
              * @param {String} str
-             * @return {String} str transformed string
+             * @return {String} str transformed string
              * @member Bancha.scaffold.Util
              */
             humanize: function(str) {
@@ -1491,7 +1491,7 @@ Ext.define('Bancha', {
                 store.each(function(el) {
                     if(!el.isValid()) {
                         valid = false;
-                        name = el.get('name') || el.get('title') || (el.phantom ? "New entry" : el.getId());
+                        name = el.get('name') || el.get('title') || (el.phantom ? "New entry" : el.getId());
                         msg += "<br><br><b>"+name+":</b>";
                         el.validate().each(function(error) {
                             msg += "<br>&nbsp;&nbsp;&nbsp;"+error.field+" "+error.message;
@@ -1538,7 +1538,7 @@ Ext.define('Bancha', {
              * Scope can be defined in destroyButtonConfig.items[0].scope, but normally 
              * you don't need a scope here, since the arguments already provide everything.
              */
-            onDestroy: function(grid, rowIndex, colIndex) {
+            onDelete: function(grid, rowIndex, colIndex) {
                 var store = grid.getStore(),
                     rec = store.getAt(rowIndex),
                     name = Ext.getClassName(rec);
@@ -1579,6 +1579,13 @@ Ext.define('Bancha', {
                             grid.setLoading("Currently we can not handle any respones after delete, so after this action <br />the grid is not usable anymore. Sry.");
                             
                         }
+                    });
+                } else {
+                    Ext.MessageBox.show({
+                        title: name + ' record deleted',
+                        msg: name + ' record was successfully deleted.',
+                        icon: Ext.MessageBox.INFO,
+                        buttons: Ext.Msg.OK
                     });
                 }
             },
@@ -1705,7 +1712,7 @@ Ext.define('Bancha', {
                 if(config.enableDestroy) {
                     button = Ext.clone(config.destroyButtonConfig);
                     if(button.items[0].handler===Ext.emptyFn) {
-                        button.items[0].handler = config.onDestroy;
+                        button.items[0].handler = config.onDelete;
                     }
                     columns.push(button);
                 }
