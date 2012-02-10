@@ -1063,7 +1063,7 @@ Ext.define('Bancha', {
             extend: 'Bancha.data.Model',
             idProperty: idProperty,
             proxy: {
-                type: 'direct',
+                type: 'direct', // TODO batch requests: http://www.sencha.com/forum/showthread.php?156917
                 batchActions: false, // don't batch requests, cake can't handle multiple records (the requests will be by batched by Ext.Direct)
                 api: {
                     /* IFPRODUCTION
