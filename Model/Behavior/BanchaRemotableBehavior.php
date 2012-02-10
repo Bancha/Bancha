@@ -476,14 +476,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param $options the save options
 	 * @return returns the result of the save operation
 	 */
-	public function saveFields($model,$data,$options=array()) {
+	public function saveFields($model,$data=null,$options=array()) {
 		// overwrite config for this commit
 		$config = $this->useOnlyDefinedFields;
 		$this->useOnlyDefinedFields = true;
 		
 		// this should never be the case, cause Bancha cannot handle validation errors currently
 		// We expect to automatically send validation errors to the client in the right format in version 1.1
-		$model->set($data);
+		if($data) {
+			$model->set($data);
+		}
 		if(!$model->validates()) {
 			$msg =  "The record doesn't validate. Since Bancha can't send validation errors to the ".
 					"client yet, please handle this in your application stack.";
@@ -493,7 +495,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			throw new BadRequestException($msg);
 		}
 		
-		$result = $model->save($data,$options);
+		$result = $model->save($model->data,$options);
 		
 		// set back
 		$this->useOnlyDefinedFields = $config;
