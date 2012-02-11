@@ -339,11 +339,6 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
  * @var string 'ArticleForTestingSaveBehavior'
  */
 	public $name = 'ArticleForTestingSaveBehavior';
-	
-/**
- * we are testing hte bancha remotable behavior
- */
-	//public $actsAs = array('Bancha.BanchaRemotable');
 /**
  * schema property
  *
@@ -359,12 +354,18 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length'=>8),
 	);
 	
-	/**
-	 * belongsTo associations
-	 * this article belongs to an author from the class below
-	 *
-	 * @var array
-	 */
+
+/**
+ * we are testing the bancha remotable behavior
+ */
+	public $actsAs = array('Bancha.BanchaRemotable');
+
+/**
+ * belongsTo associations
+ * this article belongs to an author from the class below
+ *
+ * @var array
+ */
 	public $belongsTo = array('User');
 			
 /**

@@ -195,10 +195,10 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 */
 	public function testModelSave() {
 		$article = ClassRegistry::init('ArticleForTestingSaveBehavior');
-
+		
 		// save article
 		$article->create();
-		$this->assertTrue(!!$article->save(array(
+		$this->assertTrue(!!$article->saveFieldsAndReturn(array(
 			'ArticleForTestingSaveBehavior' => array(
 				'title' => 'testModelSave Entry',
 				'body' => 'This is the body text.',
@@ -208,7 +208,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		
 		// second article with same title
 		$article->create();
-		$this->assertTrue(!!$article->save(array(
+		$this->assertTrue(!!$article->saveFieldsAndReturn(array(
 			'ArticleForTestingSaveBehavior' => array(
 				'title' => 'testModelSave Entry',
 				'body' => 'This is the body text.',
