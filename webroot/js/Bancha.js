@@ -1546,48 +1546,35 @@ Ext.define('Bancha', {
                 // instantly remove vom ui
                 store.remove(rec);
                 
-                // delete on server
-                if (!rec.phantom) {
-                    rec.destroy({
-                        success: function(record,operation) {
-    
-                            Ext.MessageBox.show({
-                                title: name + ' record deleted',
-                                msg: name + ' record was successfully deleted.',
-                                icon: Ext.MessageBox.INFO,
-                                buttons: Ext.Msg.OK
-                            });
-                        },
-                        failure: function(record,operation) {
-                            
-                            // since it couldn't be deleted, add again
-                            store.add(rec);
-                            
-                            // inform user
-                            Ext.MessageBox.show({
-                                title: name + ' record could not be deleted',
-                                msg: operation.getError() || (name + ' record could not be deleted.'),
-                                icon: Ext.MessageBox.ERROR,
-                                buttons: Ext.Msg.OK
-                            });
-                        },
-                        callback: function(record,operation) {
-                            
-                            // TODO how to solve this?
-                            // http://www.sencha.com/forum/showthread.php?157580-Don-t-resend-fails-rec.destroy()-with-Ext.Direct&p=680442#post680442
-                            grid.setLoading(false); // destroy old mask
-                            grid.setLoading("Currently we can not handle any respones after delete, so after this action <br />the grid is not usable anymore. Sry.");
-                            
-                        }
-                    });
-                } else {
-                    Ext.MessageBox.show({
-                        title: name + ' record deleted',
-                        msg: name + ' record was successfully deleted.',
-                        icon: Ext.MessageBox.INFO,
-                        buttons: Ext.Msg.OK
-                    });
-                }
+                // sync to server
+                store.sync();
+                
+                /* store.sync callbacks are only supported in ExtJS 4.1
+                store.sync({
+                    success: function(record,operation) {
+
+                        Ext.MessageBox.show({
+                            title: name + ' record deleted',
+                            msg: name + ' record was successfully deleted.',
+                            icon: Ext.MessageBox.INFO,
+                            buttons: Ext.Msg.OK
+                        });
+                    },
+                    failure: function(record,operation) {
+                        
+                        // since it couldn't be deleted, add again
+                        store.add(rec);
+                        
+                        // inform user
+                        Ext.MessageBox.show({
+                            title: name + ' record could not be deleted',
+                            msg: operation.getError() || (name + ' record could not be deleted.'),
+                            icon: Ext.MessageBox.ERROR,
+                            buttons: Ext.Msg.OK
+                        });
+                    }
+                }); */
+                
             },
             /**
              * @property

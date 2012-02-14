@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha test ficture
+ * Bancha test fixture
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer

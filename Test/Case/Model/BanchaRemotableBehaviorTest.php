@@ -12,6 +12,7 @@
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
@@ -28,6 +29,7 @@ require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the test
  *
  */
 class BanchaRemotableBehaviorTest extends CakeTestCase {
+	public $fixtures = array('plugin.bancha.article_for_testing_save_behavior','plugin.bancha.user');
 /**
  * Sets the plugins folder for this test
  *
@@ -183,6 +185,49 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  */
 	public function extractBanchaMetaData(&$model) {
 		CakePlugin::path('TestPlugin');
+	}
+
+
+	/**
+	 * Tests that custom validation rule swhich execute a find doesn't break bancha
+	 * see issue: https://github.com/Bancha/Bancha/issues/22
+	 * @return void
+	 */
+	public function testModelSave() {
+		$article = ClassRegistry::init('ArticleForTestingSaveBehavior');
+		
+		// save article
+		$article->create();
+		$this->assertTrue(!!$article->saveFieldsAndReturn(array(
+			'ArticleForTestingSaveBehavior' => array(
+				'title' => 'testModelSave Entry',
+				'body' => 'This is the body text.',
+				'user_id' => 95
+			)
+		)));
+		
+		// second article with same title
+		$article->create();
+		$this->assertTrue(!!$article->saveFieldsAndReturn(array(
+			'ArticleForTestingSaveBehavior' => array(
+				'title' => 'testModelSave Entry',
+				'body' => 'This is the body text.',
+				'user_id' => 95
+			)
+		)));
+		
+		// validation should fail here
+		// check that the validation rule is actually working
+		$article->create();
+		$article->set(array(
+			'ArticleForTestingSaveBehavior' => array(
+				'title' => 'testModelSave Entry',
+				'body' => 'This is the body text.',
+				'user_id' => 95
+			)
+		));
+		$this->assertFalse($article->validates());
+		
 	}
 
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha test fixture
+ * Bancha test fixture, only used in BanchaRemotableBehaviorTest::testModelSave
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
@@ -18,11 +18,11 @@
  */
 
 /**
- * Creates sample users
+ * Creates sample articles
  *
  * @package       Bancha.tests.fixtures
  */
-class UserFixture extends CakeTestFixture {
+class ArticleForTestingSaveBehaviorFixture extends CakeTestFixture {
 
 /**
  * fields property
@@ -32,22 +32,25 @@ class UserFixture extends CakeTestFixture {
  */
 	public $fields = array(
 		'id' => array('type' => 'integer', 'key' => 'primary'),
-		'user' => array('type' => 'string', 'null' => false),
-		'password' => array('type' => 'string', 'null' => false),
-		'created' => 'datetime',
-		'updated' => 'datetime'
+		'title' => array('type' => 'string', 'null' => true),
+		'date' => array('type' => 'datetime', 'null' => true),
+		'body' => array('type' => 'string', 'null' => true),
+		'published' => array('type' => 'integer', 'default' => 0),
+		'user_id' => array('type' => 'integer', 'null' => false),
 	);
 
+/**
+ * belongsTo associations
+ * this article belongs to an author from the class below
+ *
+ * @var array
+ */
+	public $belongsTo = array('User');
 /**
  * records property
  *
  * @var array
  * @access public
  */
-	public $records = array(
-		array('id'=>95, 'user' => 'mariano', 'password' => '5f4dcc3b5aa765d61d8327deb882cf99', 'created' => '2007-03-17 01:16:23', 'updated' => '2007-03-17 01:18:31'),
-		array('id'=>96, 'user' => 'nate', 'password' => '5f4dcc3b5aa765d61d8327deb882cf99', 'created' => '2007-03-17 01:18:23', 'updated' => '2007-03-17 01:20:31'),
-		array('id'=>97, 'user' => 'larry', 'password' => '5f4dcc3b5aa765d61d8327deb882cf99', 'created' => '2007-03-17 01:20:23', 'updated' => '2007-03-17 01:22:31'),
-		array('id'=>98, 'user' => 'garrett', 'password' => '5f4dcc3b5aa765d61d8327deb882cf99', 'created' => '2007-03-17 01:22:23', 'updated' => '2007-03-17 01:24:31'),
-	);
+	public $records = array();
 }

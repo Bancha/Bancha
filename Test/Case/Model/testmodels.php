@@ -1,12 +1,20 @@
 <?php
-
-/*
- * 		$fields = $this->model->getColumnTypes();
-		$validations = $this->getValidations();
-		$associations = $this->model->getAssociated();
-		$sorters = $this->getSorters();
+/**
+ * BanchaRemotableBehaviorTest test models file.
+ *
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v 0.9.0
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
-
 class TestUser extends CakeTestModel {
 
 /**
@@ -305,4 +313,92 @@ class TestUserRelationships extends CakeTestModel {
 	//public $hasMany = array('Device' => array('order' => array('Device.id' => 'ASC')));
 }
 
-?>
+
+
+
+
+
+
+
+/**
+ * TestingSaveArticleModel class
+ *
+ * @package       Bancha.Test.Case.Model.Behavior
+ */
+class ArticleForTestingSaveBehavior extends CakeTestModel {
+/**
+ * useTable property
+ *
+ * @var bool false
+ */
+	public $useTable = false;
+
+/**
+ * name property
+ *
+ * @var string 'ArticleForTestingSaveBehavior'
+ */
+	public $name = 'ArticleForTestingSaveBehavior';
+/**
+ * schema property
+ *
+ * @var array
+ * @access protected
+ */
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'collate' => NULL, 'key' => 'primary', 'collate' => NULL, 'comment' => '', 'length'=>8),
+		'title' => array('type' => 'string', 'null' => true, 'default' => NULL,'collate' => NULL,  'length' => 64, 'comment' => ''),
+		'date' => array('type' => 'date', 'null' => '1', 'default' => '', 'length' => ''),
+		'body' => array('type' => 'text', 'null' => true, 'default' => NULL,'collate' => NULL,  'comment' => ''),
+		'published' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length'=>1),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length'=>8),
+	);
+	
+
+/**
+ * we are testing the bancha remotable behavior
+ */
+	public $actsAs = array('Bancha.BanchaRemotable');
+
+/**
+ * belongsTo associations
+ * this article belongs to an author from the class below
+ *
+ * @var array
+ */
+	public $belongsTo = array('User');
+			
+/**
+ * Validation rules
+ *
+ * @var array
+ */
+	public $validate = array(
+		'title' => array(
+			// standard validation rule
+			'notempty' => array(
+				'rule' => array('notempty')
+			),
+			// custom validation rule
+			// we just need a custom function, so it is not allowed
+			// to have more then two entries with the same name
+			'limitDuplicates' => array(
+				'rule'	=> array('customFunctionLimitDuplicates', 2), 
+				'message' => 'This name has been used too many times.'
+			)
+		),
+	);
+	
+	/**
+	 * custom function to test bancha remotable behavior
+	 */
+	function customFunctionLimitDuplicates($check, $limit) {
+		// $check will have value: array('name' => 'some-value')
+		// $limit will have value: 25
+		$existing_names = $this->find('count', array(
+			'conditions' => $check,
+			'recursive' => -1
+		));
+		return $existing_names < $limit;
+	}
+}
