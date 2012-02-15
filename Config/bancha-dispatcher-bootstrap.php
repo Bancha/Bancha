@@ -27,3 +27,6 @@ Configure::write('Exception.handler', array('BanchaExceptionHandler', 'handleExc
 // load helper classes for the dispatcher
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
+
+// this shouldn't be necessary, but sometime it is.. maybe becaue of the caching?!
+App::import('Controller', 'Bancha.Bancha');
