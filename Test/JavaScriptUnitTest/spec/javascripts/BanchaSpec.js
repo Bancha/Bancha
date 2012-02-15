@@ -286,7 +286,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
              
         });
 
-		it("should load all needed models on onModelReady and fire functions after the model is ready", function() {
+		it("should load all needed models on onModelReady and fire functions after the model is ready for a single modelname input", function() {
             h.init();
       
             // create direct stub mock
@@ -310,7 +310,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 			
             // now fake answer
             var result = {
-            	OnModelReadyTestModel: {
+            	'OnModelReadyTestModel': {
 					idProperty: 'id',
 	                fields: [
 	                    {name:'id', type:'int'},
@@ -323,13 +323,56 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 			// now the function should be called
 			expect(onReadySpy.callCount).toEqual(1);
 
-
-
-
-			
 			// when the model is loaded it should just execute the function
             Bancha.onModelReady('OnModelReadyTestModel', onReadySpy);
 			expect(onReadySpy.callCount).toEqual(2);
+			
+		});
+		
+		it("should load all needed models on onModelReady and fire functions after the model is ready for an array of modelnames as input", function() {
+            h.init();
+      
+            // create direct stub mock
+            var mock = Mock.Proxy();
+            Bancha.RemoteStubs.Bancha = mock;
+        
+			// should be called after model is loaded
+			var onReadySpy = jasmine.createSpy();
+			
+			// bancha should also expect multiple models
+            mock.expectRPC("loadMetaData",['OnModelReadyMultipleModelsTestModel1','OnModelReadyMultipleModelsTestModel2']);
+            Bancha.onModelReady(['OnModelReadyMultipleModelsTestModel1','OnModelReadyMultipleModelsTestModel2'], onReadySpy);
+			// model should be loading from server now
+            mock.verify();
+            
+			// it should NOT execute the function before the model is loaded
+			expect(onReadySpy.callCount).toEqual(0);
+			
+			// fake that the model is a remote model (supports CRUD operations to the server)
+			Bancha.getStubsNamespace().OnModelReadyMultipleModelsTestModel1 = Bancha.getStubsNamespace().User;
+			Bancha.getStubsNamespace().OnModelReadyMultipleModelsTestModel2 = Bancha.getStubsNamespace().User;
+			
+            // now fake answer
+            var result = {
+        	'OnModelReadyMultipleModelsTestModel1': {
+				idProperty: 'id',
+                fields: [
+                    {name:'id', type:'int'},
+                    {name:'name', type:'string'}
+                ]
+            },
+            'OnModelReadyMultipleModelsTestModel2': {
+				idProperty: 'id',
+                fields: [
+                    {name:'id', type:'int'},
+                    {name:'name', type:'string'}
+                ]
+            }
+            };
+            mock.callLastRPCCallback("loadMetaData",[result]);
+
+			// now the function should be called
+			expect(onReadySpy.callCount).toEqual(1);
 		});
         
 }); //eo describe basic functions
