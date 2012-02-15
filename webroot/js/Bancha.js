@@ -792,7 +792,8 @@ Ext.define('Bancha', {
 
 		// defaults
         var modelsToLoad  = [],
-            modelName;
+            modelName,
+            me = this;
         callback = callback || Ext.emptyFn;	
         scope = scope || {}; // sandbox is no scope is set, way easier to debug then window	
         loadingModels = loadingModels || {};
@@ -827,8 +828,8 @@ Ext.define('Bancha', {
         
         // iterate trought the models to load
         Ext.Array.forEach(modelNamesToLoad, function(modelName) {
-            if(this.modelMetaDataIsLoaded(modelName)) {
-                loadedModels[modelName] = this.getModel(modelName);
+            if(me.modelMetaDataIsLoaded(modelName)) {
+                loadedModels[modelName] = me.getModel(modelName);
             } else {
                 modelsToLoad.push(modelName);
             }
@@ -836,9 +837,9 @@ Ext.define('Bancha', {
         
         // iterate trought the loading models
         Ext.each(loadingModels, function(modelName) {
-            if(this.modelMetaDataIsLoaded(modelName)) {
+            if(me.modelMetaDataIsLoaded(modelName)) {
                 // that was the model which triggered the function, so we are finished here
-                loadedModels[modelName] = this.getModel(modelName);
+                loadedModels[modelName] = me.getModel(modelName);
                 return false; // stop
             }
         });
@@ -848,12 +849,10 @@ Ext.define('Bancha', {
             callback.call(scope,loadedModels);
         } else {
             // add all elements to the queue
-            Ext.Array.forEach(modelsToLoad, function(modelName) {
-                this.preloadModelMetaData(modelName, function() {
-                    // when model is loaded try again
-                    this.onInitializedOnModelReady([], loadingModels, loadedModels, callback, scope);
-                },this);
-            }, this);
+            me.preloadModelMetaData(modelsToLoad, function() {
+                // when model is loaded try again
+                me.onInitializedOnModelReady([], loadingModels, loadedModels, callback, scope);
+            },me);
         }
     },
     /**
