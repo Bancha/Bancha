@@ -420,6 +420,10 @@ Ext.define('Bancha', {
      */
     debugVersion: true, 
     // ENDIF
+
+	/* If remote api is already loaded, keep it */
+	REMOTE_API: Bancha.REMOTE_API,
+	
     /**
      * @property
      * Bancha Project version
@@ -461,15 +465,18 @@ Ext.define('Bancha', {
      * (This function is tested in RS.util, not part of the package testing, but it is tested)
      * @param {String} path A period ('.') separated path to the desired object (String).
      * @param {String} lookIn (optional) The object on which to perform the lookup.
+     * @param {String} prototypes (optional) False to not look in prototypes (to be tested)
      * @return {Object} The object if found, otherwise undefined.
      */
-    objectFromPath: function (path, lookIn) {
+    objectFromPath: function (path, lookIn, prototypes) {
 		if(typeof path === 'number') { // for array indexes
 			path = path+''; // to string
 		}
 		if(typeof path !== 'string') {
 			return undefined;
 		}
+		prototypes = (typeof prototypes === 'undefined') ? true : prototypes; // true is default
+		
         if (!lookIn) {
             //get the global object so it don't use hasOwnProperty on window (IE incompatible)
             var first = path.indexOf('.'),
@@ -492,7 +499,7 @@ Ext.define('Bancha', {
         }
         // get the object
         return path.split('.').reduce(function(o, p) {
-            if(o && o.hasOwnProperty(p)) {
+            if(o && (prototypes || o.hasOwnProperty(p))) {
                 return o[p];
             }
         }, lookIn);
