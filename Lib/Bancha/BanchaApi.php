@@ -66,7 +66,7 @@ class BanchaApi {
 		{
 			if (!in_array($filteredModel, $models))
 			{
-				throw new MissingModelException($filteredModel);
+				throw new MissingModelException(array('class' => $filteredModel));
 			}
 		}
 		return $filteredModels;
@@ -189,7 +189,7 @@ class BanchaApi {
 			'class' => $plugin . $modelClass, 'alias' => $modelClass, 'id' => null
 		));
 		if (!$model) {
-			throw new MissingModelException($modelClass);
+			throw new MissingModelException(array('class' => $modelClass));
 		}
 		return $model;
 	}
@@ -200,11 +200,15 @@ class BanchaApi {
 	 * @param  string $controllerClass Name of the controller to load.
 	 * @return void
 	 */
-	protected function loadController($controllerClass) {
+	protected function loadController($controllerClass) {	
+		if(!file_exists(APP . DS . 'Controller' . DS . $controllerClass . '.php')) {
+			throw new MissingControllerException(array('class' => $controllerClass));
+		}
+		
 		include_once APP . DS . 'Controller' . DS . $controllerClass . '.php';
 
 		if (!class_exists($controllerClass)) {
-			throw new MissingControllerException($controllerClass);
+			throw new MissingControllerExceptionarray(array('class' => $controllerClass));
 		}
 	}
 

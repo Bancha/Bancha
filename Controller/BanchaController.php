@@ -19,7 +19,6 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
-// todo this should not not be necessary
 App::import('Controller', 'Bancha.BanchaApp');
 App::uses('BanchaException', 'Bancha.Bancha/Exception');
 App::uses('BanchaApi', 'Bancha.Bancha');
