@@ -469,14 +469,14 @@ Ext.define('Bancha', {
      * @return {Object} The object if found, otherwise undefined.
      */
     objectFromPath: function (path, lookIn, prototypes) {
-		if(typeof path === 'number') { // for array indexes
-			path = path+''; // to string
-		}
-		if(typeof path !== 'string') {
-			return undefined;
-		}
-		prototypes = (typeof prototypes === 'undefined') ? true : prototypes; // true is default
-		
+        if(typeof path === 'number') { // for array indexes
+            path = path+''; // to string
+        }
+        if(typeof path !== 'string') {
+            return undefined;
+        }
+        prototypes = (typeof prototypes === 'undefined') ? true : prototypes; // true is default
+        
         if (!lookIn) {
             //get the global object so it don't use hasOwnProperty on window (IE incompatible)
             var first = path.indexOf('.'),
@@ -787,7 +787,7 @@ Ext.define('Bancha', {
      * !!!don't use this function directly!!!
      */
     onInitializedOnModelReady: function(modelNamesToLoad, loadingModels, loadedModels, callback, scope) {
-		
+        
         // IFDEBUG
         if(!Ext.isFunction(callback)) {
             Ext.Error.raise({
@@ -797,12 +797,12 @@ Ext.define('Bancha', {
         }
         // ENDIF
 
-		// defaults
+        // defaults
         var modelsToLoad  = [],
             modelName,
             me = this;
-        callback = callback || Ext.emptyFn;	
-        scope = scope || {}; // sandbox is no scope is set, way easier to debug then window	
+        callback = callback || Ext.emptyFn;    
+        scope = scope || {}; // sandbox is no scope is set, way easier to debug then window
         loadingModels = loadingModels || {};
         loadedModels  = loadedModels  || {};
         
