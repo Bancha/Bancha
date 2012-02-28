@@ -407,7 +407,7 @@ Ext.define('Bancha', {
     singleton: true,
     
     requires: [
-        'Bancha.data.*',
+        'Ext.data.*',
         'Ext.direct.*'
     ],
     /* End Definitions */
