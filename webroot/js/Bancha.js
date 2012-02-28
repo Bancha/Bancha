@@ -19,12 +19,6 @@
 /*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*global Ext, Bancha, window */
 
-Ext.require([
-    'Ext.data.*',
-    'Ext.form.Panel',
-    'Ext.grid.Panel'
-]);
-
 /**
  * @class Bancha.data.Model
  * @extends Ext.data.Model
@@ -130,7 +124,14 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
 /*
  * Add some validation function for scaffolding
  */
-(function() {
+
+Ext.require([
+    'Ext.form.field.VTypes',
+    'Ext.data.validations',
+    'Ext.form.Panel',
+    'Ext.grid.Panel'
+], function() {
+
     var filenameHasExtension = function(filename,validExtensions) {
         if(filename==='') {
             return true; // no file defined
@@ -369,7 +370,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
             this.callOverridden();
         }
     });
-}());
+});
 
 /**
  * @class Bancha
@@ -406,7 +407,7 @@ Ext.define('Bancha', {
     singleton: true,
     
     requires: [
-        'Bancha.data.Model',
+        'Bancha.data.*',
         'Ext.direct.*'
     ],
     /* End Definitions */
@@ -421,9 +422,9 @@ Ext.define('Bancha', {
     debugVersion: true, 
     // ENDIF
 
-	/* If remote api is already loaded, keep it */
-	REMOTE_API: Bancha.REMOTE_API,
-	
+    /* If remote api is already loaded, keep it */
+    REMOTE_API: Bancha.REMOTE_API,
+    
     /**
      * @property
      * Bancha Project version
@@ -469,14 +470,14 @@ Ext.define('Bancha', {
      * @return {Object} The object if found, otherwise undefined.
      */
     objectFromPath: function (path, lookIn, prototypes) {
-		if(typeof path === 'number') { // for array indexes
-			path = path+''; // to string
-		}
-		if(typeof path !== 'string') {
-			return undefined;
-		}
-		prototypes = (typeof prototypes === 'undefined') ? true : prototypes; // true is default
-		
+        if(typeof path === 'number') { // for array indexes
+            path = path+''; // to string
+        }
+        if(typeof path !== 'string') {
+            return undefined;
+        }
+        prototypes = (typeof prototypes === 'undefined') ? true : prototypes; // true is default
+        
         if (!lookIn) {
             //get the global object so it don't use hasOwnProperty on window (IE incompatible)
             var first = path.indexOf('.'),
@@ -787,7 +788,7 @@ Ext.define('Bancha', {
      * !!!don't use this function directly!!!
      */
     onInitializedOnModelReady: function(modelNamesToLoad, loadingModels, loadedModels, callback, scope) {
-		
+        
         // IFDEBUG
         if(!Ext.isFunction(callback)) {
             Ext.Error.raise({
@@ -797,12 +798,12 @@ Ext.define('Bancha', {
         }
         // ENDIF
 
-		// defaults
+        // defaults
         var modelsToLoad  = [],
             modelName,
             me = this;
-        callback = callback || Ext.emptyFn;	
-        scope = scope || {}; // sandbox is no scope is set, way easier to debug then window	
+        callback = callback || Ext.emptyFn;    
+        scope = scope || {}; // sandbox is no scope is set, way easier to debug then window
         loadingModels = loadingModels || {};
         loadedModels  = loadedModels  || {};
         
