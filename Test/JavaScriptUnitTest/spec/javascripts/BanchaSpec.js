@@ -13,38 +13,38 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
     
         beforeEach(h.reset);
         
-		it("internally uses objectFromPath to retrieve objects", function() {
-			// simple unit tests
-			window.BanchaObjectFromPathTest = {
-				object: {
-					property: 2
-				},
-				array: ['a','b', {
-					property: 3
-				}]
-			};
-			
-			// successfulles
-			expect(Bancha.objectFromPath('BanchaObjectFromPathTest.object.property')).toEqual(2);
-			expect(Bancha.objectFromPath('object.property',BanchaObjectFromPathTest)).toEqual(2);
-			expect(Bancha.objectFromPath('property',BanchaObjectFromPathTest['object'])).toEqual(2);
-			
-			expect(Bancha.objectFromPath('BanchaObjectFromPathTest.array.2.property')).toEqual(3);
-			expect(Bancha.objectFromPath('2.property',BanchaObjectFromPathTest.array)).toEqual(3);
-			expect(Bancha.objectFromPath('1',BanchaObjectFromPathTest.array)).toEqual('b');
-			expect(Bancha.objectFromPath(1,BanchaObjectFromPathTest.array)).toEqual('b');
-			
-			expect(Bancha.objectFromPath('BanchaObjectFromPathTest')).toEqual(BanchaObjectFromPathTest);
-			
-			// can't find these pathes
-			expect(Bancha.objectFromPath('')).toBeFalsy();
-			expect(Bancha.objectFromPath('',BanchaObjectFromPathTest)).toBeFalsy();
-			expect(Bancha.objectFromPath()).toBeFalsy();
-			expect(Bancha.objectFromPath({})).toBeFalsy();
-			expect(Bancha.objectFromPath(undefined)).toBeFalsy();
-			expect(Bancha.objectFromPath(null)).toBeFalsy();
-		});
-		
+        it("internally uses objectFromPath to retrieve objects", function() {
+            // simple unit tests
+            window.BanchaObjectFromPathTest = {
+                object: {
+                    property: 2
+                },
+                array: ['a','b', {
+                    property: 3
+                }]
+            };
+            
+            // successfulles
+            expect(Bancha.objectFromPath('BanchaObjectFromPathTest.object.property')).toEqual(2);
+            expect(Bancha.objectFromPath('object.property',BanchaObjectFromPathTest)).toEqual(2);
+            expect(Bancha.objectFromPath('property',BanchaObjectFromPathTest['object'])).toEqual(2);
+            
+            expect(Bancha.objectFromPath('BanchaObjectFromPathTest.array.2.property')).toEqual(3);
+            expect(Bancha.objectFromPath('2.property',BanchaObjectFromPathTest.array)).toEqual(3);
+            expect(Bancha.objectFromPath('1',BanchaObjectFromPathTest.array)).toEqual('b');
+            expect(Bancha.objectFromPath(1,BanchaObjectFromPathTest.array)).toEqual('b');
+            
+            expect(Bancha.objectFromPath('BanchaObjectFromPathTest')).toEqual(BanchaObjectFromPathTest);
+            
+            // can't find these pathes
+            expect(Bancha.objectFromPath('')).toBeFalsy();
+            expect(Bancha.objectFromPath('',BanchaObjectFromPathTest)).toBeFalsy();
+            expect(Bancha.objectFromPath()).toBeFalsy();
+            expect(Bancha.objectFromPath({})).toBeFalsy();
+            expect(Bancha.objectFromPath(undefined)).toBeFalsy();
+            expect(Bancha.objectFromPath(null)).toBeFalsy();
+        });
+        
         it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
             h.init();
     
@@ -58,11 +58,11 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
     
         it("should in debug mode return an expection when calling getRemoteApi() before init()", function() {
             if(Bancha.debugVersion) {
-				expect(function() {
-                	Bancha.getRemoteApi();
-            	}).toThrowExtErrorMsg("Bancha: The remote api Bancha.REMOTE_API is not yet defined, "+
-                                  	"please define the api before using Bancha.getRemoteApi().");
-			}
+                expect(function() {
+                    Bancha.getRemoteApi();
+                }).toThrowExtErrorMsg("Bancha: The remote api Bancha.REMOTE_API is not yet defined, "+
+                                      "please define the api before using Bancha.getRemoteApi().");
+            }
         });
     
     
@@ -234,14 +234,14 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             })).toBeTruthy();
 
             // check if the model really got created
-            var model = Ext.ClassManager.get('CreateModelUser');
-            expect(model).toBeModelClass('CreateModelUser');
+            var model = Ext.ClassManager.get('Bancha.model.CreateModelUser');
+            expect(model).toBeModelClass('Bancha.model.CreateModelUser');
             
             // check if the additional config was used
             expect(model.prototype.additionalSettings).toBeTruthy();
 
             // test if the model saves data through ext direct
-            var user = Ext.create("CreateModelUser",{
+            var user = Ext.create('Bancha.model.CreateModelUser',{
                 firstname: 'Micky',
                 lastname: 'Mouse'
             });
@@ -254,7 +254,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             user.save();
 
             //verify the expectations were met
-            mockProxy.verify();    
+            mockProxy.verify();
         });
 
         it("should create a model if not defined with Bancha.getModel", function() {
@@ -264,7 +264,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
          
             // create model
             var model = Bancha.getModel('GetModelCreateTestUser');
-            expect(model).toBeModelClass('GetModelCreateTestUser');
+            expect(model).toBeModelClass('Bancha.model.GetModelCreateTestUser');
              
         });
         
@@ -281,88 +281,88 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
              
              // now test getModel
              var model = Bancha.getModel('GetModelJustGetTestUser');
-             expect(model).toBeModelClass('GetModelJustGetTestUser');
+             expect(model).toBeModelClass('Bancha.model.GetModelJustGetTestUser');
              expect(model.prototype.createdWithCreate).toBeTruthy();
              
         });
 
-		it("should load all needed models on onModelReady and fire functions after the model is ready for a single modelname input", function() {
+        it("should load all needed models on onModelReady and fire functions after the model is ready for a single modelname input", function() {
             h.init();
       
             // create direct stub mock
             var mock = Mock.Proxy();
             Bancha.RemoteStubs.Bancha = mock;
         
-			// should be called after model is loaded
-			var onReadySpy = jasmine.createSpy();
-			
-			// if the model is not present it should load the model
+            // should be called after model is loaded
+            var onReadySpy = jasmine.createSpy();
+            
+            // if the model is not present it should load the model
             mock.expectRPC("loadMetaData",['OnModelReadyTestModel']);
             Bancha.onModelReady('OnModelReadyTestModel', onReadySpy);
-			// model should be loading from server now
+            // model should be loading from server now
             mock.verify();
 
-			// it should NOT execute the function before the model is loaded
-			expect(onReadySpy.callCount).toEqual(0);
-			
-			// fake that the model is a remote model (supports CRUD operations to the server)
-			Bancha.getStubsNamespace().OnModelReadyTestModel = Bancha.getStubsNamespace().User;
-			
+            // it should NOT execute the function before the model is loaded
+            expect(onReadySpy.callCount).toEqual(0);
+            
+            // fake that the model is a remote model (supports CRUD operations to the server)
+            Bancha.getStubsNamespace().OnModelReadyTestModel = Bancha.getStubsNamespace().User;
+            
             // now fake answer
             var result = {
-            	'OnModelReadyTestModel': {
-					idProperty: 'id',
-	                fields: [
-	                    {name:'id', type:'int'},
-	                    {name:'name', type:'string'}
-	                ]
-	            }
+                'OnModelReadyTestModel': {
+                    idProperty: 'id',
+                    fields: [
+                        {name:'id', type:'int'},
+                        {name:'name', type:'string'}
+                    ]
+                }
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
 
-			// now the function should be called
-			expect(onReadySpy.callCount).toEqual(1);
+            // now the function should be called
+            expect(onReadySpy.callCount).toEqual(1);
 
-			// when the model is loaded it should just execute the function
+            // when the model is loaded it should just execute the function
             Bancha.onModelReady('OnModelReadyTestModel', onReadySpy);
-			expect(onReadySpy.callCount).toEqual(2);
-			
-		});
-		
-		it("should load all needed models on onModelReady and fire functions after the model is ready for an array of modelnames as input", function() {
+            expect(onReadySpy.callCount).toEqual(2);
+            
+        });
+        
+        it("should load all needed models on onModelReady and fire functions after the model is ready for an array of modelnames as input", function() {
             h.init();
       
             // create direct stub mock
             var mock = Mock.Proxy();
             Bancha.RemoteStubs.Bancha = mock;
         
-			// should be called after model is loaded
-			var onReadySpy = jasmine.createSpy();
-			
-			// bancha should also expect multiple models
+            // should be called after model is loaded
+            var onReadySpy = jasmine.createSpy();
+            
+            // bancha should also expect multiple models
             mock.expectRPC("loadMetaData",['OnModelReadyMultipleModelsTestModel1','OnModelReadyMultipleModelsTestModel2']);
             Bancha.onModelReady(['OnModelReadyMultipleModelsTestModel1','OnModelReadyMultipleModelsTestModel2'], onReadySpy);
-			// model should be loading from server now
+            // model should be loading from server now
             mock.verify();
             
-			// it should NOT execute the function before the model is loaded
-			expect(onReadySpy.callCount).toEqual(0);
-			
-			// fake that the model is a remote model (supports CRUD operations to the server)
-			Bancha.getStubsNamespace().OnModelReadyMultipleModelsTestModel1 = Bancha.getStubsNamespace().User;
-			Bancha.getStubsNamespace().OnModelReadyMultipleModelsTestModel2 = Bancha.getStubsNamespace().User;
-			
+            // it should NOT execute the function before the model is loaded
+            expect(onReadySpy.callCount).toEqual(0);
+            
+            // fake that the model is a remote model (supports CRUD operations to the server)
+            Bancha.getStubsNamespace().OnModelReadyMultipleModelsTestModel1 = Bancha.getStubsNamespace().User;
+            Bancha.getStubsNamespace().OnModelReadyMultipleModelsTestModel2 = Bancha.getStubsNamespace().User;
+            
             // now fake answer
             var result = {
-        	'OnModelReadyMultipleModelsTestModel1': {
-				idProperty: 'id',
+            'OnModelReadyMultipleModelsTestModel1': {
+                idProperty: 'id',
                 fields: [
                     {name:'id', type:'int'},
                     {name:'name', type:'string'}
                 ]
             },
             'OnModelReadyMultipleModelsTestModel2': {
-				idProperty: 'id',
+                idProperty: 'id',
                 fields: [
                     {name:'id', type:'int'},
                     {name:'name', type:'string'}
@@ -371,9 +371,9 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
 
-			// now the function should be called
-			expect(onReadySpy.callCount).toEqual(1);
-		});
+            // now the function should be called
+            expect(onReadySpy.callCount).toEqual(1);
+        });
         
 }); //eo describe basic functions
     

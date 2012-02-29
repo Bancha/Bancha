@@ -92,7 +92,7 @@ beforeEach(function() {
         
         // test if a function is an constructor of a model class
         toBeModelClass: function(className) {
-            var modelClassName = this.actual.modelName,
+            var modelClassName = Ext.ClassManager.getName(this.actual),
                 modelExtendsClass = Ext.ClassManager.getName(objectFromPath('prototype.superclass',this.actual));
             
             return (
