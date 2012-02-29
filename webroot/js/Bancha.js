@@ -55,15 +55,15 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
     alias: 'writer.jsondate',
     
     writeRecords: function(request, data) {
-        var format = 'Y-m-d' // date format;
+        var format = 'Y-m-d'; // date format
         Ext.Array.forEach(data,function(recData,recIndex) {
             Ext.Object.each(recData,function(fieldName,fieldValue) {
                 if(Ext.isDate(fieldValue)) {
                     // convert date back in cake date format
                     data[recIndex][fieldName] = Ext.Date.format(fieldValue,format);
                 }
-            })
-        })
+            });
+        });
         
         // let the json writer do the real work:
         return this.superclass.writeRecords.apply(this,arguments);
@@ -249,6 +249,11 @@ Ext.define('Bancha', {
      * null means no namespace, this is not recommanded. The namespace can be set in CakePHP: Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
      */
     namespace: null,
+    /**
+     * @property
+     * The namespace in which all Bancha models are initialized to. Please only change BEFORE for creation of any Bancha model.
+     */
+    modelNamespace: 'Bancha.model',
     /**
      * @private
      * @property
@@ -532,7 +537,7 @@ Ext.define('Bancha', {
      * @param {String} modelName The name of the model
      * @return {Boolean} True is the model is remotable
      */
-    isRemoteModel: function(modelName) {
+    isRemoteModel: function(modelName) { // TODO refactor to isRemotableModel
         return (
                 Ext.isObject(this.getStubsNamespace()) && 
                 Ext.isObject(this.getStubsNamespace()[modelName])
@@ -741,6 +746,17 @@ Ext.define('Bancha', {
          });
      },
     
+
+	/**
+	 * Checks if a Bancha model is already created (convinience function)
+	 * 
+	 * @param {String} The model name (without any namespace)
+	 * @param {Boolean} True if the model exists
+	 */
+	isCreatedModel: function(modelName) {
+		return Ext.ClassManager.isCreated(Bancha.modelNamespace+'.'+modelName);
+	},
+	
     /**
      * This method creates a {@link Bancha.data.Model} with your additional model configs, 
      * if you don't have any additional configs just use the convienience method {@link #getModel}.  
@@ -794,7 +810,7 @@ Ext.define('Bancha', {
             return false;
         }
         
-        if(Ext.ClassManager.isCreated(modelName)) {
+        if(Bancha.isCreatedModel(modelName)) {
             // IFDEBUG
             Ext.Error.raise({
                 plugin: 'Bancha',
@@ -914,7 +930,7 @@ Ext.define('Bancha', {
         modelConfig = Ext.apply(metaData, modelConfig, defaults);
         
         // create the model
-        Ext.define(modelName, modelConfig);
+        Ext.define(Bancha.modelNamespace+'.'+modelName, modelConfig);
         return true;
     },
     /**
@@ -929,7 +945,7 @@ Ext.define('Bancha', {
      * @method getModel
      */
     getModel: function(modelName) {
-        return (Ext.ClassManager.isCreated(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(modelName) : null;
+        return (this.isCreatedModel(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
     }
 });
 
