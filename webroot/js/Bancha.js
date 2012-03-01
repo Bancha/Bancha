@@ -139,31 +139,54 @@ Ext.require([
         var ext = filename.split('.').pop();
         return Ext.Array.contains(validExtensions,ext);
     };
+    
     /**
-     * @class Ext.form.field.VTypes
-     * Custom VTypes for scaffolding support
+     * @class Ext.data.validations
+     * Custom validations for scaffolding support
      * @author Roland Schuetz <mail@rolandschuetz.at>
      * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
-    Ext.apply(Ext.form.field.VTypes, {
+    Ext.apply(Ext.data.validations,{
+        /**
+         * @property
+         * The default error message used when a numberformat validation fails.
+         */
+        numberformatMessage: "is not a number or not in the allowed range",
+        /**
+         * @property
+         * The default error message used when a file validation fails.
+         */
+        fileMessage: "is not a valid file",
         /**
          * @method
-         * Validates that the file extension is of one of field.validExtensions
-         * Also true if field.validExtensions is undefined or if val is an empty string
+         * Validates that the number is in the range of min and max.
+         * Precision is not validated, but it is used for differenting int from float,
+         * also it's metadata for scaffolding.
+         * For example:
+         *     {type: 'numberformat', field: 'euro', precision:2, min:0, max: 1000}
          */
-        fileExtension: function(val, field) {
-            return filenameHasExtension(val,field.validExtensions);
+        numberformat: function(config, value) {
+            if(typeof value !== 'number') {
+                value = (config.precision===0) ? parseInt(value,10) : parseFloat(value);
+                if(typeof value !== 'number') {
+                    return false; // could not be converted to a number
+                }
+            }
+            if((Ext.isDefined(config.min) && config.min > value) || (Ext.isDefined(config.max) && value > config.max)) {
+                return false; // not in the range
+            }
+            return true;
         },
         /**
-         * @property
-         * The error text to display when the file extension validation function returns false. Defaults to: 'This file type is not allowed.'
+         * @method
+         * Validates that the given filename is of the configured extension. Also validates
+         * if no extension are defined and empty values.
+         * For example:
+         *     {type: 'file', field: 'avatar', extension:['jpg','jpeg','gif','png']}
          */
-        fileExtensionText: 'This file type is not allowed.',
-        /**
-         * @property
-         * The keystroke filter mask to be applied on alpha input. Defaults to: /[\^\r\n]/
-         */
-        fileExtensionMask: /[\^\r\n]/ // alow everything except new lines
+        file: function(config, value) {
+            return filenameHasExtension(value,config.extension);
+        }
     });
 });
 
