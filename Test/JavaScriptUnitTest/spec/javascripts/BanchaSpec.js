@@ -238,8 +238,15 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(model).toBeModelClass('Bancha.model.CreateModelUser');
             
             // check if the additional config was used
-            expect(model.prototype.additionalSettings).toBeTruthy();
+            if(ExtSpecHelper.isExt) {
+                // for ext it is directly applied
+                expect(model.prototype.additionalSettings).toBeTruthy();
+            } else {
+                // for touch it is applied inside the 'config' config
+                expect(model.prototype.config.additionalSettings).toBeTruthy();
+            }
 
+console.info(model.prototype.config.proxy);
             // test if the model saves data through ext direct
             var user = Ext.create('Bancha.model.CreateModelUser',{
                 firstname: 'Micky',

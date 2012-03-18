@@ -1,5 +1,5 @@
 /*!
- * Additional neccessary functions for testing ExtJS Code
+ * Additional neccessary functions for testing ExtJS and Sencha Touch Code
  * Copyright(c) 2011-2012 Roland Schuetz
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @copyright (c) 2011-2012 Roland Schuetz
@@ -93,7 +93,16 @@ beforeEach(function() {
         // test if a function is an constructor of a model class
         toBeModelClass: function(className) {
             var modelClassName = Ext.ClassManager.getName(this.actual),
+                modelExtendsClass;
+                
+            // for ExtJS 4
+            if(Ext.versions.extjs) {
                 modelExtendsClass = Ext.ClassManager.getName(objectFromPath('prototype.superclass',this.actual));
+            } else if(Ext.versions.touch) {
+                modelExtendsClass = Ext.ClassManager.getName(objectFromPath('superclass',this.actual));
+            } else {
+                alert('Could not recognize if this is ExtJS 4 or Sencha Touch 2. This comes from Test/JavaScriptUnitTests/spec/helpers/ExtSpecHelper.js.')
+            }
             
             return (
                 typeof this.actual === 'function' && // constructor
@@ -150,3 +159,17 @@ Mock.Proxy = (function() {
         return proxy;
     };
 }());
+
+
+ExtSpecHelper = {
+    /**
+     * This helps to regonize if this is a Sencha Touch or ExtJS test.
+     */
+    isTouch: !!Ext.versions.touch,
+    /**
+     * This helps to regonize if this is a Sencha Touch or ExtJS test.
+     */
+    isExt: !!Ext.versions.extjs
+};
+
+//eof
