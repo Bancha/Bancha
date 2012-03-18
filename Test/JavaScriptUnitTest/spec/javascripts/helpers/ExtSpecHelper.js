@@ -4,8 +4,8 @@
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @copyright (c) 2011-2012 Roland Schuetz
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
-/*global Ext, describe, it, beforeEach, expect, fail, jasmine, Mock */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
+/*global alert, Ext, describe, it, beforeEach, expect, fail, jasmine, Mock */
 
 
 beforeEach(function() {
@@ -101,7 +101,7 @@ beforeEach(function() {
             } else if(Ext.versions.touch) {
                 modelExtendsClass = Ext.ClassManager.getName(objectFromPath('superclass',this.actual));
             } else {
-                alert('Could not recognize if this is ExtJS 4 or Sencha Touch 2. This comes from Test/JavaScriptUnitTests/spec/helpers/ExtSpecHelper.js.')
+                alert('Could not recognize if this is ExtJS 4 or Sencha Touch 2. This comes from Test/JavaScriptUnitTests/spec/helpers/ExtSpecHelper.js.');
             }
             
             return (
@@ -111,55 +111,6 @@ beforeEach(function() {
         }
     });
 });
-
-
-// Mock.Proxy extends the Mock object
-Mock.Proxy = (function() {
-    
-    // extend Mock
-    var proxyPrototype = new Mock();
-    
-    
-    // add an expectRPC method to the proxy
-    proxyPrototype.expectRPC = function(method, /*Optional*/firstArg) {
-        // expect ext direct call
-        this.expect(method).withArguments(
-            firstArg || Mock.Value.Object,
-            Mock.Value.Function,
-            Mock.Value.Object
-        );
-    };
-    
-    // looks like the server has answered with some data
-    proxyPrototype.callLastRPCCallback = function(method,args) {
-        if(!this[method] || !this[method].mostRecentCall || !this[method].mostRecentCall.args) {
-            throw "The mock was not called yet!";
-        }
-        
-        // undefined as data is allowed
-        args = args || [];
-        
-        var methodArgs     = this[method].mostRecentCall.args,
-            callback = methodArgs[1],
-            scope    = methodArgs[2];
-        
-        callback.apply(scope,args);
-    };
-    
-    // fake proxy property for ext
-    proxyPrototype.isProxy = true;
-    
-    // constructor
-    return function() {
-        var proxy = Object.create(proxyPrototype);
-        
-        // setModel is always called when creating 
-        // an Proxy from model/store, totally unimportant for us
-        proxy.setModel = function() {};
-        return proxy;
-    };
-}());
-
 
 ExtSpecHelper = {
     /**
