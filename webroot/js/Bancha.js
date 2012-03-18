@@ -126,7 +126,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
  */
 
 Ext.require([
-    'Ext.form.field.VTypes'
+    'Ext.data.validations'
 ], function() {
 
     var filenameHasExtension = function(filename,validExtensions) {
