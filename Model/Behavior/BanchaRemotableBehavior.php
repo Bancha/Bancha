@@ -235,9 +235,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
  * Returns an ExtJS formated array of field names, validation types and constraints.
- * atm only the max length constraint is retrived
  *
- * @return array ExtJS formated {type, name, max}
+ * @return Ext.data.validations rules
  */
 	private function getValidations() {
 		$columns = $this->model->validate;
@@ -248,7 +247,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$cols = array();
 		foreach ($columns as $field => $values) {
 			
-			// check is the input is required
+			// check if the input is required
 			$presence = false;
 			foreach($values as $rule) {
 				if((isset($rule['required']) && $rule['required']) ||
@@ -260,35 +259,34 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if(isset($values['notempty']) || $presence) {
 				$cols[] = array(
 					'type' => 'presence',
-					'name' => $field,
+					'field' => $field,
 				);
 			}
 
-			if(isset($values['minLength'])) {
-				$cols[] = array(
+			if(isset($values['minLength']) || isset($values['maxLength'])) {
+				$col = array(
 					'type' => 'length',
-					'name' => $field,
-					'min' => $values['minLength']['rule'][1],
+					'field' => $field,
 				);
-			}
-
-			if(isset($values['maxLength'])) {
-				$cols[] = array(
-					'type' => 'length',
-					'name' => $field,
-					'max' => $values['maxLength']['rule'][1],
-				);
+				
+				if(isset($values['minLength'])) {
+					$col['min'] = $values['minLength']['rule'][1];
+				}
+				if(isset($values['maxLength'])) {
+					$col['max'] = $values['maxLength']['rule'][1];
+				}
+				$cols[] = $col;
 			}
 
 			if(isset($values['between'])) {
 				if(	isset($values['between']['rule'][1]) ||
 					isset($values['between']['rule'][2]) ) {
 					$cols[] = array(
-					'type' => 'length',
-					'name' => $field,
-					'min' => $values['between']['rule'][1],
-					'max' => $values['between']['rule'][2]
-				);
+						'type' => 'length',
+						'name' => $field,
+						'field' => $values['between']['rule'][1],
+						'max' => $values['between']['rule'][2]
+					);
 				} else {
 					$cols[] = array(
 						'type' => 'length',
@@ -301,7 +299,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if(isset($values['alpha'])) {
 				$cols[] = array(
 					'type' => 'format',
-					'name' => $field,
+					'field' => $field,
 					'matcher' => $this->formater['alpha'],
 				);
 			}
@@ -309,7 +307,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if(isset($values['alphaNumeric'])) {
 				$cols[] = array(
 					'type' => 'format',
-					'name' => $field,
+					'field' => $field,
 					'matcher' => $this->formater['alphanum'],
 				);
 			}
@@ -317,7 +315,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if(isset($values['email'])) {
 				$cols[] = array(
 					'type' => 'format',
-					'name' => $field,
+					'field' => $field,
 					'matcher' => $this->formater['email'],
 				);
 			}
@@ -325,7 +323,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if(isset($values['url'])) {
 				$cols[] = array(
 					'type' => 'format',
-					'name' => $field,
+					'field' => $field,
 					'matcher' => $this->formater['url'],
 				);
 			}
@@ -335,13 +333,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				if(isset($values['numeric']['precision'])) {
 					$cols[] = array(
 						'type' => 'numberformat',
-						'name' => $field,
+						'field' => $field,
 						'precision' => $values['numeric']['precision'],
 					);
 				} else {
 					$cols[] = array(
 						'type' => 'numberformat',
-						'name' => $field,
+						'field' => $field,
 					);
 				}
 			}
@@ -378,7 +376,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				}
 				$cols[] = array(
 					'type' => 'numberformat',
-					'name' => $field,
+					'field' => $field,
 					'min' => $min,
 					'max' => $max,
 				);
@@ -387,7 +385,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if(isset($values['extension'])) {
 				$cols[] = array(
 					'type' => 'file',
-					'name' => $field,
+					'field' => $field,
 					'extension' => $values['extension']['rule'][1],
 				);
 			}
