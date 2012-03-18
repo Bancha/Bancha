@@ -279,10 +279,14 @@ class BanchaRequestTransformer {
 			unset($this->data['data'][0]['limit']);
 		}
 		$order = array();
+		$sort_field = '';
+		$direction = '';
 		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['sort'])) {
 			foreach ($this->data['data'][0]['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
-					$order[$this->getController() . '.' . $sort['property']] = strtolower($sort['direction']);
+					$order[$this->getModel() . '.' . $sort['property']] = strtolower($sort['direction']);
+					$sort_field = $sort['property'];
+					$direction = $sort['direction'];
 				}
 			}
 			unset($this->data['data'][0]['sort']);
@@ -291,6 +295,8 @@ class BanchaRequestTransformer {
 			'page'			=> $page,
 			'limit'			=> $limit,
 			'order'			=> $order,
+			'sort'			=> $sort_field,
+			'direction'		=> $direction
 		);
 		return $this->paginate;
 	}
