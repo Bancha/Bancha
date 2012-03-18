@@ -126,7 +126,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
  */
 
 Ext.require([
-    'Ext.data.validations'
+    'Ext.data.validations' // they are differently called in ExtJS and Sencha Touch, but owrk by alias jsut fine
 ], function() {
 
     var filenameHasExtension = function(filename,validExtensions) {
@@ -789,6 +789,8 @@ Ext.define('Bancha', {
      * 
      * @param {String} modelName The name of the model
      * @param {Object} modelConfig A standard Ext.data.Model config object
+                                     In ExtJS this will be directly applied.
+                                     In Sencha Touch this iwll be applied to the config property.
      * @return {Boolean} Returns true is model was created successfully
      */
     createModel: function(modelName, modelConfig) {
@@ -951,6 +953,18 @@ Ext.define('Bancha', {
         };
         metaData = Ext.clone(this.getModelMetaData(modelName));
         modelConfig = Ext.apply(metaData, modelConfig, defaults);
+        
+        // ugly hack to recognize Sencha Touch
+        if(Ext.versions.touch) { // TODO http://www.sencha.com/forum/showthread.php?188747-The-Model-Package-for-ExtJS-and-Sencha-Touch&p=758527#post758527
+            // place all configs in the config property
+            modelConfig = {
+                extend: modelConfig.extend,
+                config: modelConfig
+            };
+            
+            // this one should be on the model itself
+            delete modelConfig.config.extend;
+        }
         
         // create the model
         Ext.define(Bancha.modelNamespace+'.'+modelName, modelConfig);

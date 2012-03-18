@@ -46,11 +46,11 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {type:'belongsTo', model:'Country', name:'country'}
                 ],
                 validations: [
-                    {"type":"numberformat","name":"id","precision":0},
-                    {"type":"presence","name":"name"},
-                    {"type":"length","name":"name","min":3},
-                    {"type":"length","name":"name","max":64},
-                    {"type":"format","name":"login","matcher":"banchaAlphanum"}
+                    { type:"numberformat", field:"id", precision:0},
+                    { type:"presence",     field:"name"},
+                    { type:"length",       field:'name', min: 2},
+                    { type:"length",       field:"name", max:64},
+                    { type:"format",       field:"login", matcher:"banchaAlphanum"}
                 ],
                 sorters: [{
                     property: 'name',
