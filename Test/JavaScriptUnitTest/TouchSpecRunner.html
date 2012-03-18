@@ -21,7 +21,11 @@
   <script type="text/javascript" src="spec/javascripts/helpers/ExtSpecHelperSpec.js"></script>
   <script type="text/javascript" src="spec/javascripts/helpers/BanchaSpecHelper.js"></script>
 
-  <script>
+  <script>	
+    /*
+     * Sencha Touch seems to have a small bug here
+     * See http://www.sencha.com/forum/showthread.php?188759-Ext.isReady-needs-to-be-triggered-by-Ext.onReady&p=758542#post758542
+     */
 	Ext.onReady(Ext.emptyFn);
   </script>
   <script type="text/javascript" src="spec/javascripts/Ext-UtilSpec.js"></script>
