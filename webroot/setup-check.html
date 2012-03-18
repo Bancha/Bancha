@@ -79,8 +79,8 @@
 </div>
 
 
-<!-- include ExtJS Core -->
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/ext-core/3.1.0/ext-core.js"></script>
+<!-- include ExtJS -->
+<script type="text/javascript" src="http://extjs.cachefly.net/extjs/4.0.1/ext-all.js"></script>
 
 <!-- test setup -->
 <script type="text/Javascript">
@@ -152,27 +152,6 @@ var BanchaSetup = {
 		if(document.location.href && document.location.href.substr(-24)!=="/bancha/setup-check.html") {
 			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html');
 		}
-		
-		// try to load ExtJS
-		BanchaSetup.loadScript('../js/ext-all.js',BanchaSetup.checkSetup_onExtIsLoaded);
-	},
-	checkSetup_onExtIsLoaded: function(isLoaded,ajaxResponse) {
-		
-		// check if ext is loaded
-		BanchaSetup.writeLog(isLoaded,'Load ExtJS library', ajaxResponse.status+': Could not load the ExtJS library, please place ext-all.js and ext-all-dev.js in the app/webroot/js/ folder');
-		if(isLoaded===false) {
-			return;
-		}
-		
-		// check if ext lib works
-		var executed = (window.Ext && typeof window.Ext.grid === 'object'); // The grid namespace only exists in ExtJS 8not in the Core)
-		BanchaSetup.writeLog(executed,'Execute ExtJS library', 'Could not execute the ExtJS library, there seems to be an javascript error inside ext-all.js. Please make sure you are using the official Sencha ExtJS 4 library.');
-		if(executed===false) {
-			return;
-		}
-		
-		// ugly hack, so ExtJS is init AFTER Ext Core was already loaded to the document
-		Ext.EventManager.fireDocReady();
 		
 		// try to load Bancha
 		BanchaSetup.loadScript('js/Bancha.js',BanchaSetup.checkSetup_onBanchaIsLoaded);
