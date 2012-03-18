@@ -4,7 +4,7 @@
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @copyright (c) 2011-2012 Roland Schuetz
  */
-/*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
+ /*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, BanchaSpecHelper */
 
 describe("Bancha Singleton - basic retrieval functions on the stubs and model meta data", function() {
@@ -225,20 +225,26 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
             // create a mock object for the proxy
             var mockProxy = Mock.Proxy();
-
+            
             // should create a user defintion
             expect(
                 Bancha.createModel('CreateModelUser', {
                     additionalSettings: true,
                     proxy: mockProxy
             })).toBeTruthy();
-
+            
             // check if the model really got created
             var model = Ext.ClassManager.get('Bancha.model.CreateModelUser');
             expect(model).toBeModelClass('Bancha.model.CreateModelUser');
             
             // check if the additional config was used
-            expect(model.prototype.additionalSettings).toBeTruthy();
+            if(ExtSpecHelper.isExt) {
+                // for ext it is directly applied
+                expect(model.prototype.additionalSettings).toBeTruthy();
+            } else {
+                // for touch it is applied inside the 'config' config
+                expect(model.prototype.config.additionalSettings).toBeTruthy();
+            }
 
             // test if the model saves data through ext direct
             var user = Ext.create('Bancha.model.CreateModelUser',{
@@ -252,9 +258,12 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
             // test
             user.save();
-
+            
             //verify the expectations were met
+            // TODO Not yet working in touch: http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
+            if(ExtSpecHelper.isExt)
             mockProxy.verify();
+            
         });
 
         it("should create a model if not defined with Bancha.getModel", function() {
@@ -282,7 +291,15 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
              // now test getModel
              var model = Bancha.getModel('GetModelJustGetTestUser');
              expect(model).toBeModelClass('Bancha.model.GetModelJustGetTestUser');
-             expect(model.prototype.createdWithCreate).toBeTruthy();
+             
+             // check if it has the correct config
+             if(ExtSpecHelper.isExt) {
+                 // for ext configs are directly applied
+                 expect(model.prototype.createdWithCreate).toBeTruthy();
+             } else {
+                 // for touch configs are applied inside the 'config' config
+                 expect(model.prototype.config.createdWithCreate).toBeTruthy();
+             }
              
         });
 

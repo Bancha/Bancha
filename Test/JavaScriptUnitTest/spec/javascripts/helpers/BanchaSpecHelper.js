@@ -41,9 +41,17 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {name:'weight', type:'float'},
                     {name:'height', type:'int'}
                 ],
-                //associations: [
-                    //{type:'hasMany', model:'Post', name:'posts'},
-                //],
+                associations: [
+                    {type:'hasMany', model:'Post', name:'posts'},
+                    {type:'belongsTo', model:'Country', name:'country'}
+                ],
+                validations: [
+                    { type:"numberformat", field:"id", precision:0},
+                    { type:"presence",     field:"name"},
+                    { type:"length",       field:'name', min: 2},
+                    { type:"length",       field:"name", max:64},
+                    { type:"format",       field:"login", matcher:"banchaAlphanum"}
+                ],
                 sorters: [{
                     property: 'name',
                     direction: 'ASC'
