@@ -160,7 +160,6 @@ class BanchaCrudTest extends CakeTestCase {
 	
 	
 	public function testSubmit_WithUpload() {
-		$this->markTestSkipped("File uploads are currently not supported.");
 		// used fixture:
 		// array('id' => 988, 'title' => 'Title 1', 'body' => 'Text 3, ...)
 

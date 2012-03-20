@@ -164,7 +164,6 @@ class BanchaRequestCollectionTest extends CakeTestCase {
  * Tests if the extUpload parameter is correctly passed through the CakeRequest.
  */
 	public function testGetExtUploadForm() {
-		$this->markTestSkipped("File uploads are currently not supported.");
 		$postData = array(
 			'extAction'	=> 'Test',
 			'extMethod'	=> 'submit',
