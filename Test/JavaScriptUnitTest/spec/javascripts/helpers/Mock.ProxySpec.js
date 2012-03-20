@@ -1,4 +1,9 @@
-
+/*!
+ * Mock.Proxy tests
+ * Copyright(c) 2011-2012 Roland Schuetz
+ * @author Roland Schuetz <mail@rolandschuetz.at>
+ * @copyright (c) 2011-2012 Roland Schuetz
+ */
 describe("Mock.Proxy",function() {
     
     it("should be able to expect RCP calls",function() {
