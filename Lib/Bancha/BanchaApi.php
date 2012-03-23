@@ -4,7 +4,7 @@
  * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * @package       Bancha
- * @subpackage    Lib.Exception
+ * @subpackage    Lib
  * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.3
@@ -12,6 +12,13 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
+/**
+ * BanchaApi
+ * A Helper class for building the bancha-enhanced Ext.Direct API.
+ *
+ * @package       Bancha
+ * @subpackage    Lib
+ */
 class BanchaApi {
 
 	/**
