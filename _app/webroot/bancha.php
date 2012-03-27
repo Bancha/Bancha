@@ -13,6 +13,7 @@
  *
  * @copyright     Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
  * @copyright	  Copyright 2011-2012, Bancha Project (http://banchaproject.org)
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @link          http://cakephp.org CakePHP(tm) Project
  * @link 		  http://banchaproject.org Bancha Project

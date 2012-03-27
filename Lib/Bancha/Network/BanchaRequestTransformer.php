@@ -170,7 +170,7 @@ class BanchaRequestTransformer {
 		if (null != $this->extUpload) {
 			return $this->extUpload;
 		}
-		$this->extUpload = isset($this->data['extUpload']) ? $this->data['extUpload'] : false;
+		$this->extUpload = isset($this->data['extUpload']) ? ($this->data['extUpload']=="true") : false; // extjs sends an string
 		unset($this->data['extUpload']);
 		return $this->extUpload;
 	}

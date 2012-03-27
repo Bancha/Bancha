@@ -4,7 +4,7 @@
  * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * @package       Bancha
- * @subpackage    Lib.Exception
+ * @subpackage    Lib
  * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.3
@@ -12,6 +12,13 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
+/**
+ * BanchaApi
+ * A Helper class for building the bancha-enhanced Ext.Direct API.
+ *
+ * @package       Bancha
+ * @subpackage    Lib
+ */
 class BanchaApi {
 
 	/**
@@ -55,8 +62,8 @@ class BanchaApi {
 	 * list of models given in $filter. If $filter is NULL or an empty string an empty array is returned.
 	 *
 	 * @param  array  $models List of remotable models
-	 * @param  string $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without 
-	 *                        quotes).
+	 * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without 
+	 *                        quotes). Or an array of models.
 	 * @return array          Filtered list of remotable models.
 	 */
 	public function filterRemotableModels($models, $filter)
@@ -69,11 +76,18 @@ class BanchaApi {
 		}
 
 		// First remove the [ and ], then split by comma and trim each element.
-		if (false !== strpos($filter, '[') && false !== strpos($filter, ']'))
+		if (is_string($filter) && false !== strpos($filter, '[') && false !== strpos($filter, ']'))
 		{
 			$filter = substr($filter, 1, -1);
 		}
-		$filteredModels = array_map('trim', explode(',', $filter));
+		
+		// transform string to array
+		$filteredModels = is_string($filter) ? explode(',', $filter) : $filter;
+		
+		// trim to prevent errors from unclean developer code
+		$filteredModels = array_map('trim', $filteredModels);
+		
+		// check if they really exist
 		foreach ($filteredModels as $filteredModel)
 		{
 			if (!in_array($filteredModel, $models))

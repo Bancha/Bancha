@@ -12,7 +12,7 @@
  *
  * For more information go to http://banchaproject.org 
  */
-/*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
+/*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
 /*global Ext, Bancha, window */
 
 /**
@@ -126,8 +126,8 @@ Ext.require([
 ], function() {
 
     var filenameHasExtension = function(filename,validExtensions) {
-        if(filename==='') {
-            return true; // no file defined
+        if(!filename) {
+            return true; // no file defined (emtpy string or undefined)
         }
         if(!Ext.isDefined(validExtensions)) {
             return true;
@@ -138,7 +138,7 @@ Ext.require([
     
     /**
      * @class Ext.data.validations
-     * Custom validations for scaffolding support
+     * Custom validations mapped from CakePHP.
      * @author Roland Schuetz <mail@rolandschuetz.at>
      * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */

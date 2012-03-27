@@ -36,16 +36,8 @@ class BanchaController extends BanchaAppController {
 	public $autoRender = false; //we don't need a view for this
 	public $autoLayout = false;
 	
-	// enable auth component if configured
-	public function __construct($request = null, $response = null) {
-		if(is_array(Configure::read('Bancha.Api.AuthConfig'))) {
-			$this->components['Auth'] = Configure::read('Bancha.Api.AuthConfig');
-		}
-		parent::__construct($request, $response);
-	}
-	
 	/**
-	 * the index method is called by default by cakePHP if no action is specified,
+	 * The index method is called by default by cakePHP if no action is specified,
 	 * it will print the API for the Controllers which have the Bancha-
 	 * Behavior set. This will not include any model meta data. to specify which
 	 * model meta data should be printed you will have to pass the model name or 'all'
@@ -62,15 +54,12 @@ class BanchaController extends BanchaAppController {
 		// send as javascript
 		$this->response->type('js');
 		
-		$remotableModels = $banchaApi->getRemotableModels();
-        $metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
+		// get all possible remotable models
+		$remotableModels = $this->getRemotableModels($banchaApi);
 		
-		$api = array(
-			'url'		=> $this->request->webroot.'bancha.php',
-			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
-    		'type'		=> 'remoting',
-    		'metadata'	=> $banchaApi->getMetadata($metadataModels),
-    		'actions'	=> array_merge_recursive(
+		// build actions
+		if(($actions = Cache::read('actions', '_bancha_api_')) === false) {
+			$actions = array_merge_recursive(
 				$banchaApi->getRemotableModelActions($remotableModels),
 				$banchaApi->getRemotableMethods(),
 				array('Bancha' => array(
@@ -79,15 +68,21 @@ class BanchaController extends BanchaAppController {
 						'len'	=> 1,
 					),
 				))
-			)
-		);
-		
-		$remoteApiNamespace = Configure::read('Bancha.remote_api');
-		if(empty($remoteApiNamespace)) {
-			$remoteApiNamespace = 'Bancha.REMOTE_API';
+			);
+			
+			// cache for future requests
+	        Cache::write('actions', $actions, '_bancha_api_');
 		}
+    	
+		$api = array(
+			'url'		=> $this->request->webroot.'bancha.php',
+			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
+    		'type'		=> 'remoting',
+    		'metadata'	=> $this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
+    		'actions'	=> $actions
+		);
 
-		$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", $remoteApiNamespace, json_encode($api)));
+		$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
 	}
 
 	/**
@@ -99,27 +94,55 @@ class BanchaController extends BanchaAppController {
 	 * @return array 
 	 */
 	public function loadMetaData() {
-		$models = array();
-		if(isset($this->params['data'][0])) {
-			$models = $this->params['data'][0];
-		}
-		
+		$models = isset($this->params['data'][0]) ? $this->params['data'][0] : null;
 		if ($models == null) {
 			return;
 		}
-
-		if ( is_string($models)) {
-			$models = array($models);
+		
+		// get the result
+		$banchaApi = new BanchaApi();
+		return $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+	}
+	
+	
+	/**
+	 * This function decorates the BanchaApi::getRemotableModels() method with caching
+	 * @return see BanchaApi::getRemotableModels
+	 */
+	private function getRemotableModels($banchaApi) {
+		if(($actions = Cache::read('remotable_models', '_bancha_api_')) !== false) {
+			return $actions;
 		}
-		$modelMetaData = array();
-		foreach($models as $mod) {
-			$mod =  Inflector::Singularize($mod);
-			$mod = ucfirst($mod);
-			$this->loadModel($mod);
-			$this->{$mod}->setBehaviorModel($mod);
-			$modelMetaData[$mod] = $this->{$mod}->extractBanchaMetaData();
-
+		
+		// get remotable models (iterates through all models)
+		$remotableModels = $banchaApi->getRemotableModels();
+		Cache::write('remotable_models', $remotableModels, '_bancha_api_');
+		
+		return $remotableModels;
+	}
+	
+	/**
+	 * This function decorates the BanchaApi::getMetadata() method with caching
+	 * @return see BanchaApi::getMetadata
+	 */
+	private function getMetaData($banchaApi, $remotableModels, $metadataFilter) {
+		// filter the models (performant function)
+		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
+		
+		// build a caching key
+		$cacheKey = 'metadata_'.implode(",", $metadataModels);
+		
+		// check cache
+		if(($metadata = Cache::read($cacheKey, '_bancha_api_')) !== false) {
+			return $metadata;
 		}
-		return $modelMetaData;
+		
+		// execute unperformant request
+		$metadata = $banchaApi->getMetadata($metadataModels);
+		
+		// cache for next time
+		Cache::write($cacheKey, $metadata, '_bancha_api_');
+		
+		return $metadata;
 	}
 }
