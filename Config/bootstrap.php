@@ -20,4 +20,5 @@ Inflector::rules('plural', array('/^Bancha$/i' => 'Bancha'));
 // config defaults
 Configure::write('Bancha.Api.AuthConfig',false);
 Configure::write('Bancha.Api.stubsNamespace','Bancha.RemoteStubs');
+Configure::write('Bancha.Api.remoteApiNamespace','Bancha.REMOTE_API');
 Configure::write('Bancha.allowMultiRecordRequests',false);

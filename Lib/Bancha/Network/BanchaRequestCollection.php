@@ -87,14 +87,12 @@ class BanchaRequestCollection {
 				$requests[$i]['plugin']			= null;
 				// bancha-specific
 				$requests[$i]['tid']			= $transformer->getTid();
-				$requests[$i]['extUpload']		= false; // quick fix disabled
+				$requests[$i]['extUpload']		= $transformer->getExtUpload();
 				$requests[$i]['client_id']		= $transformer->getClientId();
 				$requests[$i]['isFormRequest']	= $transformer->isFormRequest();
-				$requests[$i]['isBancha']		= true; // additional property for cleaner controller syntax
-				
-				// $requests[$i]['pass']			= array();
 				$requests[$i]['pass']			= $transformer->getPassParams();
-				// print_r($requests[$i]['pass']);
+				// additional property for cleaner controller syntax
+				$requests[$i]['isBancha']		= true;
 				
 				// Handle all other parameters as POST parameters.
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
