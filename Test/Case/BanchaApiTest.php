@@ -8,6 +8,7 @@
  * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
@@ -149,7 +150,6 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertCount(6, $remotableActions['Article']);
 		$this->assertEquals('getAll', $remotableActions['Article'][0]['name']);
 	}
-
 }
 
 
