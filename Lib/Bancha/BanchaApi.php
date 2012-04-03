@@ -141,19 +141,19 @@ class BanchaApi {
 	public function getCrudActionsOfController($controllerClass) {
 		$methods = $this->getClassMethods($controllerClass);
 
-		$formHandler = false;
+		$addFormHandler = false;
 		$crudActions = array();
 		foreach ($methods as $method) {
 			if ('add' === $method->name || 'edit' == $method->name) {
-				$formHandler = true;
+				$addFormHandler = true;
 			}
 			if (isset($this->crudMapping[$method->name])) {
 				$crudActions[] = $this->crudMapping[$method->name];
 			}
 		}
 
-		// If this controller has a form handler, add it to the crud actions.
-		if ($formHandler) {
+		// If this controller supports a form handler submit, add it to the crud actions.
+		if ($addFormHandler) {
 			$crudActions[] = array(
 				'name'			=> 'submit',
 				'len' 			=> 1,
@@ -243,6 +243,5 @@ class BanchaApi {
 		$reflection = new ReflectionClass($class);
 		return $reflection->getMethods();
 	}
-
 }
 
