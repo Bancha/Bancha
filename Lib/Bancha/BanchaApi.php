@@ -49,7 +49,8 @@ class BanchaApi {
 		foreach ($models as $modelClass) {
 			$model = $this->loadModel($modelClass);
 			if (isset($model->actsAs) && is_array($model->actsAs)) {
-				if (in_array('Bancha.BanchaRemotable', $model->actsAs)) {
+				// check if it is remotable (first when a AppModel behavior is also defined, second when not)
+				if (array_key_exists('Bancha.BanchaRemotable', $model->actsAs) || in_array('Bancha.BanchaRemotable', $model->actsAs)) {
 					$remotableModels[] = $modelClass;
 				}
 			}
