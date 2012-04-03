@@ -49,7 +49,8 @@ class BanchaApi {
 		foreach ($models as $modelClass) {
 			$model = $this->loadModel($modelClass);
 			if (isset($model->actsAs) && is_array($model->actsAs)) {
-				if (in_array('Bancha.BanchaRemotable', $model->actsAs)) {
+				// check if it is remotable (first when a AppModel behavior is also defined, second when not)
+				if (array_key_exists('Bancha.BanchaRemotable', $model->actsAs) || in_array('Bancha.BanchaRemotable', $model->actsAs)) {
 					$remotableModels[] = $modelClass;
 				}
 			}
@@ -140,19 +141,19 @@ class BanchaApi {
 	public function getCrudActionsOfController($controllerClass) {
 		$methods = $this->getClassMethods($controllerClass);
 
-		$formHandler = false;
+		$addFormHandler = false;
 		$crudActions = array();
 		foreach ($methods as $method) {
 			if ('add' === $method->name || 'edit' == $method->name) {
-				$formHandler = true;
+				$addFormHandler = true;
 			}
 			if (isset($this->crudMapping[$method->name])) {
 				$crudActions[] = $this->crudMapping[$method->name];
 			}
 		}
 
-		// If this controller has a form handler, add it to the crud actions.
-		if ($formHandler) {
+		// If this controller supports a form handler submit, add it to the crud actions.
+		if ($addFormHandler) {
 			$crudActions[] = array(
 				'name'			=> 'submit',
 				'len' 			=> 1,
@@ -240,8 +241,7 @@ class BanchaApi {
 
 	protected function getClassMethods($class) {
 		$reflection = new ReflectionClass($class);
-		return $reflection->getMethods();
+		return $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 	}
-
 }
 

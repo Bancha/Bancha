@@ -81,7 +81,8 @@ class BanchaController extends BanchaAppController {
     		'metadata'	=> $this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
     		'actions'	=> $actions
 		);
-
+        
+        // no extra view file needed, simply output
 		$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
 	}
 
@@ -145,4 +146,5 @@ class BanchaController extends BanchaAppController {
 		
 		return $metadata;
 	}
+    
 }
