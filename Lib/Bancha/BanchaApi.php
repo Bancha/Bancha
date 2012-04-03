@@ -241,7 +241,7 @@ class BanchaApi {
 
 	protected function getClassMethods($class) {
 		$reflection = new ReflectionClass($class);
-		return $reflection->getMethods();
+		return $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 	}
 }
 
