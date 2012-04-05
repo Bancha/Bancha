@@ -237,7 +237,7 @@ Ext.define('Bancha', {
     // ENDIF
 
     /* If remote api is already loaded, keep it */
-    REMOTE_API: Bancha.REMOTE_API,
+    REMOTE_API: window.Bancha ? Bancha.REMOTE_API : undefined,
     
     /**
      * @property
