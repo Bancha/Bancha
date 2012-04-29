@@ -60,9 +60,14 @@ class BanchaRequestCollection {
 				$data = array($data);
 			}
 			$data = Set::sort($data, '{n}.tid', 'asc');
-		} else {
+		} else if(!empty($this->postData)) {
 			// Form requests only contain one request.
 			$data = array($this->postData);
+		} else {
+			// no data passed
+			throw new CakeException(
+				'Missing POST Data: The Bancha Dispatcher expected to get all requests in the Ext.Direct format as POST '.
+				'parameter, but there is no data in this request. You can not access this site directly!');
 		}
 
 		if(count($data) > 0) {
