@@ -174,6 +174,7 @@ var BanchaSetup = {
 		// check if Bancha lib works
 		var executed = (typeof window.Bancha === 'object');
 		BanchaSetup.writeLog(executed,'Execute Bancha library', [
+			'<b>Could not execute the Bancha library</b><br />',
 			'There seems to be an JavaScript error inside Plugin/Bancha/webroot/js/Bancha.js. ',
 			'First check is you can really see JavaScript Code opening ',
 			'<a href="js/Bancha.js" target="_blank">js/Bancha.js</a>. <br /><br />',
@@ -191,11 +192,22 @@ var BanchaSetup = {
 	},
 	checkSetup_onBanchaRemoteApiIsLoaded: function(isLoaded,ajaxResponse) {
 
+		var instructions = [
+			'You most likely did not correctly installed Bancha, please check ',
+			'<a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation: Step 2</a> ',
+			'and make sure there are no cake errors in the <a href="../bancha-api.js" target="_blank">Remote API</a>.',
+			'<br /><br />',
+			'If you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, appending the output of teh Remote API above.<br /><br />',
+			'Otherwise write to support@banchaproject.org'].join('');
+		
 		// check if Bancha remote api is loaded
 		if(ajaxResponse.status==404) {
-			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 2</a> and that there are no cake errors in the <a href="../bancha-api.js" target="_blank">Remote API</a>.');
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', 
+				'<b>'+ajaxResponse.status+': Could not load the Bancha Remote API</b><br />'+instructions);
 		} else {
-			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', 
+				ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
 		}
 		if(isLoaded===false) {
 			return;
@@ -203,11 +215,23 @@ var BanchaSetup = {
 
 		// check if Bancha lib works
 		var executed = (Bancha.REMOTE_API && Bancha.REMOTE_API.actions && typeof Bancha.REMOTE_API.actions.Bancha === 'object');
+
+		// check if the boostrap is loaded and therefore there is a namespace set
+		if(!executed && ajaxResponse.responseText.indexOf('={')<19) {
+			// namespace missing
+			BanchaSetup.writeLog(false,'<b>Wrong CakePHP Configuration for Plugin</b>', [
+				'You are missing the "bootstrap=>true" part in your configuration, please see ',
+				'<a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">',
+				'Installation: Step 2</a>.<br /><br />',
+				instructions].join(''));
+			return;
+		}
+
 		BanchaSetup.writeLog(executed,'Bancha Remote API available', 'Could not init Bancha Remote API. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
 		if(executed===false) {
 			return;
 		}
-
+		
 		// check remote stubs include Bancha API
 		Bancha.init();
 		var banchaApiAvailable = (Bancha.RemoteStubs && Bancha.RemoteStubs.Bancha && typeof Bancha.RemoteStubs.Bancha.loadMetaData === 'function');
