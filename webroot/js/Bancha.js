@@ -372,7 +372,7 @@ Ext.define('Bancha', {
             regex;
         
         // IFDEBUG
-        if(!Ext.isReady) {
+        if(Ext.versions.extjs && !Ext.isReady) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: 'Bancha: Bancha should be initalized after the onReady event.'
