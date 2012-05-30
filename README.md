@@ -1,7 +1,7 @@
 [![Bancha logo](http://docs.banchaproject.org/wiki/images/github-logo.png)](http://banchaproject.com)
 
 Features
----------------
+--------
 
 *   handles all communication between server and client
 *   shares all schema and validation rules in CakePHP with ExtJS/Sencha Touch
@@ -24,10 +24,9 @@ Bancha is dual-licensed both commercially and under the open source GPL v3, just
 
 [View GPL v3 license terms](gpl-v3.txt)
 
----
 
-More information:
------------------
+More information
+----------------
 
 *   [Bancha Overview](http://banchaproject.com/)
 *   [Installation and Usage](https://github.com/Bancha/Bancha/wiki/)

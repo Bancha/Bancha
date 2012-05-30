@@ -80,8 +80,9 @@
 
 <!-- test setup -->
 <script type="text/Javascript">
-/*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
-/*global Ext, Bancha, window, alert */
+/*jslint browser: true, vars: true, plusplus: false, white: true, sloppy: true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:true, strict:false */
+/*global Ext:false, Bancha:false, window:false, alert:false */
 
 if(typeof window.Ext !== 'object') {
 	alert('This script requires a internet connection to load Ext Core.');
@@ -127,10 +128,10 @@ var BanchaSetup = {
 		document.getElementsByTagName('head')[0].appendChild(script_tag);
 		
 		script_tag.onload = script_tag.onerror = script_tag.onreadystatechange = function() {
-		    if(!this.readyState ||
-		        this.readyState === "loaded" || this.readyState === "complete") {
-		        // script successfully loaded
-		        isLoaded = true;
+			if(!this.readyState ||
+					this.readyState === "loaded" || this.readyState === "complete") {
+				// script successfully loaded
+				sLoaded = true;
 			}
 			
 			// no first state change
@@ -147,6 +148,7 @@ var BanchaSetup = {
 		// check if it is opened from right location
 		if(document.location.href && document.location.href.substr(-24)!=="/bancha/setup-check.html") {
 			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html');
+			return;
 		}
 		
 		// try to load Bancha
@@ -155,14 +157,32 @@ var BanchaSetup = {
 	checkSetup_onBanchaIsLoaded: function(isLoaded,ajaxResponse) {
 		
 		// check if Bancha is loaded
-		BanchaSetup.writeLog(isLoaded,'Load Bancha library', ajaxResponse.status+': Could not load the Bancha library. '+BanchaSetup.bugReportText);
+		BanchaSetup.writeLog(isLoaded,'Load Bancha library', [
+			'<b>'+ajaxResponse.status+': Could not load the Bancha library. </b><br />',
+			'This is most likely a server configuration problem, please check why the JavaScript ',
+			'file is not available here: <a href="js/Bancha.js" target="_blank">js/Bancha.js</a><br /><br />',
+
+			'If you see an error message "Controller class JsController could not be found.", please check ',
+			'if the file Plugin/Bancha/webroot/js/Bancha.js exists.<br /><br/>',
+			'If you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, appending the output of js/Bancha.js'
+			].join(''));
 		if(isLoaded===false) {
 			return;
 		}
 		
 		// check if Bancha lib works
 		var executed = (typeof window.Bancha === 'object');
-		BanchaSetup.writeLog(executed,'Execute Bancha library', 'Could not execute the Bancha library, there seems to be an javascript error inside plugins/Bancha/webroot/js/Bancha.js. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
+		BanchaSetup.writeLog(executed,'Execute Bancha library', [
+			'<b>Could not execute the Bancha library</b><br />',
+			'There seems to be an JavaScript error inside Plugin/Bancha/webroot/js/Bancha.js. ',
+			'First check is you can really see JavaScript Code opening ',
+			'<a href="js/Bancha.js" target="_blank">js/Bancha.js</a>. <br /><br />',
+			'If not and you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, appending the output of js/Bancha.js.<br /><br />',
+			'If you see some JavaScript this error most likely doesn\'t exist in the official version. ',
+			'Please make sure you are using the official Bancha library. If so: ',
+			BanchaSetup.bugReportText].join(''));
 		if(executed===false) {
 			return;
 		}
@@ -172,11 +192,22 @@ var BanchaSetup = {
 	},
 	checkSetup_onBanchaRemoteApiIsLoaded: function(isLoaded,ajaxResponse) {
 
+		var instructions = [
+			'You most likely did not correctly installed Bancha, please check ',
+			'<a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation: Step 2</a> ',
+			'and make sure there are no cake errors in the <a href="../bancha-api.js" target="_blank">Remote API</a>.',
+			'<br /><br />',
+			'If you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, appending the output of teh Remote API above.<br /><br />',
+			'Otherwise write to support@banchaproject.org'].join('');
+		
 		// check if Bancha remote api is loaded
-		if(ajaxResponse.status==404) {
-			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, please check <a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation step 2</a> and that there are no cake errors in the <a href="../bancha-api.js" target="_blank">Remote API</a>.');
+		if(ajaxResponse.status===404) {
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API',
+				'<b>'+ajaxResponse.status+': Could not load the Bancha Remote API</b><br />'+instructions);
 		} else {
-			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API',
+				ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
 		}
 		if(isLoaded===false) {
 			return;
@@ -184,11 +215,23 @@ var BanchaSetup = {
 
 		// check if Bancha lib works
 		var executed = (Bancha.REMOTE_API && Bancha.REMOTE_API.actions && typeof Bancha.REMOTE_API.actions.Bancha === 'object');
+
+		// check if the boostrap is loaded and therefore there is a namespace set
+		if(!executed && ajaxResponse.responseText.indexOf('={')<19) {
+			// namespace missing
+			BanchaSetup.writeLog(false,'<b>Wrong CakePHP Configuration for Plugin</b>', [
+				'You are missing the "bootstrap=>true" part in your configuration, please see ',
+				'<a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">',
+				'Installation: Step 2</a>.<br /><br />',
+				instructions].join(''));
+			return;
+		}
+
 		BanchaSetup.writeLog(executed,'Bancha Remote API available', 'Could not init Bancha Remote API. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
 		if(executed===false) {
 			return;
 		}
-
+		
 		// check remote stubs include Bancha API
 		Bancha.init();
 		var banchaApiAvailable = (Bancha.RemoteStubs && Bancha.RemoteStubs.Bancha && typeof Bancha.RemoteStubs.Bancha.loadMetaData === 'function');
@@ -204,7 +247,16 @@ var BanchaSetup = {
 	checkSetup_onBanchaDispatcherIsLoaded: function(isLoaded,ajaxResponse) {
 
 		// check if Bancha Dispatcher is copied to webroot
-		BanchaSetup.writeLog(isLoaded,'Ping Bancha Dispatcher', ajaxResponse.status+': Could not find Bancha Dispatcher, please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> into <i>app/webroot/</i>.');
+		BanchaSetup.writeLog(isLoaded,'Ping Bancha Dispatcher', [
+			'<b>'+ajaxResponse.status+': Could not find Bancha Dispatcher</b><br/><br/>',
+			'Please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> ',
+			'into <i>app/webroot/</i>.<br/><br/>',
+			'If you still have this problem check the output of <a href="../bancha.php" target="_blank">',
+			'Bancha Dispatcher page</a>. Note, the Dispatcher works correctly if you can see the error ',
+			'messsage "Missing POST Data: ...". This is expected!<br /><br />',
+			'If there is no obvious clue, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, including the output of the Bancha Dispatcher page.'
+			].join(''));
 		if(isLoaded===false) {
 			return;
 		}
@@ -212,7 +264,11 @@ var BanchaSetup = {
 		// check if Bancha Dispatcher is the official one
 		var response = Ext.decode(ajaxResponse.responseText),
 			works = response.BanchaDispatcherIsSetup===true;
-		BanchaSetup.writeLog(works,'Bancha Dispatcher works', 'Could not validate Bancha Dispatcher. Please copy the official Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> into <i>app/webroot/</i>. If  you did so: '+BanchaSetup.bugReportText);
+		BanchaSetup.writeLog(works,'Bancha Dispatcher works', [
+			'<br /><b>Could not validate the Bancha Dispatcher!!!</b><br /><br />',
+			'Please copy the official Bancha Dispatcher from <i>Plugin/Bancha/_app/webroot/bancha.php</i> ',
+			'into <i>app/webroot/</i>. <br /><br />If  you did so: '+BanchaSetup.bugReportText
+			].join(''));
 		if(works===false) {
 			return;
 		}
