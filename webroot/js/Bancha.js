@@ -952,15 +952,17 @@ Ext.define('Bancha', {
         metaData = Ext.clone(this.getModelMetaData(modelName));
         modelConfig = Ext.apply(metaData, modelConfig, defaults);
         
-        // ugly hack to recognize Sencha Touch
-        if(Ext.versions.touch) { // TODO http://www.sencha.com/forum/showthread.php?188747-The-Model-Package-for-ExtJS-and-Sencha-Touch&p=758527#post758527
+        // The Sencha Touch and ExtJS model structure differ
+        // Therefore we msut recognize here if it is a Touch version and
+        // in this case adopt the config structure
+        if(Ext.versions.touch) {
             // place all configs in the config property
             modelConfig = {
                 extend: modelConfig.extend,
                 config: modelConfig
             };
             
-            // this one should be on the model itself
+            // this one should only be on the model itself
             delete modelConfig.config.extend;
         }
         
