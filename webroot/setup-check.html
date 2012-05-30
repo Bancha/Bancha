@@ -80,8 +80,8 @@
 
 <!-- test setup -->
 <script type="text/Javascript">
-/*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:true */
+/*jslint browser: true, vars: true, plusplus: false, white: true, sloppy: true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:true, strict:false */
 /*global Ext:false, Bancha:false, window:false, alert:false */
 
 if(typeof window.Ext !== 'object') {
@@ -128,10 +128,10 @@ var BanchaSetup = {
 		document.getElementsByTagName('head')[0].appendChild(script_tag);
 		
 		script_tag.onload = script_tag.onerror = script_tag.onreadystatechange = function() {
-		    if(!this.readyState ||
-		        this.readyState === "loaded" || this.readyState === "complete") {
-		        // script successfully loaded
-		        isLoaded = true;
+			if(!this.readyState ||
+					this.readyState === "loaded" || this.readyState === "complete") {
+				// script successfully loaded
+				sLoaded = true;
 			}
 			
 			// no first state change
@@ -202,11 +202,11 @@ var BanchaSetup = {
 			'Otherwise write to support@banchaproject.org'].join('');
 		
 		// check if Bancha remote api is loaded
-		if(ajaxResponse.status==404) {
-			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', 
+		if(ajaxResponse.status===404) {
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API',
 				'<b>'+ajaxResponse.status+': Could not load the Bancha Remote API</b><br />'+instructions);
 		} else {
-			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API', 
+			BanchaSetup.writeLog(isLoaded,'Load Bancha Remote API',
 				ajaxResponse.status+': Could not load the Bancha Remote API, probably your database connection doesn\'t work, see the <a href="../bancha-api.js" target="_blank">Remote API</a> for errors.<br/>If this doesn\'t help: '+BanchaSetup.bugReportText);
 		}
 		if(isLoaded===false) {
