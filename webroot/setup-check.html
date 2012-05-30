@@ -247,7 +247,16 @@ var BanchaSetup = {
 	checkSetup_onBanchaDispatcherIsLoaded: function(isLoaded,ajaxResponse) {
 
 		// check if Bancha Dispatcher is copied to webroot
-		BanchaSetup.writeLog(isLoaded,'Ping Bancha Dispatcher', ajaxResponse.status+': Could not find Bancha Dispatcher, please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> into <i>app/webroot/</i>.');
+		BanchaSetup.writeLog(isLoaded,'Ping Bancha Dispatcher', [
+			'<b>'+ajaxResponse.status+': Could not find Bancha Dispatcher</b><br/><br/>',
+			'Please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> ',
+			'into <i>app/webroot/</i>.<br/><br/>',
+			'If you still have this problem check the output of <a href="../bancha.php" target="_blank">',
+			'Bancha Dispatcher page</a>. Note, the Dispatcher works correctly if you can see the error ',
+			'messsage "Missing POST Data: ...". This is expected!<br /><br />',
+			'If there is no obvious clue, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, including the output of the Bancha Dispatcher page.'
+			].join(''));
 		if(isLoaded===false) {
 			return;
 		}
@@ -255,7 +264,11 @@ var BanchaSetup = {
 		// check if Bancha Dispatcher is the official one
 		var response = Ext.decode(ajaxResponse.responseText),
 			works = response.BanchaDispatcherIsSetup===true;
-		BanchaSetup.writeLog(works,'Bancha Dispatcher works', 'Could not validate Bancha Dispatcher. Please copy the official Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> into <i>app/webroot/</i>. If  you did so: '+BanchaSetup.bugReportText);
+		BanchaSetup.writeLog(works,'Bancha Dispatcher works', [
+			'<br /><b>Could not validate the Bancha Dispatcher!!!</b><br /><br />',
+			'Please copy the official Bancha Dispatcher from <i>Plugin/Bancha/_app/webroot/bancha.php</i> ',
+			'into <i>app/webroot/</i>. <br /><br />If  you did so: '+BanchaSetup.bugReportText
+			].join(''));
 		if(works===false) {
 			return;
 		}
