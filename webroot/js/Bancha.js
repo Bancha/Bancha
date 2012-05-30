@@ -13,7 +13,8 @@
  * For more information go to http://banchaproject.org 
  */
 /*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
-/*global Ext, Bancha, window */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:true */
+/*global Ext:false, Bancha:true, window:false */
 
 /**
  * @class Bancha.data.Model
