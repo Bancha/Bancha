@@ -80,8 +80,9 @@
 
 <!-- test setup -->
 <script type="text/Javascript">
-/*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
-/*global Ext, Bancha, window, alert */
+/*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:true */
+/*global Ext:false, Bancha:false, window:false, alert:false */
 
 if(typeof window.Ext !== 'object') {
 	alert('This script requires a internet connection to load Ext Core.');
@@ -147,6 +148,7 @@ var BanchaSetup = {
 		// check if it is opened from right location
 		if(document.location.href && document.location.href.substr(-24)!=="/bancha/setup-check.html") {
 			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html');
+			return;
 		}
 		
 		// try to load Bancha
@@ -155,14 +157,31 @@ var BanchaSetup = {
 	checkSetup_onBanchaIsLoaded: function(isLoaded,ajaxResponse) {
 		
 		// check if Bancha is loaded
-		BanchaSetup.writeLog(isLoaded,'Load Bancha library', ajaxResponse.status+': Could not load the Bancha library. '+BanchaSetup.bugReportText);
+		BanchaSetup.writeLog(isLoaded,'Load Bancha library', [
+			'<b>'+ajaxResponse.status+': Could not load the Bancha library. </b><br />',
+			'This is most likely a server configuration problem, please check why the JavaScript ',
+			'file is not available here: <a href="js/Bancha.js" target="_blank">js/Bancha.js</a><br /><br />',
+
+			'If you see an error message "Controller class JsController could not be found.", please check ',
+			'if the file Plugin/Bancha/webroot/js/Bancha.js exists.<br /><br/>',
+			'If you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, appending the output of js/Bancha.js'
+			].join(''));
 		if(isLoaded===false) {
 			return;
 		}
 		
 		// check if Bancha lib works
 		var executed = (typeof window.Bancha === 'object');
-		BanchaSetup.writeLog(executed,'Execute Bancha library', 'Could not execute the Bancha library, there seems to be an javascript error inside plugins/Bancha/webroot/js/Bancha.js. Please make sure you are using the official Bancha library. If so: '+BanchaSetup.bugReportText);
+		BanchaSetup.writeLog(executed,'Execute Bancha library', [
+			'There seems to be an JavaScript error inside Plugin/Bancha/webroot/js/Bancha.js. ',
+			'First check is you can really see JavaScript Code opening ',
+			'<a href="js/Bancha.js" target="_blank">js/Bancha.js</a>. <br /><br />',
+			'If not and you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
+			'target="_blank">report it</a>, appending the output of js/Bancha.js.<br /><br />',
+			'If you see some JavaScript this error most likely doesn\'t exist in the official version. ',
+			'Please make sure you are using the official Bancha library. If so: ',
+			BanchaSetup.bugReportText].join(''));
 		if(executed===false) {
 			return;
 		}
