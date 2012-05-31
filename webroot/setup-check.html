@@ -131,7 +131,7 @@ var BanchaSetup = {
 			if(!this.readyState ||
 					this.readyState === "loaded" || this.readyState === "complete") {
 				// script successfully loaded
-				sLoaded = true;
+				isLoaded = true;
 			}
 			
 			// no first state change
@@ -146,7 +146,7 @@ var BanchaSetup = {
 	checkSetup: function() {
 		
 		// check if it is opened from right location
-		if(document.location.href && document.location.href.substr(-24)!=="/bancha/setup-check.html") {
+		if(document.location.href && document.location.href.substr(-24).toLowerCase()!=="/bancha/setup-check.html") {
 			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html');
 			return;
 		}
@@ -273,7 +273,19 @@ var BanchaSetup = {
 			return;
 		}
 		
-		BanchaSetup.writeLog('party','Congratulations! You have successfully installed Bancha.');
+		var exposedRemoteStubs = Ext.Object.getSize(Bancha.REMOTE_API.actions)>1;
+		if(exposedRemoteStubs) {
+			BanchaSetup.writeLog(true,'Exposed CakePHP models and/or methods');
+		}
+
+		BanchaSetup.writeLog('party',[
+			'<b>Congratulations! You have successfully installed Bancha.</b><br /><br /><br />',
+			(exposedRemoteStubs ? '' : [
+				'<div style="text-align:center;">',
+				'You haven\'t yet exposed any models or methods in CakePHP.<br />',
+				'<a href="https://github.com/Bancha/Bancha/wiki/Usage-in-CakePHP">',
+				'Read here how to do this.</a></div>'].join(''))
+			].join(''));
 	}
 }; //eo BanchaSetup
 
