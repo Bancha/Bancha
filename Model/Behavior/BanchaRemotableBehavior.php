@@ -38,14 +38,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * a mapping table from cake to extjs data types
 	 */
 	private $types = array(
-		"integer" => "int",
-		"string" => "string",
-		"datetime" => "date",
-		"date" => "date",
-		"float" => "float",
-		"text" => "string",
-		"boolean" => "boolean",
-		"timestamp" => "date"
+		'integer'   => array('type'=>'int'),
+		'string'    => array('type'=>'string'),
+		'datetime'  => array('type'=>'date', 'dateFormat' =>'Y-m-d H:i:s'),
+		'date'      => array('type'=>'date', 'dateFormat' =>'Y-m-d'),
+		'float'     => array('type'=>'float'),
+		'text'      => array('type'=>'string'),
+		'boolean'   => array('type'=>'boolean'),
+		'timestamp' => array('type'=>'date', 'dateFormat' =>'timestamp')
 
 	);
 
@@ -226,7 +226,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
 		foreach ($columns as $field => $values) {
-				array_push($cols, array( 'name' => $field, 'type' => $this->types[$values]));
+				array_push($cols, array_merge(array('name' => $field), $this->types[$values]));
 		}
 		return $cols;
 	}
