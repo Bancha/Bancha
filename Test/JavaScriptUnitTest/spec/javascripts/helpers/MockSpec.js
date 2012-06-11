@@ -1,13 +1,23 @@
 /*!
- * Mock object for easier testing
- * Copyright(c) 2011-2012 Roland Schuetz
- * @author Roland Schuetz <mail@rolandschuetz.at>
- * @copyright (c) 2011-2012 Roland Schuetz
+ *
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
+ * Bancha specific helper functions
+ *
+ * @copyright     Copyright 2011-2012 Roland Schuetz
+ * @link          http://banchaproject.org Bancha Project
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
+ *
+ * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
-/*global Ext, describe, it, beforeEach, expect, fail, jasmine, Mock, ExtSpecHelper */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock:true */
 
-describe("Mock", function() {
+
+describe("Mock tests", function() {
     
     it("Expects the ExtJS Library to be present (in Bancha/Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments.js)", function() {
         expect(Ext).toBeDefined();
@@ -16,13 +26,13 @@ describe("Mock", function() {
     
     it("should validate if there was no expectations", function() {
         // simple
-        var mock = Mock();
+        var mock = new Mock();
         mock.verify();
     });
     
     
     it("should trow an error if a expected method is not called", function() {
-        var mock = Mock();
+        var mock = new Mock();
         mock.expect("notCalled");
         
         expect(function() {
@@ -32,7 +42,7 @@ describe("Mock", function() {
     
     
     it("should trow an error if a method is called to less or to often", function() {
-        var mock = Mock();
+        var mock = new Mock();
         mock.expect("callOnce");
         mock.callOnce(1);
         mock.callOnce(2);
@@ -41,7 +51,7 @@ describe("Mock", function() {
             mock.verify();
         }).toThrow('Expected mock function "callOnce" to be called 1x instead of 2x');
         
-        mock = Mock();
+        mock = new Mock();
         mock.expect("callTwice");
         mock.expect("callTwice");
         mock.callTwice(1);
@@ -55,7 +65,7 @@ describe("Mock", function() {
     it("should be able to test multiple functions in one test", function() {
        
         // success case
-        var mock = Mock();
+        var mock = new Mock();
         mock.expect("fnOne");
         mock.fnOne(1);
         mock.expect("fnTwo");
@@ -65,7 +75,7 @@ describe("Mock", function() {
         mock.verify();
         
         // error case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnOne");
         mock.fnOne(1);
         mock.expect("fnTwo");
@@ -80,7 +90,7 @@ describe("Mock", function() {
        var mock;
        
         // success case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithArguments").withArguments("a",2,{a:true,b:['array content string']});
         mock.fnWithArguments("a",2,{a:true,b:['array content string']});
         
@@ -88,7 +98,7 @@ describe("Mock", function() {
         mock.verify();
         
         // error case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithArguments").withArguments("a",2,{a:true,b:['array content string']});
         mock.fnWithArguments("a",2,{a:true,b:['array string with wrong content']});
         
@@ -102,7 +112,7 @@ describe("Mock", function() {
         var mock;
        
         // success case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnOne").withArguments(1);
         mock.fnOne(1);
         mock.expect("fnOne").withArguments("string");
@@ -112,7 +122,7 @@ describe("Mock", function() {
         mock.verify();
         
         // error case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnOne").withArguments(1);
         mock.fnOne(1);
         mock.expect("fnOne").withArguments("string");
@@ -128,7 +138,7 @@ describe("Mock", function() {
        var mock;
        
         // success case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.String,Mock.Value.Number,Mock.Value.Boolean);
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.String,Mock.Value.Number,Mock.Value.Boolean);
         mock.fnWithSpecialArguments("a",2,true);
@@ -138,7 +148,7 @@ describe("Mock", function() {
         mock.verify();
         
         // error case string
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.String,Mock.Value.Number,Mock.Value.Boolean);
         mock.fnWithSpecialArguments(1,2,true);
         
@@ -148,7 +158,7 @@ describe("Mock", function() {
         
         
         // error case number
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.String,Mock.Value.Number,Mock.Value.Boolean);
         mock.fnWithSpecialArguments("a","2",true);
         
@@ -157,7 +167,7 @@ describe("Mock", function() {
         }).toThrow('mock function "fnWithSpecialArguments"\'s call 0. Argument[1]: Expected "2"(string) to be a number.');
         
         // error case boolean
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.String,Mock.Value.Number,Mock.Value.Boolean);
         mock.fnWithSpecialArguments("a",2,3);
         
@@ -171,7 +181,7 @@ describe("Mock", function() {
         var mock;
         
         // success case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Any,Mock.Value.Function,Mock.Value.Object,Mock.Value.Array);
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Any,Mock.Value.Function,Mock.Value.Object,Mock.Value.Array);
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Any,Mock.Value.Function,Mock.Value.Object,Mock.Value.Array);
@@ -183,7 +193,7 @@ describe("Mock", function() {
         mock.verify();
         
         // error case function
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Function,Mock.Value.String);
         mock.fnWithSpecialArguments({},"whatever");
         
@@ -193,7 +203,7 @@ describe("Mock", function() {
         
         
         // error case object
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Object,Mock.Value.String);
         mock.fnWithSpecialArguments("a","whatever");
         
@@ -203,7 +213,7 @@ describe("Mock", function() {
         
         
         // error case object NOT array
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Object,Mock.Value.String);
         mock.fnWithSpecialArguments([1],"whatever");
         
@@ -213,7 +223,7 @@ describe("Mock", function() {
         
         
         // error case array
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments(Mock.Value.Array,Mock.Value.String);
         mock.fnWithSpecialArguments(2,"whatever");
         
@@ -228,7 +238,7 @@ describe("Mock", function() {
        var mock;
        
         // success case
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments({string:Mock.Value.String,number:Mock.Value.Number});
         mock.expect("fnWithSpecialArguments").withArguments({string:Mock.Value.String,number:Mock.Value.Number});
         mock.fnWithSpecialArguments({string:"ab",number:5});
@@ -238,7 +248,7 @@ describe("Mock", function() {
         mock.verify();
         
         // error case string
-        mock = Mock();
+        mock = new Mock();
         mock.expect("fnWithSpecialArguments").withArguments({string:Mock.Value.String,number:Mock.Value.Number});
         mock.fnWithSpecialArguments({string:"ab",number:"wrongTypeString"});
         

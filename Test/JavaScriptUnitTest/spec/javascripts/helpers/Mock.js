@@ -1,11 +1,22 @@
 /*!
+ *
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
  * Mock object for easier testing
- * Copyright(c) 2011-2012 Roland Schuetz
- * @author Roland Schuetz <mail@rolandschuetz.at>
- * @copyright (c) 2011-2012 Roland Schuetz
+ * General jasmin spec helper, mocks an onjects (more complex then a simple spy)
+ *
+ * @copyright     Copyright 2011-2012 Roland Schuetz
+ * @link          http://banchaproject.org Bancha Project
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
+ *
+ * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true */
-/*global Ext, describe, it, beforeEach, expect, jasmine, Mock */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock:true, BanchaSpecHelper */
+
 
 /**
  * create an mock
@@ -18,7 +29,8 @@
      * helper functions for verify
      */
     var isArray = function(testObject) {   
-        return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number';
+        return testObject && !(testObject.propertyIsEnumerable('length')) &&
+                typeof testObject === 'object' && typeof testObject.length === 'number';
     };
     var getType = function(obj) {
         if(typeof obj==='object') {
@@ -178,8 +190,9 @@
             if (prototype === null) {
                 object = { "__proto__": null };
             } else {
-                if (typeof prototype !== "object")
+                if (typeof prototype !== "object") {
                     throw new TypeError("typeof prototype["+(typeof prototype)+"] != 'object'");
+                }
                 var Type = function () {};
                 Type.prototype = prototype;
                 object = new Type();
@@ -189,12 +202,17 @@
                 // objects created using `Object.create`
                 object.__proto__ = prototype;
             }
-            if (typeof properties !== "undefined")
+            if (typeof properties !== "undefined") {
                 Object.defineProperties(object, properties);
+            }
             return object;
         };
     }
     
+    /*
+     * Create a new Mock
+     * It doesn't matter if you use 'new' or not
+     */
     Mock = function() {
         var mock = Object.create(mockPrototype);
         
