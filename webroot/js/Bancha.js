@@ -10,10 +10,10 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
- * For more information go to http://banchaproject.org 
+ * For more information go to http://banchaproject.org
  */
 /*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
 /*global Ext:false, Bancha:true, window:false */
 
 /**
@@ -123,7 +123,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
  */
 
 Ext.require([
-    'Ext.data.validations' // they are differently called in ExtJS and Sencha Touch, but owrk by alias jsut fine
+    'Ext.data.validations' // they are differently called in ExtJS and Sencha Touch, but work by alias just fine
 ], function() {
 
     var filenameHasExtension = function(filename,validExtensions) {
@@ -768,17 +768,17 @@ Ext.define('Bancha', {
     
 
 	/**
-	 * Checks if a Bancha model is already created (convinience function)
-	 * 
-	 * @param {String} The model name (without any namespace)
-	 * @param {Boolean} True if the model exists
-	 */
+     * Checks if a Bancha model is already created (convinience function)
+     * 
+     * @param {String} The model name (without any namespace)
+     * @param {Boolean} True if the model exists
+     */
 	isCreatedModel: function(modelName) {
 		return Ext.ClassManager.isCreated(Bancha.modelNamespace+'.'+modelName);
 	},
 	
     /**
-     * This method creates a {@link Bancha.data.Model} with your additional model configs, 
+     * This method creates a {@link Bancha.data.Model} with your additional model configs,
      * if you don't have any additional configs just use the convienience method {@link #getModel}.  
      * 
      * In the debug version it will raise an Ext.Error if the model can't be 
