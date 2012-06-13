@@ -187,6 +187,42 @@ Ext.require([
     });
 });
 
+
+/*
+ * Polyfill for IE 6,7 and partially 8
+ * Add support for ECMAScript 5 Array.reduce
+ * Currently used in Ext.objectFromPath
+ * From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
+ */
+ /*jsl:ignore*/
+/*jshint bitwise:false, curly:false, plusplus:false */
+if (!Array.prototype.reduce) {
+  Array.prototype.reduce = function reduce(accumulator){
+    if (this===null || this===undefined) throw new TypeError("Object is null or undefined");
+    var i = 0, l = this.length >> 0, curr;
+
+    if(typeof accumulator !== "function") // ES5 : "If IsCallable(callbackfn) is false, throw a TypeError exception."
+      throw new TypeError("First argument is not callable");
+
+    if(arguments.length < 2) {
+      if (l === 0) throw new TypeError("Array length is 0 and no second argument");
+      curr = this[0];
+      i = 1; // start accumulating at the second element
+    }
+    else
+      curr = arguments[1];
+
+    while (i < l) {
+      if(i in this) curr = accumulator.call(undefined, curr, this[i], i, this);
+      ++i;
+    }
+
+    return curr;
+  };
+}
+/*jshint bitwise:true, curly:true, plusplus:true */
+/*jsl:end*/
+
 /**
  * @class Bancha
  * 
