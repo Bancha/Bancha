@@ -111,8 +111,8 @@ class BanchaController extends BanchaAppController {
 	 * @return see BanchaApi::getRemotableModels
 	 */
 	private function getRemotableModels($banchaApi) {
-		if(($actions = Cache::read('remotable_models', '_bancha_api_')) !== false) {
-			return $actions;
+		if(($remotableModels = Cache::read('remotable_models', '_bancha_api_')) !== false) {
+			return $remotableModels;
 		}
 		
 		// get remotable models (iterates through all models)

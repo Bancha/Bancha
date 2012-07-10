@@ -1,11 +1,20 @@
 /*!
- * Bancha.scaffold.Util Tests
- * Copyright(c) 2011-2012 Roland Schuetz
- * @author Roland Schuetz <mail@rolandschuetz.at>
- * @copyright (c) 2011-2012 Roland Schuetz
+ *
+ * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
+ * Test all additioanl Ext.data.validations
+ *
+ * @copyright     Copyright 2011-2012 Roland Schuetz
+ * @link          http://banchaproject.org Bancha Project
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
+ *
+ * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, plusplus: true, white: true, sloppy: true */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, BanchaSpecHelper */
+/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
+/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock */
 
 
 describe("Ext.data.validations tests", function() {
@@ -34,14 +43,14 @@ describe("Ext.data.validations tests", function() {
     });
         
     it("should validate max of numberformats", function() {
-        config = {type: 'numberformat', field: 'euro', max: 10};
+        var config = {type: 'numberformat', field: 'euro', max: 10};
         expect(validations.numberformat(config,2)).toBeTruthy();
         expect(validations.numberformat(config,10)).toBeTruthy();
         expect(validations.numberformat(config,11)).toBeFalsy();
     });
         
     it("should validate min and max of numberformats", function() {
-        config = {type: 'numberformat', field: 'euro', min:0, max: 10};
+        var config = {type: 'numberformat', field: 'euro', min:0, max: 10};
         expect(validations.numberformat(config,-3.4)).toBeFalsy();
         expect(validations.numberformat(config,0)).toBeTruthy();
         expect(validations.numberformat(config,10)).toBeTruthy();
