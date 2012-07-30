@@ -46,10 +46,16 @@ class BanchaDispatcher {
 				// We need to use a sub classes disaptcher, because some parameters are missing in Bancha requests and
 				// because we need to full response, not only the body of the response.
 				$dispatcher = new BanchaSingleDispatcher();
+
 				try {
+					// dispatch the request
+					$response = new CakeResponse(array('charset' => Configure::read('App.encoding')));
+					$dispatcher->dispatch($request, $response, array('return' => true));
+					
+					// add result to response colection
 					$collection->addResponse(
 						$request['tid'],
-						$dispatcher->dispatch($request, new CakeResponse(array('charset' => Configure::read('App.encoding'))), array('return' => true)), // second argument is expected to be overwritten by BanchaSingleDisptacher::_invoke
+						$response,
 						$request
 					);
 				} catch (Exception $e) {
