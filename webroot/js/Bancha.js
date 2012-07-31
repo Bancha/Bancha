@@ -378,6 +378,17 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.namespace);
     },
     /**
+     * Returns remote stubs for a given cake controller name in singular
+     * @param {String} stubName the cakephp controller name in singular
+     * @return {Object} The stub if already defined, otherwise undefined
+     */
+    getStub: function(stubName) {
+        if(!Bancha.initialized) {
+            Bancha.init();
+        }
+        return Bancha.getStubsNamespace()[stubName] || undefined;
+    },
+    /**
      * @private
      * Returns the remote api definition of Ext.direct
      * @return {Object} The api if already defined, otherwise undefined
@@ -1018,6 +1029,9 @@ Ext.define('Bancha', {
      * @method getModel
      */
     getModel: function(modelName) {
+        if(!Bancha.initialized) {
+            Bancha.init();
+        }
         return (this.isCreatedModel(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
     }
 });

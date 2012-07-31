@@ -63,7 +63,21 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(ns.User).toBeDefined();
             expect(ns.User.create).toBeDefined(); // looks good
         });
-    
+
+        it("should return a stubs on getStub(), if defined", function() {
+            h.init();
+            
+            expect(Bancha.getStub('User')).toEqual(Bancha.getStubsNamespace().User);
+            expect(Bancha.getStub('DoesntExist')).toBeUndefined();
+        });
+
+        it("should initialize Bancha, if getStub() is used", function() {
+            Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+
+            expect(Bancha.initialized).toBeFalsy();
+            expect(Bancha.getStub('User')).toEqual(Bancha.getStubsNamespace().User);
+            expect(Bancha.initialized).toBeTruthy();
+        });
     
         it("should in debug mode return an expection when calling getRemoteApi() before init()", function() {
             if(Bancha.debugVersion) {
@@ -129,7 +143,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.getModelMetaData('Phantasy')).toBeNull(); // doesn't exist
             expect(Bancha.getModelMetaData('User')).property('fields.2.name').toEqual('login'); // it's really the metadata
         });
-    
+
     
         it("should preload model meta data using the direct stub", function() {
             h.init();
@@ -310,6 +324,14 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                  expect(model.prototype.config.createdWithCreate).toBeTruthy();
              }
              
+        });
+
+        it("should initialize Bancha, if getModel() is used", function() {
+            Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+
+            expect(Bancha.initialized).toBeFalsy();
+            expect(Bancha.getModel('User')).toBeTruthy();
+            expect(Bancha.initialized).toBeTruthy();
         });
 
         it("should load all needed models on onModelReady and fire functions after the model is ready for a single modelname input", function() {
