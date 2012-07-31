@@ -1029,6 +1029,9 @@ Ext.define('Bancha', {
      * @method getModel
      */
     getModel: function(modelName) {
+        if(!Bancha.initialized) {
+            Bancha.init();
+        }
         return (this.isCreatedModel(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
     }
 });
