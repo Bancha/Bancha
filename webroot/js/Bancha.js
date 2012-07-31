@@ -411,6 +411,7 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.remoteApi);
     },
     /**
+     * @deprecated Bancha internally calls this function, you don't need to explicitly use it anymore
      * Inits Bancha with the RemotingProvider, always init before using Bancha.  
      * ({@link Bancha#onModelReady} will init automatically)
      */
@@ -846,14 +847,9 @@ Ext.define('Bancha', {
             stub,
             idProperty;
         
-        // IFDEBUG
-        if(!this.initialized) {
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                msg: 'Bancha: Bancha is not yet initalized, please init before using Bancha.createModel().'
-            });
+        if(!Bancha.initialized) {
+            Bancha.init();
         }
-        // ENDIF
         
         if(!this.isRemoteModel(modelName)) {
             // IFDEBUG
