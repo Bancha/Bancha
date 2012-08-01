@@ -283,7 +283,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// isUnique can only be tested on the server, 
 			// so we would need some business logic for that
 			// as well, maybe integrate in Bancha Scaffold
-			
+
 			if(isset($values['equalTo'])) {
 				$cols[] = array(
 					'type' => 'inclusion',
@@ -373,19 +373,23 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				);
 			}
 
-			//  numberformat = precision, min, max
-			if(isset($values['numeric'])) {
+			// number validation rules
+			// numberformat = precision, min, max
+			if(isset($values['numeric']) || isset($values['naturalNumber'])) {
+				$col = array(
+					'type' => 'numberformat',
+					'field' => $field,
+				);
+
 				if(isset($values['numeric']['precision'])) {
-					$cols[] = array(
-						'type' => 'numberformat',
-						'field' => $field,
-						'precision' => $values['numeric']['precision'],
-					);
-				} else {
-					$cols[] = array(
-						'type' => 'numberformat',
-						'field' => $field,
-					);
+					$col['precision'] = $values['numeric']['precision'];
+				}
+				if(isset($values['naturalNumber'])) {
+					$col['precision'] = 0;
+				}
+
+				if(isset($values['naturalNumber'])) {
+					$col['min'] = (isset($values['naturalNumber']['rule'][1]) && $values['naturalNumber']['rule'][1]==true) ? 0 : 1;
 				}
 			}
 			
