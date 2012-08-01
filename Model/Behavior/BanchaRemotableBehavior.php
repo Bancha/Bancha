@@ -245,6 +245,25 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$cols = array();
 		foreach ($columns as $field => $values) {
 			
+			// cake also supports a simple structure, like:
+			// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
+        	// so to support that as well, transform it:
+			if(is_string($values)) {
+				$values = array(
+					$values => array('rule' => $values));
+			}
+
+			// and now add support for even another structure
+			// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+			if(isset($values['rule'])) {
+				$values = array(
+					$values['rule'] => $values);
+			}
+
+
+			// no check for rules
+
+
 			// check if the input is required
 			$presence = false;
 			foreach($values as $rule) {
