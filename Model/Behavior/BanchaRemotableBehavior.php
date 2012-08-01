@@ -38,6 +38,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * a mapping table from cake to extjs data types
 	 */
 	private $types = array(
+		'enum'      => array('type'=>'string'),
 		'integer'   => array('type'=>'int'),
 		'string'    => array('type'=>'string'),
 		'datetime'  => array('type'=>'date', 'dateFormat' =>'Y-m-d H:i:s'),
@@ -225,10 +226,35 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	private function getColumnTypes() {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
-		foreach ($columns as $field => $values) {
-				array_push($cols, array_merge(array('name' => $field), $this->types[$values]));
+		foreach ($columns as $field => $type) {
+				array_push($cols, $this->getColumnType($field,$type));
 		}
 		return $cols;
+	}
+	private function getColumnType($field, $type) {
+
+		// handle mysql enum field
+		if(substr($type,0,4) == 'enum') {
+			// find all possible options
+			preg_match_all("/'(.*?)'/", $type, $enums);
+
+			// add a new validation rule (only during api call)
+			// in a 2.0 and 2.1 compatible way
+			if(!isset($this->model->validate[$field])) {
+				$this->model->validate[$field] = array();
+			}
+			$this->model->validate[$field]['inList'] = array(
+			    'rule' => array('inList', $enums[1])
+			);
+
+			// to back to generic behavior
+			$type = 'enum';
+		}
+
+		// handle normal fields
+		return array_merge(
+			array('name' => $field), 
+			isset($this->types[$type]) ? $this->types[$type] : array('type'=>'auto'));
 	}
 
 /**
