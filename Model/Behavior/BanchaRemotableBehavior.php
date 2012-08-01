@@ -245,6 +245,25 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$cols = array();
 		foreach ($columns as $field => $values) {
 			
+			// cake also supports a simple structure, like:
+			// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
+        	// so to support that as well, transform it:
+			if(is_string($values)) {
+				$values = array(
+					$values => array('rule' => $values));
+			}
+
+			// and now add support for even another structure
+			// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+			if(isset($values['rule'])) {
+				$values = array(
+					$values['rule'] => $values);
+			}
+
+
+			// no check for rules
+
+
 			// check if the input is required
 			$presence = false;
 			foreach($values as $rule) {
@@ -258,6 +277,34 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				$cols[] = array(
 					'type' => 'presence',
 					'field' => $field,
+				);
+			}
+
+			// isUnique can only be tested on the server, 
+			// so we would need some business logic for that
+			// as well, maybe integrate in Bancha Scaffold
+
+			if(isset($values['equalTo'])) {
+				$cols[] = array(
+					'type' => 'inclusion',
+					'field' => $field,
+					'list' => array($values['equalTo']['rule'][1])
+				);
+			}
+
+			if(isset($values['boolean'])) {
+				$cols[] = array(
+					'type' => 'inclusion',
+					'field' => $field,
+					'list' => array(true,false,'0','1',0,1)
+				);
+			}
+
+			if(isset($values['inList'])) {
+				$cols[] = array(
+					'type' => 'inclusion',
+					'field' => $field,
+					'list' => $values['inList']['rule'][1]
 				);
 			}
 
@@ -281,14 +328,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					isset($values['between']['rule'][2]) ) {
 					$cols[] = array(
 						'type' => 'length',
-						'name' => $field,
-						'field' => $values['between']['rule'][1],
+						'field' => $field,
+						'min' => $values['between']['rule'][1],
 						'max' => $values['between']['rule'][2]
 					);
 				} else {
 					$cols[] = array(
 						'type' => 'length',
-						'name' => $field,
+						'field' => $field,
 					);
 				}
 			}
@@ -326,19 +373,23 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				);
 			}
 
-			//  numberformat = precision, min, max
-			if(isset($values['numeric'])) {
+			// number validation rules
+			// numberformat = precision, min, max
+			if(isset($values['numeric']) || isset($values['naturalNumber'])) {
+				$col = array(
+					'type' => 'numberformat',
+					'field' => $field,
+				);
+
 				if(isset($values['numeric']['precision'])) {
-					$cols[] = array(
-						'type' => 'numberformat',
-						'field' => $field,
-						'precision' => $values['numeric']['precision'],
-					);
-				} else {
-					$cols[] = array(
-						'type' => 'numberformat',
-						'field' => $field,
-					);
+					$col['precision'] = $values['numeric']['precision'];
+				}
+				if(isset($values['naturalNumber'])) {
+					$col['precision'] = 0;
+				}
+
+				if(isset($values['naturalNumber'])) {
+					$col['min'] = (isset($values['naturalNumber']['rule'][1]) && $values['naturalNumber']['rule'][1]==true) ? 0 : 1;
 				}
 			}
 			
