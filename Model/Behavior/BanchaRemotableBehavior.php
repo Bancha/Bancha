@@ -280,6 +280,34 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				);
 			}
 
+			// isUnique can only be tested on the server, 
+			// so we would need some business logic for that
+			// as well, maybe integrate in Bancha Scaffold
+			
+			if(isset($values['equalTo'])) {
+				$cols[] = array(
+					'type' => 'inclusion',
+					'field' => $field,
+					'list' => array($values['equalTo']['rule'][1])
+				);
+			}
+
+			if(isset($values['boolean'])) {
+				$cols[] = array(
+					'type' => 'inclusion',
+					'field' => $field,
+					'list' => array(true,false,'0','1',0,1)
+				);
+			}
+
+			if(isset($values['inList'])) {
+				$cols[] = array(
+					'type' => 'inclusion',
+					'field' => $field,
+					'list' => $values['inList']['rule'][1]
+				);
+			}
+
 			if(isset($values['minLength']) || isset($values['maxLength'])) {
 				$col = array(
 					'type' => 'length',
@@ -300,14 +328,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					isset($values['between']['rule'][2]) ) {
 					$cols[] = array(
 						'type' => 'length',
-						'name' => $field,
-						'field' => $values['between']['rule'][1],
+						'field' => $field,
+						'min' => $values['between']['rule'][1],
 						'max' => $values['between']['rule'][2]
 					);
 				} else {
 					$cols[] = array(
 						'type' => 'length',
-						'name' => $field,
+						'field' => $field,
 					);
 				}
 			}
