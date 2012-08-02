@@ -1041,11 +1041,14 @@ Ext.define('Bancha', {
          */
         currentLang: 'eng',
         /**
-         * You can use this function to preload transaltions
-         * @param langCode a three letter language code, same as in cakephp
+         * You can use this function to preload translations
+         * @param langCode a three letter language code, same as in cakephp (Default is currentLang property)
          */
         preloadLanguage: function(langCode) {
-            this.loadLocaleStrings(langCode, true);
+            if (!this.locales) {
+                this.locales = new Ext.util.HashMap();
+            }
+            this.loadLocaleStrings(langCode || this.currentLang, true);
         },
         /**
          * @private
