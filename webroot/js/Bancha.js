@@ -1029,6 +1029,112 @@ Ext.define('Bancha', {
             Bancha.init();
         }
         return (this.isCreatedModel(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
+    },
+
+    /**
+     * @class Bancha.Localizer
+     * Language support for Bancha.
+     */
+    Localizer: {
+        /**
+         * The default value for Bancha.t's langCode
+         */
+        currentLang: 'eng',
+        /**
+         * You can use this function to preload transaltions
+         * @param langCode a three letter language code, same as in cakephp
+         */
+        preloadLanguage: function(langCode) {
+            this.loadLocaleStrings(langCode, true);
+        },
+        /**
+         * @private
+         * @param langCode a three letter language code, same as in cakephp
+         * @param asnyc False to block while loading (Default: false)
+         * @return the loaded array of translations
+         */
+        loadLocaleStrings: function(locale, async) {
+            var me = this, localeStrings;
+            Ext.Ajax.request({
+                url : "/bancha/bancha/translations/" + locale + ".js",
+                async : async || false,
+                success : function(response) {
+                    var entries = Ext.decode(response.responseText);
+                    localeStrings = new Ext.util.HashMap();
+                    Ext.each(entries, function(entry) {
+                        localeStrings.add(entry.key, entry.value);
+                    });
+                    me.locales.add(locale, localeStrings);
+                },
+                failure : function() {
+                    me.locales.add(locale, false);
+                    localeStrings = false;
+                }
+            });
+            return localeStrings;
+        },
+        /**
+         * @private
+         * @param langCode a three letter language code, same as in cakephp
+         * @return the loaded array of translations
+         */
+        getLocaleStrings: function(locale) {
+            var me = this, localeStrings;
+            if (!me.locales) {
+                me.locales = new Ext.util.HashMap();
+            }
+            if (!me.locales.get(locale)) {
+                localeStrings = me.loadLocaleStrings(locale);
+            } else {
+                localeStrings = me.locales.get(locale);
+            }
+            if (Ext.isBoolean(localeStrings) && !localeStrings) {
+                // If locale key contains "false" we
+                // tried to load the locale file before
+                // but failed.
+                return;
+            }
+            return localeStrings;
+        },
+        /**
+         * Translates an given string to the given language, 
+         * or the one set in Bancha.Localizer.currentLang.
+         * @param key the string to translate
+         * @param langCode a three letter language code, same as in 
+         *        cakephp (Default from Bancha.Localizer.currentLang)
+         */
+        getLocalizedString: function(key, locale) {
+            var me = this,
+                localeStrings,
+                localized;
+
+            locale = locale || this.currentLang;
+            if (!key || !locale) {
+                return key;
+            }
+            localeStrings = me.getLocaleStrings(locale);
+            if (!localeStrings) {
+                return key;
+            }
+            localized = localeStrings.get(key);
+            // empty strings are intentional, so just return if it's undefined
+            if (!Ext.isString(localized)) { 
+                return key;
+            }
+            return localized;
+        }
+    },
+    /**
+     * Translates an given string to the given language, 
+     * or the one set in Bancha.Localizer.currentLang.
+     *
+     * This is a convenience function for Bancha.Localizer.getLocalizedString
+     * @param key the string to translate
+     * @param langCode a three letter language code, same as in 
+     *        cakephp (Default from Bancha.Localizer.currentLang)
+     */
+    t : function(key, locale) {
+        return Bancha.Localizer.getLocalizedString(key, locale);
     }
 });
 
