@@ -1117,7 +1117,8 @@ Ext.define('Bancha', {
                 return key;
             }
             localized = localeStrings.get(key);
-            if (!localized) {
+            // empty strings are intentional, so just return if it's undefined
+            if (!Ext.isString(localized)) { 
                 return key;
             }
             return localized;
