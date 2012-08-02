@@ -62,6 +62,7 @@ class BanchaController extends BanchaAppController {
 			$actions = array_merge_recursive(
 				$banchaApi->getRemotableModelActions($remotableModels),
 				$banchaApi->getRemotableMethods(),
+				// plugin folders are not searched, so all out exposed functions manually
 				array('Bancha' => array(
 					array(
 						'name'	=> 'loadMetaData',
@@ -147,4 +148,29 @@ class BanchaController extends BanchaAppController {
 		return $metadata;
 	}
     
+    /**
+     * This function returns all translations, known to cakephp in the defiend language
+     * The default domain is 'extjs', but can be overwritten
+     */
+    public function translations($languageCode, $domain='extjs') {
+
+		App::uses('i18n', 'i18n');
+    	$i18n = i18n::getInstance();
+
+    	// force cake to load the correct language file
+    	$i18n->translate('whatever','whatever','extjs',false,1,$languageCode);
+
+    	// get the translations
+    	$domains = $i18n->domains();
+    	$translations = $domains['extjs'][$languageCode]['LC_MESSAGES'];
+
+    	// transform
+    	$jsTranslations = array();
+    	foreach($translations as $key=>$value) {
+    		array_push($jsTranslations, array('key'=>$key,'value'=>$value));
+    	}
+
+        // no extra view file needed, simply output
+		$this->response->body(json_encode($jsTranslations));
+    }
 }
