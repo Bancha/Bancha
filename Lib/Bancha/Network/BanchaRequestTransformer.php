@@ -156,7 +156,10 @@ class BanchaRequestTransformer {
 				$this->action = 'delete';
 				break;
 			case 'read':
-				$this->action = (!empty($this->data['data']['0']['data']['id']) || !empty($this->data['id'])) ? 'view' : 'index';
+				$this->action = (
+					(!empty($this->data['data'][0]['data']['id']) && is_array($this->data['data'][0]['data'])) ||
+					(!empty($this->data['data'][0]['id']) && is_array($this->data['data'][0])) ||
+					(!empty($this->data['id']) && is_array($this->data))) ? 'view' : 'index';
 				break;
 		}
 		return $this->action;
@@ -233,9 +236,13 @@ class BanchaRequestTransformer {
 	public function getPassParams() {
 		$pass = array();
 		// normal requests
-		if (isset($this->data['data'][0]['data']['id'])) {
+		if (isset($this->data['data'][0]['data']['id']) && is_array($this->data['data'][0]['data'])) {
 			$pass['id'] = $this->data['data'][0]['data']['id'];
 			unset($this->data['data'][0]['data']['id']);
+		// read requests
+		} else if (isset($this->data['data'][0]['id']) && is_array($this->data['data'][0])) {
+			$pass['id'] = $this->data['data'][0]['id'];
+			unset($this->data['data'][0]['id']);
 		// form upload requests
 		} else if ($this->isFormRequest() && isset($this->data['id'])) {
 			$pass['id'] = $this->data['id'];
