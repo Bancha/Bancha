@@ -152,17 +152,17 @@ class BanchaController extends BanchaAppController {
      * This function returns all translations, known to cakephp in the defiend language
      * The default domain is 'extjs', but can be overwritten
      */
-    public function translations($languageCode, $domain='extjs') {
+    public function translations($languageCode, $domain='bancha') {
 
 		App::uses('i18n', 'i18n');
     	$i18n = i18n::getInstance();
 
     	// force cake to load the correct language file
-    	$i18n->translate('whatever','whatever','extjs',false,1,$languageCode);
+    	$i18n->translate('whatever', 'whatever', $domain, false, 1, $languageCode);
 
     	// get the translations
     	$domains = $i18n->domains();
-    	$translations = $domains['extjs'][$languageCode]['LC_MESSAGES'];
+    	$translations = $domains[$domain][$languageCode]['LC_MESSAGES'];
 
     	// transform
     	$jsTranslations = array();
