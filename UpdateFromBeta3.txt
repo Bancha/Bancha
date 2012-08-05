@@ -1,7 +1,0 @@
-Bancha - Combining ExtJS and CakePHP
-====================================
-
-When you upgrade from Beta3 to the RC please go through the Installation again, a few things have changed:
-https://github.com/Bancha/Bancha/wiki/Installation
-
-Happy coding!

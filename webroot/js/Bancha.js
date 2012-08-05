@@ -1060,7 +1060,7 @@ Ext.define('Bancha', {
             var me = this, localeStrings;
             Ext.Ajax.request({
                 url : "/bancha/bancha/translations/" + locale + ".js",
-                async : async || false,
+                async : async || false,
                 success : function(response) {
                     var entries = Ext.decode(response.responseText);
                     localeStrings = new Ext.util.HashMap();
