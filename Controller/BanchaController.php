@@ -4,15 +4,15 @@
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
- * @package	   Bancha
- * @subpackage	Controller
- * @copyright	 Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
- * @link		  http://banchaproject.org Bancha Project
- * @since		 Bancha v 0.9.0
- * @author		Florian Eckerstorfer <florian@theroadtojoy.at>
- * @author		Andreas Kern <andreas.kern@gmail.com>
- * @author		Roland Schuetz <mail@rolandschuetz.at>
- * @author		Kung Wong <kung.wong@gmail.com>
+ * @package       Bancha
+ * @subpackage    Controller
+ * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v 0.9.0
+ * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
+ * @author        Andreas Kern <andreas.kern@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Kung Wong <kung.wong@gmail.com>
  */
 
 App::import('Controller', 'Bancha.BanchaApp');
@@ -24,11 +24,11 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  * This class exports the ExtJS API for remotable models and controller.
  * This is only internally used by the client side of Bancha.
  *
- * @package	Bancha
+ * @package    Bancha
  * @subpackage Controller
- * @author	 Andreas Kern <andreas.kern@gmail.com>
- * @author	 Florian Eckerstorfer <florian@theroadtojoy.at>
- * @author	 Roland Schuetz <mail@rolandschuetz.at>
+ * @author     Andreas Kern <andreas.kern@gmail.com>
+ * @author     Florian Eckerstorfer <florian@theroadtojoy.at>
+ * @author     Roland Schuetz <mail@rolandschuetz.at>
  */
 class BanchaController extends BanchaAppController {
 
@@ -44,7 +44,7 @@ class BanchaController extends BanchaAppController {
 	 * For more see [how to adopt the layout](https://github.com/Bancha/Bancha/wiki/Installation)
 	 *
 	 * @param string $metadataFilter Models that should be exposed through the Bancha API. Either all or [all] for
-	 *								  all models or a comma separated list of models.
+	 *                                  all models or a comma separated list of models.
 	 * @return void
 	 */
 	public function index($metadataFilter='') {
