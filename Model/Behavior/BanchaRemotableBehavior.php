@@ -499,6 +499,15 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * mixed $results The record data of the last saved record
 	 */
 	public function getLastSaveResult() {
+		if(empty($this->result)) {
+			throw new BanchaException(
+				'There was nothing saved to be returned. Probably this occures because the data '.
+				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
+				'function to create, load and save model records. If you really have to create '.
+				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+				'(Sencha Touch) is set to "data".');
+		}
+
 		return $this->result;
 	}
 	
@@ -506,6 +515,40 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * Builds a field list with all defined fields
 	 */
 	private function buildFieldList($data) {
+
+		// Make a quick quick check if the data is in the right format
+		if(isset($data[$this->model->name][0]) && is_array($data[$this->model->name][0])) {
+			throw new BanchaException(
+				'The data to be saved seems malformed. Probably this occures because you send '.
+				'from your own model or you one save invokation. Please use the Bancha.getModel(ModelName) '.
+				'function to create, load and save model records. If you really have to create '.
+				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+				'(Sencha Touch) is set to "data". <br /><br />'.
+				'Got following data to save: <br />'.print_r($data,true));
+		}
+		// More extensive data validation
+		// For performance reasons this is just done in debug mode
+		if(Configure::read('debug') == 2) {
+			$valid = false;
+			$fields = $this->model->getColumnTypes();
+			// check if at least one field is saved to the databse
+			foreach($fields as $field => $type) {
+			    if(array_key_exists($field, $data[$this->model->name])) {
+			    	$valid=true;
+			    	break;
+			    }
+			}
+			if(!$valid) {
+				throw new BanchaException(
+					'Could nto find even one model field to save to database. Probably this occures '.
+					'because you send from your own model or you one save invokation. Please use the '.
+					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
+					'you really have to create your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+					'(Sencha Touch) is set to "data". <br /><br />'.
+					'Got following data to save: <br />'.print_r($data,true));
+			}
+		} //eo debugging checks
+
 		return array_keys(isset($data[$this->model->name]) ? $data[$this->model->name] : $data);
 	}
 	/**
