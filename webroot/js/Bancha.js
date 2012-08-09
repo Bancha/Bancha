@@ -981,11 +981,13 @@ Ext.define('Bancha', {
                 writer: (modelConfig.forceConsistency) ? {
                     type: 'consitentjson',
                     writeAllFields: false,
-                    root: 'data'
+                    root: 'data', // <-- this is for ExtJS
+                    rootProperty: 'data' // <-- this is for Sencha Touch
                 } : {
                     type: 'jsondate',
                     writeAllFields: false,
-                    root: 'data'
+                    root: 'data', // <-- this is for ExtJS
+                    rootProperty: 'data' // <-- this is for Sencha Touch
                 },
                 listeners: {
                     exception: this.onRemoteException || Ext.emptyFn
