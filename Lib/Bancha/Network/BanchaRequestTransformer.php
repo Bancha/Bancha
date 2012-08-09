@@ -239,7 +239,7 @@ class BanchaRequestTransformer {
 		if (isset($this->data['data'][0]['data']['id']) && is_array($this->data['data'][0]['data'])) {
 			$pass['id'] = $this->data['data'][0]['data']['id'];
 			unset($this->data['data'][0]['data']['id']);
-		// read requests
+		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
 		} else if (isset($this->data['data'][0]['id']) && is_array($this->data['data'][0])) {
 			$pass['id'] = $this->data['data'][0]['id'];
 			unset($this->data['data'][0]['id']);
@@ -338,7 +338,7 @@ class BanchaRequestTransformer {
 		} else if( isset($data['data'][0]['data'][0]) && is_array($data['data'][0]['data'][0])) {
 			// looks like someone is using the store with batchActions:true
 			if(Configure::read('Bancha.allowMultiRecordRequests') != true) {
-				throw new CakeException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
+				throw new BanchaException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
 					'You are currently sending multiple records from ExtJS to CakePHP, this is probably because '.
 					'of an store proxy with batchActions:true. Please never batch records on the proxy level '.
 					'(Ext.Direct is batching them). So if you are using a store proxy please set the config '.

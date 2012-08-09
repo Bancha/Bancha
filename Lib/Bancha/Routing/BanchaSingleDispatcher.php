@@ -37,7 +37,7 @@ class BanchaSingleDispatcher extends Dispatcher {
 * @param Controller $controller Controller to invoke
 * @param CakeRequest $request The request object to invoke the controller for.
 * @param CakeResponse $response The response object to receive the output
-* @return void
+* @return CakeResponse te resulting response object
  */
 	protected function _invoke(Controller $controller, CakeRequest $request, CakeResponse $response) {
 		$controller->constructClasses();
