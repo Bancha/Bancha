@@ -55,7 +55,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
-		$this->assertEquals('CakeException', $responses[0]->exceptionType);
+		$this->assertEquals('BanchaException', $responses[0]->exceptionType);
 	}
 	
 /**
@@ -63,7 +63,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  * If this is happening tell the developer that he probably did an error.
  * This exception is trown in BanchaRequestTransformer::transformDataStructureToCake()
  *
- * @expectedException CakeException
+ * @expectedException BanchaException
  */
 	public function testMultipleRecordInputException() {
 		$this->getResultForMethod('returnTrue', array(array(

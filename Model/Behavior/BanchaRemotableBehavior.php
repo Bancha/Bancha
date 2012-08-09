@@ -482,7 +482,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		if($created) {
 			// just add the id
 			$this->result = $Model->data;
-			$this->result[$Model->name]['id'] = $model->id;
+			$this->result[$Model->name]['id'] = $Model->id;
 		} else {
 			// load the full record from the database
 			$currentRecursive = $Model->recursive;
