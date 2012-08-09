@@ -38,7 +38,7 @@ class BanchaResponseTransformer {
 		}
         
 		if ($response === null) { // use the triple operator to not catch empty arrays
-			throw new CakeException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
+			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 		
 		return BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
