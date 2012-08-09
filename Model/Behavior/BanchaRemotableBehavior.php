@@ -79,15 +79,15 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 */
 		'useOnlyDefinedFields' => true,
 	);
-/**
- * Sets up the BanchaRemotable behavior. For config options see 
- * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
- *
- * @param object $Model instance of model
- * @param array $config array of configuration settings.
- * @return void
- */
 	public function setup(&$Model, $config = array()) {
+	/**
+	 * Sets up the BanchaRemotable behavior. For config options see 
+	 * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
+	 *
+	 * @param Model $Model instance of model
+	 * @param array $config array of configuration settings.
+	 * @return void
+	 */
 		$this->model = $Model;
 		$this->schema = $Model->schema();
 		
@@ -107,12 +107,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$this->schema = $Model->schema();
 	}
 
-/**
- * Extracts all metadata which should be shared with the ExtJS frontend
- *
- * @param AppModel $model
- * @return array all the metadata as array
- */
+	/**
+	 * Extracts all metadata which should be shared with the ExtJS frontend
+	 *
+	 * @param AppModel $model
+	 * @return array all the metadata as array
+	 */
 	public function extractBanchaMetaData() {
 
 		//TODO persist: persist is for generated values true
@@ -185,20 +185,20 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return true;
 	}
 
-/**
- * Return the Associations as ExtJS-Assoc Model
- * should look like this:
- * <code>
- * associations: [
- *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
- *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
- *   ]
- * </code>
- *   
- *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
- *   
- *   in cakephp it is stored as this <code>Array ( [Article] => hasMany )</code>
- */
+	/**
+	 * Return the Associations as ExtJS-Assoc Model
+	 * should look like this:
+	 * <code>
+	 * associations: [
+	 *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
+	 *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
+	 *   ]
+	 * </code>
+	 *   
+	 *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
+	 *   
+	 *   in cakephp it is stored as this <code>Array ( [Article] => hasMany )</code>
+	 */
 	private function getAssociated() {
 		$assocs = $this->model->getAssociated();
 		$return = array();
@@ -211,18 +211,18 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return $return;
 	}
 
-/**
- * return the model columns as ExtJS Fields
- *
- * should look like
- *
- * 'User', {
- *   fields: [
- *     {name: 'id', type: 'int'},
- *     {name: 'name', type: 'string'}
- *   ]
- * }
- */
+	/**
+	 * return the model columns as ExtJS Fields
+	 *
+	 * should look like
+	 *
+	 * 'User', {
+	 *   fields: [
+	 *     {name: 'id', type: 'int'},
+	 *     {name: 'name', type: 'string'}
+	 *   ]
+	 * }
+	 */
 	private function getColumnTypes() {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
@@ -257,11 +257,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			isset($this->types[$type]) ? $this->types[$type] : array('type'=>'auto'));
 	}
 
-/**
- * Returns an ExtJS formated array of field names, validation types and constraints.
- *
- * @return Ext.data.validations rules
- */
+	/**
+	 * Returns an ExtJS formated array of field names, validation types and constraints.
+	 *
+	 * @return Ext.data.validations rules
+	 */
 	private function getValidations() {
 		$columns = $this->model->validate;
 		if (empty($columns)) {
