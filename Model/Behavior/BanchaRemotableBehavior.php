@@ -79,7 +79,6 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 */
 		'useOnlyDefinedFields' => true,
 	);
-	public function setup(&$Model, $config = array()) {
 	/**
 	 * Sets up the BanchaRemotable behavior. For config options see 
 	 * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
@@ -88,15 +87,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param array $config array of configuration settings.
 	 * @return void
 	 */
+	public function setup(Model $Model, $settings = array()) {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
 		
 		// apply configs
-		if(!is_array($config)) {
+		if(!is_array($settings)) {
 			throw new CakeException("Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration");
 		}
-		$settings = array_merge($this->_defaults, $config);
-		$this->settings[$this->model->alias] = $settings;
+		$settings = array_merge($this->_defaults, $settings);
+		$this->settings[$Model->alias] = $settings;
 	}
 
 	/**
@@ -476,19 +476,19 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param object $model Model using this behavior
 	 * @param boolean $created True if this save created a new record
 	 */
-	public function afterSave($model, $created) {
+	public function afterSave(Model $Model, $created) {
 		// get all the data bancha needs for the response
 		// and save it in the data property
 		if($created) {
 			// just add the id
-			$this->result = $model->data;
-			$this->result[$model->name]['id'] = $model->id;
+			$this->result = $Model->data;
+			$this->result[$Model->name]['id'] = $model->id;
 		} else {
 			// load the full record from the database
-			$currentRecursive = $model->recursive;
-			$model->recursive = -1;
-			$this->result = $model->read();
-			$model->recursive = $currentRecursive;
+			$currentRecursive = $Model->recursive;
+			$Model->recursive = -1;
+			$this->result = $Model->read();
+			$Model->recursive = $currentRecursive;
 		}
 		
 		return true;
@@ -534,7 +534,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// if not yet defined, create a field list to save only the changes
 			$options['fieldList'] = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList'];
 		}
-		
+
 		// start saving data
 		return true;
 	}
