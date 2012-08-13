@@ -68,6 +68,10 @@ class BanchaController extends BanchaAppController {
 						'name'	=> 'loadMetaData',
 						'len'	=> 1,
 					),
+					array(
+						'name'	=> 'logError',
+						'len'	=> 1,
+					),
 				))
 			);
 			
@@ -172,5 +176,13 @@ class BanchaController extends BanchaAppController {
 
 		// no extra view file needed, simply output
 		$this->response->body(json_encode($jsTranslations));
+    }
+
+	/**
+	 * This function logs an javascript error to the js_error.log
+	 */
+	public function logError($error) {
+		$this->log($error,'js_error');
+		return true;
 	}
 }

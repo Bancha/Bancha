@@ -112,8 +112,9 @@ if(isset($_GET['setup-check']) && $_GET['setup-check']) {
 		return;
 	} else {
 		$Dispatcher = new BanchaDispatcher();
+		$raw_post_data = file_get_contents("php://input");
 		$Dispatcher->dispatch(new BanchaRequestCollection(
-			isset($HTTP_RAW_POST_DATA) ? $HTTP_RAW_POST_DATA : '',
+			$raw_post_data  ? $raw_post_data : '',
 			isset($_POST) ? $_POST : array()
 		));
 	}
