@@ -800,6 +800,20 @@ Ext.define('Bancha', {
          return (api && api.metadata && api.metadata[this.uidPropertyName]) ? api.metadata[this.uidPropertyName] : false;
     },
     /**
+     * Returns the current CakePHP debug level
+     * 
+     * @param defaultValue {Number} (optional) The number to return if the Remote API is not yet initialized (Default: undefined)
+     * @return the current debug level, or if not available the default
+     */
+    getDebugLevel: function(defaultValue) {
+        if(!this.initialized) {
+            return defaultValue;
+        }
+        
+        var api = this.getRemoteApi();
+        return (api && api.metadata && Ext.isDefined(api.metadata._CakeDebugLevel)) ? api.metadata._CakeDebugLevel : defaultValue;
+    },
+    /**
      * @property {Function|False} onRemoteException
      * This function will be added to each model to handle remote errors.
      * (modelConfig.listeners.exception).  
