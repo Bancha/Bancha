@@ -14,7 +14,7 @@
  */
 /*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
-/*global Ext:false, Bancha:true, window:false */
+/*global Ext:false, Bancha:true, TraceKit:false, window:false */
 
 /**
  * @class Bancha.data.Model
@@ -442,8 +442,16 @@ Ext.define('Bancha', {
         }
         // ENDIF
         
+        // init error logging
+        if(window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
+            TraceKit.report.subscribe(function(stackInfo) {
+                // make sure to not bind the function, but the locaton (for later overriding)
+                Bancha.onError(stackInfo);
+            });
+        }
+
+
         remoteApi = this.getRemoteApi();
-        
         
         // if the server didn't send an metadata object in the api, create it
         if(!Ext.isDefined(remoteApi.metadata)) {
@@ -812,6 +820,19 @@ Ext.define('Bancha', {
         
         var api = this.getRemoteApi();
         return (api && api.metadata && Ext.isDefined(api.metadata._CakeDebugLevel)) ? api.metadata._CakeDebugLevel : defaultValue;
+    },
+    /**
+     * In production mode (or if errors occur when Bancha is not initialized) this function will be called
+     * This function will log the error to the server and then throw it.
+     * You can overwrite this function with your own implementation at any time.
+     *
+     * @parram stackInfo {Object} an TraceKit error object, see also {@link https://github.com/Bancha/TraceKit TraceKit}
+     */
+    onError: function(stackInfo) {
+        if(Bancha.getDebugLevel(0)===0) {
+            // log the error to the server
+            Bancha.getStub('Bancha').logError(stackInfo);
+        }
     },
     /**
      * @property {Function|False} onRemoteException
