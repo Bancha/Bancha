@@ -65,7 +65,7 @@ class BanchaRequestCollection {
 			$data = array($this->postData);
 		} else {
 			// no data passed
-			throw new CakeException(
+			throw new BanchaException(
 				'Missing POST Data: The Bancha Dispatcher expected to get all requests in the Ext.Direct format as POST '.
 				'parameter, but there is no data in this request. You can not access this site directly!');
 		}

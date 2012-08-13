@@ -79,24 +79,24 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 */
 		'useOnlyDefinedFields' => true,
 	);
-/**
- * Sets up the BanchaRemotable behavior. For config options see 
- * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
- *
- * @param object $Model instance of model
- * @param array $config array of configuration settings.
- * @return void
- */
-	public function setup(&$Model, $config = array()) {
+	/**
+	 * Sets up the BanchaRemotable behavior. For config options see 
+	 * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
+	 *
+	 * @param Model $Model instance of model
+	 * @param array $config array of configuration settings.
+	 * @return void
+	 */
+	public function setup(Model $Model, $settings = array()) {
 		$this->model = $Model;
 		$this->schema = $Model->schema();
 		
 		// apply configs
-		if(!is_array($config)) {
+		if(!is_array($settings)) {
 			throw new CakeException("Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration");
 		}
-		$settings = array_merge($this->_defaults, $config);
-		$this->settings[$this->model->alias] = $settings;
+		$settings = array_merge($this->_defaults, $settings);
+		$this->settings[$Model->alias] = $settings;
 	}
 
 	/**
@@ -107,12 +107,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$this->schema = $Model->schema();
 	}
 
-/**
- * Extracts all metadata which should be shared with the ExtJS frontend
- *
- * @param AppModel $model
- * @return array all the metadata as array
- */
+	/**
+	 * Extracts all metadata which should be shared with the ExtJS frontend
+	 *
+	 * @param AppModel $model
+	 * @return array all the metadata as array
+	 */
 	public function extractBanchaMetaData() {
 
 		//TODO persist: persist is for generated values true
@@ -185,20 +185,20 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return true;
 	}
 
-/**
- * Return the Associations as ExtJS-Assoc Model
- * should look like this:
- * <code>
- * associations: [
- *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
- *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
- *   ]
- * </code>
- *   
- *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
- *   
- *   in cakephp it is stored as this <code>Array ( [Article] => hasMany )</code>
- */
+	/**
+	 * Return the Associations as ExtJS-Assoc Model
+	 * should look like this:
+	 * <code>
+	 * associations: [
+	 *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
+	 *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
+	 *   ]
+	 * </code>
+	 *   
+	 *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
+	 *   
+	 *   in cakephp it is stored as this <code>Array ( [Article] => hasMany )</code>
+	 */
 	private function getAssociated() {
 		$assocs = $this->model->getAssociated();
 		$return = array();
@@ -211,18 +211,18 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return $return;
 	}
 
-/**
- * return the model columns as ExtJS Fields
- *
- * should look like
- *
- * 'User', {
- *   fields: [
- *     {name: 'id', type: 'int'},
- *     {name: 'name', type: 'string'}
- *   ]
- * }
- */
+	/**
+	 * return the model columns as ExtJS Fields
+	 *
+	 * should look like
+	 *
+	 * 'User', {
+	 *   fields: [
+	 *     {name: 'id', type: 'int'},
+	 *     {name: 'name', type: 'string'}
+	 *   ]
+	 * }
+	 */
 	private function getColumnTypes() {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
@@ -257,11 +257,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			isset($this->types[$type]) ? $this->types[$type] : array('type'=>'auto'));
 	}
 
-/**
- * Returns an ExtJS formated array of field names, validation types and constraints.
- *
- * @return Ext.data.validations rules
- */
+	/**
+	 * Returns an ExtJS formated array of field names, validation types and constraints.
+	 *
+	 * @return Ext.data.validations rules
+	 */
 	private function getValidations() {
 		$columns = $this->model->validate;
 		if (empty($columns)) {
@@ -476,19 +476,19 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param object $model Model using this behavior
 	 * @param boolean $created True if this save created a new record
 	 */
-	public function afterSave($model, $created) {
+	public function afterSave(Model $Model, $created) {
 		// get all the data bancha needs for the response
 		// and save it in the data property
 		if($created) {
 			// just add the id
-			$this->result = $model->data;
-			$this->result[$model->name]['id'] = $model->id;
+			$this->result = $Model->data;
+			$this->result[$Model->name]['id'] = $Model->id;
 		} else {
 			// load the full record from the database
-			$currentRecursive = $model->recursive;
-			$model->recursive = -1;
-			$this->result = $model->read();
-			$model->recursive = $currentRecursive;
+			$currentRecursive = $Model->recursive;
+			$Model->recursive = -1;
+			$this->result = $Model->read();
+			$Model->recursive = $currentRecursive;
 		}
 		
 		return true;
@@ -499,6 +499,15 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * mixed $results The record data of the last saved record
 	 */
 	public function getLastSaveResult() {
+		if(empty($this->result)) {
+			throw new BanchaException(
+				'There was nothing saved to be returned. Probably this occures because the data '.
+				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
+				'function to create, load and save model records. If you really have to create '.
+				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+				'(Sencha Touch) is set to "data".');
+		}
+
 		return $this->result;
 	}
 	
@@ -506,6 +515,40 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * Builds a field list with all defined fields
 	 */
 	private function buildFieldList($data) {
+
+		// Make a quick quick check if the data is in the right format
+		if(isset($data[$this->model->name][0]) && is_array($data[$this->model->name][0])) {
+			throw new BanchaException(
+				'The data to be saved seems malformed. Probably this occures because you send '.
+				'from your own model or you one save invokation. Please use the Bancha.getModel(ModelName) '.
+				'function to create, load and save model records. If you really have to create '.
+				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+				'(Sencha Touch) is set to "data". <br /><br />'.
+				'Got following data to save: <br />'.print_r($data,true));
+		}
+		// More extensive data validation
+		// For performance reasons this is just done in debug mode
+		if(Configure::read('debug') == 2) {
+			$valid = false;
+			$fields = $this->model->getColumnTypes();
+			// check if at least one field is saved to the databse
+			foreach($fields as $field => $type) {
+			    if(array_key_exists($field, $data[$this->model->name])) {
+			    	$valid=true;
+			    	break;
+			    }
+			}
+			if(!$valid) {
+				throw new BanchaException(
+					'Could nto find even one model field to save to database. Probably this occures '.
+					'because you send from your own model or you one save invokation. Please use the '.
+					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
+					'you really have to create your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+					'(Sencha Touch) is set to "data". <br /><br />'.
+					'Got following data to save: <br />'.print_r($data,true));
+			}
+		} //eo debugging checks
+
 		return array_keys(isset($data[$this->model->name]) ? $data[$this->model->name] : $data);
 	}
 	/**
@@ -534,7 +577,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// if not yet defined, create a field list to save only the changes
 			$options['fieldList'] = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList'];
 		}
-		
+
 		// start saving data
 		return true;
 	}
