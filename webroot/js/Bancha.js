@@ -1164,14 +1164,15 @@ Ext.define('Bancha', {
             return localized;
         }
     },
-    /**
+    /** 
      * Translates an given string to the given language, 
      * or the one set in Bancha.Localizer.currentLang.
      *
      * This is a convenience function for Bancha.Localizer.getLocalizedString
      * @param key the string to translate
-     * @param langCode a three letter language code, same as in 
+     * @param langCode a three letter language code, same as in
      *        cakephp (Default from Bancha.Localizer.currentLang)
+     * @member Bancha
      */
     t : function(key, locale) {
         return Bancha.Localizer.getLocalizedString(key, locale);
