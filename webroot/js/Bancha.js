@@ -12,7 +12,7 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
+/*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
 /*global Ext:false, Bancha:true, TraceKit:false, window:false */
 
@@ -195,7 +195,7 @@ Ext.require([
  * From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
  */
  /*jsl:ignore*/
-/*jshint bitwise:false, curly:false, plusplus:false */
+/*jshint bitwise:false, curly:false */
 if (!Array.prototype.reduce) {
   Array.prototype.reduce = function reduce(accumulator){
     if (this===null || this===undefined) throw new TypeError("Object is null or undefined");
@@ -220,7 +220,7 @@ if (!Array.prototype.reduce) {
     return curr;
   };
 }
-/*jshint bitwise:true, curly:true, plusplus:true */
+/*jshint bitwise:true, curly:true */
 /*jsl:end*/
 
 /**
@@ -1171,30 +1171,56 @@ Ext.define('Bancha', {
          * Translates an given string the current language
          * (see {@link Bancha.Localizer.currentLang}.
          *
-         * Additional arguments are treated as %s repalcements.
+         * Additional arguments are used to replace %s (for string) and %d (for number).
          * @param key the string to translate
          * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
          */
         getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
-            var replacements = Array.prototype.slice.call(arguments); // get an real array
-            replacements.shift(1); // exclude the key
-
             // translate
             key = this.getLocalizedString(key);
 
-            // replace
-            Ext.each(replacements, function(replacement) {
-                key = key.replace(/%s/, replacement);
-            });
+            // replace %s and %d
+            var bits = key.split('%'),
+                result = bits[0],
+                i, len, p;
 
-            return key;
+            // IFDEBUG
+            if(bits.length !== arguments.length) { // replacements+first substr should equal key+replacements
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: 'Bancha.Localizer expected for the string "'+key+'" '+(bits.length-1)+' replacement(s), instead got '+(arguments.length-1)+'.'
+                });
+            }
+            // ENDIF
+
+            for(i=1, len=bits.length; i<len; i++) {
+                switch(bits[i].substr(0,1)) {
+                    case 'd':
+                        result += parseInt(arguments[i], 10);
+                        break;
+                    case 's':
+                        result += arguments[i];
+                        break;
+                    default: 
+                        // IFDEBUG
+                        Ext.Error.raise({
+                            plugin: 'Bancha',
+                            msg: 'Bancha.Localizer does not know how to replace %'+bits[i].substr(0,1)+' in string "'+key+'".'
+                        });
+                        // ENDIF
+                        result += '%'+bits[i].substr(0,1);
+                }
+                result += bits[i].substr(1);
+            }
+
+            return result;
         }
     },
     /** 
      * Translates an given string the current language
      * (see {@link Bancha.Localizer.currentLang}.
      *
-     * Additional arguments are treated as %s repalcements.
+     * Additional arguments are used to replace %s (for string) and %d (for number).
      *
      * This is a convenience function for Bancha.Localizer.getLocalizedStringWithReplacements
      * @param key the string to translate
