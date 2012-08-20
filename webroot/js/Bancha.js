@@ -1069,11 +1069,13 @@ Ext.define('Bancha', {
     },
 
     /**
+     * @singleton
      * @class Bancha.Localizer
      * Language support for Bancha.
      */
     Localizer: {
         /**
+         * @property
          * The default value for Bancha.t's langCode
          */
         currentLang: 'eng',
@@ -1148,6 +1150,8 @@ Ext.define('Bancha', {
                 localeStrings,
                 localized;
 
+            key = key + ''; // string conversion
+
             locale = locale || this.currentLang;
             if (!key || !locale) {
                 return key;
@@ -1162,20 +1166,43 @@ Ext.define('Bancha', {
                 return key;
             }
             return localized;
+        },
+        /**
+         * Translates an given string the current language
+         * (see {@link Bancha.Localizer.currentLang}.
+         *
+         * Additional arguments are treated as %s repalcements.
+         * @param key the string to translate
+         * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
+         */
+        getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
+            var replacements = Array.prototype.slice.call(arguments); // get an real array
+            replacements.shift(1); // exclude the key
+
+            // translate
+            key = this.getLocalizedString(key);
+
+            // replace
+            Ext.each(replacements, function(replacement) {
+                key = key.replace(/%s/, replacement);
+            });
+
+            return key;
         }
     },
     /** 
-     * Translates an given string to the given language, 
-     * or the one set in Bancha.Localizer.currentLang.
+     * Translates an given string the current language
+     * (see {@link Bancha.Localizer.currentLang}.
      *
-     * This is a convenience function for Bancha.Localizer.getLocalizedString
+     * Additional arguments are treated as %s repalcements.
+     *
+     * This is a convenience function for Bancha.Localizer.getLocalizedStringWithReplacements
      * @param key the string to translate
-     * @param langCode a three letter language code, same as in
-     *        cakephp (Default from Bancha.Localizer.currentLang)
+     * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
      * @member Bancha
      */
-    t : function(key, locale) {
-        return Bancha.Localizer.getLocalizedString(key, locale);
+    t : function(key,  replacement1, replacement2, replacement3) {
+        return Bancha.Localizer.getLocalizedStringWithReplacements.apply(Bancha.Localizer, arguments);
     }
 });
 
