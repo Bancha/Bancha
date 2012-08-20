@@ -190,8 +190,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * should look like this:
 	 * <code>
 	 * associations: [
-	 *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
-	 *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
+	 *	    {type: 'hasMany', model: 'Bancha.model.Post',	 name: 'posts'},
+	 *	    {type: 'hasMany', model: 'Bancha.model.Comment', name: 'comments'}
 	 *   ]
 	 * </code>
 	 *   
@@ -205,7 +205,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		foreach ($assocs as $field => $value) {
 			if($value != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
 				$name = lcfirst(Inflector::pluralize($field)); //generate a handy name
-				$return[] = array ('type' => $value, 'model' => $field, 'name' => $name);
+				$return[] = array ('type' => $value, 'model' => 'Bancha.model.'.$field, 'name' => $name);
 			}
 		}
 		return $return;

@@ -124,7 +124,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->{$type} = $table;
 		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
 		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData();
-		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Article', 'name' => 'articles')));
+		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Bancha.model.Article', 'name' => 'articles')));
 				
 	}
 
@@ -139,7 +139,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		
 		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData();
 				
-		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Article', 'name' => 'articles')));
+		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Bancha.model.Article', 'name' => 'articles')));
 		}
 	
 /**
