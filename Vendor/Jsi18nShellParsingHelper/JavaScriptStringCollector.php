@@ -56,7 +56,14 @@ class JavaScriptStringCollector {
 	private $str; // the currently collected string
 	private $strings; // the result
 	private $allowVariables = false;
-	public function __construct(&$tokens, $allowVariables=false) {
+
+	/**
+	 * Creates a new string collector
+	 * @param $tokens An array of JS_TOKEN's
+	 * @param $allowVariables if false a JavaScriptStringCollectorGotVariableException
+	 *                        gets thrown if a variable is found inside the expression
+	 */
+	public function __construct(Array $tokens, $allowVariables=false) {
 		$this->state = self::EXPECT_EXPRESSION;
 		$this->tokens = $tokens;
 		$this->allowVariables = $allowVariables;
