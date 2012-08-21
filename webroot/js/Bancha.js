@@ -1075,10 +1075,30 @@ Ext.define('Bancha', {
      */
     Localizer: {
         /**
+         * @private
          * @property
-         * The default value for Bancha.t's langCode
+         * The default value for Bancha.t's langCode.
+         * Use the getter and setter methods!
          */
         currentLang: 'eng',
+        /**
+         * Returns the default language for {@link Bancha.Localizer.getLocaleStrings},
+         * {@link Bancha.Localizer.getLocalizedStringWithReplacements} and {@link Bancha.t}
+         *
+         * @return {String} the three letter code of the current language, as in cakephp, e.g. 'eng'
+         */
+        getCurrentLanguage: function() {
+            return this.currentLang;
+        },
+        /**
+         * Sets a new default language for {@link Bancha.Localizer.getLocaleStrings},
+         * {@link Bancha.Localizer.getLocalizedStringWithReplacements} and {@link Bancha.t}
+         *
+         * @param lang {String} the three letter code of the new language, as in cakephp, e.g. 'eng'
+         */
+        setCurrentLanguage: function(lang) {
+            this.currentLang = lang;
+        },
         /**
          * You can use this function to preload translations
          * @param langCode a three letter language code, same as in cakephp (Default is currentLang property)
