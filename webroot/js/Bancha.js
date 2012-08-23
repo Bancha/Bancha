@@ -12,7 +12,7 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: false, plusplus: false, white: true, sloppy: true */
+/*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
 /*global Ext:false, Bancha:true, TraceKit:false, window:false */
 
@@ -195,7 +195,7 @@ Ext.require([
  * From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
  */
  /*jsl:ignore*/
-/*jshint bitwise:false, curly:false, plusplus:false */
+/*jshint bitwise:false, curly:false */
 if (!Array.prototype.reduce) {
   Array.prototype.reduce = function reduce(accumulator){
     if (this===null || this===undefined) throw new TypeError("Object is null or undefined");
@@ -220,7 +220,7 @@ if (!Array.prototype.reduce) {
     return curr;
   };
 }
-/*jshint bitwise:true, curly:true, plusplus:true */
+/*jshint bitwise:true, curly:true */
 /*jsl:end*/
 
 /**
@@ -1069,14 +1069,36 @@ Ext.define('Bancha', {
     },
 
     /**
+     * @singleton
      * @class Bancha.Localizer
      * Language support for Bancha.
      */
     Localizer: {
         /**
-         * The default value for Bancha.t's langCode
+         * @private
+         * @property
+         * The default value for Bancha.t's langCode.
+         * Use the getter and setter methods!
          */
         currentLang: 'eng',
+        /**
+         * Returns the default language for {@link Bancha.Localizer.getLocaleStrings},
+         * {@link Bancha.Localizer.getLocalizedStringWithReplacements} and {@link Bancha.t}
+         *
+         * @return {String} the three letter code of the current language, as in cakephp, e.g. 'eng'
+         */
+        getCurrentLanguage: function() {
+            return this.currentLang;
+        },
+        /**
+         * Sets a new default language for {@link Bancha.Localizer.getLocaleStrings},
+         * {@link Bancha.Localizer.getLocalizedStringWithReplacements} and {@link Bancha.t}
+         *
+         * @param lang {String} the three letter code of the new language, as in cakephp, e.g. 'eng'
+         */
+        setCurrentLanguage: function(lang) {
+            this.currentLang = lang;
+        },
         /**
          * You can use this function to preload translations
          * @param langCode a three letter language code, same as in cakephp (Default is currentLang property)
@@ -1148,6 +1170,8 @@ Ext.define('Bancha', {
                 localeStrings,
                 localized;
 
+            key = key + ''; // string conversion
+
             locale = locale || this.currentLang;
             if (!key || !locale) {
                 return key;
@@ -1162,19 +1186,69 @@ Ext.define('Bancha', {
                 return key;
             }
             return localized;
+        },
+        /**
+         * Translates an given string the current language
+         * (see {@link Bancha.Localizer.currentLang}.
+         *
+         * Additional arguments are used to replace %s (for string) and %d (for number).
+         * @param key the string to translate
+         * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
+         */
+        getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
+            // translate
+            key = this.getLocalizedString(key);
+
+            // replace %s and %d
+            var bits = key.split('%'),
+                result = bits[0],
+                i, len, p;
+
+            // IFDEBUG
+            if(bits.length !== arguments.length) { // replacements+first substr should equal key+replacements
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: 'Bancha.Localizer expected for the string "'+key+'" '+(bits.length-1)+' replacement(s), instead got '+(arguments.length-1)+'.'
+                });
+            }
+            // ENDIF
+
+            for(i=1, len=bits.length; i<len; i++) {
+                switch(bits[i].substr(0,1)) {
+                    case 'd':
+                        result += parseInt(arguments[i], 10);
+                        break;
+                    case 's':
+                        result += arguments[i];
+                        break;
+                    default: 
+                        // IFDEBUG
+                        Ext.Error.raise({
+                            plugin: 'Bancha',
+                            msg: 'Bancha.Localizer does not know how to replace %'+bits[i].substr(0,1)+' in string "'+key+'".'
+                        });
+                        // ENDIF
+                        result += '%'+bits[i].substr(0,1);
+                }
+                result += bits[i].substr(1);
+            }
+
+            return result;
         }
     },
-    /**
-     * Translates an given string to the given language, 
-     * or the one set in Bancha.Localizer.currentLang.
+    /** 
+     * Translates an given string the current language
+     * (see {@link Bancha.Localizer.currentLang}.
      *
-     * This is a convenience function for Bancha.Localizer.getLocalizedString
+     * Additional arguments are used to replace %s (for string) and %d (for number).
+     *
+     * This is a convenience function for Bancha.Localizer.getLocalizedStringWithReplacements
      * @param key the string to translate
-     * @param langCode a three letter language code, same as in 
-     *        cakephp (Default from Bancha.Localizer.currentLang)
+     * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
+     * @member Bancha
      */
-    t : function(key, locale) {
-        return Bancha.Localizer.getLocalizedString(key, locale);
+    t : function(key,  replacement1, replacement2, replacement3) {
+        return Bancha.Localizer.getLocalizedStringWithReplacements.apply(Bancha.Localizer, arguments);
     }
 });
 

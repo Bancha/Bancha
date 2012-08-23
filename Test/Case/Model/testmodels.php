@@ -246,7 +246,21 @@ class TestUserOrder extends CakeTestModel {
 	);
 	
 	
-	function schema() {
+	/**
+	 * Returns an array of table metadata (column names and types) for testing.
+	 * $field => keys(type, null, default, key, length, extra)
+	 *
+	 * @param boolean|string $field Set to true to reload schema, or a string to return a specific field
+	 * @return array Array of table metadata
+	 */
+	function schema($field = false) {
+		if (is_string($field)) {
+			if (isset($this->_schema[$field])) {
+				return $this->_schema[$field];
+			} else {
+				return null;
+			}
+		}
 		return $this->_schema;
 	}
 }
