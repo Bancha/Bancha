@@ -100,11 +100,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 	/**
-	 * set the model explicit as cakephp does not instantiate the behavior for each model
+	 * This function is only used when the BanchaApi::getMetadata instanciates the behavior
+	 * Set the model explicit as cakephp does not instantiate the behavior for each model
 	 */
-	public function setBehaviorModel(&$Model) {
-		$this->model = $Model;
-		$this->schema = $Model->schema();
+	public function setBehaviorModel(Model $model) {
+		$this->model = $model;
+		$this->schema = $model->schema();
 	}
 
 	/**
@@ -190,8 +191,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * should look like this:
 	 * <code>
 	 * associations: [
-	 *	    {type: 'hasMany', model: 'Post',	name: 'posts'},
-	 *	    {type: 'hasMany', model: 'Comment', name: 'comments'}
+	 *	    {type: 'hasMany', model: 'Bancha.model.Post',	 name: 'posts'},
+	 *	    {type: 'hasMany', model: 'Bancha.model.Comment', name: 'comments'}
 	 *   ]
 	 * </code>
 	 *   
@@ -205,7 +206,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		foreach ($assocs as $field => $value) {
 			if($value != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
 				$name = lcfirst(Inflector::pluralize($field)); //generate a handy name
-				$return[] = array ('type' => $value, 'model' => $field, 'name' => $name);
+				$return[] = array ('type' => $value, 'model' => 'Bancha.model.'.$field, 'name' => $name);
 			}
 		}
 		return $return;
@@ -231,6 +232,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 		return $cols;
 	}
+	/**
+	 * @see getColumnTypes
+	 */
 	private function getColumnType($field, $type) {
 
 		// handle mysql enum field
@@ -555,9 +559,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
 	 * 
 	 * @param $model the model
-	 * @param $options the validation options
+	 * @param array $options Options passed from model::save(), see $options of model::save().
+	 * @return boolean True if validate operation should continue, false to abort
 	 */
-	public function beforeValidate($model,$options) {
+	public function beforeValidate(Model $model, $options = array()) {
 		if($this->settings[$this->model->alias]['useOnlyDefinedFields']) {
 			// if not yet defined, create a field list to validate only the changes (empty records will still invalidate)
 			$model->whitelist = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList']; // TODO how to not overwrite the whitelist?
@@ -570,9 +575,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
 	 * 
 	 * @param $model the model
-	 * @param $options the save options
+	 * @param array $options
+	 * @return boolean True if the operation should continue, false if it should abort
 	 */
-	public function beforeSave($model,$options) {
+	public function beforeSave(Model $model, $options = array()) {
 		if($this->settings[$this->model->alias]['useOnlyDefinedFields']) {
 			// if not yet defined, create a field list to save only the changes
 			$options['fieldList'] = empty($options['fieldList']) ? $this->buildFieldList($model->data) : $options['fieldList'];
@@ -590,7 +596,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param $options the save options
 	 * @return returns the result of the save operation
 	 */
-	public function saveFields($model,$data=null,$options=array()) {
+	public function saveFields(Model $model, $data=null, $options=array()) {
 		// overwrite config for this commit
 		$config = $this->settings[$this->model->alias]['useOnlyDefinedFields'];
 		$this->settings[$this->model->alias]['useOnlyDefinedFields'] = true;
@@ -624,7 +630,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param $model the model is always the first param (cake does this automatically)
 	 * @param $data the data to save, first function argument
 	 */
-	public function saveFieldsAndReturn($model,$data) {
+	public function saveFieldsAndReturn(Model $model, $data=null) {
 		// save
 		$this->saveFields($model,$data);
 		
@@ -635,7 +641,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	/**
 	 * convenience methods, just delete and then return $this.getLastSaveResult();
 	 */
-	public function deleteAndReturn($model) {
+	public function deleteAndReturn(Model $model) {
 		if (!$model->exists()) {
 			throw new NotFoundException(__('Invalid user'));
 		}
@@ -643,7 +649,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return $this->getLastSaveResult();
 	}
 	
-	public function afterDelete() {
+	public function afterDelete(Model $model) {
 		// if no exception was thrown so far the request was successfull
 		$this->result = true;
 	}

@@ -57,8 +57,8 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {name:'height', type:'int'}
                 ],
                 associations: [
-                    {type:'hasMany', model:'Post', name:'posts'},
-                    {type:'belongsTo', model:'Country', name:'country'}
+                    {type:'hasMany', model:'Bancha.model.Post', name:'posts'}, // these models need to exist
+                    {type:'belongsTo', model:'Bancha.model.Country', name:'country'}
                 ],
                 validations: [
                     { type:"numberformat", field:"id", precision:0},
