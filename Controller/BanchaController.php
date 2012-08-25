@@ -135,8 +135,8 @@ class BanchaController extends BanchaAppController {
 		// filter the models (performant function)
 		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 		
-		// build a caching key
-		$cacheKey = 'metadata_'.implode(",", $metadataModels);
+		// build a caching key, make sure we are always using the right models
+		$cacheKey = 'metadata_'.md5(implode(",", $metadataModels)); // md5 for shorter file names
 		
 		// check cache
 		if(($metadata = Cache::read($cacheKey, '_bancha_api_')) !== false) {
