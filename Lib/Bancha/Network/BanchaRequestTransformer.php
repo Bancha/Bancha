@@ -267,20 +267,32 @@ class BanchaRequestTransformer {
 			return $this->paginate;
 		}
 		
+		// find the page and limit
 		$page = 1;
-
-		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['page'])) {
-			$page = $this->data['data'][0]['page'];
-			unset($this->data['data'][0]['page']);
-		} else if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['start']) && isset($this->data['data'][0]['limit'])) {
-			$page = floor($this->data['data'][0]['start'] / $this->data['data'][0]['limit']);
-			unset($this->data['data'][0]['start']);
-		}
 		$limit = 500;
-		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['limit'])) {
-			$limit = $this->data['data'][0]['limit'];
-			unset($this->data['data'][0]['limit']);
+		if (isset($this->data['data'][0]) && is_array($this->data['data'][0])) {
+			$params = $this->data['data'][0];
+
+			// find the correct page
+			if(isset($params['page'])) {
+				$page = $params['page'];
+				unset($params['page']);
+			} else if (isset($params['start']) && isset($params['limit'])) {
+				$page = floor($params['start'] / $params['limit']);
+			}
+
+			// unset this, even if the page was read from the page property
+			if(isset($params['start'])) {
+				unset($params['start']);
+			}
+
+			// find the limit
+			if (isset($params['limit'])) {
+				$limit = $params['limit'];
+				unset($params['limit']);
+			}
 		}
+
 		$order = array();
 		$sort_field = '';
 		$direction = '';
@@ -301,6 +313,7 @@ class BanchaRequestTransformer {
 			'sort'			=> $sort_field,
 			'direction'		=> $direction
 		);
+
 		return $this->paginate;
 	}
 	
