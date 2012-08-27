@@ -227,9 +227,21 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	private function getColumnTypes() {
 		$columns = $this->model->getColumnTypes();
 		$cols = array();
+		
+		// add all database fields
 		foreach ($columns as $field => $type) {
-				array_push($cols, $this->getColumnType($field,$type));
+			array_push($cols, $this->getColumnType($field,$type));
 		}
+
+		// add virtual fields
+		foreach ($this->model->virtualFields as $field => $type) {
+			array_push($cols, array(
+				'name' => $field,
+				'type' => 'auto', // we can't guess the type here
+				'persist' => false // nothing to save here
+			));
+		}
+
 		return $cols;
 	}
 	/**
