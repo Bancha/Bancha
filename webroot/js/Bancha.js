@@ -386,6 +386,14 @@ Ext.define('Bancha', {
         if(!Bancha.initialized) {
             Bancha.init();
         }
+        // IFDEBUG
+        if(!Ext.isObject(Bancha.getStubsNamespace()[stubName])) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: The Stub '+stubName+' doesn\'t exist'
+            });
+        }
+        // ENDIF
         return Bancha.getStubsNamespace()[stubName] || undefined;
     },
     /**
