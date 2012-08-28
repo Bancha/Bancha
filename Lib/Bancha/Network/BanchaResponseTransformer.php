@@ -54,7 +54,7 @@ class BanchaResponseTransformer {
 	 * @param $controller The used controller
 	 * @return extjs formated data array
 	 */
-	public static function transformDataStructureToExt($modelName,$response) {
+	public static function transformDataStructureToExt($modelName, $response) {
 		
 		// understand primitive responses
 		if($response===true || $response===false) {
@@ -65,12 +65,12 @@ class BanchaResponseTransformer {
 		}
 		
 		// expect a successfull operation, but check
-		$sucess = isset($response['success']) ? !!$response['success'] : true;
+		$success = isset($response['success']) ? !!$response['success'] : true;
 		
 		if( isset($response[$modelName]) ) {
 			// this is standard cake single element structure
 			$response = array(
-				'success' => $sucess,
+				'success' => $success,
 				'data' => $response[$modelName]
 			);
 			
@@ -81,7 +81,7 @@ class BanchaResponseTransformer {
 				array_push($data, $record[$modelName]);
 			}
 			$response = array(
-				'success' => $sucess,
+				'success' => $success,
 				'data' => $data
 			);
 			
@@ -96,11 +96,19 @@ class BanchaResponseTransformer {
 
 			// create response including the total number of records
 			$response = array(
-				'success' => $sucess,
+				'success' => $success,
 				'data'  => isset($data['data']) ? $data['data'] : $data, // second option is for empty responses
 				'total' => $response['count']
 			);
+		} else if(is_array($response) && count($response)===0) {
+			// this is an empty array, so expect that this is just a request without any found records
+			return array(
+				'success' => true,
+				'data' => array()
+			);
 		}
+		// else the structure could not be recognized as any transformable data
+		// so output it as it is
 		
 		return $response;
 	}
