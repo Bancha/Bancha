@@ -31,7 +31,6 @@ if ( false === function_exists('lcfirst') ) {
  * @subpackage Model.Behavior
  */
 class BanchaRemotableBehavior extends ModelBehavior {
-	private $schema;
 	private $model;
 
 	/**
@@ -89,8 +88,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	public function setup(Model $Model, $settings = array()) {
 		$this->model = $Model;
-		$this->schema = $Model->schema();
-		
+
 		// apply configs
 		if(!is_array($settings)) {
 			throw new CakeException("Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration");
@@ -103,9 +101,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * This function is only used when the BanchaApi::getMetadata instanciates the behavior
 	 * Set the model explicit as cakephp does not instantiate the behavior for each model
 	 */
-	public function setBehaviorModel(Model $model) {
-		$this->model = $model;
-		$this->schema = $model->schema();
+	public function setBehaviorModel(Model $Model) {
+		$this->model = $Model;
 	}
 
 	/**
@@ -219,37 +216,38 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 *
 	 * 'User', {
 	 *   fields: [
-	 *     {name: 'id', type: 'int'},
-	 *     {name: 'name', type: 'string'}
+	 *     {name: 'id', type: 'int', allowNull:true, default:''},
+	 *     {name: 'name', type: 'string', allowNull:true, default:''}
 	 *   ]
 	 * }
 	 */
 	private function getColumnTypes() {
-		$columns = $this->model->getColumnTypes();
-		$cols = array();
-		
+		$schema = $this->model->schema();
+		$fields = array();
+
 		// add all database fields
-		foreach ($columns as $field => $type) {
-			array_push($cols, $this->getColumnType($field,$type));
+		foreach ($schema as $field => $fieldSchema) {
+			array_push($fields, $this->getColumnType($field,$fieldSchema));
 		}
 
 		// add virtual fields
-		foreach ($this->model->virtualFields as $field => $type) {
-			array_push($cols, array(
+		foreach ($this->model->virtualFields as $field => $sql) {
+			array_push($fields, array(
 				'name' => $field,
 				'type' => 'auto', // we can't guess the type here
 				'persist' => false // nothing to save here
 			));
 		}
 
-		return $cols;
+		return $fields;
 	}
 	/**
 	 * @see getColumnTypes
 	 */
-	private function getColumnType($field, $type) {
+	private function getColumnType($field, $fieldSchema) {
 
 		// handle mysql enum field
+		$type = $fieldSchema['type'];
 		if(substr($type,0,4) == 'enum') {
 			// find all possible options
 			preg_match_all("/'(.*?)'/", $type, $enums);
@@ -269,7 +267,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// handle normal fields
 		return array_merge(
-			array('name' => $field), 
+			array(
+				'name' => $field,
+				'allowNull' => $fieldSchema['null'],
+				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default']===null) ? 
+									'' : $fieldSchema['default'] // if null is not allowed fall back to ''
+				), 
 			isset($this->types[$type]) ? $this->types[$type] : array('type'=>'auto'));
 	}
 
