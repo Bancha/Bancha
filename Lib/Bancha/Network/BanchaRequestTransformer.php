@@ -106,9 +106,8 @@ class BanchaRequestTransformer {
 	 * @return string Name of the model.
 	 */
 	public function getModel() {
-		if (null != $this->model)
-		{
-			return $this->controller;
+		if($this->model != null) {
+			return $this->model;
 		}
 		
 		$this->model = Inflector::singularize($this->getController());
@@ -293,6 +292,7 @@ class BanchaRequestTransformer {
 			}
 		}
 
+		// find ordering and direction
 		$order = array();
 		$sort_field = '';
 		$direction = '';
