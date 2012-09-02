@@ -425,7 +425,11 @@ Ext.define('Bancha', {
      */
     init: function() {
         var remoteApi,
-            regex;
+            regex,
+            scripts,
+            foundApi = false,
+            apiPath,
+            response;
         
         // IFDEBUG
         if(Ext.versions.extjs && !Ext.isReady) {
@@ -436,9 +440,82 @@ Ext.define('Bancha', {
         }
         
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
+
+            // the remote api is not available, check if this is because of an error on the bancha-api.js or because it is not included
+            scripts = Ext.DomQuery.select('script');
+            Ext.each(scripts, function(script) {
+                if(script.src && script.src.search(/bancha-api\.js/)!==-1) {
+                    // the bancha-api seems to be included
+                    foundApi = true;
+                    apiPath = script.src;
+                }
+            });
+
+            if(!apiPath) {
+                // try in the root directory
+                apiPath = '/bancha-api.js';
+            }
+
+            // load the api
+            response = Ext.Ajax.request({
+                url : apiPath,
+                async : false
+            });
+
+            if(!foundApi) {
+                // user just forgot to include the api
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Configuration Error:</b><br />',
+                        'Please include the Bancha API before using Bancha by adding into your html:<br /><br />',
+                        response.status===200 ? 
+                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;/bancha-api.js&quot;&gt;&lt;/script&gt;</i>' :
+                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;path/to/your/webroot/bancha-api.js&quot;&gt;&lt;/script&gt;</i>'
+                    ].join('')
+                });
+            }
+
+            if(response.status === 404) {
+                //the api is included, but there seems to be an error
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Configuration Error:</b><br />',
+                        'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please fix it:<br /><br />',
+
+                        response.responseText.search(/<h2>Not Found<\/h2>/)!==-1 ? '<b>Note: You might have to turn ob debug mode to get a usefull error message!</b><br/><br/>' : '',
+
+                        response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remote the script tags
+                            response.responseText.substr(31,response.responseText.length-31-9) : 
+                            response.responseText
+                    ].join('')
+                });
+            }
+
+            if(response.responseText.search(/Parse error/)!==-1 || response.responseText.search(/cake-error/)!==-1) {
+                // there is an php error in cake
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>CakePHP Error:</b><br />',
+                        'You have an php error in your code:<br /><br />',
+
+                        response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remote the script tags
+                            response.responseText.substr(31,response.responseText.length-31-9) : 
+                            response.responseText
+                    ].join('')
+                });
+            }
+
+            // general error message
             Ext.Error.raise({
                 plugin: 'Bancha',
-                msg: 'Bancha: The remote api '+this.remoteApi+' is not yet defined, please define the api before using Bancha.init().'
+                msg: [
+                    '<b>Unknown Error in Bancha API:</b><br />',
+                    'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please open the API for details.<br />',
+                    'Note: You might have to turn ob debug mode to get a usefull error message!<br />'
+                ].join('')
             });
         }
         
@@ -450,17 +527,33 @@ Ext.define('Bancha', {
         }
         // ENDIF
         
-        // init error logging
-        if(window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
+
+        remoteApi = this.getRemoteApi();
+
+        // IFDEBUG
+        if(remoteApi && remoteApi.metadata && remoteApi.metadata._CakeError) {
+            // there is an cake error
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>CakePHP Error:</b><br />',
+                    'You have an error in your cakephp code:<br /><br />',
+                    Ext.isString(remoteApi.metadata._CakeError) ? 
+                        remoteApi.metadata._CakeError : 
+                        'Please turn the cakephp debug mode on to see the error message!'
+                ].join('')
+            });
+        }
+        // ENDIF
+
+        // init error logging in production mode
+        if(Bancha.getDebugLevel()===0 && window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
             TraceKit.report.subscribe(function(stackInfo) {
                 // make sure to not bind the function, but the locaton (for later overriding)
                 Bancha.onError(stackInfo);
             });
         }
 
-
-        remoteApi = this.getRemoteApi();
-        
         // if the server didn't send an metadata object in the api, create it
         if(!Ext.isDefined(remoteApi.metadata)) {
             remoteApi.metadata = {};
@@ -483,6 +576,25 @@ Ext.define('Bancha', {
         // init Provider
         Ext.direct.Manager.addProvider(remoteApi);
         
+        //IFDEBUG
+        // test if the bancha dispatcher is available
+        response = Ext.Ajax.request({
+            url: remoteApi.url+'?setup-check=true',
+            async: false
+        });
+        if(response.status !==200 || !Ext.decode(response.responseText) || !Ext.decode(response.responseText).BanchaDispatcherIsSetup) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Configuration Error:</b><br />',
+                    'Bancha expects the Bancha Dispatcher to be reachable at <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.<br /><br />',
+                    '<b>Probably you just forgot to copy the file <i>Bancha/_app/webroot/bancha.php</i> into your app at <i>app/webroot/bancha.php</i><br />',
+                    'Please do this and then reload the page.</b>'
+                ].join('')
+            });
+        }
+        // ENDIF
+
         this.initialized = true;
     },
     /**
@@ -900,7 +1012,7 @@ Ext.define('Bancha', {
                 plugin: 'Bancha',
                 modelName: modelName,
                 modelConfig: modelConfig,
-                msg: 'Bancha: Couldn\'t create the model cause the model is not supported by the server (no remote model).'
+                msg: 'Bancha: Couldn\'t create the model "'+modelName+'" cause the model is not supported by the server (no remote model).'
             });
             // ENDIF
             return false;
