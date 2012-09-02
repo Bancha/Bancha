@@ -425,7 +425,11 @@ Ext.define('Bancha', {
      */
     init: function() {
         var remoteApi,
-            regex;
+            regex,
+            scripts,
+            foundApi = false,
+            apiPath,
+            response;
         
         // IFDEBUG
         if(Ext.versions.extjs && !Ext.isReady) {
@@ -436,9 +440,82 @@ Ext.define('Bancha', {
         }
         
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
+
+            // the remote api is not available, check if this is because of an error on the bancha-api.js or because it is not included
+            scripts = Ext.DomQuery.select('script');
+            Ext.each(scripts, function(script) {
+                if(script.src && script.src.search(/bancha-api\.js/)!==-1) {
+                    // the bancha-api seems to be included
+                    foundApi = true;
+                    apiPath = script.src;
+                }
+            });
+
+            if(!apiPath) {
+                // try in the root directory
+                apiPath = '/bancha-api.js';
+            }
+
+            // load the api
+            response = Ext.Ajax.request({
+                url : apiPath,
+                async : false
+            });
+
+            if(!foundApi) {
+                // user just forgot to include the api
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Configuration Error:</b><br />',
+                        'Please include the Bancha API before using Bancha by adding into your html:<br /><br />',
+                        response.status===200 ? 
+                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;/bancha-api.js&quot;&gt;&lt;/script&gt;</i>' :
+                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;path/to/your/webroot/bancha-api.js&quot;&gt;&lt;/script&gt;</i>'
+                    ].join('')
+                });
+            }
+
+            if(response.status === 404) {
+                //the api is included, but there seems to be an error
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Configuration Error:</b><br />',
+                        'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please fix it:<br /><br />',
+
+                        response.responseText.search(/<h2>Not Found<\/h2>/)!==-1 ? '<b>Note: You might have to turn ob debug mode to get a usefull error message!</b><br/><br/>' : '',
+
+                        response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remote the script tags
+                            response.responseText.substr(31,response.responseText.length-31-9) : 
+                            response.responseText
+                    ].join('')
+                });
+            }
+
+            if(response.responseText.search(/Parse error/)!==-1 || response.responseText.search(/cake-error/)!==-1) {
+                // there is an php error in cake
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>CakePHP Error:</b><br />',
+                        'You have an php error in your code:<br /><br />',
+
+                        response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remote the script tags
+                            response.responseText.substr(31,response.responseText.length-31-9) : 
+                            response.responseText
+                    ].join('')
+                });
+            }
+
+            // general error message
             Ext.Error.raise({
                 plugin: 'Bancha',
-                msg: 'Bancha: The remote api '+this.remoteApi+' is not yet defined, please define the api before using Bancha.init().'
+                msg: [
+                    '<b>Unknown Error in Bancha API:</b><br />',
+                    'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please open the API for details.<br />',
+                    'Note: You might have to turn ob debug mode to get a usefull error message!<br />'
+                ].join('')
             });
         }
         
