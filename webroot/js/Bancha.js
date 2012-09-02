@@ -530,6 +530,20 @@ Ext.define('Bancha', {
 
         remoteApi = this.getRemoteApi();
 
+        // IFDEBUG
+        if(remoteApi && remoteApi.metadata && remoteApi.metadata._CakeError) {
+            // there is an cake error
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>CakePHP Error:</b><br />',
+                    'You have an error in your cakephp code:<br /><br />',
+                    Ext.isString(remoteApi.metadata._CakeError) ? 
+                        remoteApi.metadata._CakeError : 
+                        'Please turn the cakephp debug mode on to see the error message!'
+                ].join('')
+            });
+        }
 
         // init error logging in production mode
         if(Bancha.getDebugLevel()===0 && window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
