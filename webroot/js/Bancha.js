@@ -544,6 +544,7 @@ Ext.define('Bancha', {
                 ].join('')
             });
         }
+        // ENDIF
 
         // init error logging in production mode
         if(Bancha.getDebugLevel()===0 && window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
@@ -575,6 +576,25 @@ Ext.define('Bancha', {
         // init Provider
         Ext.direct.Manager.addProvider(remoteApi);
         
+        //IFDEBUG
+        // test if the bancha dispatcher is available
+        response = Ext.Ajax.request({
+            url: remoteApi.url+'?setup-check=true',
+            async: false
+        });
+        if(response.status !==200 || !Ext.decode(response.responseText) || !Ext.decode(response.responseText).BanchaDispatcherIsSetup) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Configuration Error:</b><br />',
+                    'Bancha expects the Bancha Dispatcher to be reachable at <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.<br /><br />',
+                    '<b>Probably you just forgot to copy the file <i>Bancha/_app/webroot/bancha.php</i> into your app at <i>app/webroot/bancha.php</i><br />',
+                    'Please do this and then reload the page.</b>'
+                ].join('')
+            });
+        }
+        // ENDIF
+
         this.initialized = true;
     },
     /**
