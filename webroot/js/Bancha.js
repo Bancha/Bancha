@@ -450,17 +450,18 @@ Ext.define('Bancha', {
         }
         // ENDIF
         
-        // init error logging
-        if(window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
+
+        remoteApi = this.getRemoteApi();
+
+
+        // init error logging in production mode
+        if(Bancha.getDebugLevel()===0 && window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
             TraceKit.report.subscribe(function(stackInfo) {
                 // make sure to not bind the function, but the locaton (for later overriding)
                 Bancha.onError(stackInfo);
             });
         }
 
-
-        remoteApi = this.getRemoteApi();
-        
         // if the server didn't send an metadata object in the api, create it
         if(!Ext.isDefined(remoteApi.metadata)) {
             remoteApi.metadata = {};
