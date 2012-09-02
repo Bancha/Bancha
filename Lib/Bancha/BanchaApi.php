@@ -236,7 +236,7 @@ class BanchaApi {
 		include_once APP . DS . 'Controller' . DS . $controllerClass . '.php';
 
 		if (!class_exists($controllerClass)) {
-			throw new MissingControllerExceptionarray(array('class' => $controllerClass));
+			throw new MissingControllerException(array('class' => $controllerClass));
 		}
 	}
 
