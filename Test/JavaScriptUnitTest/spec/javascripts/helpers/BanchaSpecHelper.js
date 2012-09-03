@@ -1,11 +1,11 @@
 /*!
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 StudioQ OG
  *
  * Bancha specific helper functions
  *
- * @copyright     Copyright 2011-2012 Roland Schuetz
+ * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
@@ -20,7 +20,7 @@
 BanchaSpecHelper = {};
 BanchaSpecHelper.SampleData = {};
 BanchaSpecHelper.SampleData.remoteApiDefinition = {
-    url: 'Bancha/router.json',
+    url: 'bancha-dispatcher-mock.js',
     namespace: 'Bancha.RemoteStubs',
     "type":"remoting",
     "actions":{
@@ -44,6 +44,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
     },
     metadata: {
         _UID: '550e8400e29b11d4a7164466554400004',
+        _CakeDebugLevel: 0, // set the debug level to zero to suppress Banchas debug error handling
         User: {
                 idProperty: 'id',
                 fields: [
@@ -123,6 +124,20 @@ beforeEach(function() {
             return true;
         }
     });
+
+    // Bancha tries to connect to the api in debug mode, mimik that is works
+    // but there should never be any other Ajax requests
+    Ext.Ajax.request = function(config) {
+        if(config.url.search(BanchaSpecHelper.SampleData.remoteApiDefinition) !== -1) {
+            // this is a check of the bancha dispatcher, everything ok
+            return {
+                status: 200,
+                responseText: '{BanchaDispatcherIsSetup:true}'
+            };
+        } else {
+            throw new Error('Unexpected usage of Ext.Ajax.request');
+        }
+    };
 });
 
 //eof

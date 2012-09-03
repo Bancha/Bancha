@@ -1,11 +1,11 @@
 <?php
 /**
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 StudioQ OG
  *
  * @package       Bancha
  * @subpackage    Lib
- * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.3
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -236,7 +236,7 @@ class BanchaApi {
 		include_once APP . DS . 'Controller' . DS . $controllerClass . '.php';
 
 		if (!class_exists($controllerClass)) {
-			throw new MissingControllerExceptionarray(array('class' => $controllerClass));
+			throw new MissingControllerException(array('class' => $controllerClass));
 		}
 	}
 

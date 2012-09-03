@@ -1,10 +1,10 @@
 /*!
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 StudioQ OG
  *
  * @package       Bancha
- * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.0.2
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -425,7 +425,12 @@ Ext.define('Bancha', {
      */
     init: function() {
         var remoteApi,
-            regex;
+            regex,
+            scripts,
+            foundApi = false,
+            apiPath,
+            response,
+            result;
         
         // IFDEBUG
         if(Ext.versions.extjs && !Ext.isReady) {
@@ -436,9 +441,82 @@ Ext.define('Bancha', {
         }
         
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
+
+            // the remote api is not available, check if this is because of an error on the bancha-api.js or because it is not included
+            scripts = Ext.DomQuery.select('script');
+            Ext.each(scripts, function(script) {
+                if(script.src && script.src.search(/bancha-api\.js/)!==-1) {
+                    // the bancha-api seems to be included
+                    foundApi = true;
+                    apiPath = script.src;
+                }
+            });
+
+            if(!apiPath) {
+                // try in the root directory
+                apiPath = '/bancha-api.js';
+            }
+
+            // load the api
+            response = Ext.Ajax.request({
+                url : apiPath,
+                async : false
+            });
+
+            if(!foundApi) {
+                // user just forgot to include the api
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Configuration Error:</b><br />',
+                        'Please include the Bancha API before using Bancha by adding into your html:<br /><br />',
+                        response.status===200 ? 
+                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;/bancha-api.js&quot;&gt;&lt;/script&gt;</i>' :
+                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;path/to/your/webroot/bancha-api.js&quot;&gt;&lt;/script&gt;</i>'
+                    ].join('')
+                });
+            }
+
+            if(response.status === 404) {
+                //the api is included, but there seems to be an error
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Configuration Error:</b><br />',
+                        'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please fix it:<br /><br />',
+
+                        response.responseText.search(/<h2>Not Found<\/h2>/)!==-1 ? '<b>Note: You might have to turn ob debug mode to get a usefull error message!</b><br/><br/>' : '',
+
+                        response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remote the script tags
+                            response.responseText.substr(31,response.responseText.length-31-9) : 
+                            response.responseText
+                    ].join('')
+                });
+            }
+
+            if(response.responseText.search(/Parse error/)!==-1 || response.responseText.search(/cake-error/)!==-1) {
+                // there is an php error in cake
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>CakePHP Error:</b><br />',
+                        'You have an php error in your code:<br /><br />',
+
+                        response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remote the script tags
+                            response.responseText.substr(31,response.responseText.length-31-9) : 
+                            response.responseText
+                    ].join('')
+                });
+            }
+
+            // general error message
             Ext.Error.raise({
                 plugin: 'Bancha',
-                msg: 'Bancha: The remote api '+this.remoteApi+' is not yet defined, please define the api before using Bancha.init().'
+                msg: [
+                    '<b>Unknown Error in Bancha API:</b><br />',
+                    'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please open the API for details.<br />',
+                    'Note: You might have to turn ob debug mode to get a usefull error message!<br />'
+                ].join('')
             });
         }
         
@@ -450,17 +528,33 @@ Ext.define('Bancha', {
         }
         // ENDIF
         
-        // init error logging
-        if(window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
+
+        remoteApi = this.getRemoteApi();
+
+        // IFDEBUG
+        if(remoteApi && remoteApi.metadata && remoteApi.metadata._CakeError) {
+            // there is an cake error
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>CakePHP Error:</b><br />',
+                    'You have an error in your cakephp code:<br /><br />',
+                    Ext.isString(remoteApi.metadata._CakeError) ? 
+                        remoteApi.metadata._CakeError : 
+                        'Please turn the cakephp debug mode on to see the error message!'
+                ].join('')
+            });
+        }
+        // ENDIF
+
+        // init error logging in production mode
+        if(Bancha.getDebugLevel()===0 && window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
             TraceKit.report.subscribe(function(stackInfo) {
                 // make sure to not bind the function, but the locaton (for later overriding)
                 Bancha.onError(stackInfo);
             });
         }
 
-
-        remoteApi = this.getRemoteApi();
-        
         // if the server didn't send an metadata object in the api, create it
         if(!Ext.isDefined(remoteApi.metadata)) {
             remoteApi.metadata = {};
@@ -483,7 +577,85 @@ Ext.define('Bancha', {
         // init Provider
         Ext.direct.Manager.addProvider(remoteApi);
         
+        //IFDEBUG
+        // test if the bancha dispatcher is available
+        response = Ext.Ajax.request({
+            url: remoteApi.url+'?setup-check=true',
+            async: false
+        });
+        try {
+            result = Ext.decode(response.responseText);
+        } catch(e) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Configuration Error:</b><br />',
+                    'There is an error in your <i>app/webroot/bancha-dispatcher.php</i> file, ',
+                    'see <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.'
+                ].join('')
+            });
+        }
+        if(response.status!==200 || !Ext.isObject(result) || !result.BanchaDispatcherIsSetup) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Configuration Error:</b><br />',
+                    'Bancha expects the Bancha Dispatcher to be reachable at <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.<br /><br />',
+                    '<b>Probably you just forgot to copy the file <i>Bancha/_app/webroot/bancha.php</i> into your app at <i>app/webroot/bancha.php</i><br />',
+                    'Please do this and then reload the page.</b>'
+                ].join('')
+            });
+        }
+        // ENDIF
+
         this.initialized = true;
+
+        // In Cake Debug mode set up all default error handlers
+        if(this.getDebugLevel()!==0) { // this works only when this.initialized===true
+            this.setupDebugErrorHandler();
+        }
+    },
+    /**
+     * If you are using Banchas debug version and CakePHP is in debug mode this function will be used when Bancha initializes
+     * to setup debugging error handlers.
+     * In production mode this function will be empty. This function is only triggered when cakes debug level is greater then zero.
+     */
+    setupDebugErrorHandler: function() {
+
+        //IFDEBUG
+        // catch every debug exception thrown from either ExtJS or Bancha
+        Ext.Error.handle = function(err) {
+            Ext.Msg.alert('Error', err.msg);
+        };
+
+        // catch server-side errors
+        Ext.direct.Manager.on('exception', function(err){
+            // normalize ExtJS and Sencha Touch
+            var data = (typeof err.getCode === 'function') ? {
+                code: err.getCode(),
+                message: err.getMessage(),
+                data: {
+                    msg: err.getData()
+                },
+
+                // bancha-specific
+                exceptionType: err.config.exceptionType,
+                where: err.config.where,
+                trace: err.config.trace
+            } : err;
+            
+            // handle error
+            if(data.code==="parse") {
+                // parse error
+                Ext.Msg.alert('Bancha: Server-Response can not be decoded',data.data.msg);
+            } else {
+                // exception from server
+                Ext.Msg.alert('Bancha: Exception from Server',
+                    "<br/><b>"+(data.exceptionType || "Exception")+": "+data.message+"</b><br /><br />"+
+                    ((data.where) ? data.where+"<br /><br />Trace:<br />"+data.trace : "<i>Turn on the debug mode in cakephp to see the trace.</i>"));
+            }
+        });
+        //ENDIF
     },
     /**
      * @private
@@ -900,7 +1072,7 @@ Ext.define('Bancha', {
                 plugin: 'Bancha',
                 modelName: modelName,
                 modelConfig: modelConfig,
-                msg: 'Bancha: Couldn\'t create the model cause the model is not supported by the server (no remote model).'
+                msg: 'Bancha: Couldn\'t create the model "'+modelName+'" cause the model is not supported by the server (no remote model).'
             });
             // ENDIF
             return false;
