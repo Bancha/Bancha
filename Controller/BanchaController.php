@@ -2,11 +2,11 @@
 
 /**
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 StudioQ OG
  *
  * @package       Bancha
  * @subpackage    Controller
- * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
@@ -54,13 +54,26 @@ class BanchaController extends BanchaAppController {
 		// send as javascript
 		$this->response->type('js');
 		
+		// send an _CakeError property to the frontend
+		$error = false;
+
 		// get all possible remotable models
 		$remotableModels = $this->getRemotableModels($banchaApi);
 		
+		//get all the remotable model actions, this can throw an error on missconfiguration
+		$remotableModelsActions = array();
+		try {
+			$remotableModelsActions = $banchaApi->getRemotableModelActions($remotableModels);
+		} catch(MissingControllerException $e) {
+			$error  = 'You have exposed a model with BanchaRemotable, so Bancha requires the corresponding controller to exist.<br />';
+			$error .= '<br />Bancha looks at this controller to see which CRUD functions should be exposed. <b>But the '.$e->getMessage().'</b>';
+			$error .= '<br />Please create this controller!';
+		}
+
 		// build actions
 		if(($actions = Cache::read('actions', '_bancha_api_')) === false) {
 			$actions = array_merge_recursive(
-				$banchaApi->getRemotableModelActions($remotableModels),
+				$remotableModelsActions,
 				$banchaApi->getRemotableMethods(),
 				// plugin folders are not searched, so all out exposed functions manually
 				array('Bancha' => array(
@@ -80,10 +93,12 @@ class BanchaController extends BanchaAppController {
 		}
 		
 		$api = array(
-			'url'		=> $this->request->webroot.'bancha.php',
+			'url'		=> $this->request->webroot.'bancha-dispatcher.php',
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
-			'metadata'	=> $this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
+			'metadata'	=> array_merge(
+								$this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
+								array('_CakeError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
 		

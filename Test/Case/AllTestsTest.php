@@ -3,11 +3,11 @@
  * AllTestsTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 StudioQ OG
  *
  * @package       Bancha
  * @category      tests
- * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -41,8 +41,6 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile($path . DS . 'AllRoutingTest.php');
 		$suite->addTestFile($path . DS . 'AllSystemTest.php');
 		$suite->addTestFile($path . DS . 'BanchaApiTest.php');
-		$suite->addTestFile($path . DS . 'Vendor' . DS . 'JavaScriptStringCollectorTest.php');
-		$suite->addTestFile($path . DS . 'Console' . DS .'Command' . DS . 'Task' . DS . 'BanchaExtractTaskTest.php');
 		
 		//$suite->addTestDirectory($path);
 		return $suite;

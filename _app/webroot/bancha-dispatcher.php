@@ -9,10 +9,10 @@
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Bancha : Ext JS and Cake PHP (http://banchaproject.org)
  * Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * Copyright 2011, Bancha Project
+ * Copyright 2011-2012, StudioQ OG
  *
  * @copyright     Copyright 2005-2010, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @copyright	  Copyright 2011-2012, Bancha Project (http://banchaproject.org)
+ * @copyright	  Copyright 2011-2012 StudioQ OG
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @link          http://cakephp.org CakePHP(tm) Project

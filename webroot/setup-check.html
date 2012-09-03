@@ -3,10 +3,10 @@
 /*!
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
- * Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * Copyright 2011-2012 StudioQ OG
  *
  * @package       Bancha
- * @copyright     Copyright 2011-2012 Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.3
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -241,7 +241,7 @@ var BanchaSetup = {
 		}
 		
 		// try to check bancha dispatcher
-		BanchaSetup.loadScript('../bancha.php?setup-check=true',BanchaSetup.checkSetup_onBanchaDispatcherIsLoaded);
+		BanchaSetup.loadScript('../bancha-dispatcher.php?setup-check=true',BanchaSetup.checkSetup_onBanchaDispatcherIsLoaded);
 		
 	},
 	checkSetup_onBanchaDispatcherIsLoaded: function(isLoaded,ajaxResponse) {
@@ -249,9 +249,9 @@ var BanchaSetup = {
 		// check if Bancha Dispatcher is copied to webroot
 		BanchaSetup.writeLog(isLoaded,'Ping Bancha Dispatcher', [
 			'<b>'+ajaxResponse.status+': Could not find Bancha Dispatcher</b><br/><br/>',
-			'Please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha.php</i> ',
+			'Please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha-dispatcher.php</i> ',
 			'into <i>app/webroot/</i>.<br/><br/>',
-			'If you still have this problem check the output of <a href="../bancha.php" target="_blank">',
+			'If you still have this problem check the output of <a href="../bancha-dispatcher.php" target="_blank">',
 			'Bancha Dispatcher page</a>. Note, the Dispatcher works correctly if you can see the error ',
 			'messsage "Missing POST Data: ...". This is expected!<br /><br />',
 			'If there is no obvious clue, please <a href="https://github.com/Bancha/Bancha/issues" ',
@@ -266,7 +266,7 @@ var BanchaSetup = {
 			works = response.BanchaDispatcherIsSetup===true;
 		BanchaSetup.writeLog(works,'Bancha Dispatcher works', [
 			'<br /><b>Could not validate the Bancha Dispatcher!!!</b><br /><br />',
-			'Please copy the official Bancha Dispatcher from <i>Plugin/Bancha/_app/webroot/bancha.php</i> ',
+			'Please copy the official Bancha Dispatcher from <i>Plugin/Bancha/_app/webroot/bancha-dispatcher.php</i> ',
 			'into <i>app/webroot/</i>. <br /><br />If  you did so: '+BanchaSetup.bugReportText
 			].join(''));
 		if(works===false) {
