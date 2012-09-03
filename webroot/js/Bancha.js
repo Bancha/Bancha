@@ -429,7 +429,8 @@ Ext.define('Bancha', {
             scripts,
             foundApi = false,
             apiPath,
-            response;
+            response,
+            result;
         
         // IFDEBUG
         if(Ext.versions.extjs && !Ext.isReady) {
@@ -582,7 +583,19 @@ Ext.define('Bancha', {
             url: remoteApi.url+'?setup-check=true',
             async: false
         });
-        if(response.status !==200 || !Ext.decode(response.responseText) || !Ext.decode(response.responseText).BanchaDispatcherIsSetup) {
+        try {
+            result = Ext.decode(response.responseText);
+        } catch(e) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Configuration Error:</b><br />',
+                    'There is an error in your <i>app/webroot/bancha-dispatcher.php</i> file, ',
+                    'see <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.'
+                ].join('')
+            });
+        }
+        if(response.status!==200 || !Ext.isObject(result) || !result.BanchaDispatcherIsSetup) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: [
@@ -596,6 +609,53 @@ Ext.define('Bancha', {
         // ENDIF
 
         this.initialized = true;
+
+        // In Cake Debug mode set up all default error handlers
+        if(this.getDebugLevel()!==0) { // this works only when this.initialized===true
+            this.setupDebugErrorHandler();
+        }
+    },
+    /**
+     * If you are using Banchas debug version and CakePHP is in debug mode this function will be used when Bancha initializes
+     * to setup debugging error handlers.
+     * In production mode this function will be empty. This function is only triggered when cakes debug level is greater then zero.
+     */
+    setupDebugErrorHandler: function() {
+
+        //IFDEBUG
+        // catch every debug exception thrown from either ExtJS or Bancha
+        Ext.Error.handle = function(err) {
+            Ext.Msg.alert('Error', err.msg);
+        };
+
+        // catch server-side errors
+        Ext.direct.Manager.on('exception', function(err){
+            // normalize ExtJS and Sencha Touch
+            var data = (typeof err.getCode === 'function') ? {
+                code: err.getCode(),
+                message: err.getMessage(),
+                data: {
+                    msg: err.getData()
+                },
+
+                // bancha-specific
+                exceptionType: err.config.exceptionType,
+                where: err.config.where,
+                trace: err.config.trace
+            } : err;
+            
+            // handle error
+            if(data.code==="parse") {
+                // parse error
+                Ext.Msg.alert('Bancha: Server-Response can not be decoded',data.data.msg);
+            } else {
+                // exception from server
+                Ext.Msg.alert('Bancha: Exception from Server',
+                    "<br/><b>"+(data.exceptionType || "Exception")+": "+data.message+"</b><br /><br />"+
+                    ((data.where) ? data.where+"<br /><br />Trace:<br />"+data.trace : "<i>Turn on the debug mode in cakephp to see the trace.</i>"));
+            }
+        });
+        //ENDIF
     },
     /**
      * @private
