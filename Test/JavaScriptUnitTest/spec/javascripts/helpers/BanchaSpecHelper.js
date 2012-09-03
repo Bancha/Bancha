@@ -20,7 +20,7 @@
 BanchaSpecHelper = {};
 BanchaSpecHelper.SampleData = {};
 BanchaSpecHelper.SampleData.remoteApiDefinition = {
-    url: 'Bancha/router.json',
+    url: 'bancha-dispatcher-mock.js',
     namespace: 'Bancha.RemoteStubs',
     "type":"remoting",
     "actions":{
@@ -123,6 +123,20 @@ beforeEach(function() {
             return true;
         }
     });
+
+    // Bancha tries to connect to the api in debug mode, mimik that is works
+    // but there should never be any other Ajax requests
+    Ext.Ajax.request = function(config) {
+        if(config.url.search(BanchaSpecHelper.SampleData.remoteApiDefinition) !== -1) {
+            // this is a check of the bancha dispatcher, everything ok
+            return {
+                status: 200,
+                responseText: '{BanchaDispatcherIsSetup:true}'
+            };
+        } else {
+            throw new Error('Unexpected usage of Ext.Ajax.request');
+        }
+    };
 });
 
 //eof
