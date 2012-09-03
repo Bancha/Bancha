@@ -93,7 +93,7 @@ class BanchaController extends BanchaAppController {
 		}
 		
 		$api = array(
-			'url'		=> $this->request->webroot.'bancha.php',
+			'url'		=> $this->request->webroot.'bancha-dispatcher.php',
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
