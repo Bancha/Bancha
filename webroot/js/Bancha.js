@@ -429,7 +429,8 @@ Ext.define('Bancha', {
             scripts,
             foundApi = false,
             apiPath,
-            response;
+            response,
+            result;
         
         // IFDEBUG
         if(Ext.versions.extjs && !Ext.isReady) {
@@ -582,7 +583,19 @@ Ext.define('Bancha', {
             url: remoteApi.url+'?setup-check=true',
             async: false
         });
-        if(response.status !==200 || !Ext.decode(response.responseText) || !Ext.decode(response.responseText).BanchaDispatcherIsSetup) {
+        try {
+            result = Ext.decode(response.responseText);
+        } catch(e) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Configuration Error:</b><br />',
+                    'There is an error in your <i>app/webroot/bancha-dispatcher.php</i> file, ',
+                    'see <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.'
+                ].join('')
+            });
+        }
+        if(response.status!==200 || !Ext.isObject(result) || !result.BanchaDispatcherIsSetup) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: [
