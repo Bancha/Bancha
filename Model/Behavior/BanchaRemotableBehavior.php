@@ -16,6 +16,7 @@
 
 App::uses('ModelBehavior', 'Model');
 
+
 // backwards compability with 5.2
 if ( false === function_exists('lcfirst') ) {
 	function lcfirst( $str ) { return (string)(strtolower(substr($str,0,1)).substr($str,1)); }
@@ -165,17 +166,17 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$upload_info = array_shift($data);
 
 		// No file uploaded.
-		if ($required && $upload_info[’size’] == 0) {
+		if ($required && $upload_info['size'] == 0) {
 				return false;
 		}
 
 		// Check for Basic PHP file errors.
-		if ($upload_info[‘error’] !== 0) {
+		if ($upload_info['error'] !== 0) {
 			return false;
 		}
 
 		// Finally, use PHP’s own file validation method.
-		return is_uploaded_file($upload_info[‘tmp_name’]);
+		return is_uploaded_file($upload_info['tmp_name']);
 	}
 		
 	// TODO remove workarround for 'file' validation
@@ -519,7 +520,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	public function getLastSaveResult() {
 		if(empty($this->result)) {
-			throw new BanchaException(
+			throw new Exception(
 				'There was nothing saved to be returned. Probably this occures because the data '.
 				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
 				'function to create, load and save model records. If you really have to create '.
@@ -537,7 +538,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// Make a quick quick check if the data is in the right format
 		if(isset($data[$this->model->name][0]) && is_array($data[$this->model->name][0])) {
-			throw new BanchaException(
+			throw new Exception(
 				'The data to be saved seems malformed. Probably this occures because you send '.
 				'from your own model or you one save invokation. Please use the Bancha.getModel(ModelName) '.
 				'function to create, load and save model records. If you really have to create '.
@@ -558,7 +559,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			    }
 			}
 			if(!$valid) {
-				throw new BanchaException(
+				throw new Exception(
 					'Could nto find even one model field to save to database. Probably this occures '.
 					'because you send from your own model or you one save invokation. Please use the '.
 					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
