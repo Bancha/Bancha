@@ -551,17 +551,25 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		if(Configure::read('debug') == 2) {
 			$valid = false;
 			$fields = $this->model->getColumnTypes();
-			// check if at least one field is saved to the databse
+			// check if at least one field is saved to the database
+			try {
 			foreach($fields as $field => $type) {
 			    if(array_key_exists($field, $data[$this->model->name])) {
 			    	$valid=true;
 			    	break;
 			    }
 			}
+			} catch (Exception $e) {
+				throw new Exception(
+					'Caught exception: ' . $e->getMessage() . ' <br />' .
+					'Bancha couldn\'t find any fields. This is usually because the Model is incorrectly designed. ' .
+						'Check your model <br /><br /><pre>'.print_r($data,true).'</pre>'
+				);
+			}
 			if(!$valid) {
 				throw new Exception(
-					'Could nto find even one model field to save to database. Probably this occures '.
-					'because you send from your own model or you one save invokation. Please use the '.
+					'Could nto find even one model field to save to database. Probably this occurs '.
+					'because you send from your own model or you one save invocation. Please use the '.
 					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
 					'you really have to create your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
 					'(Sencha Touch) is set to "data". <br /><br />'.
