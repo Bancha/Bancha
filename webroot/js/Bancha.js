@@ -453,7 +453,7 @@ Ext.define('Bancha', {
             // the remote api is not available, check if this is because of an error on the bancha-api.js or because it is not included
             scripts = Ext.DomQuery.select('script');
             Ext.each(scripts, function(script) {
-                if(script.src && script.src.search(/bancha-api\.js/)!==-1) {
+                if(script.src && (script.src.search(/bancha-api\.js/)!==-1 || script.src.search(/bancha-api\/models\/([A-Za-z]*)\.js/)!==-1)) {
                     // the bancha-api seems to be included
                     foundApi = true;
                     apiPath = script.src;
