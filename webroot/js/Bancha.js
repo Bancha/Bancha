@@ -426,6 +426,7 @@ Ext.define('Bancha', {
     init: function() {
         var remoteApi,
             regex,
+            defaultErrorHandle,
             scripts,
             foundApi = false,
             apiPath,
@@ -433,6 +434,13 @@ Ext.define('Bancha', {
             result;
         
         // IFDEBUG
+
+        // show all initialize errors as message
+        defaultErrorHandle = Ext.Error.handle;
+        Ext.Error.handle = function(err) {
+            Ext.Msg.alert('Bancha Error', err.msg);
+        };
+
         if(Ext.versions.extjs && !Ext.isReady) {
             Ext.Error.raise({
                 plugin: 'Bancha',
@@ -445,7 +453,7 @@ Ext.define('Bancha', {
             // the remote api is not available, check if this is because of an error on the bancha-api.js or because it is not included
             scripts = Ext.DomQuery.select('script');
             Ext.each(scripts, function(script) {
-                if(script.src && script.src.search(/bancha-api\.js/)!==-1) {
+                if(script.src && (script.src.search(/bancha-api\.js/)!==-1 || script.src.search(/bancha-api\/models\/([A-Za-z]*)\.js/)!==-1)) {
                     // the bancha-api seems to be included
                     foundApi = true;
                     apiPath = script.src;
@@ -584,28 +592,49 @@ Ext.define('Bancha', {
             async: false
         });
         try {
-            result = Ext.decode(response.responseText);
+            result = Ext.decode(response.responseText, true);
         } catch(e) {
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                msg: [
-                    '<b>Bancha Configuration Error:</b><br />',
-                    'There is an error in your <i>app/webroot/bancha-dispatcher.php</i> file, ',
-                    'see <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.'
-                ].join('')
-            });
+            // handle below
         }
         if(response.status!==200 || !Ext.isObject(result) || !result.BanchaDispatcherIsSetup) {
+
+            // this might be just an update issue
+            // check if the old name (bancha.php) still works
+            response = Ext.Ajax.request({
+                url: remoteApi.url.replace(/bancha-dispatcher\.php/, 'bancha.php')+'?setup-check=true',
+                async: false
+            });
+            try {
+                result = Ext.decode(response.responseText, true);
+            } catch(e) {
+                // There are many errors, let the user first rename the Bancha dispatcher and then fix the other
+            }
+            if(response.status===200 && Ext.isObject(result) && result.BanchaDispatcherIsSetup) {
+                // old bancha dispatcher is still available
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        '<b>Bancha Update Error:</b><br />',
+                        'Since 1.1.0 the Bancha Dispatcher got renamed from "bancha.php" to "bancha-dispatcher.php".<br /><br />',
+                        '<b>Please rename the file <i>app/webroot/bancha.php</i> to <i>bancha-dispatcher.php</i><br />'
+                    ].join('')
+                });
+            }
+
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: [
                     '<b>Bancha Configuration Error:</b><br />',
                     'Bancha expects the Bancha Dispatcher to be reachable at <a href="'+remoteApi.url+'">'+remoteApi.url+'</a>.<br /><br />',
-                    '<b>Probably you just forgot to copy the file <i>Bancha/_app/webroot/bancha.php</i> into your app at <i>app/webroot/bancha.php</i><br />',
+                    '<b>Probably you just forgot to copy the file <i>Bancha/_app/webroot/bancha-dispatcher.php</i> into your app at <i>app/webroot/bancha-dispatcher.php</i><br />',
                     'Please do this and then reload the page.</b>'
                 ].join('')
             });
         }
+
+        // reset to default error handler
+        Ext.Error.handle = defaultErrorHandle;
+
         // ENDIF
 
         this.initialized = true;

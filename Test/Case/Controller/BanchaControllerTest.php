@@ -24,7 +24,7 @@ class BanchaControllerTest extends ControllerTestCase {
 	{
 		$response = $this->testAction('/bancha-api.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
-		$this->assertEquals('/bancha.php', substr($api->url,-11,11)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 		$this->assertTrue(isset($api->metadata->_UID));
@@ -40,7 +40,7 @@ class BanchaControllerTest extends ControllerTestCase {
 	{
 		$response = $this->testAction('/bancha-api/models/User.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
-		$this->assertEquals('/bancha.php', substr($api->url,-11,11)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 		$this->assertTrue(isset($api->metadata->_UID));
@@ -58,7 +58,7 @@ class BanchaControllerTest extends ControllerTestCase {
 	{
 		$response = $this->testAction('/bancha-api/models/all.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
-		$this->assertEquals('/bancha.php', substr($api->url,-11,11)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 

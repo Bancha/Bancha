@@ -188,25 +188,42 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * should look like this:
 	 * <code>
 	 * associations: [
-	 *	    {type: 'hasMany', model: 'Bancha.model.Post',	 name: 'posts'},
-	 *	    {type: 'hasMany', model: 'Bancha.model.Comment', name: 'comments'}
+	 *	    {type: 'hasMany', model: 'Bancha.model.Post',	 foreignKey: 'post_id', name: 'posts'},
+	 *	    {type: 'hasMany', model: 'Bancha.model.Comment', foreignKey: 'comment_id', name: 'comments'}
 	 *   ]
 	 * </code>
 	 *   
 	 *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
 	 *   
-	 *   in cakephp it is stored as this <code>Array ( [Article] => hasMany )</code>
+	 *   in cakephp all association types are a property on the model containing a full configuration, like
+	 *   <code> Array ( [Article] => Array ( [className] => Article [foreignKey] => user_id [dependent] => 
+	 *          [conditions] => [fields] => [order] => [limit] => [offset] => [exclusive] => [finderQuery] => 
+	 *          [counterQuery] => ) )</code>
 	 */
 	private function getAssociated() {
-		$assocs = $this->model->getAssociated();
-		$return = array();
-		foreach ($assocs as $field => $value) {
-			if($value != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
-				$name = lcfirst(Inflector::pluralize($field)); //generate a handy name
-				$return[] = array ('type' => $value, 'model' => 'Bancha.model.'.$field, 'name' => $name);
+		$assocTypes = $this->model->associations();
+		$assocs = array();
+		foreach ($assocTypes as $type) {
+			foreach($this->model->{$type} as $modelName => $config) {
+				if($type != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
+					
+					//generate the name to retrieve associations
+					$name = '';
+					if($type == 'hasMany') {
+						$name = lcfirst(Inflector::pluralize($modelName));
+					} else {
+						$name = lcfirst($modelName);
+					}
+
+					$assocs[] = array(
+						'type' => $type, 
+						'model' => 'Bancha.model.'.$config['className'], 
+						'foreignKey' => $config['foreignKey'],
+						'name' => $name);
+				}
 			}
 		}
-		return $return;
+		return $assocs;
 	}
 
 	/**
