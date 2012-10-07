@@ -80,7 +80,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	);
 	/**
 	 * Sets up the BanchaRemotable behavior. For config options see 
-	 * https://github.com/Bancha/Bancha/wiki/BanchaRemotableBehavior-Configurations
+	 * http://docs.banchaproject.org/resources/Advanced-Configurations.html#bancharemotablebehavior-configurations
 	 *
 	 * @param Model $Model instance of model
 	 * @param array $config array of configuration settings.

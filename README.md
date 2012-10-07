@@ -29,7 +29,7 @@ More information
 ----------------
 
 *   [Bancha Overview](http://banchaproject.com/)
-*   [Installation and Usage](https://github.com/Bancha/Bancha/wiki/)
+*   [Installation and Usage](http://docs.banchaproject.org)
 *   [Updates on Twitter](http://twitter.com/#!/banchaproject)
 
 

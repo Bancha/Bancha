@@ -194,7 +194,7 @@ var BanchaSetup = {
 
 		var instructions = [
 			'You most likely did not correctly installed Bancha, please check ',
-			'<a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">Installation: Step 2</a> ',
+			'<a href="http://docs.banchaproject.org/resources/Installation.html" target="_blank">Installation: Step 2</a> ',
 			'and make sure there are no cake errors in the <a href="../bancha-api.js" target="_blank">Remote API</a>.',
 			'<br /><br />',
 			'If you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
@@ -221,7 +221,7 @@ var BanchaSetup = {
 			// namespace missing
 			BanchaSetup.writeLog(false,'<b>Wrong CakePHP Configuration for Plugin</b>', [
 				'You are missing the "bootstrap=>true" part in your configuration, please see ',
-				'<a href="https://github.com/Bancha/Bancha/wiki/Installation" target="_blank">',
+				'<a href="http://docs.banchaproject.org/resources/Installation.html" target="_blank">',
 				'Installation: Step 2</a>.<br /><br />',
 				instructions].join(''));
 			return;
@@ -283,7 +283,7 @@ var BanchaSetup = {
 			(exposedRemoteStubs ? '' : [
 				'<div style="text-align:center;">',
 				'You haven\'t yet exposed any models or methods in CakePHP.<br />',
-				'<a href="https://github.com/Bancha/Bancha/wiki/Usage-in-CakePHP">',
+				'<a href="http://docs.banchaproject.org/resources/Usage-in-CakePHP.html">',
 				'Read here how to do this.</a></div>'].join(''))
 			].join(''));
 	}
