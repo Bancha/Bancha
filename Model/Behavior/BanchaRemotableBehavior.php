@@ -200,7 +200,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 *          [conditions] => [fields] => [order] => [limit] => [offset] => [exclusive] => [finderQuery] => 
 	 *          [counterQuery] => ) )</code>
 	 */
-	private function getAssociated() {
+	public function getAssociated() {
 		$assocTypes = $this->model->associations();
 		$assocs = array();
 		foreach ($assocTypes as $type) {
