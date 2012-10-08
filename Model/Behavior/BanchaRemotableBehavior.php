@@ -208,18 +208,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				if($type != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
 					
 					//generate the name to retrieve associations
-					$name = '';
-					if($type == 'hasMany') {
-						$name = lcfirst(Inflector::pluralize($modelName));
-					} else {
-						$name = lcfirst($modelName);
-					}
+					$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
 
 					$assocs[] = array(
 						'type' => $type, 
 						'model' => 'Bancha.model.'.$config['className'], 
 						'foreignKey' => $config['foreignKey'],
-						'name' => $name);
+						'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
+						'setterName' => 'set'.$name,
+						'name' => lcfirst($name)
+						);
 				}
 			}
 		}
