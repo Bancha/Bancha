@@ -188,8 +188,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * should look like this:
 	 * <code>
 	 * associations: [
-	 *	    {type: 'hasMany', model: 'Bancha.model.Post',	 foreignKey: 'post_id', name: 'posts'},
-	 *	    {type: 'hasMany', model: 'Bancha.model.Comment', foreignKey: 'comment_id', name: 'comments'}
+	 *	    {type: 'hasMany',   model: 'Bancha.model.Post',    foreignKey: 'post_id',    name: 'posts',    getterName: 'posts',    setterName: 'setPosts'},
+	 *	    {type: 'hasMany',   model: 'Bancha.model.Comment', foreignKey: 'comment_id', name: 'comments', getterName: 'comments', setterName: 'setComments'},
+	 *	    {type: 'belongsTo', model: 'Bancha.model.User',    foreignKey: 'user_id',    name: 'user',     getterName: 'getUser',  setterName: 'setUser'}
 	 *   ]
 	 * </code>
 	 *   
