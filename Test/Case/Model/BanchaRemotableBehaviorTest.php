@@ -5,6 +5,9 @@
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 StudioQ OG
  *
+ *
+ * @package       Bancha
+ * @category      tests
  * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
@@ -22,6 +25,9 @@ require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the test
 
 /**
  * BanchaRemotableBehaviorTest class
+ *
+ * @package       Bancha
+ * @category      tests
  *
  */
 class BanchaRemotableBehaviorTest extends CakeTestCase {
