@@ -23,7 +23,7 @@ App::uses('BanchaComponent', 'Bancha.Controller/Component');
  *
  * A fake controller to test against
  *
- * @package       Bancha
+ * @package       Bancha.Test.Case.Controller.Component
  * @category      tests
  *
  */	

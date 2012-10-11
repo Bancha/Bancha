@@ -6,7 +6,7 @@
  * Copyright 2011-2012 StudioQ OG
  *
  *
- * @package       Bancha
+ * @package       Bancha.Test.Case.Model
  * @category      tests
  * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
@@ -26,7 +26,7 @@ require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the test
 /**
  * BanchaRemotableBehaviorTest class
  *
- * @package       Bancha
+ * @package       Bancha.Test.Case.Model
  * @category      tests
  *
  */
