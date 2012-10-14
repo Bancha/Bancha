@@ -77,9 +77,6 @@ class BanchaComponent extends Component {
 		// set the controller-specific optiosn is defined
 		$this->_setSettings($this->settings);
 
-		// filter conditions-array
-		$this->sanitizeFilterConditions();
-
 		// tell the PaginationComponent to use our conditions
 		$this->Controller->Components->load('Paginator')->whitelist[] = 'conditions';
 	}
@@ -99,33 +96,46 @@ class BanchaComponent extends Component {
 			}
 		}
 
+		// fire the setter for allowedFilters
+		$this->setAllowedFilters($this->allowedFilters);
+	}
+
+/**
+ * Change the allowedFilter at run-time. This function will santizise and may throw an
+ * error if the configuration is malformed.
+ * @param String/String[] $allowedFilters the new value for the allowedFilters property
+ * @throws BanchaException
+ * @return void
+ */
+	public function setAllowedFilters($allowedFilters) {
+
 		// check if the allowedFilters is configured correctly
-		if(!isset($this->allowedFilters)) {
+		if(!isset($allowedFilters)) {
 			throw new BanchaException('The BanchaComponent::allowedFilters configuration needs to be set.');
 		}
-		if(is_string($this->allowedFilters)) {
-			if(!in_array($this->allowedFilters, array('all', 'associations', 'none'))) {
-				throw new BanchaException('The BanchaComponent::allowedFilters configuration is a unknown string value: ' . $this->allowedFilters);
+		if(is_string($allowedFilters)) {
+			if(!in_array($allowedFilters, array('all', 'associations', 'none'))) {
+				throw new BanchaException('The BanchaComponent::allowedFilters configuration is a unknown string value: ' . $allowedFilters);
 			}
 
 			// transform 'none' to an empty array
-			if($this->allowedFilters == 'none') {
-				$this->allowedFilters = array();
+			if($allowedFilters == 'none') {
+				$allowedFilters = array();
 			}
-		} else if(is_array($this->allowedFilters)) {
+		} else if(is_array($allowedFilters)) {
 
 			// check if the array is in the form array('field1','field2') and if so transform
-			if(count($this->allowedFilters)!=0) {
-				if(strpos($this->allowedFilters[0], '.') === FALSE) {
+			if(count($allowedFilters)!=0) {
+				if(strpos($allowedFilters[0], '.') === FALSE) {
 					$modelName = $this->Controller->modelClass; // the name of the primary model
-					foreach($this->allowedFilters as $key=>$value) {
-						$this->allowedFilters[$key] = $modelName . '.' . $value; // transform to Model.field
+					foreach($allowedFilters as $key=>$value) {
+						$allowedFilters[$key] = $modelName . '.' . $value; // transform to Model.field
 					}
 				}
 
 				// in debug mode check if the field are really existing
 				if(Configure::read('debug') == 2) {
-					foreach($this->allowedFilters as $key=>$value) {
+					foreach($allowedFilters as $key=>$value) {
 						$parts = explode('.',$value);
 						if(count($parts) != 2) {
 							throw new BanchaException('The BanchaComponent::allowedFilters configuration could not be recognized at array position '.$key.', value: '.$value);
@@ -153,21 +163,25 @@ class BanchaComponent extends Component {
 		} else {
 			throw new BanchaException('The BanchaComponent::allowedFilters configuration needs to be either a string or an array.');
 		}
+
+
+		// filter conditions-array and set result
+		$this->allowedFilters = $this->sanitizeFilterConditions($allowedFilters);
 	}
 
 /**
- * This functions loops through all filter conditions and check is the are valid
+ * This functions loops through all filter conditions and check if the are valid
  * according to the {@link allowedFilter} property
  * @throws BanchaException
  * @return void
  */
-	private function sanitizeFilterConditions() {
-		if($this->allowedFilters == 'all') {
-			return;
+	private function sanitizeFilterConditions($allowedFilters) {
+		if($allowedFilters == 'all') {
+			return $allowedFilters;
 		}
 
 		// check each condition and filter unalloweds out
-		if($this->allowedFilters == 'associations') {
+		if($allowedFilters == 'associations') {
 			// check each condition individualy
 			foreach($this->Controller->request->named['conditions'] as $field=>$value) {
 				list($modelName, $fieldName) = explode('.', $field);
@@ -186,18 +200,18 @@ class BanchaComponent extends Component {
 					if(Configure::read('debug') == 2) {
 						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaComponent::allowedFilters configuration.');
 					} else {
-						// we are not in debug mode where we want to throw an exception, so jsut ignore this filtering
+						// we are not in debug mode where we want to throw an exception, so just ignore this filtering
 						delete($this->Controller->request->paginate['conditions'][$field]);
 					}
 				}
 			}
-			return;
+			return $allowedFilters;
 		}
 
 		// allowedFilers is an array
 		// check each condition individually
 		foreach($this->Controller->request->named['conditions'] as $field=>$value) {
-			if(!in_array($field, $this->allowedFilters)) {
+			if(!in_array($field, $allowedFilters)) {
 				if(Configure::read('debug') == 2) {
 					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaComponent::allowedFilters configuration.');
 				} else {
@@ -206,5 +220,7 @@ class BanchaComponent extends Component {
 				}
 			}
 		}
+
+		return $allowedFilters;
 	}
 }
