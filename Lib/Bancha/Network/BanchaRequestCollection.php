@@ -40,8 +40,8 @@ class BanchaRequestCollection {
  * @param array $postData Content of $_POST.
  */
 	public function __construct($rawPostData = '', $postData = array()) {
-		$this->rawPostData = $rawPostData;
-		$this->postData = $postData;
+		$this->rawPostData = $rawPostData; // when the enctype is "multipart/form-data", the rawPostData will be empty
+		$this->postData = $postData; // so we need the $_POST data as well for form submits with file uploads
 	}
 
 /**
@@ -51,18 +51,26 @@ class BanchaRequestCollection {
  * @return array Array with CakeRequest objects.
  */
 	public function getRequests() {
-		$requests = array();
-		// If the request comes from $HTTP_RAW_POST_DATA it could be a batch request.
-		if (strlen($this->rawPostData)) {
+
+		if(isset($this->postData) && isset($this->postData['extTID'])) {
+			// this is a form request, form request data is directly avialable 
+			// in the $postData and only contains one request.
+			$data = array($this->postData); // make an array of requests data
+
+		} else if(strlen($this->rawPostData)) {
+			// It is a normal Ext.Direct request, payload is read from php://input (saved in $rawPostData)
 			$data = json_decode($this->rawPostData, true);
-			// TODO: improve detection (not perfect, but should it should be correct in most cases.)
+			if($data === NULL) {
+				// payload could not be converted, probably misformed json
+				throw new BanchaException(
+					'Misformed Input: The Bancha Dispatcher expected a json string, instead got ' . $this->rawPostData);
+			}
 			if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
+				// this is just a single request, so make an array of requests data
 				$data = array($data);
 			}
+			// make sure that we keep the set in order
 			$data = Set::sort($data, '{n}.tid', 'asc');
-		} else if(!empty($this->postData)) {
-			// Form requests only contain one request.
-			$data = array($this->postData);
 		} else {
 			// no data passed
 			throw new BanchaException(
@@ -70,6 +78,7 @@ class BanchaRequestCollection {
 				'parameter, but there is no data in this request. You can not access this site directly!');
 		}
 
+		$requests = array();
 		if(count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
