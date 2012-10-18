@@ -271,7 +271,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				$Model->validate[$field] = array();
 			}
 			$Model->validate[$field]['inList'] = array(
-			    'rule' => array('inList', $enums[1])
+				'rule' => array('inList', $enums[1])
 			);
 
 			// to back to generic behavior
@@ -305,7 +305,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			
 			// cake also supports a simple structure, like:
 			// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
-        	// so to support that as well, transform it:
+			// so to support that as well, transform it:
 			if(is_string($values)) {
 				$values = array(
 					$values => array('rule' => $values));
@@ -568,16 +568,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// check if at least one field is saved to the database
 			try {
 				foreach($fields as $field => $type) {
-				    if(array_key_exists($field, $Model->data[$Model->name])) {
-				    	$valid=true;
-				    	break;
-				    }
+					if(array_key_exists($field, $Model->data[$Model->name])) {
+						$valid=true;
+						break;
+					}
 				}
 			} catch (Exception $e) {
-				throw new Exception(
+				throw new BanchaException(
 					'Caught exception: ' . $e->getMessage() . ' <br />' .
 					'Bancha couldn\'t find any fields. This is usually because the Model is incorrectly designed. ' .
-						'Check your model <br /><br /><pre>'.print_r($Model->data,true).'</pre>'
+					'Check your model <br /><br /><pre>'.print_r($Model->data,true).'</pre>'
 				);
 			}
 			if(!$valid) {
