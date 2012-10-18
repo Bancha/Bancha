@@ -533,7 +533,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	public function getLastSaveResult(Model $Model) {
 		if(empty($this->result[$Model->alias])) {
-			throw new Exception(
+			throw new BanchaException(
 				'There was nothing saved to be returned. Probably this occures because the data '.
 				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
 				'function to create, load and save model records. If you really have to create '.
@@ -552,7 +552,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	private function buildFieldList(Model $Model) {
 		// Make a quick quick check if the data is in the right format
 		if(isset($Model->data[$Model->name][0]) && is_array($Model->data[$Model->name][0])) {
-			throw new Exception(
+			throw new BanchaException(
 				'The data to be saved seems malformed. Probably this occures because you send '.
 				'from your own model or you one save invokation. Please use the Bancha.getModel(ModelName) '.
 				'function to create, load and save model records. If you really have to create '.
@@ -581,7 +581,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				);
 			}
 			if(!$valid) {
-				throw new Exception(
+				throw new BanchaException(
 					'Could nto find even one model field to save to database. Probably this occurs '.
 					'because you send from your own model or you one save invocation. Please use the '.
 					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
