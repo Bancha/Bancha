@@ -531,14 +531,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param Model $Model the model using this behavior
 	 * @return mixed $results The record data of the last saved record
 	 */
-<<<<<<< HEAD
-	public function getLastSaveResult() {
-		if(empty($this->result)) {
-=======
 	public function getLastSaveResult(Model $Model) {
 		if(empty($this->result[$Model->alias])) {
->>>>>>> 0f20d00a1248b3fbdac7d665c9618b5b9fc29328
-			throw new Exception(
+			throw new BanchaException(
 				'There was nothing saved to be returned. Probably this occures because the data '.
 				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
 				'function to create, load and save model records. If you really have to create '.
@@ -556,12 +551,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	private function buildFieldList(Model $Model) {
 		// Make a quick quick check if the data is in the right format
-<<<<<<< HEAD
-		if(isset($data[$this->model->name][0]) && is_array($data[$this->model->name][0])) {
-=======
 		if(isset($Model->data[$Model->name][0]) && is_array($Model->data[$Model->name][0])) {
->>>>>>> 0f20d00a1248b3fbdac7d665c9618b5b9fc29328
-			throw new Exception(
+			throw new BanchaException(
 				'The data to be saved seems malformed. Probably this occures because you send '.
 				'from your own model or you one save invokation. Please use the Bancha.getModel(ModelName) '.
 				'function to create, load and save model records. If you really have to create '.
@@ -573,16 +564,6 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// For performance reasons this is just done in debug mode
 		if(Configure::read('debug') == 2) {
 			$valid = false;
-<<<<<<< HEAD
-			$fields = $this->model->getColumnTypes();
-			// check if at least one field is saved to the database
-			try {
-			foreach($fields as $field => $type) {
-			    if(array_key_exists($field, $data[$this->model->name])) {
-			    	$valid=true;
-			    	break;
-			    }
-=======
 			$fields = $Model->getColumnTypes();
 			// check if at least one field is saved to the database
 			try {
@@ -598,17 +579,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					'Bancha couldn\'t find any fields. This is usually because the Model is incorrectly designed. ' .
 					'Check your model <br /><br /><pre>'.print_r($Model->data,true).'</pre>'
 				);
->>>>>>> 0f20d00a1248b3fbdac7d665c9618b5b9fc29328
-			}
-			} catch (Exception $e) {
-				throw new Exception(
-					'Caught exception: ' . $e->getMessage() . ' <br />' .
-					'Bancha couldn\'t find any fields. This is usually because the Model is incorrectly designed. ' .
-						'Check your model <br /><br /><pre>'.print_r($data,true).'</pre>'
-				);
 			}
 			if(!$valid) {
-				throw new Exception(
+				throw new BanchaException(
 					'Could nto find even one model field to save to database. Probably this occurs '.
 					'because you send from your own model or you one save invocation. Please use the '.
 					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
