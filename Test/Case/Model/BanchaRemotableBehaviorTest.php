@@ -100,7 +100,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->order = $in;
 		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
 		
-		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData();
+		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
 		$this->assertEqual($ExtJSdata['sorters'], $out);
 	}
 		
@@ -123,7 +123,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel = new TestUserRelationships();
 		$TestModel->{$type} = $table;
 		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
-		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData();
+		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
 		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Bancha.model.Article', 'foreignKey' => 'user_id', 'name' => 'articles', 'getterName' => 'articles', 'setterName' => 'setArticles')));
 				
 	}
@@ -137,7 +137,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel = new TestUserRelationships();		
 		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
 		
-		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData();
+		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
 				
 		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Bancha.model.Article', 'foreignKey' => 'user_id', 'name' => 'articles', 'getterName' => 'articles', 'setterName' => 'setArticles')));
 		}
@@ -161,7 +161,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
 		
 		#execute function
-		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData();
+		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
 		
 		//debug("This debug() output shows the structure of the returned array");
 		//debug($ExtJSdata,true);

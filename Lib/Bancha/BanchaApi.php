@@ -110,8 +110,7 @@ class BanchaApi {
 		$metadata = array();
 		foreach ($models as $modelClass) {
 			$model = $this->loadModel($modelClass);
-			$model->setBehaviorModel($modelClass);
-			$metadata[$modelClass] = $model->extractBanchaMetaData();
+			$metadata[$modelClass] = $model->extractBanchaMetaData($modelClass);
 		}
 		$metadata['_UID'] = str_replace('.', '', uniqid('', true));
 		$metadata['_CakeDebugLevel'] = Configure::read('debug');

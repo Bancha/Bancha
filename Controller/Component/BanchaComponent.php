@@ -187,7 +187,8 @@ class BanchaComponent extends Component {
 				list($modelName, $fieldName) = explode('.', $field);
 
 				// look though all associations if we can find the field name as foreign key
-				$assocs = $this->Controller->{$modelName}->Behaviors->BanchaRemotable->getAssociated(); // use the Bancha-specific method to get the foreign keys
+				$model = $this->Controller->{$modelName};
+				$assocs = $model->Behaviors->BanchaRemotable->getAssociated($model); // use the Bancha-specific method to get the foreign keys
 				$valid = false;
 				foreach($assocs as $assoc) {
 					if($assoc['foreignKey'] == $fieldName) {
