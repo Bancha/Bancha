@@ -15,6 +15,7 @@
  */
 
 App::uses('ModelBehavior', 'Model');
+App::uses('BanchaException', 'Bancha.Bancha/Exception');
 
 
 // backwards compability with 5.2
@@ -164,7 +165,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			return false;
 		}
 
-		// Finally, use PHP’s own file validation method.
+		// Finally, use PHP's own file validation method.
 		return is_uploaded_file($upload_info['tmp_name']);
 	}
 		
