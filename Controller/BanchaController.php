@@ -41,7 +41,7 @@ class BanchaController extends BanchaAppController {
 	 * it will print the API for the Controllers which have the Bancha-
 	 * Behavior set. This will not include any model meta data. to specify which
 	 * model meta data should be printed you will have to pass the model name or 'all'
-	 * For more see [how to adopt the layout](https://github.com/Bancha/Bancha/wiki/Installation)
+	 * For more see [how to adopt the layout](http://docs.banchaproject.org/resources/Installation.html#setting-up-extjs)
 	 *
 	 * @param string $metadataFilter Models that should be exposed through the Bancha API. Either all or [all] for
 	 *                                  all models or a comma separated list of models.

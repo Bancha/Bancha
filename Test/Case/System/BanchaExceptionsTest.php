@@ -176,7 +176,8 @@ class BanchaExceptionsTest extends CakeTestCase {
  * @category      TestFixtures
  */
 class ArticlesExceptionsController extends ArticlesController {
-
+	public $components = array('Bancha.Bancha'); // ignore the ArticlesController settings on this
+	
 /**
  * throwExceptionMethod method
  *

@@ -1,6 +1,6 @@
 <?php
 /**
- * BanchaCrudTest file.
+ * BanchaResponseCollectionTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 StudioQ OG

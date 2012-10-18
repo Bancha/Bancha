@@ -9,6 +9,11 @@
 
   <!-- include source files here... -->
   <script type="text/javascript" src="lib/ext-all-debug-w-comments.js"></script>
+  <script type="text/javascript">
+    if(!window.Ext) {
+      alert('Please copy the ExtJS 4 library into Bancha/Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments.js');
+    }
+  </script>
   <script type="text/javascript" src="../../webroot/js/Bancha.js"></script>
 
   <!-- include spec files here... -->

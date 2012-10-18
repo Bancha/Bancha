@@ -15,15 +15,12 @@
 
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
-
 App::uses('ArticlesController', 'Controller');
-
-// require_once dirname(__FILE__) . '/ArticlesController.php';
 
 /**
  * BanchaDebugExceptionsTest. Tests if the Exception to help the user develop are thrown correctly
  *
- * @package       Bancha
+ * @package       Bancha.Test.Case.System
  * @category      Tests
  */
 class BanchaDebugExceptionsTest extends CakeTestCase {
@@ -52,7 +49,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 	public function testNoMethodResultException() {
 
 		$responses = $this->getResultForMethod('getNoResult');
-		
+
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertEquals('BanchaException', $responses[0]->exceptionType);
@@ -113,10 +110,11 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 /**
  * DebugExceptionsController, has many errors a developer can make
  *
- * @package       Bancha
+ * @package       Bancha.Test.Case.System
  * @category      TestFixtures
  */
 class DebugExceptionsController extends ArticlesController {
+	public $components = array('Bancha.Bancha'); // ignore the ArticlesController settings on this
 
 /**
  * User forgot to set a return value
