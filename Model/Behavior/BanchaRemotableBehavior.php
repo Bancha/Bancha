@@ -656,7 +656,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		try {
 		$result[$Model->alias] = $Model->save($Model->data,$options);
 		} catch(Exception $e) {
-			throw new BanchaException("Trying to save ". print_r($Model->data,true).'-------'.print_r($options,true));
+			throw new BanchaException("Trying to save ". print_r($Model->schema(),true));
 		}
 		// set back
 		$this->settings[$Model->alias]['useOnlyDefinedFields'] = $config;
