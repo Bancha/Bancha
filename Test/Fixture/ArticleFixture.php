@@ -31,7 +31,7 @@ class ArticleFixture extends CakeTestFixture {
 		'title' => array('type' => 'string', 'null' => true),
 		'date' => array('type' => 'datetime', 'null' => true),
 		'body' => array('type' => 'string', 'null' => true),
-		'published' => array('type' => 'integer', 'length'=>1, 'default' => 0),
+		'published' => array('type' => 'boolean', 'default' => false),
 		'user_id' => array('type' => 'integer', 'null' => false),
 	);
 
