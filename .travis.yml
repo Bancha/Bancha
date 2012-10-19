@@ -5,8 +5,16 @@ php:
 
 env:
   - DB=mysql
+  - DB=pgsql
+  - DB=sqlite
 
 before_script:
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
   - mkdir .Bancha
   - mv ./* .Bancha/
   - mv .Bancha Bancha
@@ -19,30 +27,87 @@ before_script:
   - cp -r BanchaTestProject/* cakephp/app/ 
   - echo "<?php
     class DATABASE_CONFIG {
+    private \$identities = array(
+      'mysql' => array(
+        'datasource' => 'Database/Mysql',
+        'host' => '0.0.0.0',
+        'login' => 'travis'
+      ),
+      'pgsql' => array(
+        'datasource' => 'Database/Postgres',
+        'host' => '127.0.0.1',
+        'login' => 'postgres',
+        'database' => 'cakephp_test',
+        'schema' => array(
+          'default' => 'public',
+          'test' => 'public',
+          'test2' => 'test2',
+          'test_database_three' => 'test3'
+        )
+      ),
+      'sqlite' => array(
+        'datasource' => 'Database/Sqlite',
+        'database' => array(
+          'default' => ':memory:',
+          'test' => ':memory:',
+          'test2' => '/tmp/cakephp_test2.db',
+          'test_database_three' => '/tmp/cakephp_test3.db'
+        ),
+      )
+    );
     public \$default = array(
-      'driver' => 'mysql',
       'persistent' => false,
-      'host' => '0.0.0.0',
-      'login' => 'root',
+      'host' => '',
+      'login' => '',
       'password' => '',
       'database' => 'cakephp_test',
       'prefix' => ''
     );
     public \$test = array(
-      'driver' => 'mysql',
       'persistent' => false,
-      'host' => '0.0.0.0',
-      'login' => 'root',
+      'host' => '',
+      'login' => '',
       'password' => '',
       'database' => 'cakephp_test',
-      'prefix' => '',
-      'encoding' => 'utf8'
+      'prefix' => ''
     );
-    }" > cakephp/app/Config/database.php  
+    public \$test2 = array(
+      'persistent' => false,
+      'host' => '',
+      'login' => '',
+      'password' => '',
+      'database' => 'cakephp_test2',
+      'prefix' => ''
+    );
+    public \$test_database_three = array(
+      'persistent' => false,
+      'host' => '',
+      'login' => '',
+      'password' => '',
+      'database' => 'cakephp_test3',
+      'prefix' => ''
+    );
+    public function __construct() {
+      \$db = 'mysql';
+      if (!empty(\$_SERVER['DB'])) {
+        \$db = \$_SERVER['DB'];
+      }
+      foreach (array('default', 'test', 'test2', 'test_database_three') as \$source) {
+        \$config = array_merge(\$this->{\$source}, \$this->identities[\$db]);
+        if (is_array(\$config['database'])) {
+          \$config['database'] = \$config['database'][\$source];
+        }
+        if (!empty(\$config['schema']) && is_array(\$config['schema'])) {
+          \$config['schema'] = \$config['schema'][\$source];
+        }
+        \$this->{\$source} = \$config;
+      }
+    }
+    }" > app/Config/database.php
   - mv ./Bancha ./cakephp/app/Plugin/
   - cd ./cakephp
 
 
 script:
   - chmod a+x ./lib/Cake/Console/cake
-  - ./lib/Cake/Console/cake test Bancha AllTests
+  - ./lib/Cake/Console/cake test Bancha AllTests --stderr
