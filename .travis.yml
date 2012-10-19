@@ -6,29 +6,21 @@ php:
   - 5.4
 
 env:
-  - DB=mysql CAKEPHP=master
-  - DB=mysql CAKEPHP=2.2.0
-  - DB=mysql CAKEPHP=2.1.5
-  - DB=mysql CAKEPHP=2.0.6
-  - DB=mysql CAKEPHP=2.0.0
-  - DB=pgsql CAKEPHP=master
-  - DB=sqlite CAKEPHP=master
-
-branches:
-  only:
-    - master
+  - DB=mysql
+  - DB=pgsql
+  - DB=sqlite
 
 before_script:
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi" # create the databases
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
+#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
+#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
+#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
   - mkdir .Bancha # create hidden subdirectory (which is not moved by the mv command)
   - mv ./* .Bancha/ # copy everything (except the hidden directories) into the directory
   - mv .Bancha Bancha # unhide it for later use
-  - wget https://github.com/cakephp/cakephp/tarball/$DB -O cake.tar.gz # get cakephp
+  - wget https://github.com/cakephp/cakephp/tarball/master -O cake.tar.gz # get cakephp
   - tar xf cake.tar.gz # extract cakephp
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
@@ -125,8 +117,3 @@ before_script:
 script:
   - chmod a+x ./lib/Cake/Console/cake # make sure to execute it
   - ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
-
-notifications:
-  email:
-    recipients:
-      - mail@banchaproject.org
