@@ -61,7 +61,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @access private
  * @var Controller class
  */
-	protected $Controller;
+	public $Controller;
 
 /**
  * Main execution method. Handles validating of allowed filter constraints.
