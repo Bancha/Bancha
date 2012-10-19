@@ -24,6 +24,7 @@ before_script:
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
   - git clone https://github.com/Bancha/BanchaTestProject.git # clone Testproject
   - cp -r BanchaTestProject/* cakephp/app/ #move into appropriate folder
+  - set +H # needed for pasting the following config file
   - echo "<?php
     class DATABASE_CONFIG {
     private \$identities = array(
