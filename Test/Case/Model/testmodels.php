@@ -5,6 +5,8 @@
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 StudioQ OG
  *
+ * @package       Bancha.Test.Case.Model
+ * @category      tests
  * @copyright     Copyright 2011-2012 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
@@ -149,6 +151,13 @@ class TestUser extends CakeTestModel {
 	);
 }
 
+/**
+ *
+ * @package       Bancha.Test.Case.Model
+ * @category      tests
+ *
+ */
+
 class TestUserOrder extends CakeTestModel {
 	public $name = 'User';
 	public $useTable = false; //users
@@ -265,6 +274,12 @@ class TestUserOrder extends CakeTestModel {
 	}
 }
 	
+/**
+ *
+ * @package       Bancha.Test.Case.Model
+ * @category      tests
+ *
+ */
 
 class TestUserRelationships extends CakeTestModel {
 

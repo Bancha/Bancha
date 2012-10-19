@@ -1,4 +1,5 @@
 <?php
+App::uses('AppController', 'Controller');
 /**
  * BanchaDispatcherTest file.
  *
@@ -57,6 +58,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
 
+		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('Hello World!', $responses[0]->result->text);
 		$this->assertEquals('foobar', $responses[1]->result->text);
 	}
