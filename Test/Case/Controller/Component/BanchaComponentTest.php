@@ -18,7 +18,15 @@ App::uses('CakeResponse', 'Network');
 App::uses('ComponentCollection', 'Controller');
 App::uses('BanchaComponent', 'Bancha.Controller/Component');
 
-// A fake controller to test against
+/**
+ * TestBanchaComponentController
+ *
+ * A fake controller to test against
+ *
+ * @package       Bancha.Test.Case.Controller.Component
+ * @category      tests
+ *
+ */	
 class TestBanchaComponentController extends Controller {
 	public $uses = array('Article');
 }
