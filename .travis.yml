@@ -22,9 +22,9 @@ before_script:
   - tar xf cake.tar.gz # extract cakephp
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
-  - git clone --recursive https://github.com/Bancha/BanchaTestProject.git # clone Testproject as base
-  - cp -r BanchaTestProject/* cakephp/app/ #move into appropriate folder
   - cd cakephp
+  - rm -r ./app
+  - git clone --recursive https://github.com/Bancha/BanchaTestProject.git app # clone Testproject as base
   - touch app/Config/database.php
   - set +H # needed for pasting the following config file
   - echo "<?php
@@ -107,6 +107,7 @@ before_script:
     }
     }" > app/Config/database.php #create database config file for cakephp
   - cd ..
+  - rm -r ./cakephp/app/Plugin/Bancha
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
   - cd ./cakephp # move into the directory for execution
 
