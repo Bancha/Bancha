@@ -36,7 +36,7 @@ class AllControllerTest extends PHPUnit_Framework_TestSuite {
 
 		$path = dirname(__FILE__) . DS . 'Controller';
 		$suite->addTestFile($path . DS . 'BanchaControllerTest.php');
-		$suite->addTestFile($path . DS . 'Component' . DS . 'BanchaComponentTest.php');
+		$suite->addTestFile($path . DS . 'Component' . DS . 'BanchaPaginatorComponentTest.php');
 
 		$suite->addTestDirectory($path);
 		return $suite;
