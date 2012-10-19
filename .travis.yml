@@ -14,30 +14,26 @@ env:
   - DB=pgsql CAKEPHP=master
   - DB=sqlite CAKEPHP=master
 
+branches:
+  only:
+    - master
+
 before_script:
-  - # create the databases
-  - 
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
-  - 
-  - # Prepare the Bancha plugin
   - mkdir .Bancha # create hidden subdirectory (which is not moved by the mv command)
   - mv ./* .Bancha/ # copy everything (except the hidden directories) into the directory
   - mv .Bancha Bancha # unhide it for later use
-  - 
-  - # Download cakephp
   - wget https://github.com/cakephp/cakephp/tarball/$DB -O cake.tar.gz # get cakephp
   - tar xf cake.tar.gz # extract cakephp
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
   - cd cakephp
   - rm -r ./app
-  - 
-  - # Setup the TestProject for Bancha
   - git clone --recursive https://github.com/Bancha/BanchaTestProject.git app # clone Testproject as base
   - touch app/Config/database.php
   - set +H # needed for pasting the following config file
@@ -121,8 +117,6 @@ before_script:
     }
     }" > app/Config/database.php #create database config file for cakephp
   - cd ..
-  - 
-  - # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
   - cd ./cakephp # move into the directory for execution
@@ -131,3 +125,8 @@ before_script:
 script:
   - chmod a+x ./lib/Cake/Console/cake # make sure to execute it
   - ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
+
+notifications:
+  email:
+    recipients:
+      - mail@banchaproject.org
