@@ -32,10 +32,22 @@ Bancha.t("Bancha supports simple with double.");
 // ternary
 Bancha.t(something ? "Bancha collect both strings for conditional strings" : "Yes, even the second");
 
-<?php
+// a normal variable
+Bancha.t(str);
+
+// sometimes the translatable strings can have strange characters
+Bancha.t('( bla');
+Bancha.t('I can\'t go home!');
+Bancha.t('() bla');
+Bancha.t(') bla');
+Bancha.t(':?{} bla');
+Bancha.t('I quote "bla"');
+Bancha.t("I quote 'bla'");
+Bancha.t('I quote "bla"' + " and 'bla'");
+
+
 // non-translations
 Bancha.tt("Bancha supports simple with double.");
-Bancha.t(str);
 Bancha.t = 'lala';
 __('standard cake string');
 
