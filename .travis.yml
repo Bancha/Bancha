@@ -9,6 +9,7 @@ env:
 #  - DB=sqlite
 
 before_script:
+  - ls /home/travis/builds/Bancha/Bancha/cakephp/app/Plugin/BanchaDeveloperRemoteApi/Config/
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi" # create the databases
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
