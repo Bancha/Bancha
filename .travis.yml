@@ -23,6 +23,7 @@ before_script:
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
   - git clone https://github.com/Bancha/BanchaTestProject.git # clone Testproject
+  - git submodule update --init --recursive # check out the DeveloperRemoteAPI
   - cp -r BanchaTestProject/* cakephp/app/ #move into appropriate folder
   - cd cakephp
   - touch app/Config/database.php
