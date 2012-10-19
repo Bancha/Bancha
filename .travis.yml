@@ -22,7 +22,8 @@ before_script:
   - tar xf cake.tar.gz # extract cakephp
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
-  - git clone https://github.com/Bancha/BanchaTestProject.git ./cakephp/app # clone the BanchaTestProject into app folder
+  - git clone https://github.com/Bancha/BanchaTestProject.git # clone Testproject
+  - cp -r BanchaTestProject/* cakephp/app/ #move into appropriate folder
   - echo "<?php
     class DATABASE_CONFIG {
     private \$identities = array(
