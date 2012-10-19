@@ -106,9 +106,8 @@ class BanchaRequestTransformer {
 	 * @return string Name of the model.
 	 */
 	public function getModel() {
-		if (null != $this->model)
-		{
-			return $this->controller;
+		if($this->model != null) {
+			return $this->model;
 		}
 		
 		$this->model = Inflector::singularize($this->getController());
@@ -293,6 +292,7 @@ class BanchaRequestTransformer {
 			}
 		}
 
+		// find ordering and direction
 		$order = array();
 		$sort_field = '';
 		$direction = '';
@@ -306,12 +306,25 @@ class BanchaRequestTransformer {
 			}
 			unset($this->data['data'][0]['sort']);
 		}
+
+		// find store filters
+		$conditions = array();
+		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && 
+			isset($this->data['data'][0]['filter']) && is_array($this->data['data'][0]['filter'])) {
+			$filters = $this->data['data'][0]['filter'];
+
+			foreach ($filters as $filter) {
+				$conditions[$this->getModel() . '.' . $filter['property']] = $filter['value'];
+			}
+		}
+
 		$this->paginate = array(
 			'page'			=> $page,
 			'limit'			=> $limit,
 			'order'			=> $order,
 			'sort'			=> $sort_field,
-			'direction'		=> $direction
+			'direction'		=> $direction,
+			'conditions'	=> $conditions
 		);
 
 		return $this->paginate;

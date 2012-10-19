@@ -29,10 +29,11 @@ More information
 ----------------
 
 *   [Bancha Overview](http://banchaproject.com/)
-*   [Installation and Usage](https://github.com/Bancha/Bancha/wiki/)
+*   [Installation and Usage](http://docs.banchaproject.org)
 *   [Updates on Twitter](http://twitter.com/#!/banchaproject)
 
 
+[![Build Status](https://travis-ci.org/Bancha/Bancha.png)](https://travis-ci.org/Bancha/Bancha)
 
 ------------------------------
 For any further questions just ask us: mail@banchaproject.com

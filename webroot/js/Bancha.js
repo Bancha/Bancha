@@ -33,7 +33,7 @@ Ext.define('Bancha.data.Model', {
     /**
      * @cfg
      * If true the frontend forces consistency
-     * This is not yet supported! See https://github.com/Bancha/Bancha/wiki/Roadmap
+     * This is not yet supported! See http://docs.banchaproject.org/resources/Roadmap.html
      */
     forceConsistency: false
 });

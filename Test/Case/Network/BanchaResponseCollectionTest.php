@@ -1,6 +1,6 @@
 <?php
 /**
- * BanchaCrudTest file.
+ * BanchaResponseCollectionTest file.
  *
  * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
  * Copyright 2011-2012 StudioQ OG
@@ -18,7 +18,7 @@ App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
 /**
  * BanchaRequestTest
  *
- * @package bancha.libs
+ * @package Bancha.Test.Case.Network
  */
 class BanchaResponseCollectionTest extends CakeTestCase {
 

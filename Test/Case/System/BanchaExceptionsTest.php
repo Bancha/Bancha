@@ -64,7 +64,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
-		$this->assertEquals('Exception', $responses[0]->exceptionType); // this is the class anme, see bottom
+		$this->assertEquals('Exception', $responses[0]->exceptionType); // this is the class name, see bottom
 	}
 
 /**
@@ -176,7 +176,7 @@ class BanchaExceptionsTest extends CakeTestCase {
  * @category      TestFixtures
  */
 class ArticlesExceptionsController extends ArticlesController {
-
+	
 /**
  * throwExceptionMethod method
  *

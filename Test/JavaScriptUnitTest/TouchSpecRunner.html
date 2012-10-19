@@ -9,6 +9,11 @@
 
   <!-- include source files here... -->
   <script type="text/javascript" src="lib/sencha-touch-all-debug.js"></script>
+  <script type="text/javascript">
+    if(!window.Ext) {
+      alert('Please copy the Sencha Touch 2 library into Bancha/Test/JavaScriptUnitTest/lib/sencha-touch-all-debug.js');
+    }
+  </script>
   <script type="text/javascript" src="../../webroot/js/Bancha.js"></script>
 
   <!-- include spec files here... -->
