@@ -11,18 +11,20 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
-App::uses('Component', 'Controller');
+App::uses('PaginatorComponent', 'Controller/Component');
 App::uses('BanchaException', 'Bancha.Bancha/Exception');
 
 /**
- * Bancha Controller
- * This class exports the ExtJS API for remotable models and controller.
- * This is only internally used by the client side of Bancha.
+ * BanchaPaginatorComponent
+ * 
+ * This class extends the default Paginator component to also support
+ * remote filtering from inside any ExtJS/Sencha Touch store with
+ * remoteFiltering:true and a Bancha model.
  *
  * @package    Bancha.Controller.Component
  * @author     Roland Schuetz <mail@rolandschuetz.at>
  */
-class BanchaComponent extends Component {
+class BanchaPaginatorComponent extends PaginatorComponent {
 
 /**
  * Define here on which fields it's allowed to filter data.
@@ -53,10 +55,13 @@ class BanchaComponent extends Component {
 	protected $allowedFilters = 'associations';
 
 /**
- * A reference to the instantiating controller object
+ * A reference to the instantiating controller object. 
+ * This is setup by the PaginatorComponent itself.
+ *
+ * @access private
  * @var Controller class
  */
-	private $Controller;
+	protected $Controller;
 
 /**
  * Main execution method. Handles validating of allowed filter constraints.
@@ -71,32 +76,57 @@ class BanchaComponent extends Component {
 			return;
 		}
 
-		// keep a reference to the controller
-		$this->Controller = $controller;
-
-		// set the controller-specific optiosn is defined
+		// set the controller-specific options if defined
 		$this->_setSettings($this->settings);
+	}
 
-		// tell the PaginationComponent to use our conditions
-		$this->Controller->Components->load('Paginator')->whitelist[] = 'conditions';
+/**
+ * Handles automatic pagination of model records. 
+ * 
+ * The BanchaPaginatorComponents extends the default
+ * behavior by supporting remote filtering on Bancha 
+ * requests if the $allowedFilters property allows it.
+ *
+ * @param mixed $object Model to paginate (e.g: model instance, or 'Model', or 'Model.InnerModel')
+ * @param mixed $scope Additional find conditions to use while paginating
+ * @param array $whitelist List of allowed fields for ordering.  This allows you to prevent ordering
+ *   on non-indexed, or undesirable columns.
+ * @return array Model query results
+ * @throws MissingModelException
+ * @throws BanchaException
+ */
+    public function paginate($object = null, $scope = array(), $whitelist = array()) {
+
+    	// bancha-specific access-restriction logic
+		if(isset($this->Controller->request->params['isBancha']) && $this->Controller->request->params['isBancha']) {
+			// this is a Bancha request, apply the allowed filters
+			$this->whitelist[] = 'conditions';
+
+			// filter given conditions-array and apply it to our pagination
+			$remoteConditions = $this->sanitizeFilterConditions($this->allowedFilters, $this->Controller->request->named['conditions']);
+			$scope = array_merge($remoteConditions, $scope);
+		}
+
+		return parent::paginate($object, $scope, $whitelist);
 	}
 
 /**
  * Attempts to introspect the correct values for object properties.
+ * @access private
  * @param Array $settings An array of configuratuions for this component
  * @throws BanchaException
  * @return void
  */
 	private function _setSettings($settings) {
 
-		// override defaults by user configs
+		// override defaults by component configs
 		foreach ($settings as $key => $value) {
 			if(property_exists($this, $key)) {
 				$this->{$key} = $value; // override
 			}
 		}
 
-		// fire the setter for allowedFilters
+		// allowedFilters is already set, now verify correctness
 		$this->setAllowedFilters($this->allowedFilters);
 	}
 
@@ -111,11 +141,11 @@ class BanchaComponent extends Component {
 
 		// check if the allowedFilters is configured correctly
 		if(!isset($allowedFilters)) {
-			throw new BanchaException('The BanchaComponent::allowedFilters configuration needs to be set.');
+			throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration needs to be set.');
 		}
 		if(is_string($allowedFilters)) {
 			if(!in_array($allowedFilters, array('all', 'associations', 'none'))) {
-				throw new BanchaException('The BanchaComponent::allowedFilters configuration is a unknown string value: ' . $allowedFilters);
+				throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration is a unknown string value: ' . $allowedFilters);
 			}
 
 			// transform 'none' to an empty array
@@ -138,52 +168,53 @@ class BanchaComponent extends Component {
 					foreach($allowedFilters as $key=>$value) {
 						$parts = explode('.',$value);
 						if(count($parts) != 2) {
-							throw new BanchaException('The BanchaComponent::allowedFilters configuration could not be recognized at array position '.$key.', value: '.$value);
+							throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration could not be recognized at array position '.$key.', value: '.$value);
 						}
 						$modelName = $parts[0];
 						$fieldName = $parts[1];
 
 						if(!is_object($this->Controller->{$modelName})) {
 							print_r($this->Controller->{$modelName});
-							throw new BanchaException('The '.$this->Controller->name.'Controller is missing the model '.$modelName.', but has a configuration for this model in BanchaComponent::allowedFilters. Please make sure to define the controllers uses property or use the beforeFilter for loading.');
+							throw new BanchaException('The '.$this->Controller->name.'Controller is missing the model '.$modelName.', but has a configuration for this model in BanchaPaginatorComponent::allowedFilters. Please make sure to define the controllers uses property or use the beforeFilter for loading.');
 						}
 						if($this->Controller->{$modelName}->virtualFields && $this->Controller->{$modelName}->virtualFields[$fieldName]) {
-							throw new BanchaException('The BanchaComponent::allowedFilters configuration allows filtering on '.$value.', but this is a virtual field cakephp can\'t handle constraints on them.');
+							throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration allows filtering on '.$value.', but this is a virtual field cakephp can\'t handle constraints on them.');
 						}
 
 						$schema = $this->Controller->{$modelName}->schema();
 						if(!isset($schema[$fieldName])) {
 							// this field doesn't exist in the database
-							throw new BanchaException('The BanchaComponent::allowedFilters configuration allows filtering on '.$value.', but this is field doesn\'t exist in the models schema.');
+							throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration allows filtering on '.$value.', but this is field doesn\'t exist in the models schema.');
 						}
 					}
 				}
 			}
 			// check if all array fields are matching the model
 		} else {
-			throw new BanchaException('The BanchaComponent::allowedFilters configuration needs to be either a string or an array.');
+			throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration needs to be either a string or an array.');
 		}
 
-
-		// filter conditions-array and set result
-		$this->allowedFilters = $this->sanitizeFilterConditions($allowedFilters);
+		$this->allowedFilters = $allowedFilters;
 	}
 
 /**
  * This functions loops through all filter conditions and check if the are valid
- * according to the {@link allowedFilter} property
+ * according to the {@link allowedFilter} property.
+ *
+ * @param  Array|String $allowedFilters the $allowedFilters configuration for this pagination request
+ * @param  Array $conditions the given remote filter conditions to santisize
  * @throws BanchaException
- * @return void
+ * @return Array the allowed filter conditions
  */
-	private function sanitizeFilterConditions($allowedFilters) {
+	private function sanitizeFilterConditions($allowedFilters, $conditions) {
 		if($allowedFilters == 'all') {
-			return $allowedFilters;
+			return $conditions;
 		}
 
 		// check each condition and filter unalloweds out
 		if($allowedFilters == 'associations') {
 			// check each condition individualy
-			foreach($this->Controller->request->named['conditions'] as $field=>$value) {
+			foreach($conditions as $field=>$value) {
 				list($modelName, $fieldName) = explode('.', $field);
 
 				// look though all associations if we can find the field name as foreign key
@@ -199,29 +230,29 @@ class BanchaComponent extends Component {
 
 				if(!$valid) {
 					if(Configure::read('debug') == 2) {
-						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaComponent::allowedFilters configuration.');
+						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaPaginatorComponent::allowedFilters configuration.');
 					} else {
 						// we are not in debug mode where we want to throw an exception, so just ignore this filtering
-						delete($this->Controller->request->paginate['conditions'][$field]);
+						delete($conditions[$field]);
 					}
 				}
 			}
-			return $allowedFilters;
+			return $conditions;
 		}
 
-		// allowedFilers is an array
+		// allowedFilters is an array
 		// check each condition individually
-		foreach($this->Controller->request->named['conditions'] as $field=>$value) {
+		foreach($conditions as $field=>$value) {
 			if(!in_array($field, $allowedFilters)) {
 				if(Configure::read('debug') == 2) {
-					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaComponent::allowedFilters configuration.');
+					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaPaginatorComponent::allowedFilters configuration.');
 				} else {
 					// we are not in debug mode where we want to throw an exception, so jsut ignore this filtering
-					delete($this->Controller->request->paginate['conditions'][$field]);
+					delete($conditions[$field]);
 				}
 			}
 		}
 
-		return $allowedFilters;
+		return $conditions;
 	}
 }

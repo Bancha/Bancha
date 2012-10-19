@@ -49,7 +49,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 	public function testNoMethodResultException() {
 
 		$responses = $this->getResultForMethod('getNoResult');
-
+		
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertEquals('BanchaException', $responses[0]->exceptionType);
@@ -114,7 +114,6 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  * @category      TestFixtures
  */
 class DebugExceptionsController extends ArticlesController {
-	public $components = array('Bancha.Bancha'); // ignore the ArticlesController settings on this
 
 /**
  * User forgot to set a return value
