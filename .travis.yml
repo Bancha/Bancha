@@ -1,0 +1,48 @@
+language: php
+
+php:
+  - 5.3
+
+env:
+  - DB=mysql
+
+before_script:
+  - mv ./* Bancha/
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
+  - wget https://github.com/cakephp/cakephp/tarball/master -O cake.tar.gz
+  - tar xf cake.tar.gz
+  - mv cakephp-cakephp-* ./cakephp
+  - chmod -R 777 ./cakephp/app/tmp
+  - echo "<?php
+    App::build(array(
+    'plugins' => array('/home/vagrant/builds/k1LoW/'),
+    ));
+    " > cakephp/app/config/bootstrap.php
+  - echo "<?php
+    class DATABASE_CONFIG {
+    public \$default = array(
+      'driver' => 'mysql',
+      'persistent' => false,
+      'host' => '0.0.0.0',
+      'login' => 'root',
+      'password' => '',
+      'database' => 'cakephp_test',
+      'prefix' => ''
+    );
+    public \$test = array(
+      'driver' => 'mysql',
+      'persistent' => false,
+      'host' => '0.0.0.0',
+      'login' => 'root',
+      'password' => '',
+      'database' => 'cakephp_test',
+      'prefix' => '',
+      'encoding' => 'utf8'
+    );
+    }" > cakephp/app/config/database.php  
+  - mv ./Bancha ./cakephp/plugins/
+  - cd ./cakephp
+
+
+script:
+  - php ./lib/Cake/Console/cake test Bancha AllTests

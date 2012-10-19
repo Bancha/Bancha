@@ -18,7 +18,7 @@ App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
 /**
  * BanchaRequestTest
  *
- * @package bancha.libs
+ * @package Bancha.Test.Case.Network
  */
 class BanchaResponseCollectionTest extends CakeTestCase {
 
