@@ -17,8 +17,8 @@
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @link          http://cakephp.org CakePHP(tm) Project
  * @link 		  http://banchaproject.org Bancha Project
- * @package       bancha
- * @subpackage    bancha.app.webroot
+ * @package       Bancha
+ * @subpackage    Bancha.app.webroot
  * @since         CakePHP(tm) v 0.2.9
  */
 

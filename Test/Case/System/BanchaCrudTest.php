@@ -63,6 +63,7 @@ class BanchaCrudTest extends CakeTestCase {
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
 		
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertNotNull($responses[0]->result->data->id);
 		$this->assertEquals('Hello World', $responses[0]->result->data->title);
 		$this->assertEquals(false, $responses[0]->result->data->published);
@@ -456,6 +457,7 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 
 		// general response checks (check dispatcher, collections and transformers)
+		$this->assertTrue(isset($responses[0]->result), 'Expected an action proptery on first response, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('create', $responses[0]->method);
 		$this->assertEquals('rpc', $responses[0]->type);
