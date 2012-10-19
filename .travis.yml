@@ -7,6 +7,10 @@ php:
 
 env:
   - DB=mysql CAKEPHP_VERION=master
+  - DB=mysql CAKEPHP_VERION=2.2.0
+  - DB=mysql CAKEPHP_VERION=2.1.5
+  - DB=mysql CAKEPHP_VERION=2.0.6
+  - DB=mysql CAKEPHP_VERION=2.0.0
   - DB=pgsql CAKEPHP_VERION=master
   - DB=sqlite CAKEPHP_VERION=master
 
@@ -16,12 +20,9 @@ branches:
 
 before_script:
   # create the databases
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
-  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE bancha_test;'; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE bancha_test;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA bancha_test;' -U postgres -d bancha_test; fi"
   
   # Prepare the Bancha plugin
   - mkdir .Bancha # create hidden subdirectory (which is not moved by the mv command)
@@ -43,11 +44,12 @@ before_script:
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
   - cd ./cakephp # move into the directory for execution
   
-  - echo "var net = require('net');
-    var server = net.createServer();
-    server.listen(80, 'localhost');
-    console.log('TCP server listening on port 80 at localhost.');" > app/tmp/socket.js
-  - sudo node ./app/tmp/socket.js &
+  # Used in the cake core tests, activate if a webserver is needed
+  # - echo "var net = require('net');
+  #  var server = net.createServer();
+  #  server.listen(80, 'localhost');
+  #  console.log('TCP server listening on port 80 at localhost.');" > app/tmp/socket.js
+  #- sudo node ./app/tmp/socket.js &
   
   # Setup the database config
   - touch app/Config/database.php
@@ -77,8 +79,6 @@ before_script:
         'database' => array(
           'default' => ':memory:',
           'test' => ':memory:',
-          'test2' => '/tmp/cakephp_test2.db',
-          'test_database_three' => '/tmp/cakephp_test3.db'
         ),
       )
     );
@@ -87,7 +87,7 @@ before_script:
       'host' => '',
       'login' => '',
       'password' => '',
-      'database' => 'cakephp_test',
+      'database' => 'bancha_test',
       'prefix' => ''
     );
     public \$test = array(
@@ -95,23 +95,7 @@ before_script:
       'host' => '',
       'login' => '',
       'password' => '',
-      'database' => 'cakephp_test',
-      'prefix' => ''
-    );
-    public \$test2 = array(
-      'persistent' => false,
-      'host' => '',
-      'login' => '',
-      'password' => '',
-      'database' => 'cakephp_test2',
-      'prefix' => ''
-    );
-    public \$test_database_three = array(
-      'persistent' => false,
-      'host' => '',
-      'login' => '',
-      'password' => '',
-      'database' => 'cakephp_test3',
+      'database' => 'bancha_test',
       'prefix' => ''
     );
     public function __construct() {
@@ -119,7 +103,7 @@ before_script:
       if (!empty(\$_SERVER['DB'])) {
         \$db = \$_SERVER['DB'];
       }
-      foreach (array('default', 'test', 'test2', 'test_database_three') as \$source) {
+      foreach (array('default', 'test') as \$source) {
         \$config = array_merge(\$this->{\$source}, \$this->identities[\$db]);
         if (is_array(\$config['database'])) {
           \$config['database'] = \$config['database'][\$source];
