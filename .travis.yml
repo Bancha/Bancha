@@ -1,29 +1,43 @@
 language: php
 
 php:
+  - 5.2
   - 5.3
+  - 5.4
 
 env:
-  - DB=mysql # only test mysql
-#  - DB=pgsql
-#  - DB=sqlite
+  - DB=mysql CAKEPHP=master
+  - DB=mysql CAKEPHP=2.2.0
+  - DB=mysql CAKEPHP=2.1.5
+  - DB=mysql CAKEPHP=2.0.6
+  - DB=mysql CAKEPHP=2.0.0
+  - DB=pgsql CAKEPHP=master
+  - DB=sqlite CAKEPHP=master
 
 before_script:
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi" # create the databases
+  - # create the databases
+  - 
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test2;'; fi"
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE cakephp_test3;'; fi"
-#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
-#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
-#  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE cakephp_test;' -U postgres; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test2;' -U postgres -d cakephp_test; fi"
+  - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA test3;' -U postgres -d cakephp_test; fi"
+  - 
+  - # Prepare the Bancha plugin
   - mkdir .Bancha # create hidden subdirectory (which is not moved by the mv command)
   - mv ./* .Bancha/ # copy everything (except the hidden directories) into the directory
   - mv .Bancha Bancha # unhide it for later use
-  - wget https://github.com/cakephp/cakephp/tarball/master -O cake.tar.gz # get cakephp
+  - 
+  - # Download cakephp
+  - wget https://github.com/cakephp/cakephp/tarball/$DB -O cake.tar.gz # get cakephp
   - tar xf cake.tar.gz # extract cakephp
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # dunno, make tmp executable
   - cd cakephp
   - rm -r ./app
+  - 
+  - # Setup the TestProject for Bancha
   - git clone --recursive https://github.com/Bancha/BanchaTestProject.git app # clone Testproject as base
   - touch app/Config/database.php
   - set +H # needed for pasting the following config file
@@ -107,6 +121,8 @@ before_script:
     }
     }" > app/Config/database.php #create database config file for cakephp
   - cd ..
+  - 
+  - # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
   - cd ./cakephp # move into the directory for execution
