@@ -8,11 +8,11 @@ php:
 env:
   - DB=mysql CAKEPHP_VERION=master
   - DB=mysql CAKEPHP_VERION=2.2.0
-  - DB=mysql CAKEPHP_VERION=2.1.5
-  - DB=mysql CAKEPHP_VERION=2.0.6
-  - DB=mysql CAKEPHP_VERION=2.0.0
+  #- DB=mysql CAKEPHP_VERION=2.1.5
+  #- DB=mysql CAKEPHP_VERION=2.0.6
+  #- DB=mysql CAKEPHP_VERION=2.0.0
   - DB=pgsql CAKEPHP_VERION=master
-  - DB=sqlite CAKEPHP_VERION=master
+  #- DB=sqlite CAKEPHP_VERION=master
 
 branches:
   only:
