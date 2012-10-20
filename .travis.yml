@@ -12,7 +12,7 @@ env:
   #- DB=mysql CAKEPHP_VERION=2.0.6
   #- DB=mysql CAKEPHP_VERION=2.0.0
   - DB=pgsql CAKEPHP_VERION=master
-  #- DB=sqlite CAKEPHP_VERION=master
+  - DB=sqlite CAKEPHP_VERION=master
 
 branches:
   only:
