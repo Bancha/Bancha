@@ -45,6 +45,12 @@ class BanchaCrudTest extends CakeTestCase {
 
 	public function testAdd() {
 		
+		$config = ConnectionManager::enumConnectionObjects();
+		$this->skipIf(
+			$config['default']['datasource'] ===  'Database/Sqlite',
+			'Default database needs to be persistent for this test' 
+		);
+
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',

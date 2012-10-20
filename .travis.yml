@@ -42,7 +42,7 @@ before_script:
   # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
-  - cd ./cakephp # move into the directory for execution
+  - cd ./cakephp/app # move into the directory for execution
   
   # Used in the cake core tests, activate if a webserver is needed
   # - echo "var net = require('net');
@@ -52,7 +52,7 @@ before_script:
   #- sudo node ./app/tmp/socket.js &
   
   # Setup the database config
-  - touch app/Config/database.php
+  - touch Config/database.php
   - set +H # needed for pasting the following config file
   - echo "<?php
     class DATABASE_CONFIG {
@@ -66,12 +66,10 @@ before_script:
         'datasource' => 'Database/Postgres',
         'host' => '127.0.0.1',
         'login' => 'postgres',
-        'database' => 'cakephp_test',
+        'database' => 'bancha_test',
         'schema' => array(
           'default' => 'public',
           'test' => 'public',
-          'test2' => 'test2',
-          'test_database_three' => 'test3'
         )
       ),
       'sqlite' => array(
@@ -114,7 +112,8 @@ before_script:
         \$this->{\$source} = \$config;
       }
     }
-    }" > app/Config/database.php #create database config file for cakephp
+    }" > Config/database.php #create database config file for cakephp
+
 
 
 script:
