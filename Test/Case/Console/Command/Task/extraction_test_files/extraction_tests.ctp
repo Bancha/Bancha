@@ -13,7 +13,7 @@
 		<li><?php echo $this->Html->link(__('New Customer'), array('controller' => 'customers', 'action' => 'add')); ?> </li>
         </ul>
         </div>
-        <?php echo '<script>alert(Bancha.t("This is some string inside a php code"))</script>'; ?>
+        <?php echo '<script>alert(Bancha.t("This is some string inside a php code"));</script>'; ?>
     </div>
 
     <script>
