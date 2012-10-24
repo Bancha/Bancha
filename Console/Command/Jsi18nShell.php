@@ -53,8 +53,8 @@ class Jsi18nShell extends AppShell {
  * @return void
  */
 	public function main() {
-		$this->out(__d('cake_console', '<info>Bancha I18n Shell</info>'));
-		$this->out(__d('cake_console', '<info>This will collect all translations from for javascript files.</info>'));
+		$this->out(__d('cake_console', '<info>Bancha I18n Shell - Beta</info>'));
+		$this->out(__d('cake_console', '<info>This will collect all translations from for javascript, html and template files.</info>'));
 		$this->hr();
 
 		$this->BanchaExtract->execute();
