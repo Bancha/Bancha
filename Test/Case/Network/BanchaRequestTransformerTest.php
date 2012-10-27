@@ -15,13 +15,66 @@
 App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 
 /**
+ * Expose method for tests
+ */
+class TestBanchaRequestTransformerTest extends BanchaRequestTransformer {
+	public function publicIsArray($variable, $path) {
+		return $this->isArray($variable, $path);
+	}
+}
+
+/**
  * BanchaRequestTransformerTest
  *
  * @package       Bancha
  * @category      tests
  */
 class BanchaRequestTransformerTest extends CakeTestCase {
-	
+
+/**
+ * Test the helper function
+ */
+	public function testIsArray() {
+		$cls = new TestBanchaRequestTransformerTest();
+
+		// check with no path
+		$this->assertFalse($cls->publicIsArray(true, ''));
+		$this->assertFalse($cls->publicIsArray('string', ''));
+		$this->assertTrue($cls->publicIsArray(array(), ''));
+
+		// check with parts, both integer and string properties
+		$this->assertFalse($cls->publicIsArray(array(
+			'string'
+		), '[data]'));
+		$this->assertFalse($cls->publicIsArray(array(
+			'data' => 'string'
+		), '[data]'));
+		$this->assertTrue($cls->publicIsArray(array(
+			'data' => array('string')
+		), '[data]'));
+
+		$this->assertFalse($cls->publicIsArray(array(
+			'string'
+		), '[0]'));
+		$this->assertTrue($cls->publicIsArray(array(
+			array('string')
+		), '[0]'));
+
+		$this->assertFalse($cls->publicIsArray(array(array(
+			array('string')
+		)), '[0][data]'));
+		$this->assertTrue($cls->publicIsArray(array(array(
+			'data' => array('string')
+		)), '[0][data]'));
+
+		$this->assertTrue($cls->publicIsArray(array(array(
+			'data' => array(array('string'))
+		)), '[0][data][0]'));
+		$this->assertTrue($cls->publicIsArray(array(array(
+			'data' => array(array(
+				'data' => array('string')))
+		)), '[0][data][0][data]'));
+	}
 /**
  * Test input transformation of simple data
  */

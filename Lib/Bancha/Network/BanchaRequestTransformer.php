@@ -66,6 +66,37 @@ class BanchaRequestTransformer {
 	}
 
 /**
+ * We want to make sure that php will never throw notices or warning,
+ * so when $data = 'string' the result of isset($data['data'][0]) is true,
+ * but is_array($data['data'][0]) will throw an php warning.
+ *
+ * To prohibit that we need a longer check, which we have here.
+ *
+ * @access private
+ * @param  Mixed  $variable The variable to look up
+ * @param  String $path     A path in the style: [data][0][data]
+ * @return boolean          True if the path is an array
+ */
+	public function isArray($variable, $path) {
+		$path = substr($path, 1, strlen($path)-2); // remove first and last char
+		$paths = explode('][', $path);
+
+		if($paths[0] == '') {
+			// there is no path
+			return is_array($variable);
+		}
+
+		// check each path part
+		foreach($paths as $property) {
+			if(!isset($variable[$property]) || !is_array($variable[$property])) {
+				return false;
+			}
+			$variable = $variable[$property];
+		}
+
+		return true;
+	}
+/**
  * Returns the name of the controller. Thus returns the pluralized value of 'action' from the Ext JS request. Also removes the
  * 'action' property from the Ext JS request.
  *
@@ -156,9 +187,9 @@ class BanchaRequestTransformer {
 				break;
 			case 'read':
 				$this->action = (
-					(!empty($this->data['data'][0]['data']['id']) && is_array($this->data['data'][0]['data'])) ||
-					(!empty($this->data['data'][0]['id']) && is_array($this->data['data'][0])) ||
-					(!empty($this->data['id']) && is_array($this->data))) ? 'view' : 'index';
+					($this->isArray($this->data, '[data][0][data]') && !empty($this->data['data'][0]['data']['id'])) ||
+					($this->isArray($this->data, '[data][0]')       && !empty($this->data['data'][0]['id'])) ||
+					($this->isArray($this->data, '')                && !empty($this->data['id']))) ? 'view' : 'index';
 				break;
 		}
 		return $this->action;
@@ -235,11 +266,11 @@ class BanchaRequestTransformer {
 	public function getPassParams() {
 		$pass = array();
 		// normal requests
-		if (isset($this->data['data'][0]['data']['id']) && is_array($this->data['data'][0]['data'])) {
+		if ($this->isArray($this->data, '[data][0][data]') && isset($this->data['data'][0]['data']['id'])) {
 			$pass['id'] = $this->data['data'][0]['data']['id'];
 			unset($this->data['data'][0]['data']['id']);
 		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
-		} else if (isset($this->data['data'][0]['id']) && is_array($this->data['data'][0])) {
+		} else if ($this->isArray($this->data, '[data][0]') && isset($this->data['data'][0]['id'])) {
 			$pass['id'] = $this->data['data'][0]['id'];
 			unset($this->data['data'][0]['id']);
 		// form upload requests
@@ -269,7 +300,9 @@ class BanchaRequestTransformer {
 		// find the page and limit
 		$page = 1;
 		$limit = 500;
-		if (isset($this->data['data'][0]) && is_array($this->data['data'][0])) {
+		if ($this->isArray($this->data, '[data][0]')) {
+			// the above check needs to be so long, because php allows strigns to be used as array,
+			// so to make sure that $this->data['data'] is not a string we need all from above
 			$params = $this->data['data'][0];
 
 			// find the correct page
@@ -296,7 +329,7 @@ class BanchaRequestTransformer {
 		$order = array();
 		$sort_field = '';
 		$direction = '';
-		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && isset($this->data['data'][0]['sort'])) {
+		if ($this->isArray($this->data, '[data][0]') && isset($this->data['data'][0]['sort'])) {
 			foreach ($this->data['data'][0]['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
 					$order[$this->getModel() . '.' . $sort['property']] = strtolower($sort['direction']);
@@ -309,8 +342,7 @@ class BanchaRequestTransformer {
 
 		// find store filters
 		$conditions = array();
-		if (isset($this->data['data'][0]) && is_array($this->data['data'][0]) && 
-			isset($this->data['data'][0]['filter']) && is_array($this->data['data'][0]['filter'])) {
+		if ($this->isArray($this->data, '[data][0][filter]')) {
 			$filters = $this->data['data'][0]['filter'];
 
 			foreach ($filters as $filter) {
@@ -361,7 +393,7 @@ class BanchaRequestTransformer {
 				// ... so delete it
 				unset($data[$modelName]['id']);
 			}
-		} else if( isset($data['data'][0]['data'][0]) && is_array($data['data'][0]['data'][0])) {
+		} else if($this->isArray($data, '[data][0][data][0]')) {
 			// looks like someone is using the store with batchActions:true
 			if(Configure::read('Bancha.allowMultiRecordRequests') != true) {
 				throw new BanchaException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
