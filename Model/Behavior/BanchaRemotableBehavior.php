@@ -533,6 +533,17 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	public function getLastSaveResult(Model $Model) {
 		if(empty($this->result[$Model->alias])) {
+			// there were some validation errors, send those
+			if(!$Model->validates()) {
+				$msg =  "The record doesn't validate. Since Bancha can't send validation errors to the ".
+						"client yet, please handle this in your application stack.";
+				if(Configure::read('debug') > 0) {
+					$msg .= "<br/><br/><pre>Validation Errors:\n".print_r($Model->invalidFields(),true)."</pre>";
+				}
+				throw new BadRequestException($msg);
+			}
+
+			// otherwise send error
 			throw new BanchaException(
 				'There was nothing saved to be returned. Probably this occures because the data '.
 				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
