@@ -75,6 +75,9 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
             case 'time':
                 return date.getTime();
             default:
+                if(date===null || !Ext.isDefined(date)) {
+                    return date;
+                }
                 return Ext.Date.format(date, dateFormat);
         }
     }
