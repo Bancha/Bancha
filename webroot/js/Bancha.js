@@ -64,6 +64,19 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
         
         // let the json writer do the real work:
         return this.superclass.writeRecords.apply(this,arguments);
+    },
+
+    // fix Sencha Touch code
+    writeDate: function(field, date) {
+        var dateFormat = field.dateFormat || (field.config ? field.config.dateFormat : false) || 'timestamp'; // <-- fixed this line
+        switch (dateFormat) {
+            case 'timestamp':
+                return date.getTime()/1000;
+            case 'time':
+                return date.getTime();
+            default:
+                return Ext.Date.format(date, dateFormat);
+        }
     }
 });
 
