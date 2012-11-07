@@ -1191,7 +1191,7 @@ Ext.define('Bancha', {
             idProperty: idProperty,
             proxy: {
                 type: 'direct', // TODO batch requests: http://www.sencha.com/forum/showthread.php?156917
-                batchActions: false, // don't batch requests, cake can't handle multiple records (the requests will be by batched by Ext.Direct)
+                batchActions: false, // don't batch requests on the store level, they will be batched batched by Ext.Direct on the application level
                 api: {
                     /* IFPRODUCTION
                     // if method is not supported by remote it get's set to undefined
