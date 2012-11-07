@@ -2,7 +2,7 @@
 /**
  * AllNetworkTest file.
  *
- * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2012 StudioQ OG
  *
  * @package       Bancha
