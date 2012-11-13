@@ -6,12 +6,13 @@ php:
   - 5.4
 
 env:
-  - DB=mysql CAKEPHP_VERION=master
-  - DB=mysql CAKEPHP_VERION=2.2.0
+  # CakePHP and ExtJS and Sencha Touch versions are independent from each other
+  - DB=mysql CAKEPHP_VERION=master EXTJS_VERSION=4.1.1a TOUCH_VERSION=2.0.1.1
+  - DB=mysql CAKEPHP_VERION=2.2.0 EXTJS_VERSION=4.1.0
   #- DB=mysql CAKEPHP_VERION=2.1.5
   #- DB=mysql CAKEPHP_VERION=2.0.6
   #- DB=mysql CAKEPHP_VERION=2.0.0
-  - DB=pgsql CAKEPHP_VERION=master
+  - DB=pgsql CAKEPHP_VERION=master EXTJS_VERSION=4.0.7
   - DB=sqlite CAKEPHP_VERION=master
 
 branches:
@@ -114,11 +115,26 @@ before_script:
     }
     }" > app/Config/database.php #create database config file for cakephp
 
+  # now prepare the jasmine tests
+  - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
+  - if [ $EXTJS_VERION ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION-gpl/ext-all-debug-w-comments.js ; fi
+  - if [ $TOUCH_VERSION ]; then wget http://cdn.sencha.io/touch/sencha-touch-$TOUCH_VERSION/sencha-touch-all-debug.js ; fi
+  - cd ../../../../../../
 
+  # Travis needs this stuff to start Phantom1.4...
+  # When they get Phantom1.5 this section can go away
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+
+  # get pahntomjs for jasmine
+  - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
   - chmod a+x ./lib/Cake/Console/cake # make sure to execute it
   - ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
+
+  # execute the jasmine tests
+  - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi ## TODO find right HTML
 
 notifications:
   email:
