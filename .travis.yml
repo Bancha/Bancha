@@ -7,13 +7,13 @@ php:
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
-  - DB=mysql CAKEPHP_VERION=master EXTJS_VERSION=4.1.1a TOUCH_VERSION=2.0.1.1
-  - DB=mysql CAKEPHP_VERION=2.2.0 EXTJS_VERSION=4.1.0
-  #- DB=mysql CAKEPHP_VERION=2.1.5
-  #- DB=mysql CAKEPHP_VERION=2.0.6
-  #- DB=mysql CAKEPHP_VERION=2.0.0
-  - DB=pgsql CAKEPHP_VERION=master EXTJS_VERSION=4.0.7
-  - DB=sqlite CAKEPHP_VERION=master
+  - DB=mysql CAKEPHP_VERSION=master EXTJS_VERSION=4.1.1a TOUCH_VERSION=2.0.1.1
+  - DB=mysql CAKEPHP_VERSION=2.2.0 EXTJS_VERSION=4.1.0
+  #- DB=mysql CAKEPHP_VERSION=2.1.5
+  #- DB=mysql CAKEPHP_VERSION=2.0.6
+  #- DB=mysql CAKEPHP_VERSION=2.0.0
+  - DB=pgsql CAKEPHP_VERSION=master EXTJS_VERSION=4.0.7
+  - DB=sqlite CAKEPHP_VERSION=master
 
 branches:
   only:
@@ -31,7 +31,7 @@ before_script:
   - mv .Bancha Bancha # unhide it for later use
   
   # Download cakephp
-  - wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERION -O cake.tar.gz # get cakephp
+  - wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERSION -O cake.tar.gz # get cakephp
   - tar xf cake.tar.gz # extract cakephp
   - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
   - chmod -R 777 ./cakephp/app/tmp # make tmp executable
@@ -117,7 +117,7 @@ before_script:
 
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
-  - if [ $EXTJS_VERION ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION-gpl/ext-all-debug-w-comments.js ; fi
+  - if [ $EXTJS_VERSION ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION-gpl/ext-all-debug-w-comments.js ; fi
   - if [ $TOUCH_VERSION ]; then wget http://cdn.sencha.io/touch/sencha-touch-$TOUCH_VERSION/sencha-touch-all-debug.js ; fi
   - cd ../../../../../../
 
