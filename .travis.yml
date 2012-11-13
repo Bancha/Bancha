@@ -134,7 +134,8 @@ script:
   - ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
 
   # execute the jasmine tests
-  - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi ## TODO find right HTML
+  - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
+  - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
 
 notifications:
   email:
