@@ -174,10 +174,9 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 						$fieldName = $parts[1];
 
 						if(!is_object($this->Controller->{$modelName})) {
-							print_r($this->Controller->{$modelName});
 							throw new BanchaException('The '.$this->Controller->name.'Controller is missing the model '.$modelName.', but has a configuration for this model in BanchaPaginatorComponent::allowedFilters. Please make sure to define the controllers uses property or use the beforeFilter for loading.');
 						}
-						if($this->Controller->{$modelName}->virtualFields && $this->Controller->{$modelName}->virtualFields[$fieldName]) {
+						if($this->Controller->{$modelName}->virtualFields && isset($this->Controller->{$modelName}->virtualFields[$fieldName])) {
 							throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration allows filtering on '.$value.', but this is a virtual field cakephp can\'t handle constraints on them.');
 						}
 
