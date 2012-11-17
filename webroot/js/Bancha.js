@@ -69,25 +69,30 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
             fieldItems = fields.items,
             me = this;
 
-        // for newer ExtJS versions add support for null
-        if(Ext.versions.extjs) {
+        // Sencha Touch is augmented in the writeDate fucntion, so we are done here
+        // ExtJS doesn't have a writeDate function yet, so we need to augment below
+        if(Ext.versions.touch) {
+            return data;
+        }
+
+        // for ExtJS 4.1.1+ versions add support for null
+        if(parseInt(Ext.versions.extjs.shortVersion,10) >= 411) {
             Ext.each(fieldItems, function(field) {
                 var name = field[nameProperty] || field.name; 
                 if (field.type === Ext.data.Types.DATE && field.dateFormat && record.get(field.name)===null) {
                     data[name] = null;
                 }
             });
-        }
 
         // for older ExtJS versions add full date conversion support
-        if(Ext.versions.extjs) {
+        } else {
             Ext.each(fieldItems, function(field) {
                 var name = field[nameProperty] || field.name; 
                 if (field.type === Ext.data.Types.DATE && field.dateFormat) {
                     data[name] = me.writeDate(field, record.get(field.name));
                 }
             });
-        }        
+        }
 
         return data;
     },
