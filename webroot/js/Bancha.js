@@ -45,8 +45,11 @@ Ext.define('Bancha.data.Model', {
  * 
  * For Sencha Touch it fixes a bug inside writeDate.
  * 
- * For ExtJS it adds support date fields with value 
- * null.
+ * For ExtJS 4.1.1a+ it adds support date fields with  
+ * value null.
+ * 
+ * For ExtJS 4.1.0 and below it adds support for date 
+ * conversions.
  *
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
@@ -63,10 +66,11 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
         var data = this.superclass.getRecordData.apply(this,arguments),
             nameProperty = this.nameProperty, 
             fields = record.fields,
-            fieldItems = fields.items;
+            fieldItems = fields.items,
+            me = this;
 
-        // replace null dates with null
-        if(Ext.versions.extjs) { // this is only necessary in ExtJS
+        // for newer ExtJS versions add support for null
+        if(Ext.versions.extjs) {
             Ext.each(fieldItems, function(field) {
                 var name = field[nameProperty] || field.name; 
                 if (field.type === Ext.data.Types.DATE && field.dateFormat && record.get(field.name)===null) {
@@ -75,6 +79,16 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
             });
         }
 
+        // for older ExtJS versions add full date conversion support
+        if(Ext.versions.extjs) {
+            Ext.each(fieldItems, function(field) {
+                var name = field[nameProperty] || field.name; 
+                if (field.type === Ext.data.Types.DATE && field.dateFormat) {
+                    data[name] = me.writeDate(field, record.get(field.name));
+                }
+            });
+        }        
+
         return data;
     },
 
@@ -82,9 +96,9 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
      * Fix Sencha Touch 2.1.1 and below to use the 
      * dateFormat and add support for null dates.
      *
-     * Since this function only exists in Sencha Touch
-     * we don't need to check for the library here. But
-     * just to be sure we also consider field.dateFormat
+     * Since ExtJS doesn't have a function called 
+     * writeDate but is also buggy prior to Ext 4.1.1
+     * we call this function from getRecordData
      *
      * Bug Report:
      * http://www.sencha.com/forum/showthread.php?249288-Ext.data.writer.Json-doesn-t-use-dateFormat
