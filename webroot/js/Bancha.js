@@ -41,8 +41,12 @@ Ext.define('Bancha.data.Model', {
 
 /**
  * @private
- * This should only be used by Bancha internally, 
- * it converts javascript dates in a cake format... not really elegant yet
+ * This should only be used by Bancha internally.
+ * 
+ * For Sencha Touch it fixes a bug inside writeDate.
+ * 
+ * For ExtJS it adds support date fields with value 
+ * null.
  *
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
@@ -51,19 +55,53 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
     extend: 'Ext.data.writer.Json',
     alias: 'writer.jsondate',
     
-    writeRecords: function(request, data) {
-        var format = 'Y-m-d'; // date format
-        Ext.Array.forEach(data,function(recData,recIndex) {
-            Ext.Object.each(recData,function(fieldName,fieldValue) {
-                if(Ext.isDate(fieldValue)) {
-                    // convert date back in cake date format
-                    data[recIndex][fieldName] = Ext.Date.format(fieldValue,format);
+    /**
+     * Add support for null dates to ExtJS
+     */
+    getRecordData: function(record, operation) {
+        // let the json writer do the real work
+        var data = this.superclass.getRecordData.apply(this,arguments),
+            nameProperty = this.nameProperty, 
+            fields = record.fields,
+            fieldItems = fields.items;
+
+        // replace null dates with null
+        if(Ext.versions.extjs) { // this is only necessary in ExtJS
+            Ext.each(fieldItems, function(field) {
+                var name = field[nameProperty] || field.name; 
+                if (field.type === Ext.data.Types.DATE && field.dateFormat && record.get(field.name)===null) {
+                    data[name] = null;
                 }
             });
-        });
-        
-        // let the json writer do the real work:
-        return this.superclass.writeRecords.apply(this,arguments);
+        }
+
+        return data;
+    },
+
+    /**
+     * Fix Sencha Touch 2.1.1 and below to use the 
+     * dateFormat and add support for null dates.
+     *
+     * Since this function only exists in Sencha Touch
+     * we don't need to check for the library here. But
+     * just to be sure we also consider field.dateFormat
+     *
+     * Bug Report:
+     * http://www.sencha.com/forum/showthread.php?249288-Ext.data.writer.Json-doesn-t-use-dateFormat
+     */
+    writeDate: function(field, date) {
+        var dateFormat = field.dateFormat || (field.getDateFormat ? field.getDateFormat() : false) || 'timestamp'; // <-- fixed this line
+        switch (dateFormat) {
+            case 'timestamp':
+                return date.getTime()/1000;
+            case 'time':
+                return date.getTime();
+            default:
+                if(date===null || !Ext.isDefined(date)) { // <-- added support for null and undefined
+                    return date;
+                }
+                return Ext.Date.format(date, dateFormat);
+        }
     }
 });
 
