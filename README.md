@@ -1,4 +1,5 @@
 [![Bancha logo](http://docs.banchaproject.org/wiki/images/github-logo.png)](http://banchaproject.com)
+[![Build Status](https://travis-ci.org/Bancha/Bancha.png)](https://travis-ci.org/Bancha/Bancha)
 
 Features
 --------
@@ -32,8 +33,6 @@ More information
 *   [Installation and Usage](http://docs.banchaproject.org)
 *   [Updates on Twitter](http://twitter.com/#!/banchaproject)
 
-
-[![Build Status](https://travis-ci.org/Bancha/Bancha.png)](https://travis-ci.org/Bancha/Bancha)
 
 ------------------------------
 For any further questions just ask us: mail@banchaproject.com
