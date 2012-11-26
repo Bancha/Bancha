@@ -43,8 +43,9 @@ class BanchaController extends BanchaAppController {
 	 * model meta data should be printed you will have to pass the model name or 'all'
 	 * For more see [how to adopt the layout](http://docs.banchaproject.org/resources/Installation.html#setting-up-extjs)
 	 *
-	 * @param string $metadataFilter Models that should be exposed through the Bancha API. Either all or [all] for
-	 *                                  all models or a comma separated list of models.
+	 * @param string $metadataFilter Model metadata that should be exposed through the Bancha API. Either 'all' or '[all]'
+	 *                               to get the metadata for all models or a comma separated list of models like 
+	 *                               '[User,Article]'.
 	 * @return void
 	 */
 	public function index($metadataFilter='') {
@@ -107,10 +108,14 @@ class BanchaController extends BanchaAppController {
 	}
 
 	/**
+	 * @access private
 	 * loadMetaData returns the Metadata of the models passed as an argument or 
-	 * in params['pass'] array which is created by cakephp from the arguments 
-	 * passed in the url. e.g.: http://localhost/Bancha/loadMetaData/User/Tag 
-	 * will load the metadata from the models Users and Tags
+	 * in params['pass'] array. params['pass'] is created by cakephp from the arguments 
+	 * passed in the url. e.g.: http://localhost/Bancha/loadMetaData/User/Tag
+	 * will load the metadata from the models Users and Tags.
+	 *
+	 * This function is only used by Bancha internally, see the JavaScript 
+	 * Bancha.onModelReady function.
 	 * 
 	 * @return array 
 	 */
@@ -168,8 +173,15 @@ class BanchaController extends BanchaAppController {
 	}
 	
 	/**
-	 * This function returns all translations, known to cakephp in the defiend language
-	 * The default domain is 'bancha', but can be overwritten
+	 * This function returns all translations in the given domain, which are known to cakephp for
+	 * the defined language. By default the domain bancha is used for all front-side translatable 
+	 * strings (see also the jsi18n shell tool). When Bancha needs to translate a string for the
+	 * first time in the frontend it uses this method to load all translations.
+	 * 
+	 * @param  string $languageCode three-letter language code, see CakePHP language codes
+	 * @param  string $domain       The used domain, default is 'bancha'
+	 * @return void                 No return value, the response body is set to an json object 
+	 *                              with all data.
 	 */
 	public function translations($languageCode, $domain='bancha') {
 
