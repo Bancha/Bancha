@@ -597,15 +597,15 @@ Ext.define('Bancha', {
         remoteApi = this.getRemoteApi();
 
         // IFDEBUG
-        if(remoteApi && remoteApi.metadata && remoteApi.metadata._CakeError) {
+        if(remoteApi && remoteApi.metadata && remoteApi.metadata._ServerError) {
             // there is an cake error
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: [
                     '<b>CakePHP Error:</b><br />',
                     'You have an error in your cakephp code:<br /><br />',
-                    Ext.isString(remoteApi.metadata._CakeError) ? 
-                        remoteApi.metadata._CakeError : 
+                    Ext.isString(remoteApi.metadata._ServerError) ? 
+                        remoteApi.metadata._ServerError : 
                         'Please turn the cakephp debug mode on to see the error message!'
                 ].join('')
             });
@@ -1085,7 +1085,7 @@ Ext.define('Bancha', {
         }
         
         var api = this.getRemoteApi();
-        return (api && api.metadata && Ext.isDefined(api.metadata._CakeDebugLevel)) ? api.metadata._CakeDebugLevel : defaultValue;
+        return (api && api.metadata && Ext.isDefined(api.metadata._ServerDebugLevel)) ? api.metadata._ServerDebugLevel : defaultValue;
     },
     /**
      * In production mode (or if errors occur when Bancha is not initialized) this function will be called
