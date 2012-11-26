@@ -54,7 +54,7 @@ class BanchaController extends BanchaAppController {
 		// send as javascript
 		$this->response->type('js');
 		
-		// send an _CakeError property to the frontend
+		// send an _ServerError property to the frontend
 		$error = false;
 
 		// get all possible remotable models
@@ -98,7 +98,7 @@ class BanchaController extends BanchaAppController {
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
 								$this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
-								array('_CakeError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
+								array('_ServerError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
 		

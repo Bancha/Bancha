@@ -32,6 +32,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		// check primary Bancha configurations
 		$this->assertTrue(isset($api->metadata->_UID));
+		$this->assertEquals(Configure::read('debug'), $api->metadata->_ServerDebugLevel);
 
 		// check exposed methods
 		$this->assertTrue(isset($api->actions->Article));
@@ -101,7 +102,6 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
-	
 	
 }
 

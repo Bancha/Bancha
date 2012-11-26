@@ -44,7 +44,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
     },
     metadata: {
         _UID: '550e8400e29b11d4a7164466554400004',
-        _CakeDebugLevel: 0, // set the debug level to zero to suppress Banchas debug error handling
+        _ServerDebugLevel: 0, // set the debug level to zero to suppress Banchas debug error handling
         User: {
                 idProperty: 'id',
                 fields: [

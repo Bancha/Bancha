@@ -103,7 +103,7 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertArrayHasKey('User', $metadata);
 		$this->assertArrayHasKey('Article', $metadata);
 		$this->assertArrayHasKey('_UID', $metadata);
-		$this->assertArrayHasKey('_CakeDebugLevel', $metadata);
+		$this->assertArrayHasKey('_ServerDebugLevel', $metadata);
 		$this->assertTrue(is_array($metadata['User']));
 		$this->assertTrue(is_array($metadata['Article']));
 		$this->assertTrue(strlen($metadata['_UID']) > 0);

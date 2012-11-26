@@ -113,7 +113,7 @@ class BanchaApi {
 			$metadata[$modelClass] = $model->extractBanchaMetaData($modelClass);
 		}
 		$metadata['_UID'] = str_replace('.', '', uniqid('', true));
-		$metadata['_CakeDebugLevel'] = Configure::read('debug');
+		$metadata['_ServerDebugLevel'] = Configure::read('debug');
 		return $metadata;
 	}
 
