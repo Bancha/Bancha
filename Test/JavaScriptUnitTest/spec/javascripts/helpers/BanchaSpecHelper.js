@@ -145,7 +145,7 @@ beforeEach(function() {
             // this is a check of the bancha dispatcher, everything ok
             return {
                 status: 200,
-                responseText: '{BanchaDispatcherIsSetup:true}'
+                responseText: '{"BanchaDispatcherIsSetup":true}'
             };
         } else {
             throw new Error('Unexpected usage of Ext.Ajax.request');
