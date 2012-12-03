@@ -72,7 +72,7 @@ class BanchaController extends BanchaAppController {
 		}
 
 		// build actions
-		if(($actions = Cache::read('actions', '_bancha_api_')) === false) {
+		if(($actions = Cache::read('actions_'.Configure::read('debug'), '_bancha_api_')) === false) {
 			$actions = array_merge_recursive(
 				$remotableModelsActions,
 				$banchaApi->getRemotableMethods(),
@@ -90,7 +90,7 @@ class BanchaController extends BanchaAppController {
 			);
 			
 			// cache for future requests
-			Cache::write('actions', $actions, '_bancha_api_');
+			Cache::write('actions_'.Configure::read('debug'), $actions, '_bancha_api_');
 		}
 		
 		$api = array(
@@ -136,13 +136,13 @@ class BanchaController extends BanchaAppController {
 	 * @return see BanchaApi::getRemotableModels
 	 */
 	private function getRemotableModels($banchaApi) {
-		if(($remotableModels = Cache::read('remotable_models', '_bancha_api_')) !== false) {
+		if(($remotableModels = Cache::read('remotable_models_'.Configure::read('debug'), '_bancha_api_')) !== false) {
 			return $remotableModels;
 		}
 		
 		// get remotable models (iterates through all models)
 		$remotableModels = $banchaApi->getRemotableModels();
-		Cache::write('remotable_models', $remotableModels, '_bancha_api_');
+		Cache::write('remotable_models_'.Configure::read('debug'), $remotableModels, '_bancha_api_');
 		
 		return $remotableModels;
 	}
@@ -156,7 +156,7 @@ class BanchaController extends BanchaAppController {
 		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 		
 		// build a caching key, make sure we are always using the right models
-		$cacheKey = 'metadata_'.md5(implode(",", $metadataModels)); // md5 for shorter file names
+		$cacheKey = 'metadata_'.md5(implode(",", $metadataModels)).'_'.Configure::read('debug'); // md5 for shorter file names
 		
 		// check cache
 		if(($metadata = Cache::read($cacheKey, '_bancha_api_')) !== false) {

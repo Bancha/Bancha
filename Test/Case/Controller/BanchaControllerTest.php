@@ -103,6 +103,31 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 	
+	
+	public function testBanchaApiServerErrorProperty_NoError() {
+		$debugLevel = Configure::read('debug');
+
+		// in production mode only expect a flag
+		Configure::write('debug', 0);
+		$response = $this->testAction('/bancha-api.js');
+		$api = json_decode(substr($response, strpos($response, '=')+1));
+		// test data
+		$this->assertEquals(0, $api->metadata->_ServerDebugLevel);
+		$this->assertFalse($api->metadata->_ServerError);
+
+		// in debug mode expect a error message
+		Configure::write('debug', 2);
+		$response = $this->testAction('/bancha-api/models/all.js');
+		$api = json_decode(substr($response, strpos($response, '=')+1));
+
+		// test data
+		$this->assertEquals(2, $api->metadata->_ServerDebugLevel);
+		$this->assertFalse($api->metadata->_ServerError);
+
+		// reset level to normal
+		Configure::write('debug', $debugLevel);
+	}
+
 }
 
     
