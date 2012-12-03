@@ -2,5 +2,5 @@
 /.project
 Bancha.tmproj
 .DS_Store
-Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments.js
-Test/JavaScriptUnitTest/lib/sencha-touch-all-debug.js
+Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments*
+Test/JavaScriptUnitTest/lib/sencha-touch-all-debug*
