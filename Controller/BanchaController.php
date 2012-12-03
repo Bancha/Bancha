@@ -84,7 +84,7 @@ class BanchaController extends BanchaAppController {
 					),
 					array(
 						'name'	=> 'logError',
-						'len'	=> 1,
+						'len'	=> 2,
 					),
 				))
 			);
@@ -205,11 +205,26 @@ class BanchaController extends BanchaAppController {
 		$this->response->body(json_encode($jsTranslations));
     }
 
-	/**
-	 * This function logs an javascript error to the js_error.log
-	 */
-	public function logError($error) {
-		$this->log($error,'js_error');
-		return true;
+    /**
+     * This function logs an javascript error to eigther js_error.log or
+     * missing_translation.log. This function should never be called directly.
+     * use the JavaScript Bancha.log method to log errors.
+	 * 
+     * @param  string $error the error message to log
+     * @param  string $type  'js_error' or 'missing_translation'
+     * @return boolean		 True to indicate that everything worked.
+     */
+	public function logError($error, $type) {
+		if($type!=='js_error' && $type!=='missing_translation') {
+			$this->log(
+				'Someone send a javascript error message of type "'.$type.'" to CakePHP, but this type does not exist. '.
+				'If you did this, please never use the serverside Bancha::logError directly. Instead use the JavaScript '.
+				'function Bancha.log');
+			return false;
+		} else {
+			// log error to corresponding log file
+			$this->log($error, $type);
+			return true;
+		}
 	}
 }

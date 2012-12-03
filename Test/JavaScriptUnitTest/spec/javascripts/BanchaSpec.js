@@ -14,7 +14,7 @@
  */
 /*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
 
 describe("Bancha Singleton - basic retrieval functions on the stubs and model meta data", function() {
         var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
@@ -431,6 +431,228 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(onReadySpy.callCount).toEqual(1);
         });
         
+        it("should write to the console using logToConsole", function() {
+
+            // this may make problems if console is native to the browser
+            var console = window.console;
+            window.console = {
+                log: jasmine.createSpy()
+            };
+
+            // everything goes to the log now
+            Bancha.logToBrowser('My error');
+            expect(window.console.log.callCount).toEqual(1);
+            expect(window.console.log.mostRecentCall.args).toEqual(['ERROR: My error']);
+            Bancha.logToBrowser('My warning','warn');
+            expect(window.console.log.callCount).toEqual(2);
+            expect(window.console.log.mostRecentCall.args).toEqual(['WARN: My warning']);
+            Bancha.logToBrowser('untranslatable','missing_translation');
+            expect(window.console.log.callCount).toEqual(3);
+            expect(window.console.log.mostRecentCall.args).toEqual(['MISSING TRANSLATION: untranslatable']);
+
+            window.console = {
+                log: jasmine.createSpy(),
+                error: jasmine.createSpy(),
+                warn: jasmine.createSpy()
+            };
+
+            // now use the specific functions
+            Bancha.logToBrowser('My error2','error');
+            Bancha.logToBrowser('My warning2','warn');
+            Bancha.logToBrowser('untranslatable2','missing_translation');
+
+            expect(window.console.log.callCount).toEqual(0);
+
+            expect(window.console.error.callCount).toEqual(1);
+            expect(window.console.error.mostRecentCall.args).toEqual(['My error2']);
+
+            expect(window.console.warn.callCount).toEqual(2);
+            expect(window.console.warn.calls[0].args).toEqual(['My warning2']);
+            expect(window.console.warn.mostRecentCall.args).toEqual(['MISSING TRANSLATION: untranslatable2']);
+
+            // tear down
+            window.console = console;
+        });
+
+        it("should log to the browser window or console depending on the support", function() {
+
+            // this may make problems if console is native to the browser
+            var console = window.console;
+            window.console = {}; // deleting doesn't work in Chrome
+
+            // setup the browser alert
+            var alert = Ext.Msg.alert;
+            Ext.Msg.alert = jasmine.createSpy();
+
+
+            // there is no console, so use Ext.Msg.alert
+            Bancha.logToBrowser('My error');
+            expect(Ext.Msg.alert.callCount).toEqual(1);
+            expect(Ext.Msg.alert.mostRecentCall.args).toEqual(['ERROR','My error']);
+
+            window.console = {
+                log: jasmine.createSpy(),
+                error: jasmine.createSpy()
+            };
+
+            // console is back, use it
+            Bancha.logToBrowser('My error');
+            expect(Ext.Msg.alert.callCount).toEqual(1);
+            expect(window.console.log.callCount).toEqual(0);
+            expect(window.console.error.callCount).toEqual(1);
+            expect(window.console.error.mostRecentCall.args).toEqual(['My error']);
+
+            // tear down
+            window.console = console;
+            Ext.Msg.alert = alert;
+        });
+
+        it("should log to the server in production mode and to console in debug mode", function() {
+            h.init();
+
+            // setup functions
+            var log = Bancha.logToBrowser;
+            Bancha.logToBrowser = jasmine.createSpy();
+            var serverlog = jasmine.createSpy();
+            Bancha.getStubsNamespace().Bancha = { logError: serverlog};
+
+            // test logging to the browser
+            Bancha.getRemoteApi().metadata._ServerDebugLevel = 2;
+            Bancha.log('My error');
+            expect(serverlog.callCount).toEqual(0);
+            expect(Bancha.logToBrowser.callCount).toEqual(1);
+            expect(Bancha.logToBrowser.mostRecentCall.args).toEqual(['My error','error']);
+
+            // test logging to the server with forceServerlog
+            Bancha.log('My error',null,true);
+            expect(Bancha.logToBrowser.callCount).toEqual(1);
+            expect(serverlog.callCount).toEqual(1);
+            expect(serverlog.mostRecentCall.args).toEqual(['My error','js_error']);
+
+            // test logging to the server
+            Bancha.getRemoteApi().metadata._ServerDebugLevel = 0;
+            Bancha.log('My error');
+            expect(Bancha.logToBrowser.callCount).toEqual(1);
+            expect(serverlog.callCount).toEqual(2);
+            expect(serverlog.mostRecentCall.args).toEqual(['My error','js_error']);
+
+            Bancha.log('untranslatable','missing_translation');
+            expect(Bancha.logToBrowser.callCount).toEqual(1);
+            expect(serverlog.callCount).toEqual(3);
+            expect(serverlog.mostRecentCall.args).toEqual(['untranslatable','missing_translation']);
+
+            // type info should not be logged to the server
+            Bancha.log('My info','info');
+            expect(Bancha.logToBrowser.callCount).toEqual(1);
+            expect(serverlog.callCount).toEqual(3);
+
+            delete Bancha.getRemoteApi().Bancha;
+            Bancha.logToBrowser = log;
+        });
+
+        it("should have convenienve functions for logging", function() {
+            h.init();
+
+            // setup functions
+            var log = Bancha.logToBrowser;
+            Bancha.logToBrowser = jasmine.createSpy();
+            var serverlog = jasmine.createSpy();
+            Bancha.getStubsNamespace().Bancha = { logError: serverlog};
+            Bancha.getRemoteApi().metadata._ServerDebugLevel = 2;
+
+            // test convenience functions
+            Bancha.log.info('My info');
+            expect(Bancha.logToBrowser.callCount).toEqual(1);
+            expect(Bancha.logToBrowser.mostRecentCall.args).toEqual(['My info','info']);
+
+            Bancha.log.warn('My warn');
+            expect(Bancha.logToBrowser.callCount).toEqual(2);
+            expect(Bancha.logToBrowser.mostRecentCall.args).toEqual(['My warn','warn']);
+
+            Bancha.log.error('My error');
+            expect(Bancha.logToBrowser.callCount).toEqual(3);
+            expect(Bancha.logToBrowser.mostRecentCall.args).toEqual(['My error','error']);
+
+
+            // test convenience functions with forceServerLog
+            Bancha.log.info('My info',true);
+            // info is not logged to the server
+            expect(serverlog.callCount).toEqual(0);
+
+            Bancha.log.warn('My warn',true);
+            expect(serverlog.callCount).toEqual(1);
+            expect(serverlog.mostRecentCall.args).toEqual(['WARNING: My warn','js_error']);
+
+            Bancha.log.error('My error',true);
+            expect(serverlog.callCount).toEqual(2);
+            expect(serverlog.mostRecentCall.args).toEqual(['My error','js_error']);
+        });
+
+        it("should trigger the onError function if in production mode and there is a script error", function() {
+            var loadScript = function(src, cb) {
+                var script=document.createElement("script");
+                script.type="text/javascript";
+                script.async=false;
+                script.src=src;
+
+                // prepare callback
+                var isLoaded = false;
+
+                // most browsers
+                script.onload = function() {
+                    isLoaded = true;
+                    cb();
+                };
+                // IE 6 & 7
+                script.onreadystatechange = function() {
+                    if (this.readyState === 'complete') {
+                        isLoaded = true;
+                        cb();
+                    }
+                };
+                setTimeout(function() {
+                    // if the file can not be laoded, fail
+                    if(!isLoaded) {
+                        expect('Could not load file '+src).toEqual(false);
+                    }
+                }, 500);
+
+                // include in page
+                var pageScript=document.getElementsByTagName("script")[0];
+                pageScript.parentNode.insertBefore(script, pageScript);
+            };
+
+            // make an asyn test
+            var testPrepared = false;
+            runs(function() {
+                // load TraceKit before initializing Bancha
+                loadScript('../../webroot/js/tracekit/tracekit.js', function() {
+                    // init the error listeners
+                    h.init(); 
+
+                    // setup environment
+                    spyOn(Bancha, 'onError');
+                    Bancha.getRemoteApi().metadata._ServerDebugLevel = 0;
+
+                    // load an external js file with an error (via script tag, not ajax)
+                    loadScript('spec/javascripts/helpers/js-error-file.js', function() {
+                        testPrepared = true;
+                    });
+                });
+            });
+
+            waitsFor(function() {
+                return testPrepared;
+            }, 'Waiting to load external scripts', 10*100);
+
+            runs(function() {
+                // verify that the error was catched
+                expect(Bancha.onError).toHaveBeenCalled();
+                expect(Bancha.onError.mostRecentCall.args[0]).property('message').toEqual('Script error.');
+            });
+        });
+
+
 }); //eo describe basic functions
     
 //eof
