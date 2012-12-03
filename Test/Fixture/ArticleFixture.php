@@ -14,9 +14,9 @@
  */
 
 /**
- * Creates sample articles
+ * Bancha test fixture
  *
- * @package       Bancha.tests.fixtures
+ * @package       Bancha.Test.Fixture
  */
 class ArticleFixture extends CakeTestFixture {
 

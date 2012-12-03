@@ -14,9 +14,9 @@
  */
 
 /**
- * Creates sample tags
+ * Bancha test fixture
  *
- * @package       Bancha.tests.fixtures
+ * @package       Bancha.Test.Fixture
  */
 class TagFixture extends CakeTestFixture {
 

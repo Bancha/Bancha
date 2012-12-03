@@ -14,9 +14,9 @@
  */
 
 /**
- * Creates sample users
+ * Bancha test fixture
  *
- * @package       Bancha.tests.fixtures
+ * @package       Bancha.Test.Fixture
  */
 class UserFixture extends CakeTestFixture {
 
