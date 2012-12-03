@@ -294,12 +294,9 @@ if (!Array.prototype.reduce) {
  *         // when Bancha is ready, the model meta data is loaded
  *         // from the server and the model is created....
  *         Bancha.onModelReady('User', function(userModel) {
- *             // ... create a full featured users grid
- *             Ext.create('Ext.grid.Panel',{
- *                 scaffold: 'User',
- *                 title: 'User Grid',
- *                 renderTo: 'gridpanel'
- *             );
+ *             
+ *             ... your code ...
+ *             
  *         }); //eo onModelReady
  *     </script>
  *   
@@ -323,6 +320,7 @@ Ext.define('Bancha', {
     
     // IFDEBUG
     /**
+     * @private
      * @property
      * This property only exists in the debug version to indicate 
      * to jasmine tests that this is a debug version
@@ -345,9 +343,10 @@ Ext.define('Bancha', {
      */
     remoteApi: 'Bancha.REMOTE_API',
     /**
+     * @private
      * @property
-     * The path of the RCP for loading model meta data from the server, without the namespace. (Default: 'Bancha.loadMetaData')  
-     * Only change this if you renamed the server-side BanchaController or it's method
+     * This function should normally not be changed, it corresponds to the serverside BanchaController method.
+     * The path of the RCP for loading model meta data from the server, without the namespace. (Default: 'Bancha.loadMetaData')
      */
     metaDataLoadFunction: 'Bancha.loadMetaData',
     /**
@@ -357,14 +356,16 @@ Ext.define('Bancha', {
      */
     uidPropertyName: '_UID',
     /**
-     * @property
+     * @property {Null|String}
      * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API configuration on {@link Bancha#init}.  
      * null means no namespace, this is not recommanded. The namespace can be set in CakePHP: Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
      */
     namespace: null,
     /**
+     * @private
      * @property
      * The namespace in which all Bancha models are initialized to. Please only change BEFORE for creation of any Bancha model.
+     * There's normally no need to change this. (Default: 'Bancha.model')
      */
     modelNamespace: 'Bancha.model',
     /**
@@ -524,8 +525,8 @@ Ext.define('Bancha', {
 
             // load the api
             response = Ext.Ajax.request({
-                url : apiPath,
-                async : false
+                url: apiPath,
+                async: false
             });
 
             if(!foundApi) {
@@ -1076,7 +1077,7 @@ Ext.define('Bancha', {
     /**
      * Returns the current CakePHP debug level
      * 
-     * @param defaultValue {Number} (optional) The number to return if the Remote API is not yet initialized (Default: undefined)
+     * @param {Number} defaultValue (optional) The number to return if the Remote API is not yet initialized (Default: undefined)
      * @return the current debug level, or if not available the default
      */
     getDebugLevel: function(defaultValue) {
