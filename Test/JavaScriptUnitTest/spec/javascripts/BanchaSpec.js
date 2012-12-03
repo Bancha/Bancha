@@ -69,12 +69,14 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             
             expect(Bancha.getStub('User')).toEqual(Bancha.getStubsNamespace().User);
             
+            var handle = spyOn(Ext.Error, 'handle');
             try {
                 expect(Bancha.getStub('DoesntExist')).toBeUndefined();
             } catch(e) {
                 // in debug mode it throws an error
                 // perfect
             }
+            expect(handle).toHaveBeenCalled();
         });
 
         it("should initialize Bancha, if getStub() is used", function() {
