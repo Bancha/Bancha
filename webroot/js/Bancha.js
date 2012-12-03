@@ -1120,8 +1120,8 @@ Ext.define('Bancha', {
 	/**
      * Checks if a Bancha model is already created (convinience function)
      * 
-     * @param {String} The model name (without any namespace)
-     * @param {Boolean} True if the model exists
+     * @param {String} modelName The model name (without any namespace)
+     * @return {Boolean} True if the model exists
      */
 	isCreatedModel: function(modelName) {
 		return Ext.ClassManager.isCreated(Bancha.modelNamespace+'.'+modelName);
@@ -1368,7 +1368,7 @@ Ext.define('Bancha', {
         },
         /**
          * You can use this function to preload translations
-         * @param langCode a three letter language code, same as in cakephp (Default is currentLang property)
+         * @param {String} langCode a three letter language code, same as in cakephp (Default is currentLang property)
          */
         preloadLanguage: function(langCode) {
             if (!this.locales) {
@@ -1378,16 +1378,16 @@ Ext.define('Bancha', {
         },
         /**
          * @private
-         * @param langCode a three letter language code, same as in cakephp
-         * @param asnyc False to block while loading (Default: false)
-         * @return the loaded array of translations
+         * @param {String} langCode a three letter language code, same as in cakephp
+         * @param {Boolean} asnyc False to block while loading (Default: false)
+         * @return {Array} the loaded array of translations
          */
         loadLocaleStrings: function(locale, async) {
             var me = this, localeStrings;
             Ext.Ajax.request({
-                url : "/bancha/bancha/translations/" + locale + ".js",
-                async : async || false,
-                success : function(response) {
+                url: "/bancha/bancha/translations/" + locale + ".js",
+                async: async || false,
+                success: function(response) {
                     var entries = Ext.decode(response.responseText);
                     localeStrings = new Ext.util.HashMap();
                     Ext.each(entries, function(entry) {
@@ -1395,7 +1395,7 @@ Ext.define('Bancha', {
                     });
                     me.locales.add(locale, localeStrings);
                 },
-                failure : function() {
+                failure: function() {
                     me.locales.add(locale, false);
                     localeStrings = false;
                 }
@@ -1404,8 +1404,8 @@ Ext.define('Bancha', {
         },
         /**
          * @private
-         * @param langCode a three letter language code, same as in cakephp
-         * @return the loaded array of translations
+         * @param {String} langCode a three letter language code, same as in cakephp
+         * @return {Array} the loaded array of translations
          */
         getLocaleStrings: function(locale) {
             var me = this, localeStrings;
@@ -1428,9 +1428,9 @@ Ext.define('Bancha', {
         /**
          * Translates an given string to the given language, 
          * or the one set in Bancha.Localizer.currentLang.
-         * @param key the string to translate
-         * @param langCode a three letter language code, same as in 
-         *        cakephp (Default from Bancha.Localizer.currentLang)
+         * @param {String} key the string to translate
+         * @param {String} langCode a three letter language code, same as in 
+         *                 cakephp (Default from Bancha.Localizer.currentLang)
          */
         getLocalizedString: function(key, locale) {
             var me = this,
@@ -1459,8 +1459,8 @@ Ext.define('Bancha', {
          * (see {@link Bancha.Localizer.currentLang}.
          *
          * Additional arguments are used to replace %s (for string) and %d (for number).
-         * @param key the string to translate
-         * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
+         * @param {String} key the string to translate
+         * @param {String...} replacements An arbitrary number of additional strings to replace %s in the first one
          */
         getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
             // translate
@@ -1510,11 +1510,11 @@ Ext.define('Bancha', {
      * Additional arguments are used to replace %s (for string) and %d (for number).
      *
      * This is a convenience function for Bancha.Localizer.getLocalizedStringWithReplacements
-     * @param key the string to translate
-     * @param replacement1 An arbitrary number of additional strings to replace %s in the first one
+     * @param {String} key the string to translate
+     * @param {String...} replacements An arbitrary number of additional strings to replace %s in the first one
      * @member Bancha
      */
-    t : function(key,  replacement1, replacement2, replacement3) {
+    t: function(key,  replacement1, replacement2, replacement3) {
         return Bancha.Localizer.getLocalizedStringWithReplacements.apply(Bancha.Localizer, arguments);
     }
 });
