@@ -313,7 +313,8 @@ Ext.define('Bancha', {
     
     requires: [
         'Ext.data.*',
-        'Ext.direct.*'
+        'Ext.direct.*',
+        'Ext.MessageBox'
     ],
     /* End Definitions */
     
@@ -1100,6 +1101,8 @@ Ext.define('Bancha', {
      * If the debug level is bigger then zero and a console is availabe
      * it is written to the console. If no console is available it is
      * instead displayed as a Ext.Msg.alert.
+     *
+     * For convenience functions see also {link Bancha.log}
      * 
      * @param  {String}  message        The error message
      * @param  {String}  type           (optional) Either 'error', 'warn' or 'missing_translation' (default is 'error')

@@ -74,7 +74,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 expect(Bancha.getStub('DoesntExist')).toBeUndefined();
             } catch(e) {
                 // in debug mode it throws an error
-                // perfect
+                handle(e); // perfect
             }
             expect(handle).toHaveBeenCalled();
         });
