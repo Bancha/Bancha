@@ -7,7 +7,7 @@ App::uses('AppController', 'Controller');
  * @package       Bancha
  * @category      TestFixtures
  */
-class Articles2Controller extends AppController {
+class ArticlesController extends AppController {
 
 /**
  * index method

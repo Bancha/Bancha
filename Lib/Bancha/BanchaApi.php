@@ -244,7 +244,8 @@ class BanchaApi {
 	 * @param  string $controllerClass Name of the controller to load.
 	 * @return void
 	 */
-	protected function loadController($controllerClass) {	
+	protected function loadController($controllerClass) {
+		App::uses('AppController', 'Controller');
 		App::uses($controllerClass, 'Controller');
 
 		if (!class_exists($controllerClass)) {

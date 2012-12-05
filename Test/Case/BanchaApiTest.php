@@ -21,6 +21,7 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  * @category      tests
  */
 class BanchaApiTest extends CakeTestCase {
+    public $fixtures = array('plugin.bancha.article','plugin.bancha.articles_tag','plugin.bancha.user','plugin.bancha.tag');
 
 	public function testGetRemotableModels() {
 		$api = new BanchaApi();
@@ -152,9 +153,3 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertEquals('getAll', $remotableActions['Article'][0]['name']);
 	}
 }
-
-
-
-
-
-
