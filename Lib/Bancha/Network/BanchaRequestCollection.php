@@ -83,9 +83,6 @@ class BanchaRequestCollection {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
 
-				// CakePHP should think that every Bancha request is a POST request.
-				$_SERVER['REQUEST_METHOD'] = 'POST';
-
 				// Create CakeRequest and fill it with values from the transformer.
 				$requests[$i] = new CakeRequest($transformer->getUrl());
 				

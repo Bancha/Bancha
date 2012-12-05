@@ -37,6 +37,9 @@ class BanchaDispatcher {
 	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
 		$collection = new BanchaResponseCollection();
 
+		// CakePHP should think that every Bancha request is a POST request.
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
 			$skip_request = false;
