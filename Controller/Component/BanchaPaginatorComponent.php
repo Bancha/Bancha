@@ -64,6 +64,29 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 	protected $Controller;
 
 /**
+ * The initialize method fixes a conflict with the RequestHandler.
+ *
+ * The RequestHandler would overwrite the by Bancha set $request->data property
+ * to the whole Ext.Direct json data, instead of the correct request data only.
+ *
+ * So every time the request is made by Bancha we will disable the RequestHandler,
+ * if available.
+ * 
+ * @param  Controller $controller Controller with components to initialize
+ * @return void
+ */
+	public function initialize(Controller $controller) {
+		if(!isset($controller->request->params['isBancha']) || !$controller->request->params['isBancha']) {
+			// this is not a Bancha request, so nothing for us to do here
+			return;
+		}
+
+		// If there is a RequestHandler, deactivate all callbacks
+		if(isset($controller->RequestHandler)) {
+			$controller->Components->disable('RequestHandler');
+		}
+	}
+/**
  * Main execution method. Handles validating of allowed filter constraints.
  *
  * @param Controller $controller A reference to the instantiating controller object
