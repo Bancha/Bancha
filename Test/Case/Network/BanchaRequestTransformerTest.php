@@ -83,23 +83,58 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		// setup
 		$transformer = new BanchaRequestTransformer();
 		
+
+		// test a request without argumtens
+		$expected = array();
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+
 		
-		// test 1 inside a data property
-		$expected = array(
+		// test 1 input of type boolean
+		$expected = array(false);
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+		
+
+		// test input of type string
+		$expected = array('input string');
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+
+		
+		// test input of type number
+		$expected = array(-1);
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+
+		$expected = array(0);
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+
+		$expected = array(1);
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+
+		$expected = array(5);
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
+
+		
+		// test input of type array
+		$expected = array( // this is the real input data
 			'message' => 'value'
 		);
-		$input = array(
-			'data' => $expected
-		);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+			'data' => $expected, // ext writes all function arguments inside the data property
+		)));
 		
-		
-		// test 2 no data
-		$input = array(
-			'ignore' => 'me',
-		);
-		$expected = array();
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
 	}
 /**
  * Test input transformation for form data

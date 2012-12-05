@@ -363,14 +363,16 @@ class BanchaRequestTransformer {
 	}
 	
 	/**
-	 * Transform a Bancha request with one data element to cake structure
+	 * Ext.Direct writes the list of parameters to $data['data'].
+	 * Transform a Bancha request with model elements to cake structure,
 	 * otherwise just return the original response.
 	 * This function has no side-effects.
+	 * 
 	 *
 	 * @param $modelName The model name of the current request
 	 * @param $data The input request data from Bancha-ExtJS
 	 */
-	public function transformDataStructureToCake($modelName,$data) {
+	public function transformDataStructureToCake($modelName, $data) {
 		
 		// form uploads save all fields directly in the data array
 		if($this->isFormRequest()) {
@@ -382,18 +384,9 @@ class BanchaRequestTransformer {
 			);
 		}
 		
-		// non-form request
-		if( isset($data['data'][0]['data']) && !isset($data['data'][0]['data'][0])) {
-			// this is standard extjs-bancha structure, transform to cake
-			$data = array(
-				$modelName => $data['data'][0]['data']
-			);
-			// add request doesn't have an id in cake...
-			if($this->getAction()=='add') {
-				// ... so delete it
-				unset($data[$modelName]['id']);
-			}
-		} else if($this->isArray($data, '[data][0][data][0]')) {
+		// for non-form requests
+
+		if($this->isArray($data, '[data][0][data][0]')) {
 			// looks like someone is using the store with batchActions:true
 			if(Configure::read('Bancha.allowMultiRecordRequests') != true) {
 				throw new BanchaException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
@@ -412,11 +405,21 @@ class BanchaRequestTransformer {
 				);
 			}
 			$data = $result;
-			
-		} else if( isset($data['data'])) {
-			// some data from ext to just pass through
+		} else if($this->isArray($data,'[data][0][data]')) {
+			// this is standard extjs-bancha structure, transform to cake
+			$data = array(
+				$modelName => $data['data'][0]['data']
+			);
+			// add request doesn't have an id in cake...
+			if($this->getAction()=='add') {
+				// ... so delete it
+				unset($data[$modelName]['id']);
+			}
+		} else if(is_array($data) && isset($data['data'])) {
+			// some arbitrary data from ext to just pass through
 			$data = $data['data'];
 		} else {
+			// do data at all given
 			$data = array();
 		}
 		return $data;
