@@ -56,6 +56,19 @@ class BanchaResponseTransformer {
 	 */
 	public static function transformDataStructureToExt($modelName, $response) {
 		
+		// if we only got an array with a asuccess proeprty we expect 
+		// that this data is already in the correct format, so only 
+		// enfore that the success value is a boolean and we're done
+		if(is_array($response) && isset($response['success'])) {
+			
+			// enforce that the success value is of type boolean
+			$response['success'] = $response['success']==='false' ? false : !!$response['success'];
+
+			return $response; // everything done
+		}
+
+		// these are the cases where we transform data:
+
 		// understand primitive responses
 		if($response===true || $response===false) {
 			// this was an un-/successfull operation, return that to ext
@@ -63,54 +76,73 @@ class BanchaResponseTransformer {
 				'success' => $response,
 			);
 		}
+
+		// understand string and numeric responses
+		if(is_string($response) || is_numeric($response)) {
+			// this was an successfull operation with a string/number as data
+			return array(
+				'success' => true,
+				'data' => $response,
+			);
+		}
+
+		// this is a strange case, we got some class object, expect this should be the data
+		if(!is_array($response)) {
+			return array(
+				'success' => true,
+				'data' => $response,
+			);
+		}
 		
-		// expect a successfull operation, but check
-		$success = isset($response['success']) ? !!$response['success'] : true;
+		// we got some data array here, wrap it in the sencha response
+		// and try to transform it
+		$senchaResponse = array(
+			'success' => true,
+			'data' => $response
+		);
+
 		
 		if( isset($response[$modelName]) ) {
 			// this is standard cake single element structure
-			$response = array(
-				'success' => $success,
-				'data' => $response[$modelName]
-			);
+			$senchaResponse['data'] = $response[$modelName];
 			
-		} else if( isset($response['0'][$modelName]) ) {
+		} else if( isset($response['0']) && isset($response['0'][$modelName]) && 
+					is_array($response['0'][$modelName])) {
 			// this is standard cake multiple element structure
+
+			$conversionSuccessfull = true;
 			$data = array();
 			foreach($response as $record) {
+				if(!isset($record[$modelName]) || !is_array($record[$modelName])) {
+					// there are entries which does not have data, strange
+					$conversionSuccessfull = false;
+					break;
+				}
 				array_push($data, $record[$modelName]);
 			}
-			$response = array(
-				'success' => $success,
-				'data' => $data
-			);
-			
-		} else if( isset($response['records']) && 
-				(isset($response['records']['0'][$modelName]) || 							// paginagted records
-				(is_array($response['records']) && isset($response['count']) 
-											&& $response['count']==0))) {         // pagination with zero records
-			// this is a paging response
-			
-			// the records have standard cake structure, so get them
-			$data = BanchaResponseTransformer::transformDataStructureToExt($modelName,$response['records']);
 
-			// create response including the total number of records
-			$response = array(
-				'success' => $success,
-				'data'  => isset($data['data']) ? $data['data'] : $data, // second option is for empty responses
-				'total' => $response['count']
-			);
-		} else if(is_array($response) && count($response)===0) {
-			// this is an empty array, so expect that this is just a request without any found records
-			return array(
-				'success' => true,
-				'data' => array()
-			);
+			if($conversionSuccessfull) {
+				$senchaResponse['data'] = $data;
+			} else {
+				$senchaResponse['message'] = 'Expected the response to be multiple ' . $modelName . ' records, '.
+				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
+			}
+			
+		} else if( isset($response['records']) && isset($response['count']) && 
+				(isset($response['records']['0'][$modelName]) || 						// paginagted records with records
+				(is_array($response['records']) && $response['count']==0))) {   		// pagination with zero records
+			// this is a paging response
+
+			// the records have standard cake structure, so get them by using this function
+			$data = BanchaResponseTransformer::transformDataStructureToExt($modelName, $response['records']);
+			// now add only the data to the response
+			$senchaResponse['data'] = $data['data'];
+
+			// Include the total number of records
+			$senchaResponse['total'] = $response['count'];
 		}
-		// else the structure could not be recognized as any transformable data
-		// so output it as it is
-		
-		return $response;
+
+		return $senchaResponse;
 	}
 	
 	
