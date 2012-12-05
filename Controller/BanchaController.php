@@ -122,7 +122,7 @@ class BanchaController extends BanchaAppController {
 	public function loadMetaData() {
 		$models = isset($this->params['data'][0]) ? $this->params['data'][0] : null;
 		if ($models == null) {
-			return;
+			return false;
 		}
 		
 		// get the result
