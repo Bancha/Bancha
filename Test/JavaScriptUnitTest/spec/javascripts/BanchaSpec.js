@@ -167,34 +167,37 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             
             // now fake answer
             var result = {
-                PreloadTestUser: {
-                    fields: [
-                        {name:'id', type:'int'},
-                        {name:'name', type:'string'},
-                        {name:'login', type:'string'},
-                        {name:'created', type:'date'},
-                        {name:'email', type:'string'},
-                        {name:'avatar', type:'string'},
-                        {name:'weight', type:'float'},
-                        {name:'height', type:'float'}
-                    ],
-                    validations: [
-                        {type:'length', name:'name', min:4, max:64},
-                        {type:'length', name:'login', min:3, max:64},
-                        {type:'length', name:'email', min:5, max:64},
-                        {type:'length', name:'avatar', max:64},
-                        {type:'length', name:'weight', max:64}
-                    ],
-                    sorters: [{
-                        property: 'name',
-                        direction: 'ASC'
-                    }]
-                },
-                PreloadTestArticle: {
-                    fields: [
-                        {name:'id', type:'int'},
-                        {name:'name', type:'string'}
-                    ]
+                success: true,
+                data: {
+                    PreloadTestUser: {
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'},
+                            {name:'login', type:'string'},
+                            {name:'created', type:'date'},
+                            {name:'email', type:'string'},
+                            {name:'avatar', type:'string'},
+                            {name:'weight', type:'float'},
+                            {name:'height', type:'float'}
+                        ],
+                        validations: [
+                            {type:'length', name:'name', min:4, max:64},
+                            {type:'length', name:'login', min:3, max:64},
+                            {type:'length', name:'email', min:5, max:64},
+                            {type:'length', name:'avatar', max:64},
+                            {type:'length', name:'weight', max:64}
+                        ],
+                        sorters: [{
+                            property: 'name',
+                            direction: 'ASC'
+                        }]
+                    },
+                    PreloadTestArticle: {
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'}
+                        ]
+                    }
                 }
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
@@ -366,12 +369,15 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             
             // now fake answer
             var result = {
-                'OnModelReadyTestModel': {
-                    idProperty: 'id',
-                    fields: [
-                        {name:'id', type:'int'},
-                        {name:'name', type:'string'}
-                    ]
+                success: true,
+                data: {
+                    'OnModelReadyTestModel': {
+                        idProperty: 'id',
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'}
+                        ]
+                    }
                 }
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
@@ -410,20 +416,23 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             
             // now fake answer
             var result = {
-            'OnModelReadyMultipleModelsTestModel1': {
-                idProperty: 'id',
-                fields: [
-                    {name:'id', type:'int'},
-                    {name:'name', type:'string'}
-                ]
-            },
-            'OnModelReadyMultipleModelsTestModel2': {
-                idProperty: 'id',
-                fields: [
-                    {name:'id', type:'int'},
-                    {name:'name', type:'string'}
-                ]
-            }
+                success: true,
+                data: {
+                    'OnModelReadyMultipleModelsTestModel1': {
+                        idProperty: 'id',
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'}
+                        ]
+                    },
+                    'OnModelReadyMultipleModelsTestModel2': {
+                        idProperty: 'id',
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'}
+                        ]
+                    }
+                }
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
 
