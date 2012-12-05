@@ -831,7 +831,7 @@ Ext.define('Bancha', {
         cb = function(result, event) {
             
             // IFDEBUG
-            if(result===null) {
+            if(result===null || !result.success) {
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     result: result,
@@ -842,7 +842,7 @@ Ext.define('Bancha', {
             // ENDIF
         
             // save result
-            Ext.apply(Bancha.getRemoteApi().metadata,result);
+            Ext.apply(Bancha.getRemoteApi().metadata, result.data);
             
             // decode new stuff
             this.decodeMetadata(Bancha.getRemoteApi());
@@ -868,7 +868,7 @@ Ext.define('Bancha', {
                 if(!Ext.isDefined(scope)) {
                     scope = window;
                 }
-                callback.call(scope,result);
+                callback.call(scope, result.data);
             }
         };
         
