@@ -415,7 +415,7 @@ class BanchaRequestTransformer {
 				// ... so delete it
 				unset($data[$modelName]['id']);
 			}
-		} else if(is_array($data) && isset($data['data'])) {
+		} else if($this->isArray($data, '[data]')) {
 			// some arbitrary data from ext to just pass through
 			$data = $data['data'];
 		} else {
