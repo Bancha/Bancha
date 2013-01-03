@@ -126,7 +126,7 @@
     Ext.Loader.setPath('Bancha', path);
 
     if(paths['Bancha.Initializer']) {
-        // Sencha Architect 3
+        // Sencha Cmd 4 (probably with Sencha Architect 3)
         // Since there is a specific path for each file, Sencha Architect 3 with Sencha Cmd 4 is used
         // The new Sencha Cmd 4 writes all class pathes in bootstrap.js. Since Bancha files are outside
         // the webroot, the filesystem and dynamic web-loaded pathes don't match.
