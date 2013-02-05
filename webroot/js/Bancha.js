@@ -1627,63 +1627,67 @@ Ext.define('Bancha', {
 });
 
 
-/**
- * @singleton
- * @class Bancha.log
- *
- * This is not a class, but an overloaded function which logs a message.
- *
- * If the debug level is 0 (production mode) or forceServerlog is
- * true, and the type is not 'info', then the error will be send to 
- * the server and logged to app/tmp/logs/js_error.log (for types 
- * 'error' and 'warn') or app/tmp/logs/missing_translation.log 
- * (for type 'missing_translation').
- *
- * If the debug level is bigger then zero and a console is availabe
- * it is written to the console. If no console is available it is
- * instead displayed as a Ext.Msg.alert.
- * 
- * example usage:
- *     Bancha.log('My error message');
- *     Bancha.log('My info message','info');
- *     
- *     Bancha.log.info('My info message');
- *     Bancha.log.warn('My warning message');
- *     Bancha.log.error('My error message');
- * 
- */
-/**
- * Convenience function for logging with type 'info', see {@link Bancha.log}
- * 
- * @member Bancha.log
- * @param  {String}  message        The info message
- * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
- * @return void
- */
-Bancha.log.info = function(message, forceServerlog) {
-    Bancha.log(message, 'info', forceServerlog || false);
-};
-/**
- * Convenience function for logging with type 'warn', see {@link Bancha.log}
- * 
- * @member Bancha.log
- * @param  {String}  message        The warn message
- * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
- * @return void
- */
-Bancha.log.warn = function(message, forceServerlog) {
-    Bancha.log(message, 'warn', forceServerlog || false);
-};
-/**
- * Convenience function for logging with type 'error', see {@link Bancha.log}
- * 
- * @member Bancha.log
- * @param  {String}  message        The error message
- * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
- * @return void
- */
-Bancha.log.error = function(message, forceServerlog) {
-    Bancha.log(message, 'error', forceServerlog || false);
-};
+Ext.require([
+    'Bancha' // make sure Bancha is initialized before we can set up the shortcuts
+], function() {
+    /**
+     * @singleton
+     * @class Bancha.log
+     *
+     * This is not a class, but an overloaded function which logs a message.
+     *
+     * If the debug level is 0 (production mode) or forceServerlog is
+     * true, and the type is not 'info', then the error will be send to 
+     * the server and logged to app/tmp/logs/js_error.log (for types 
+     * 'error' and 'warn') or app/tmp/logs/missing_translation.log 
+     * (for type 'missing_translation').
+     *
+     * If the debug level is bigger then zero and a console is availabe
+     * it is written to the console. If no console is available it is
+     * instead displayed as a Ext.Msg.alert.
+     * 
+     * example usage:
+     *     Bancha.log('My error message');
+     *     Bancha.log('My info message','info');
+     *     
+     *     Bancha.log.info('My info message');
+     *     Bancha.log.warn('My warning message');
+     *     Bancha.log.error('My error message');
+     * 
+     */
+    /**
+     * Convenience function for logging with type 'info', see {@link Bancha.log}
+     * 
+     * @member Bancha.log
+     * @param  {String}  message        The info message
+     * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
+     * @return void
+     */
+    Bancha.log.info = function(message, forceServerlog) {
+        Bancha.log(message, 'info', forceServerlog || false);
+    };
+    /**
+     * Convenience function for logging with type 'warn', see {@link Bancha.log}
+     * 
+     * @member Bancha.log
+     * @param  {String}  message        The warn message
+     * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
+     * @return void
+     */
+    Bancha.log.warn = function(message, forceServerlog) {
+        Bancha.log(message, 'warn', forceServerlog || false);
+    };
+    /**
+     * Convenience function for logging with type 'error', see {@link Bancha.log}
+     * 
+     * @member Bancha.log
+     * @param  {String}  message        The error message
+     * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
+     * @return void
+     */
+    Bancha.log.error = function(message, forceServerlog) {
+        Bancha.log(message, 'error', forceServerlog || false);
+    };
+}); //eo require Bancha
 
 // eof
