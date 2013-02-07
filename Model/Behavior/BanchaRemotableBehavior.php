@@ -314,8 +314,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// and now add support for even another structure
 			// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
 			if(isset($values['rule'])) {
-				$values = array(
-					$values['rule'] => $values);
+				if(is_string($values['rule'])) { // this is the name of a validation rule
+					$values = array(
+						$values['rule'] => $values);
+				} else if(is_array($values['rule']) && is_string($values['rule'][0])) { // this is an array or name plus arguments
+					$values = array(
+						$values['rule'][0] => $values);
+				}
+				// otherwise the rule is malformed
 			}
 
 
