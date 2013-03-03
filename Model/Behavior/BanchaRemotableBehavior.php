@@ -599,11 +599,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 			if(!$valid) {
 				throw new BanchaException(
-					'Could nto find even one model field to save to database. Probably this occurs '.
-					'because you send from your own model or you one save invocation. Please use the '.
+					'You try to save a record, but Bancha is not able to find the data. Bancha could '.
+					'not find even one model field in the send data. Probably this occurs because you '.
+					'saved a record from your own model with a wrong configuration. Please use the '.
 					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
-					'you really have to create your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
-					'(Sencha Touch) is set to "data". <br /><br />'.
+					'you really have to create your own models, make sure that the JsonWriter property '.
+					'"root" (ExtJS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />'.
 					'Got following data to save: <br />'.print_r($Model->data,true));
 			}
 		} //eo debugging checks
