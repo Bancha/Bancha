@@ -4,7 +4,7 @@
  * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
- * @subpackage    Console
+ * @subpackage    Console.Command
  * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 1.0.1
@@ -14,7 +14,7 @@
 /**
  * Shell for I18N management.
  *
- * @package       Cake.Console.Command
+ * @package       Bancha.Console.Command
  */
 class Jsi18nShell extends AppShell {
 

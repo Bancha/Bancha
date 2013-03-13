@@ -13,6 +13,12 @@
 
 App::uses('ExtractTask', 'Console/Command/Task');
 
+/**
+ * This class represents a token for extracting translations from JavaScript.
+ * The class is used by BanchaExtractTask.
+ *
+ * @package       Bancha.Console.Command.Task
+ */
 class Bancha_JavaScriptToken {
 	public static $TYPE_ERROR = false;
 	public static $TYPE_STRING = 1;
@@ -608,8 +614,7 @@ class BanchaExtractTask extends ExtractTask {
 
 				// check strings if possible %s match given arguments
 				// if($arguments[0])
-				// TOD: $replacements = preg_match_all("%s", $singular, $matches);
-				// TODO
+				// TODO $replacements = preg_match_all("%s", $singular, $matches);
 				
 				// add the translation
 				
