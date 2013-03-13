@@ -1,5 +1,5 @@
 Bancha Project
-Copyright 2011-2012 StudioQ OG
+Copyright 2011-2013 StudioQ OG
 All rights reserved.
 mail@banchaproject.org
 
