@@ -1475,26 +1475,26 @@ Ext.define('Bancha', {
          */
         currentLang: 'eng',
         /**
-         * Returns the default language for {@link Bancha.Localizer#getLocaledStrings},
-         * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}
+         * Returns the default language for {@link Bancha.Localizer#getLocalizedString},
+         * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}.
          *
-         * @return {String} the three letter code of the current language, as in cakephp, e.g. 'eng'
+         * @return {String} The three letter code of the current language, as in cakephp, e.g. 'eng'
          */
         getCurrentLanguage: function() {
             return this.currentLang;
         },
         /**
-         * Sets a new default language for {@link Bancha.Localizer#getLocaledStrings},
-         * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}
+         * Sets a new default language for {@link Bancha.Localizer#getLocalizedString},
+         * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}.
          *
-         * @param {String} langthe three letter code of the new language, as in cakephp, e.g. 'eng'
+         * @param {String} lang The three letter code of the new language, as in cakephp, e.g. 'eng'
          */
         setCurrentLanguage: function(lang) {
             this.currentLang = lang;
         },
         /**
-         * You can use this function to preload translations
-         * @param {String} langCode a three letter language code, same as in cakephp (Default is {@link #currentLang} property)
+         * You can use this function to preload translations.
+         * @param {String} langCode A three letter language code, same as in cakephp (Default is {@link #currentLang} property)
          */
         preloadLanguage: function(langCode) {
             if (!this.locales) {
@@ -1504,7 +1504,7 @@ Ext.define('Bancha', {
         },
         /**
          * @private
-         * @param {String} langCode a three letter language code, same as in cakephp
+         * @param {String} langCode A three letter language code, same as in cakephp
          * @param {Boolean} asnyc False to block while loading (Default: false)
          * @return {Array} the loaded array of translations
          */
@@ -1530,7 +1530,7 @@ Ext.define('Bancha', {
         },
         /**
          * @private
-         * @param {String} langCode a three letter language code, same as in cakephp
+         * @param {String} langCode A three letter language code, same as in cakephp
          * @return {Array} the loaded array of translations
          */
         getLocaleStrings: function(locale) {
@@ -1557,7 +1557,7 @@ Ext.define('Bancha', {
          * If no locale is defined the language is taken from {@link #currentLang}.
          * 
          * @param {String} key The string to translate
-         * @param {String} langCode a three letter language code, same as in cakephp (Default from {@link #currentLang})
+         * @param {String} langCode A three letter language code, same as in cakephp (Default from {@link #currentLang})
          * @return {String} The translated string
          */
         getLocalizedString: function(key, locale) {
@@ -1589,7 +1589,7 @@ Ext.define('Bancha', {
          * Additional arguments are used to replace %s (for string) and %d (for number).
          *
          * @param {String} key The string to translate
-         * @param {String...} replacement1 An arbitrary number of additional strings used to replace %s (for string) and %d (for number) in the key string.
+         * @param {String...} replacements An arbitrary number of additional strings used to replace %s (for string) and %d (for number) in the key string.
          * @return {String} The translated string
          */
         getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
@@ -1640,8 +1640,9 @@ Ext.define('Bancha', {
      * Additional arguments are used to replace %s (for string) and %d (for number).
      *
      * This is a convenience function for {@link Bancha.Localizer#getLocalizedStringWithReplacements}.
+     * 
      * @param {String} key The string to translate
-     * @param {String...} replacement1 An arbitrary number of additional strings used to replace %s (for string) and %d (for number) in the key string.
+     * @param {String...} replacements An arbitrary number of additional strings used to replace %s (for string) and %d (for number) in the key string.
      * @return {String} The translated string
      * @member Bancha
      */
