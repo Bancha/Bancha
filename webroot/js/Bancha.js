@@ -906,7 +906,7 @@ Ext.define('Bancha', {
      * Loads and instanciates a model if not already done and then
      * calls the callback function.  
      * 
-     * If Bancha is not already initialized it will wait for link Ext.isReady
+     * If Bancha is not already initialized it will wait for {@link http://docs.sencha.com/ext-js/4-1/#!/api/Ext-property-isReady Ext.isReady}
      * and calls {@link Bancha#init} before model creation.  
      * 
      * See {@link Bancha Bancha class explaination} for an example.
@@ -1194,7 +1194,7 @@ Ext.define('Bancha', {
         window.console.log(typeText+': '+message);
     },
     /**
-     * In production mode (or if errors occur when Bancha is not initialized) this function will be called
+     * In production mode (or if errors occur when Bancha is not initialized) this function will be called. 
      * This function will log the error to the server and then throw it.
      * You can overwrite this function with your own implementation at any time.
      *
@@ -1246,8 +1246,8 @@ Ext.define('Bancha', {
      * 
      * @param {String} modelName The name of the model
      * @param {Object} modelConfig A standard Ext.data.Model config object
-                                     In ExtJS this will be directly applied.
-                                     In Sencha Touch this iwll be applied to the config property.
+                                   In ExtJS this will be directly applied.
+                                   In Sencha Touch this iwll be applied to the config property.
      * @return {Boolean} Returns true is model was created successfully
      */
     createModel: function(modelName, modelConfig) {
@@ -1468,15 +1468,15 @@ Ext.define('Bancha', {
      */
     Localizer: {
         /**
-         * @private
          * @property
-         * The default value for Bancha.t's langCode.
-         * Use the getter and setter methods!
+         * The default language code for translations.   
+         * Use the getter and setter methods!   
+         * (Default: 'eng')
          */
         currentLang: 'eng',
         /**
-         * Returns the default language for {@link Bancha.Localizer.getLocaleStrings},
-         * {@link Bancha.Localizer.getLocalizedStringWithReplacements} and {@link Bancha.t}
+         * Returns the default language for {@link Bancha.Localizer#getLocaledStrings},
+         * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}
          *
          * @return {String} the three letter code of the current language, as in cakephp, e.g. 'eng'
          */
@@ -1484,17 +1484,17 @@ Ext.define('Bancha', {
             return this.currentLang;
         },
         /**
-         * Sets a new default language for {@link Bancha.Localizer.getLocaleStrings},
-         * {@link Bancha.Localizer.getLocalizedStringWithReplacements} and {@link Bancha.t}
+         * Sets a new default language for {@link Bancha.Localizer#getLocaledStrings},
+         * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}
          *
-         * @param lang {String} the three letter code of the new language, as in cakephp, e.g. 'eng'
+         * @param {String} langthe three letter code of the new language, as in cakephp, e.g. 'eng'
          */
         setCurrentLanguage: function(lang) {
             this.currentLang = lang;
         },
         /**
          * You can use this function to preload translations
-         * @param {String} langCode a three letter language code, same as in cakephp (Default is currentLang property)
+         * @param {String} langCode a three letter language code, same as in cakephp (Default is {@link #currentLang} property)
          */
         preloadLanguage: function(langCode) {
             if (!this.locales) {
@@ -1552,11 +1552,13 @@ Ext.define('Bancha', {
             return localeStrings;
         },
         /**
-         * Translates an given string to the given language, 
-         * or the one set in Bancha.Localizer.currentLang.
-         * @param {String} key the string to translate
-         * @param {String} langCode a three letter language code, same as in 
-         *                 cakephp (Default from Bancha.Localizer.currentLang)
+         * Translates an given string to the given language.
+         * 
+         * If no locale is defined the language is taken from {@link #currentLang}.
+         * 
+         * @param {String} key The string to translate
+         * @param {String} langCode a three letter language code, same as in cakephp (Default from {@link #currentLang})
+         * @return {String} The translated string
          */
         getLocalizedString: function(key, locale) {
             var me = this,
@@ -1582,11 +1584,13 @@ Ext.define('Bancha', {
         },
         /**
          * Translates an given string the current language
-         * (see {@link Bancha.Localizer.currentLang}.
+         * (see {@link #currentLang}).
          *
          * Additional arguments are used to replace %s (for string) and %d (for number).
-         * @param {String} key the string to translate
-         * @param {String...} replacements An arbitrary number of additional strings to replace %s in the first one
+         *
+         * @param {String} key The string to translate
+         * @param {String...} replacement1 An arbitrary number of additional strings used to replace %s (for string) and %d (for number) in the key string.
+         * @return {String} The translated string
          */
         getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
             // translate
@@ -1629,15 +1633,16 @@ Ext.define('Bancha', {
             return result;
         }
     },
-    /** 
+    /**
      * Translates an given string the current language
-     * (see {@link Bancha.Localizer.currentLang}.
+     * (see {@link Bancha.Localizer#currentLang}).
      *
      * Additional arguments are used to replace %s (for string) and %d (for number).
      *
-     * This is a convenience function for Bancha.Localizer.getLocalizedStringWithReplacements
-     * @param {String} key the string to translate
-     * @param {String...} replacements An arbitrary number of additional strings to replace %s in the first one
+     * This is a convenience function for {@link Bancha.Localizer#getLocalizedStringWithReplacements}.
+     * @param {String} key The string to translate
+     * @param {String...} replacement1 An arbitrary number of additional strings used to replace %s (for string) and %d (for number) in the key string.
+     * @return {String} The translated string
      * @member Bancha
      */
     t: function(key,  replacement1, replacement2, replacement3) {
