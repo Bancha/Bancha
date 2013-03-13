@@ -1235,6 +1235,9 @@ Ext.define('Bancha', {
 	},
 	
     /**
+     * @deprecated Please only define your model on the backend to have a clean separation of concerns. 
+     * This function will be removed soon.
+     * 
      * This method creates a {@link Bancha.data.Model} with your additional model configs,
      * if you don't have any additional configs just use the convienience method {@link #getModel}.  
      * 
@@ -1256,6 +1259,12 @@ Ext.define('Bancha', {
             stub,
             idProperty;
         
+        // IFDEBUG
+        if(Ext.isDefined(modelConfig) && Ext.Logger && Ext.Logger.deprecate) {
+            Ext.Logger.deprecate('Bancha.created is deprecated and will be removed soon. Please only define your model on the backend to have a clean separation of concerns.', 1);
+        }
+        // ENDIF
+
         if(!Bancha.initialized) {
             Bancha.init();
         }
