@@ -1257,7 +1257,8 @@ Ext.define('Bancha', {
             safeDirectFn,
             // ENDIF
             stub,
-            idProperty;
+            idProperty,
+            configWithRootPropertySet;
         
         // IFDEBUG
         if(Ext.isDefined(modelConfig) && Ext.Logger && Ext.Logger.deprecate) {
@@ -1355,7 +1356,22 @@ Ext.define('Bancha', {
             return fakeFn;
         }; 
         // ENDIF
-        
+
+        // Sencha Touch uses the new rootProperty property for configuring the reader and writer
+        // ExtJS still uses root. 
+        // This all would be fine, but now Sencha Touch throws deprecated warning for using the old
+        // ExtJS syntax, so we can't just assign both anymore, instead we need to create a config
+        // prototype here
+        if(Ext.versions.touch) {
+            configWithRootPropertySet = {
+                rootProperty: 'data'
+            };
+        } else {
+            configWithRootPropertySet = {
+                root: 'data'
+            };
+        }
+
         // create the metadata
         modelConfig = modelConfig || {};
         stub = this.getStubsNamespace()[modelName];
@@ -1390,23 +1406,17 @@ Ext.define('Bancha', {
                 // IFDEBUG
                 directFn: safeDirectFn(stub,'read',modelName),
                 // ENDIF
-                reader: {
+                reader: Ext.apply({
                     type: 'json',
-                    root: 'data', // <-- this is for ExtJS
-                    rootProperty: 'data', // <-- this is for Sencha Touch
                     messageProperty: 'message'
-                },
-                writer: (modelConfig.forceConsistency) ? {
+                }, configWithRootPropertySet),
+                writer: (modelConfig.forceConsistency) ? Ext.apply({
                     type: 'consitentjson',
-                    writeAllFields: false,
-                    root: 'data', // <-- this is for ExtJS
-                    rootProperty: 'data' // <-- this is for Sencha Touch
-                } : {
+                    writeAllFields: false
+                }, configWithRootPropertySet) : Ext.apply({
                     type: 'jsondate',
-                    writeAllFields: false,
-                    root: 'data', // <-- this is for ExtJS
-                    rootProperty: 'data' // <-- this is for Sencha Touch
-                },
+                    writeAllFields: false
+                }, configWithRootPropertySet),
                 listeners: {
                     exception: this.onRemoteException || Ext.emptyFn
                 }
