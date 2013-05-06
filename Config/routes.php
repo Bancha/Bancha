@@ -24,15 +24,16 @@
  */
 if(Router::extensions() !== true) { // if all extensions are supported we are done
 
-	// add json to the extensions
+	// add json and javascript to the extensions
 	$extensions = Router::extensions();
 	if(!is_array($extensions)) {
-		$extensions = array('json');
+		$extensions = array('json','js');
 	} else {
-		array_push($extensions, 'Json');
+		array_push($extensions, 'json');
+		array_push($extensions, 'js');
 	}
 
-	Router::parseExtensions($extensions);
+	call_user_func_array('Router::parseExtensions', $extensions);
 }
 
 
