@@ -1090,19 +1090,7 @@ Ext.define('Bancha', {
         return (api && api.metadata && Ext.isDefined(api.metadata._ServerDebugLevel)) ? api.metadata._ServerDebugLevel : defaultValue;
     },
     /**
-     * This function logs a message.
-     *
-     * If the debug level is 0 (production mode) or forceServerlog is
-     * true, and the type is not 'info', then the error will be send to 
-     * the server and logged to app/tmp/logs/js_error.log (for types 
-     * 'error' and 'warn') and app/tmp/logs/missing_translation.log 
-     * (for type 'missing_translation').
-     *
-     * If the debug level is bigger then zero and a console is availabe
-     * it is written to the console. If no console is available it is
-     * instead displayed as a Ext.Msg.alert.
-     *
-     * For convenience functions see also {link Bancha.log}
+     * This is a synonym for {Bancha.Logger.log}
      * 
      * @param  {String}  message        The error message
      * @param  {String}  type           (optional) Either 'error', 'warn' or 'missing_translation' (default is 'error')
@@ -1110,88 +1098,19 @@ Ext.define('Bancha', {
      * @return void
      */
     log: function(message, type, forceServerlog) {
-        type = type || 'error';
-
-        if(Bancha.getDebugLevel(0)===0 || forceServerlog) {
-            if(type === 'info') {
-                return; // don't log info messages
+        if(!Bancha.Logger) {
+            // IFDEBUG
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Tried to use Bancha.log, but the necessarry class Bancha.Logger is not present'
+            });
+            // ENDIF
+            if(window.console && window.console.error) {
+                window.console.error('Tried to use Bancha.log, but the necessarry class Bancha.Logger is not present');
             }
-
-            // log the error to the server
-
-            // if not yet initalized try to initialize
-            if(!Bancha.initialized) {
-                try {
-                    Bancha.init();
-                } catch(error) {
-                    // Bancha could not be initialized and we are in production mode
-                    // suppress everything, and try to write to the console
-                    Bancha.logToConsole(message, type);
-                    return;
-                }
-            }
-
-            // ok, now log it to the server
-            var serverType = type==='missing_translation' ? type : 'js_error';
-            message = (type==='warn' ? 'WARNING: ' : '') + message;
-            Bancha.getStub('Bancha').logError(message, serverType);
             return;
         }
-
-        // in debug mode
-        Bancha.logToBrowser(message, type);
-
-    },
-    /**
-     * @private
-     * This function writes logging information to the console or browser window.
-     * 
-     * If the console is availabe writes it there. If no console is available 
-     * it is instead displayed as a Ext.Msg.alert.
-     * 
-     * @param  String message The logging message
-     * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
-     * @return void
-     */
-    logToBrowser: function(message, type) {
-        type = type || 'error';
-        var typeText = type.replace(/_/,' ').toUpperCase();
-
-        if(window.console && typeof window.console.log === 'function') {
-            // just use the console
-            Bancha.logToConsole(message, type);
-        } else {
-            // There is no console, use alert
-            Ext.Msg.alert(typeText, message);
-        }
-    },
-    /**
-     * @private
-     * A wrapper for the window.console method
-     * 
-     * @param  String message The logging message
-     * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
-     * @return void
-     */
-    logToConsole: function(message, type) {
-        type = type || 'error';
-        var typeText = type.replace(/_/,' ').toUpperCase();
-
-        if(type==='error' && typeof window.console.error === 'function') {
-            window.console.error(message);
-            return;
-        }
-        if((type==='warn' || type==='missing_translation') && typeof window.console.warn === 'function') {
-            window.console.warn((type==='missing_translation' ? 'MISSING TRANSLATION: ' : '') + message);
-            return;
-        }
-        if(type==='info' && typeof window.console.info === 'function') {
-            window.console.info(message);
-            return;
-        }
-        
-        // there is no specific log function, use default log
-        window.console.log(typeText+': '+message);
+        return Bancha.Logger.log.apply(Bancha.Logger,arguments);
     },
     /**
      * In production mode (or if errors occur when Bancha is not initialized) this function will be called. 
@@ -1649,70 +1568,195 @@ Ext.define('Bancha', {
     t: function(key,  replacement1, replacement2, replacement3) {
         return Bancha.Localizer.getLocalizedStringWithReplacements.apply(Bancha.Localizer, arguments);
     }
+}, function() {
+    /*
+     * The Bancha class callback
+     * Create deprecated warnings for old Bancha.log.*
+     */
+
+    // now initialize all deprecated log functions
+    Bancha.log.info = function(msg) {
+        Ext.Logger.deprecate('Bancha.log.info is deprecated in flavor of Bancha.Logger.info', 1);
+        if(Bancha.Logger) {
+            Bancha.Logger.info.apply(Bancha.Logger, arguments);
+        } else {
+            Ext.Logger.info(msg);
+        }
+    };
+    Bancha.log.warn = function(msg) {
+        Ext.Logger.deprecate('Bancha.log.warn is deprecated in flavor of Bancha.Logger.warn', 1);
+        if(Bancha.Logger) {
+            Bancha.Logger.warn.apply(Bancha.Logger, arguments);
+        } else {
+            Ext.Logger.warn(msg);
+        }
+    };
+    Bancha.log.error = function(msg) {
+        Ext.Logger.deprecate('Bancha.log.error is deprecated in flavor of Bancha.Logger.error', 1);
+        if(Bancha.Logger) {
+            Bancha.Logger.error.apply(Bancha.Logger, arguments);
+        } else {
+            Ext.Logger.error(msg);
+        }
+    };
 });
 
 
-Ext.require([
-    'Bancha' // make sure Bancha is initialized before we can set up the shortcuts
-], function() {
+
+
+/**
+ * @singleton
+ * @class Bancha.Logger
+ *
+ * This class encalpsulates some logging features.
+ * For more see {Bancha.Logger.log}
+ * 
+ * example usage:
+ *     Bancha.log('My error message');
+ *     Bancha.log('My info message','info');
+ *     
+ *     Bancha.Logger.info('My info message');
+ *     Bancha.Logger.warn('My warning message');
+ *     Bancha.Logger.error('My error message');
+ * 
+ */
+Ext.define('Bancha.Logger', {
+    singleton: true,
+    requires: [
+        'Bancha'
+    ],
     /**
-     * @singleton
-     * @class Bancha.log
+     * This function logs a message.
      *
-     * This is not a class, but an overloaded function which logs a message.
-     *
-     * If the debug level is 0 (production mode) or forceServerlog is
+     * If the CakePHP debug level is 0 (production mode) or forceServerlog is
      * true, and the type is not 'info', then the error will be send to 
      * the server and logged to app/tmp/logs/js_error.log (for types 
-     * 'error' and 'warn') or app/tmp/logs/missing_translation.log 
+     * 'error' and 'warn') and app/tmp/logs/missing_translation.log 
      * (for type 'missing_translation').
      *
      * If the debug level is bigger then zero and a console is availabe
      * it is written to the console. If no console is available it is
      * instead displayed as a Ext.Msg.alert.
      * 
-     * example usage:
-     *     Bancha.log('My error message');
-     *     Bancha.log('My info message','info');
-     *     
-     *     Bancha.log.info('My info message');
-     *     Bancha.log.warn('My warning message');
-     *     Bancha.log.error('My error message');
-     * 
+     * @param  {String}  message        The error message
+     * @param  {String}  type           (optional) Either 'error', 'warn' or 'missing_translation' (default is 'error')
+     * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
+     * @return void
      */
+    log: function(message, type, forceServerlog) {
+        type = type || 'error';
+
+        if(Bancha.getDebugLevel(0)===0 || forceServerlog) {
+            if(type === 'info') {
+                return; // don't log info messages
+            }
+
+            // log the error to the server
+
+            // if not yet initalized try to initialize
+            if(!Bancha.initialized) {
+                try {
+                    Bancha.init();
+                } catch(error) {
+                    // Bancha could not be initialized and we are in production mode
+                    // suppress everything, and try to write to the console
+                    Bancha.Logger.logToConsole(message, type);
+                    return;
+                }
+            }
+
+            // ok, now log it to the server
+            var serverType = type==='missing_translation' ? type : 'js_error';
+            message = (type==='warn' ? 'WARNING: ' : '') + message;
+            Bancha.getStub('Bancha').logError(message, serverType);
+            return;
+        }
+
+        // in debug mode
+        Bancha.Logger.logToBrowser(message, type);
+
+    },
     /**
-     * Convenience function for logging with type 'info', see {@link Bancha.log}
+     * Convenience function for logging with type 'info', see {@link Bancha.Logger.log}
      * 
-     * @member Bancha.log
      * @param  {String}  message        The info message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
      * @return void
      */
-    Bancha.log.info = function(message, forceServerlog) {
-        Bancha.log(message, 'info', forceServerlog || false);
-    };
+    info: function(message, forceServerlog) {
+        Bancha.Logger.log(message, 'info', forceServerlog || false);
+    },
     /**
-     * Convenience function for logging with type 'warn', see {@link Bancha.log}
+     * Convenience function for logging with type 'warn', see {@link Bancha.Logger.log}
      * 
-     * @member Bancha.log
      * @param  {String}  message        The warn message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
      * @return void
      */
-    Bancha.log.warn = function(message, forceServerlog) {
-        Bancha.log(message, 'warn', forceServerlog || false);
-    };
+    warn: function(message, forceServerlog) {
+        Bancha.Logger.log(message, 'warn', forceServerlog || false);
+    },
     /**
-     * Convenience function for logging with type 'error', see {@link Bancha.log}
+     * Convenience function for logging with type 'error', see {@link Bancha.Logger.log}
      * 
-     * @member Bancha.log
      * @param  {String}  message        The error message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
      * @return void
      */
-    Bancha.log.error = function(message, forceServerlog) {
-        Bancha.log(message, 'error', forceServerlog || false);
-    };
-}); //eo require Bancha
+    error: function(message, forceServerlog) {
+        Bancha.Logger.log(message, 'error', forceServerlog || false);
+    },
+    /**
+     * @private
+     * This function writes logging information to the console or browser window.
+     * 
+     * If the console is availabe writes it there. If no console is available 
+     * it is instead displayed as a Ext.Msg.alert.
+     * 
+     * @param  String message The logging message
+     * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
+     * @return void
+     */
+    logToBrowser: function(message, type) {
+        type = type || 'error';
+        var typeText = type.replace(/_/,' ').toUpperCase();
+
+        if(window.console && typeof window.console.log === 'function') {
+            // just use the console
+            Bancha.Logger.logToConsole(message, type);
+        } else {
+            // There is no console, use alert
+            Ext.Msg.alert(typeText, message);
+        }
+    },
+    /**
+     * @private
+     * A wrapper for the window.console method
+     * 
+     * @param  String message The logging message
+     * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
+     * @return void
+     */
+    logToConsole: function(message, type) {
+        type = type || 'error';
+        var typeText = type.replace(/_/,' ').toUpperCase();
+
+        if(type==='error' && typeof window.console.error === 'function') {
+            window.console.error(message);
+            return;
+        }
+        if((type==='warn' || type==='missing_translation') && typeof window.console.warn === 'function') {
+            window.console.warn((type==='missing_translation' ? 'MISSING TRANSLATION: ' : '') + message);
+            return;
+        }
+        if(type==='info' && typeof window.console.info === 'function') {
+            window.console.info(message);
+            return;
+        }
+        
+        // there is no specific log function, use default log
+        window.console.log(typeText+': '+message);
+    }
+});
 
 // eof
