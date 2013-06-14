@@ -1,10 +1,14 @@
 <?php
 /**
- * Index
+ * Bancha Front Controller
  *
- * The Front Controller for handling every request
+ * The Front Controller for handling every request from Sencha Touch or ExtJS.
+ * This file should be copied to the app/webroot directory.
  *
- * PHP versions 4 and 5
+ * This is modified version of CakePHPs webroot/index.php
+ * Supports CakePHP 2.0.0 till latest
+ *
+ * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Bancha : Ext JS and Cake PHP (http://banchaproject.org)
@@ -18,8 +22,8 @@
  * @link          http://cakephp.org CakePHP(tm) Project
  * @link 		  http://banchaproject.org Bancha Project
  * @package       Bancha
- * @subpackage    Bancha.app.webroot
- * @since         CakePHP(tm) v 0.2.9
+ * @subpackage    Bancha._app.webroot
+ * @since         Bancha v 0.9.1
  */
 
 
@@ -36,9 +40,9 @@ if(isset($_GET['setup-check']) && $_GET['setup-check']) {
 /**
  * Use the DS to separate the directories in other defines
  */
-	if (!defined('DS')) {
-		define('DS', DIRECTORY_SEPARATOR);
-	}
+if (!defined('DS')) {
+	define('DS', DIRECTORY_SEPARATOR);
+}
 /**
  * These defines should only be edited if you have cake installed in
  * a directory layout other than the way it is distributed.
@@ -49,72 +53,95 @@ if(isset($_GET['setup-check']) && $_GET['setup-check']) {
  * The full path to the directory which holds "app", WITHOUT a trailing DS.
  *
  */
-	if (!defined('ROOT')) {
-		define('ROOT', dirname(dirname(dirname(__FILE__))));
-	}
+if (!defined('ROOT')) {
+	define('ROOT', dirname(dirname(dirname(__FILE__))));
+}
 
 /**
  * The actual directory name for the "app".
  *
  */
-	if (!defined('APP_DIR')) {
-		define('APP_DIR', basename(dirname(dirname(__FILE__))));
-	}
+if (!defined('APP_DIR')) {
+	define('APP_DIR', basename(dirname(dirname(__FILE__))));
+}
 /**
  * The absolute path to the "cake" directory, WITHOUT a trailing DS.
  *
+ * Un-comment this line to specify a fixed path to CakePHP.
+ * This should point at the directory containing `Cake`.
+ *
+ * For ease of development CakePHP uses PHP's include_path.  If you
+ * cannot modify your include_path set this value.
+ *
+ * Leaving this constant undefined will result in it being defined in Cake/bootstrap.php
  */
-	if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-		define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
-	}
+	//define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
 
 /**
  * Editing below this line should NOT be necessary.
  * Change at your own risk.
  *
  */
-	if (!defined('WEBROOT_DIR')) {
-		define('WEBROOT_DIR', basename(dirname(__FILE__)));
+if (!defined('WEBROOT_DIR')) {
+	define('WEBROOT_DIR', basename(dirname(__FILE__)));
+}
+if (!defined('WWW_ROOT')) {
+	define('WWW_ROOT', dirname(__FILE__) . DS);
+}
+
+// for built-in server (added in CakePHP 2.3)
+if (php_sapi_name() == 'cli-server') {
+	if ($_SERVER['REQUEST_URI'] !== '/' && file_exists(WWW_ROOT . $_SERVER['REQUEST_URI'])) {
+		return false;
 	}
-	if (!defined('WWW_ROOT')) {
-		define('WWW_ROOT', dirname(__FILE__) . DS);
+	$_SERVER['PHP_SELF'] = '/' . basename(__FILE__);
+}
+
+if (!defined('CAKE_CORE_INCLUDE_PATH')) {
+	if (function_exists('ini_set')) {
+		ini_set('include_path', ROOT . DS . 'lib' . PATH_SEPARATOR . ini_get('include_path'));
 	}
-	if (!defined('CORE_PATH')) {
-		/*if (function_exists('ini_set') && ini_set('include_path', CAKE_CORE_INCLUDE_PATH . PATH_SEPARATOR . ROOT . DS . APP_DIR . DS . PATH_SEPARATOR . ini_get('include_path'))) {
-			define('APP_PATH', null);
-			define('CORE_PATH', null);
-		} else {*/
-			define('APP_PATH', ROOT . DS . APP_DIR . DS);
-			define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
-		//}
+	if (!include ('Cake' . DS . 'bootstrap.php')) {
+		$failed = true;
 	}
-	if (!include(CORE_PATH . 'Cake' . DS . 'bootstrap.php')) {
-		trigger_error("CakePHP core could not be found.  Check the value of CAKE_CORE_INCLUDE_PATH in APP/webroot/index.php.  It should point to the directory containing your " . DS . "cake core directory and your " . DS . "vendors root directory.", E_USER_ERROR);
+} else {
+	if (!include (CAKE_CORE_INCLUDE_PATH . DS . 'Cake' . DS . 'bootstrap.php')) {
+		$failed = true;
 	}
-	
-	// load bootstrap of bancha after cake and app bootstrap is loaded above
-	$failedLoadingBootstrap = true;
-	if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
-		// Bancha is in the general plugins folder
-		$failedLoadingBootstrap = !include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php');
-	} else if (file_exists(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
-		// Bancha is in the app Plugin folder
-		$failedLoadingBootstrap = !include(APP_PATH . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php');
+}
+if (!empty($failed)) {
+	trigger_error("CakePHP core could not be found.  Check the value of CAKE_CORE_INCLUDE_PATH in APP/webroot/bancha-dispatcher.php.  It should point to the directory containing your " . DS . "cake core directory and your " . DS . "vendors root directory.", E_USER_ERROR);
+}
+
+/**
+ * On top of the normal boostrap Bancha will also load it's own bootstrap
+ */
+// first we need to find where Bancha is located
+if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+	// Bancha is in the general plugins folder
+	if(!include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+		$failed = true;
 	}
-	if ($failedLoadingBootstrap) {
-		trigger_error("Bancha bootstrap could not be loaded.  
-		Check the value of ROOT in APP/webroot/index.php.  
-		It should point to the directory containing your " . DS . " ROOT directory and your " . DS . "vendors root directory.", E_USER_ERROR);
+} else if (file_exists(APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+	// Bancha is in the app Plugin folder
+	if(!include(APP_DIR . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+		$failed = true;
 	}
-	
-	
-	if (isset($_GET['url']) && $_GET['url'] === 'favicon.ico') {
-		return;
-	} else {
-		$Dispatcher = new BanchaDispatcher();
-		$raw_post_data = file_get_contents("php://input");
-		$Dispatcher->dispatch(new BanchaRequestCollection(
-			$raw_post_data  ? $raw_post_data : '',
-			isset($_POST) ? $_POST : array()
-		));
-	}
+}
+if (!empty($failed)) {
+	trigger_error("Bancha bootstrap could not be found. Check the value of ROOT or APP_DIR in APP/webroot/bancha-dispatcher.php.  It should point to the directory containing your " . DS . " ROOT or APP_DIR directory.", E_USER_ERROR);
+}
+
+// load the dispatcher and request colletion
+App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
+App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
+
+// this shouldn't be necessary, but sometime it is.. not sure why
+App::import('Controller', 'Bancha.Bancha');
+
+$Dispatcher = new BanchaDispatcher();
+$raw_post_data = file_get_contents("php://input");
+$Dispatcher->dispatch(new BanchaRequestCollection(
+	$raw_post_data  ? $raw_post_data : '',
+	isset($_POST) ? $_POST : array()
+));
