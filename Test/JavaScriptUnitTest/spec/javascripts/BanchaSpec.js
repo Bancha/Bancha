@@ -16,7 +16,7 @@
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
 /*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
 
-describe("Bancha Singleton - basic retrieval functions on the stubs and model meta data", function() {
+describe("Bancha Singleton - basic retrieval functions on the stubs and model metadata.", function() {
         var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
             h = BanchaSpecHelper; // helper shortcut
     
@@ -88,6 +88,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         });
     
         it("should in debug mode return an expection when calling getRemoteApi() before init()", function() {
+            // The RemoteApi to was already set during the startup to correctly load dependencies
+            // so unset it first
+            Bancha.REMOTE_API = undefined;
+            // now test
             if(Bancha.debugVersion) {
                 expect(function() {
                     Bancha.getRemoteApi();
@@ -153,23 +157,44 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         });
 
     
-        it("should preload model meta data using the direct stub", function() {
+        it("should initialize Bancha, if loadModelMetaData() is used", function() {
+            // prepare remote api for beeing initialized
+            Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
+
+            // make sure it is not yet
+            expect(Bancha.initialized).toBeFalsy();
+
+            // trigger initialization
+            Bancha.loadModelMetaData(['LoadMetaDataInitializationTest'],Ext.emptyFn,{},true); // use sync for ajax
+
+            expect(Bancha.initialized).toBeTruthy();
+        });
+
+        it("should load model metadata using the direct stub in async mode.", function() {
             h.init();
       
             // create direct stub mock
             var mock = Mock.Proxy();
-            mock.expectRPC("loadMetaData",['PreloadTestUser','PreloadTestArticle']);
+            mock.expectRPC("loadMetaData",['LoadTestUser','LoadTestArticle']);
             Bancha.RemoteStubs.Bancha = mock;
             
+            // create callback
+            var scope = {
+                scopedExecution: false,
+                callback: function() {
+                    this.scopedExecution = true;
+                }
+            };
+
             // execute test
-            Bancha.preloadModelMetaData(['PreloadTestUser','PreloadTestArticle']);
+            Bancha.loadModelMetaData(['LoadTestUser','LoadTestArticle'], scope.callback, scope, false);
             mock.verify();
             
             // now fake answer
             var result = {
                 success: true,
                 data: {
-                    PreloadTestUser: {
+                    LoadTestUser: {
                         fields: [
                             {name:'id', type:'int'},
                             {name:'name', type:'string'},
@@ -192,7 +217,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                             direction: 'ASC'
                         }]
                     },
-                    PreloadTestArticle: {
+                    LoadTestArticle: {
                         fields: [
                             {name:'id', type:'int'},
                             {name:'name', type:'string'}
@@ -202,29 +227,120 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
             
-            // now see if is is available
-            expect(Bancha.modelMetaDataIsLoaded('PreloadTestUser')).toBeTruthy();
-            expect(Bancha.modelMetaDataIsLoaded('PreloadTestArticle')).toBeTruthy();
-        
-            // check model by sample field
-            expect(Bancha.getModelMetaData('PreloadTestUser')).property('fields.2.name').toEqual('login');
+            // check callback
+            expect(scope.scopedExecution).toBeTruthy();
         });
     
-    
-        it("should allow to just give a string as argument when preloading only one model meta data", function() {
+
+        it("should allow to just give a string as argument when loading only one model metadata.", function() {
             h.init();
       
             // create direct stub mock
             var mock = Mock.Proxy();
-            mock.expectRPC("loadMetaData",['PreloadSingleTestUser']);
+            mock.expectRPC("loadMetaData",['LoadSingleTestUser']);
             Bancha.RemoteStubs.Bancha = mock;
 
             // execute test
-            Bancha.preloadModelMetaData('PreloadSingleTestUser');
+            Bancha.loadModelMetaData('LoadSingleTestUser');
             mock.verify();
         });
     
+
+        it("should be able to translate model metadata requires into ajax urls", function() {
+            // in the project root
+            Bancha.REMOTE_API = {
+                url: '/bancha-dispatcher.php'
+            };
+            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser'])).toEqual('/bancha-load-metadata/[LoadTestUser].js');
+            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).toEqual('/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
+
+            // in a sub directory
+            Bancha.REMOTE_API = {
+                url: '/my/subdir/bancha-dispatcher.php'
+            };
+            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser'])).toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser].js');
+            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
+        });
+
+        it("should load model metadata using the ajax in syncEnabled mode.", function() {
+            h.init();
+      
+            // create ajax spy
+            var loadFn = spyOn(Ext.Ajax, 'request');
+            
+            // create callback
+            var scope = {
+                scopedExecution: false,
+                callback: function() {
+                    this.scopedExecution = true;
+                }
+            };
+
+            // execute test
+            Bancha.loadModelMetaData(['LoadTestUser','LoadTestArticle'], scope.callback, scope, true);
+            expect(loadFn).toHaveBeenCalled();
+            expect(loadFn.mostRecentCall.args[0].url).toEqual('/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
+            expect(loadFn.mostRecentCall.args[0].async).toEqual(false);
+
+            // now fake answer
+            var response = {
+                responseText: Ext.encode({
+                    LoadTestUser: {
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'},
+                            {name:'login', type:'string'},
+                            {name:'created', type:'date'},
+                            {name:'email', type:'string'},
+                            {name:'avatar', type:'string'},
+                            {name:'weight', type:'float'},
+                            {name:'height', type:'float'}
+                        ],
+                        validations: [
+                            {type:'length', name:'name', min:4, max:64},
+                            {type:'length', name:'login', min:3, max:64},
+                            {type:'length', name:'email', min:5, max:64},
+                            {type:'length', name:'avatar', max:64},
+                            {type:'length', name:'weight', max:64}
+                        ],
+                        sorters: [{
+                            property: 'name',
+                            direction: 'ASC'
+                        }]
+                    },
+                    LoadTestArticle: {
+                        fields: [
+                            {name:'id', type:'int'},
+                            {name:'name', type:'string'}
+                        ]
+                    }
+                }) //eo responseText
+            }; //eo response
+
+            // trigger the ajax onLoaded callback
+            loadFn.mostRecentCall.args[0].success(response);
+            
+            // check custom callback
+            expect(scope.scopedExecution).toBeTruthy();
+            
+        });
     
+
+        it("should support (the already deprecated) preloadModelMetaData function.", function() {
+            var loadFn = spyOn(Bancha, 'loadModelMetaData'),
+                callback = function() {},
+                scope = {};
+
+            // test
+            Bancha.preloadModelMetaData('LoadSingleTestUser', callback, scope);
+            expect(loadFn).toHaveBeenCalled();
+            expect(loadFn.mostRecentCall.args[0]).toEqual('LoadSingleTestUser');
+            expect(loadFn.mostRecentCall.args[1]).toBe(callback);
+            expect(loadFn.mostRecentCall.args[2]).toBe(scope);
+            expect(loadFn.mostRecentCall.args[3]).toEqual(false);
+        });
+
+
         it("should throw an error in debug mode / returns false in prodiction mode "+
             "when Bancha#createModel is called for a not yet loaded metadata of a model", function() {
             

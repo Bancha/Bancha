@@ -825,16 +825,62 @@ Ext.define('Bancha', {
      * @param {Object}       scope     (optional) The scope of the callback function
      */
     preloadModelMetaData: function(modelNames,callback,scope) {
-        // get remote stub function
-        var cb,
-            fn = this.objectFromPath(this.metaDataLoadFunction,this.getStubsNamespace());
-        
+        this.loadModelMetaData(modelNames,callback,scope,false);
+    },
+    /**
+     * @private
+     * Returns the url to load the metadata. Simple separation of concerns for better debugging and testing.
+     *
+     * @since Bancha v 2.0.0
+     * @param  {Array}  modelNames An array of model names to load
+     * @return {String}            The url to load model metadata via ajax
+     */
+    getMetaDataAjaxUrl: function(modelNames) {
         // IFDEBUG
-        if(!Ext.isFunction(fn)) {
+        if(!Bancha.REMOTE_API) {
             Ext.Error.raise({
                 plugin: 'Bancha',
-                metaDataLoadFunction: this.metaDataLoadFunction,
-                msg: 'Bancha: The Bancha.metaDataLoadFunction config seems to be configured wrong.'
+                msg: 'Bancha: The Bancha.getMetaDataAjaxUrl requires the Bancha.REMOTE_API to be loaded to get the url.'
+            });
+        }
+        // ENDIF
+
+        var directUrl = Bancha.REMOTE_API.url,
+            baseUrl = directUrl.substr(0, directUrl.lastIndexOf('/')+1 || 0);
+        baseUrl = baseUrl || '/'; // if the direct url does not contain an slash
+        return baseUrl+'bancha-load-metadata/['+modelNames+'].js';
+    },
+    /**
+     * @private
+     * This function loads model metadata from the server to create a new model definition.  
+     *
+     * This function should not be directly used, instead require model classed in your class
+     * definitions.
+     * 
+     * @since Bancha v 2.0.0
+     * @param {Array|String}  models            An array of the models to preload or a string with one model name
+     * @param {Function}      callback          (optional) A callback function
+     * @param {Boolean}       callback.success  True is successful, otherwise false.
+     * @param {String}        callback.errorMsg If an error occured, this is the reeason.
+     * @param {Object}        scope             (optional) The scope of the callback function
+     * @param {Boolean}       syncEnabled       (optional) To to load synchronously (Defualt: false)
+     * @return {void}
+     */
+    loadModelMetaData: function(modelNames, callback, scope, syncEnabled) {
+
+        // make sure Bancha is initialized
+        if(!Bancha.initialized) {
+            Bancha.init();
+        }
+
+        // get remote stub function
+        var fn, cb, directUrl, url;
+
+        // IFDEBUG
+        if(!Bancha.REMOTE_API) { // with syncEnable needed for getMetaDataAjaxUrl, otherwise for Ext.Direct
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: The Bancha.loadModelMetaData requires the Bancha.REMOTE_API to be loaded.'
             });
         }
         // ENDIF
@@ -855,53 +901,107 @@ Ext.define('Bancha', {
         if(Ext.isString(modelNames)) {
             modelNames = [modelNames];
         }
-        
-        cb = function(result, event) {
-            
-            // IFDEBUG
-            if(result===null || !result.success) {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    result: result,
-                    event: event,
-                    msg: 'Bancha: The Bancha.preloadModelMetaData('+modelNames.toString()+') expected to get the metadata from the server, instead got: '+Ext.encode(result)
-                });
-            }
-            // ENDIF
-        
-            // save result
-            Ext.apply(Bancha.getRemoteApi().metadata, result.data);
-            
-            // decode new stuff
-            this.decodeMetadata(Bancha.getRemoteApi());
-        
-            // IFDEBUG
-            if(!Ext.isFunction(callback) && Ext.isDefined(callback)) {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    callback: callback,
-                    msg: 'Bancha: The for Bancha.preloadModelMetaData supplied callback is not a function.'
-                });
-            }
-            if(!Ext.isObject(scope) && Ext.isDefined(scope)) {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    callback: callback,
-                    msg: 'Bancha: The for Bancha.preloadModelMetaData supplied scope is not a object.'
-                });
-            }
-            // ENDIF
-            // user callback
-            if(typeof callback==='function') {
-                if(!Ext.isDefined(scope)) {
-                    scope = window;
+
+        // create the callback
+        cb = Ext.Function.pass(this.onModelMetaDataLoaded, [callback, scope, modelNames], this);
+
+        if(syncEnabled) {
+            // start syncronous ajax request (Ext.Direct does not support synchronous requests)
+            Ext.Ajax.request({
+                url: this.getMetaDataAjaxUrl(modelNames),
+                async: false,
+                success: function(response) {
+                    // prepare a Ext.Direct-like result
+                    var result = {
+                        success: true,
+                        data: Ext.decode(response.responseText)
+                    };
+
+                    // trigger callback
+                    cb(result);
+                },
+                failure: function(response, opts) {
+                    // error, tell user
+                    if(typeof callback==='function') {
+                        if(!Ext.isDefined(scope)) {
+                            scope = window;
+                        }
+                        callback.call(scope, false, 'server-side failure with status code '+response.status);
+                    }
                 }
-                callback.call(scope, result.data);
+            });
+        } else {
+            // start async Ext.Direct request
+            fn = this.objectFromPath(this.metaDataLoadFunction,this.getStubsNamespace());
+
+            // IFDEBUG
+            if(!Ext.isFunction(fn)) {
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    metaDataLoadFunction: this.metaDataLoadFunction,
+                    msg: 'Bancha: The Bancha.metaDataLoadFunction config seems to be configured wrong.'
+                });
             }
-        };
+            // ENDIF
+
+            fn(modelNames,cb,Bancha);
+        }
+    }, 
+    /**
+     * @private
+     * This function is triggered when the server returned the metadata, loaded via #loadModelMetaData.
+     * 
+     * @since Bancha v 2.0.0
+     * @param {Array|String}  models            An array of the models to preload or a string with one model name
+     * @param {Function}      callback          (optional) A callback function
+     * @param {Boolean}       callback.success  True is successful, otherwise false.
+     * @param {String}        callback.errorMsg If an error occured, this is the reeason.
+     * @param {Object}        scope             (optional) The scope of the callback function
+     * @param {Object|null}   result            A result object, containing a success and data property
+     * @return {void}
+     */
+    onModelMetaDataLoaded: function(callback, scope, modelNames, result) {
+        // IFDEBUG
+        if(result===null || !result.success) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                result: result,
+                event: event,
+                msg: 'Bancha: The Bancha.loadModelMetaData('+modelNames.toString()+',..) expected to get the metadata from the server, instead got: '+Ext.encode(result)
+            });
+        }
+        // ENDIF
+    
+        // save result
+        Ext.apply(Bancha.getRemoteApi().metadata, result.data);
         
-        // start ext.direct request
-        fn(modelNames,cb,Bancha);
+        // decode new stuff
+        this.decodeMetadata(Bancha.getRemoteApi());
+    
+        // IFDEBUG
+        if(!Ext.isFunction(callback) && Ext.isDefined(callback)) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                callback: callback,
+                msg: 'Bancha: The for Bancha.loadModelMetaData supplied callback is not a function.'
+            });
+        }
+        if(!Ext.isObject(scope) && Ext.isDefined(scope)) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                scope: scope,
+                msg: 'Bancha: The for Bancha.loadModelMetaData supplied scope is not a object.'
+            });
+        }
+        // ENDIF
+
+        // user callback
+        if(typeof callback==='function') {
+            if(!Ext.isDefined(scope)) {
+                scope = window;
+            }
+            callback.call(scope, true, 'Successfully loaded '+modelNames.toString());
+        }
     },
     /**
      * Checks if the model is supported by the server
