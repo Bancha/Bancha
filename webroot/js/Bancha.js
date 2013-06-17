@@ -325,7 +325,8 @@ Ext.define('Bancha', {
     requires: [
         'Ext.data.*',
         'Ext.direct.*',
-        'Ext.MessageBox'
+        'Ext.MessageBox',
+        'Bancha.data.override.Validations'
     ],
 
     alternateClassName: [
@@ -1589,9 +1590,20 @@ Ext.define('Bancha', {
      * Create deprecated warnings for old Bancha.log.*
      */
 
+     // Ext.Logger might not be available
+     var markDeprecated = function(msg) {
+        if(Ext.Logger) {
+            Ext.Logger.deprecate(msg);
+        } else if(Bancha.Logger) {
+            Bancha.Logger.warn('[DEPRECATE]'+msg);
+        } else if(window.console && window.console.warn) {
+            window.console.warn('[DEPRECATE]'+msg);
+        }
+    };
+
     // now initialize all deprecated log functions
     Bancha.log.info = function(msg) {
-        Ext.Logger.deprecate('Bancha.log.info is deprecated in flavor of Bancha.Logger.info', 1);
+        markDeprecated('Bancha.log.info is deprecated in favor of Bancha.Logger.info', 1);
         if(Bancha.Logger) {
             Bancha.Logger.info.apply(Bancha.Logger, arguments);
         } else {
@@ -1599,7 +1611,7 @@ Ext.define('Bancha', {
         }
     };
     Bancha.log.warn = function(msg) {
-        Ext.Logger.deprecate('Bancha.log.warn is deprecated in flavor of Bancha.Logger.warn', 1);
+        markDeprecated('Bancha.log.warn is deprecated in favor of Bancha.Logger.warn', 1);
         if(Bancha.Logger) {
             Bancha.Logger.warn.apply(Bancha.Logger, arguments);
         } else {
@@ -1607,7 +1619,7 @@ Ext.define('Bancha', {
         }
     };
     Bancha.log.error = function(msg) {
-        Ext.Logger.deprecate('Bancha.log.error is deprecated in flavor of Bancha.Logger.error', 1);
+        markDeprecated('Bancha.log.error is deprecated in favor of Bancha.Logger.error', 1);
         if(Bancha.Logger) {
             Bancha.Logger.error.apply(Bancha.Logger, arguments);
         } else {
@@ -1638,7 +1650,7 @@ Ext.define('Bancha', {
 Ext.define('Bancha.Logger', {
     singleton: true,
     requires: [
-        'Bancha'
+        'Bancha.Main'
     ],
     /**
      * This function logs a message.
