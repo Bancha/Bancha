@@ -175,14 +175,20 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
 });
 
 
-/*
- * Add some validation function for scaffolding
+/**
+ * @private
+ * @class Bancha.data.override.Validations
+ * 
+ * Add custom validators to {@class Ext.data.validations}.  
+ * 
+ * @author Roland Schuetz <mail@rolandschuetz.at>
+ * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
+Ext.define('Bancha.data.override.Validations', {
+    requires: ['Ext.data.validations']
+}, function() {
 
-Ext.require([
-    'Ext.data.validations' // they are differently called in ExtJS and Sencha Touch, but work by alias just fine
-], function() {
-
+    // helper function for Bancha.data.override.validations
     var filenameHasExtension = function(filename,validExtensions) {
         if(!filename) {
             return true; // no file defined (emtpy string or undefined)
@@ -196,11 +202,16 @@ Ext.require([
     
     /**
      * @class Ext.data.validations
-     * Custom validations mapped from CakePHP.
+     * 
+     * Bancha extends Ext.data.validations with two new validation rules: 
+     * numberformat and file.  
+     * 
+     * These custom validations are mapped from CakePHP.
+     * 
      * @author Roland Schuetz <mail@rolandschuetz.at>
      * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
-    Ext.apply(Ext.data.validations,{
+    Ext.apply(Ext.data.validations, { // this is differently called in ExtJS and Sencha Touch, but work by alias just fine
         /**
          * @property
          * The default error message used when a numberformat validation fails.
@@ -241,8 +252,8 @@ Ext.require([
         file: function(config, value) {
             return filenameHasExtension(value,config.extension);
         }
-    });
-});
+    }); //eo apply
+}); //eo override
 
 
 /*
