@@ -46,9 +46,15 @@ class BanchaController extends BanchaAppController {
 	 * @param string $metadataFilter Model metadata that should be exposed through the Bancha API. Either 'all' or '[all]'
 	 *                               to get the metadata for all models or a comma separated list of models like 
 	 *                               '[User,Article]'.
+	 * @param string $asClass        If you want to package your whole app using Sencha CMD defining an extra runtime inclusion
+	 *                               can be hard since the Sencha library is not yet loaded when you include external dependencies.
+	 *                               Also you have to load multiple javascript files and can not automatically saving the BanchaAPI
+	 *                               on the client though the generated manifest file.
+	 *                               To solve all of these issues you can include a generated javascript file in your packaging process.
+	 *                               To make this happen include the API as a class.
 	 * @return void
 	 */
-	public function index($metadataFilter='') {
+	public function index($metadataFilter='', $asClass=false) {
 		$metadataFilter = urldecode($metadataFilter);
 		$banchaApi = new BanchaApi();
 		
@@ -104,7 +110,21 @@ class BanchaController extends BanchaAppController {
 		);
 		
 		// no extra view file needed, simply output
-		$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+
+		// Just to keep in mind:
+		// Using json_encode will quote the object keys. 
+		// If you are using Sencha CMD (which uses the Google Closure Compiler) this is
+		// important, because we refer to the Bancha.loadMetaData function by name and so
+		// the advanced mdoe renaming would rename the method, but not the string reference
+		// except we quote the key. 
+		// For a detailed description see https://developers.google.com/closure/compiler/docs/limitations
+		// under "Using string names to refer to object properties"
+		if($asClass) {
+			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
+			$this->response->body(sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+		} else {
+			$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+		}
 	}
 
 	/**

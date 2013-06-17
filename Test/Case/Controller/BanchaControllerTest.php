@@ -159,6 +159,23 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+	public function testBanchaApiClass() {
+		// get response without models
+		$response = $this->testAction('/bancha-api-class.js');
+
+		// the logic is exactly the same as in the normal api, so only 
+		// test that this is a correct class definition
+		$this->assertEquals('Ext.define', substr($response, 0, 10));
+
+		// get response with models
+		$response = $this->testAction('/bancha-api-class/models/all.js');
+
+		// the logic is exactly the same as in the normal api, so only 
+		// test that this is a correct class definition
+		$this->assertEquals('Ext.define', substr($response, 0, 10));
+	}
+
+
 	public function testBanchaApiServerErrorProperty_NoError() {
 		$debugLevel = Configure::read('debug');
 
