@@ -4,3 +4,7 @@ Bancha.tmproj
 .DS_Store
 Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments*
 Test/JavaScriptUnitTest/lib/sencha-touch-all-debug*
+
+Bancha-js.sublime-project
+
+Bancha-js.sublime-workspace
