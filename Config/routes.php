@@ -44,3 +44,8 @@ Router::connect('/bancha-api', array('plugin' => 'bancha', 'controller' => 'banc
 Router::connect('/bancha-api/models/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'),array('pass'=>array('metaDataForModels')));
 Router::connect('/bancha-api-class', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', '', true),array('pass'=>array('metaDataForModels')));
 Router::connect('/bancha-api-class/models/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', true),array('pass'=>array('metaDataForModels',true)));
+
+/**
+ * connect ajax metadata loading
+ */
+Router::connect('/bancha-load-metadata/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'loadMetaData'),array('pass'=>array('metaDataForModels')));

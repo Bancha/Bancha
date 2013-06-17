@@ -159,6 +159,57 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+	public function testLoadModelMetaData_Ajax_One() {
+		$response = $this->testAction('/bancha-load-metadata/User.js');
+		$data = json_decode($response);
+
+		// check that only requested metadata is send
+		$this->assertFalse(isset($data->Article));
+		$this->assertFalse(isset($data->ArticlesTag));
+		$this->assertFalse(isset($data->Tag));
+		$this->assertTrue(isset($data->User)); // <-- this should be available
+	}
+
+	public function testLoadModelMetaData_Ajax_Multiple() {
+		$response = $this->testAction('/bancha-load-metadata/[User,Article].js');
+		$data = json_decode($response);
+
+		// check that only requested metadata is send
+		$this->assertTrue(isset($data->Article)); // <-- this should be available
+		$this->assertFalse(isset($data->ArticlesTag));
+		$this->assertFalse(isset($data->Tag));
+		$this->assertTrue(isset($data->User)); // <-- this should be available
+	}
+
+	public function testLoadModelMetaData_Ajax_All() {
+		$response = $this->testAction('/bancha-load-metadata/all.js');
+		$data = json_decode($response);
+
+		// check that only requested metadata is send
+		$this->assertTrue(isset($data->Article)); // <-- this should be available
+		$this->assertTrue(isset($data->ArticlesTag));
+		$this->assertTrue(isset($data->Tag));
+		$this->assertTrue(isset($data->User)); // <-- this should be available
+	}
+
+	public function testLoadModelMetaData_ExtDirect_All() {
+		// fake an Ext.Direct request
+		$response = $this->testAction(
+			'/bancha/Bancha/loadMetaData.js',
+			array(
+				'data' => array('data'=>array("[Article,User]")), 
+				'method' => 'post'
+			)
+		);
+		$data = json_decode($response);
+
+		// check that only requested metadata is send
+		$this->assertTrue(isset($data->Article)); // <-- this should be available
+		$this->assertFalse(isset($data->ArticlesTag));
+		$this->assertFalse(isset($data->Tag));
+		$this->assertTrue(isset($data->User)); // <-- this should be available
+	}
+
 	public function testBanchaApiClass() {
 		// get response without models
 		$response = $this->testAction('/bancha-api-class.js');

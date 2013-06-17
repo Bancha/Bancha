@@ -129,25 +129,37 @@ class BanchaController extends BanchaAppController {
 
 	/**
 	 * @access private
-	 * loadMetaData returns the Metadata of the models passed as an argument or 
-	 * in params['pass'] array. params['pass'] is created by cakephp from the arguments 
-	 * passed in the url. e.g.: http://localhost/Bancha/loadMetaData/User/Tag
-	 * will load the metadata from the models Users and Tags.
-	 *
-	 * This function is only used by Bancha internally, see the JavaScript 
-	 * Bancha.onModelReady function.
+	 * loadMetaData returns the Metadata of the models passed.
 	 * 
-	 * @return array 
+	 * Ext.Direct will pass them in params['data'], Ext.Ajax in params['pass'].
+	 * 
+	 * E.g. for Ext.Ajax: http://localhost/bancha-load-metadata/[User,Article].js
+	 * will load the metadata from the models Users and Articles.
+	 *
+	 * This function is only used by Bancha internally for dependency resolution 
+	 * in the Bancha.loader.Models and in Ext#onModelReady. Internally this is 
+	 * triggered from Bancha#loadModelMetaData.
+	 * 
+	 * @return void 
 	 */
 	public function loadMetaData() {
-		$models = isset($this->params['data'][0]) ? $this->params['data'][0] : null;
+		$models = null;
+		if(isset($this->params['data'][0])) { $models = $this->params['data'][0]; } //for Ext.Direct
+		if(isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync
 		if ($models == null) {
 			return false;
 		}
-		
+
 		// get the result
 		$banchaApi = new BanchaApi();
-		return $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+		$result = $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+
+		// support both direct ajax requests and Bancha requests
+		if($this->params['isBancha']) {
+			return $result;
+		} else {
+			$this->response->body(json_encode($result));
+		}
 	}
 	
 	
