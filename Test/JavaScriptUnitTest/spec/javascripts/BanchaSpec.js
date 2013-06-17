@@ -227,6 +227,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
             
+            // now see if is is available
+            expect(Bancha.modelMetaDataIsLoaded('LoadTestUser')).toBeTruthy();
+            expect(Bancha.modelMetaDataIsLoaded('LoadTestArticle')).toBeTruthy();
+
             // check callback
             expect(scope.scopedExecution).toBeTruthy();
         });
@@ -319,6 +323,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
             // trigger the ajax onLoaded callback
             loadFn.mostRecentCall.args[0].success(response);
+            
+            // now see if is is available
+            expect(Bancha.modelMetaDataIsLoaded('LoadTestUser')).toBeTruthy();
+            expect(Bancha.modelMetaDataIsLoaded('LoadTestArticle')).toBeTruthy();
             
             // check custom callback
             expect(scope.scopedExecution).toBeTruthy();
