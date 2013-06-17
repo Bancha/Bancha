@@ -82,7 +82,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
-		// check exposed methods
+		// check that all direct methods are exposed
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
 		$this->assertTrue(isset($api->actions->Tag));
@@ -90,7 +90,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($api->actions->HelloWorld));
 		$this->assertTrue(isset($api->actions->Bancha));
 
-		// check that correct metadata is send
+		// check that only requested metadata is send
 		$this->assertFalse(isset($api->metadata->Article));
 		$this->assertFalse(isset($api->metadata->ArticlesTag));
 		$this->assertFalse(isset($api->metadata->Tag));
@@ -107,6 +107,32 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	}
 
+	public function testBanchaApiWithMultipleMetadata() {
+		$response = $this->testAction('/bancha-api/models/[Article,User].js');
+		$api = json_decode(substr($response, strpos($response, '=')+1));
+
+		// check Ext.Direct configurations
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
+		$this->assertEquals('remoting', $api->type);
+
+		// check that all direct methods are exposed
+		$this->assertTrue(isset($api->actions->Article));
+		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Tag));
+		$this->assertTrue(isset($api->actions->User));
+		$this->assertTrue(isset($api->actions->HelloWorld));
+		$this->assertTrue(isset($api->actions->Bancha));
+
+		// check that only requested metadata is send
+		$this->assertTrue(isset($api->metadata->Article)); // <-- this should be available
+		$this->assertFalse(isset($api->metadata->ArticlesTag));
+		$this->assertFalse(isset($api->metadata->Tag));
+		$this->assertTrue(isset($api->metadata->User)); // <-- this should be available
+		$this->assertFalse(isset($api->metadata->HelloWorld));
+		$this->assertFalse(isset($api->metadata->Bancha));
+	}
+
 	public function testBanchaApiWithAllMetadata() {
 		$response = $this->testAction('/bancha-api/models/all.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
@@ -116,7 +142,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
-		// check exposed methods
+		// check that all direct methods are exposed
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
 		$this->assertTrue(isset($api->actions->Tag));
@@ -124,7 +150,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($api->actions->HelloWorld));
 		$this->assertTrue(isset($api->actions->Bancha));
 
-		// check that correct metadata is send
+		// check that only requested metadata is send
 		$this->assertTrue(isset($api->metadata->Article));
 		$this->assertTrue(isset($api->metadata->ArticlesTag));
 		$this->assertTrue(isset($api->metadata->Tag));
