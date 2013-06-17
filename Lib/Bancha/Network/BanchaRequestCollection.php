@@ -95,7 +95,7 @@ class BanchaRequestCollection {
 				$requests[$i]['controller'] 	= $transformer->getController();
 				$requests[$i]['action']			= $transformer->getAction();
 				$requests[$i]['named']			= $transformer->getPaging();
-				$requests[$i]['plugin']			= null;
+				$requests[$i]['plugin']			= $requests[$i]['controller']=='Bancha' ? 'Bancha' : null;
 				// bancha-specific
 				$requests[$i]['tid']			= $transformer->getTid();
 				$requests[$i]['extUpload']		= $transformer->getExtUpload();
