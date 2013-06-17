@@ -799,6 +799,9 @@ Ext.define('Bancha', {
     }()), //eo decodeMetadata
      
     /**
+     * @deprecated Instead of preloading dependencies imperatively, use the uses
+     * property on classes to load optional classes. Description below is from Bancha 1.3
+     * 
      * Preloads the models metadata from the server to create a new model.  
      *  
      * __When to use it:__ You should use this function if you don't want to load 
