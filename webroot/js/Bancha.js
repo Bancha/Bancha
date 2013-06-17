@@ -345,7 +345,16 @@ Ext.define('Bancha', {
     debugVersion: true, 
     // ENDIF
 
-    /* If remote api is already loaded, keep it */
+    /**
+     * @private
+     * @export
+     * The internal reference to the Remote API.  
+     *
+     * Export annotation is for Google Closure compiler.  
+     *
+     * Default: If the remote api is already loaded, keep it.
+     * Otherwise set to undefined.
+     * */
     REMOTE_API: window.Bancha ? Bancha.REMOTE_API : undefined,
     
     /**
@@ -808,9 +817,9 @@ Ext.define('Bancha', {
      *         )
      *     );
      *
-     * @param {Array|String} models An array of the models to preload or a string with one model name
-     * @param {Function} callback  (optional) A callback function
-     * @param {Object} scope  (optional) The scope of the callback function
+     * @param {Array|String} models    An array of the models to preload or a string with one model name
+     * @param {Function}     callback  (optional) A callback function
+     * @param {Object}       scope     (optional) The scope of the callback function
      */
     preloadModelMetaData: function(modelNames,callback,scope) {
         // get remote stub function
