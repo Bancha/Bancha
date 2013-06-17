@@ -316,6 +316,10 @@ Ext.define('Bancha', {
         'Ext.direct.*',
         'Ext.MessageBox'
     ],
+
+    alternateClassName: [
+        'Bancha.Main' // If you want to include Bancha using the Microloader use this class name instead of simply 'Bancha'
+    ],
     /* End Definitions */
     
     
