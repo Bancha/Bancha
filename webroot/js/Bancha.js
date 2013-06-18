@@ -962,7 +962,7 @@ Ext.define('Bancha', {
      */
     onModelMetaDataLoaded: function(callback, scope, modelNames, result) {
         // IFDEBUG
-        if(result===null || !result.success) {
+        if(result===null) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 result: result,
@@ -971,7 +971,16 @@ Ext.define('Bancha', {
             });
         }
         // ENDIF
-    
+        
+        // error handling
+        if(!result.success) {
+            if(typeof callback==='function') {
+                if(!Ext.isDefined(scope)) {
+                    scope = window;
+                }
+                callback.call(scope, false, result.message);
+            }
+        }
         // save result
         Ext.apply(Bancha.getRemoteApi().metadata, result.data);
         

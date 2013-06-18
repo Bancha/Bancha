@@ -149,18 +149,35 @@ class BanchaController extends BanchaAppController {
 		if ($models == null) {
 			return false;
 		}
+		
+		try {
+			// get the result
+			$banchaApi = new BanchaApi();
+			$result = $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
 
-		// get the result
-		$banchaApi = new BanchaApi();
-		$result = $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+			// support both direct ajax requests and Bancha requests
+			if($this->params['isBancha']) {
+				return $result;
+			} else {
+				$this->response->body(json_encode($result));
+			}
+		} catch(MissingModelException $e) {
+			// in the case of an error return with false, but don't throw an exception
+			// So the Bancha class loader can handle the error handling
 
-		// support both direct ajax requests and Bancha requests
-		if($this->params['isBancha']) {
-			return $result;
-		} else {
-			$this->response->body(json_encode($result));
+			// support both direct ajax requests and Bancha requests
+			if($this->params['isBancha']) {
+				return array(
+					'success' => false,
+					'message' => $e->getMessage()
+				);
+			} else {
+				// for Ajax
+				throw $e;
+			}
 		}
 	}
+	
 	
 	
 	/**
