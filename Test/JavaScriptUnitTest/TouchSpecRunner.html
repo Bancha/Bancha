@@ -17,8 +17,14 @@
     // this is quite tricky, for Sencha Touch be be ready we need to trigger 
     // the setup process (e.g. to make Ext.Msg available)
     Ext.setup({});
+    
+    Bancha = {};
+    Bancha.REMOTE_API = {}; // set this to not load the api as requirement
   </script>
   <script type="text/javascript" src="../../webroot/js/Bancha.js"></script>
+  <script type="text/javascript" src="../../webroot/js/Loader.js"></script>
+  <script type="text/javascript" src="../../webroot/js/loader/Interface.js"></script>
+  <script type="text/javascript" src="../../webroot/js/loader/Models.js"></script>
 
   <!-- include spec files here... -->
   <script type="text/javascript" src="spec/javascripts/helpers/SpecHelper.js"></script>
@@ -32,6 +38,8 @@
 
   <script type="text/javascript" src="spec/javascripts/Ext-UtilSpec.js"></script>
   <script type="text/javascript" src="spec/javascripts/BanchaSpec.js"></script>
+  <script type="text/javascript" src="spec/javascripts/Bancha.LoaderSpec.js"></script>
+  <script type="text/javascript" src="spec/javascripts/Bancha.loader.ModelsSpec.js"></script>
   <script type="text/javascript" src="spec/javascripts/Bancha.LoggerSpec.js"></script>
   <script type="text/javascript" src="spec/javascripts/Bancha.LocalizerSpec.js"></script>
   <script type="text/javascript" src="spec/javascripts/Bancha.data.ModelSpec.js"></script>
