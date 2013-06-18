@@ -74,7 +74,7 @@ describe("Bancha.Loader", function() {
         var handlesFn = spyOn(myLoader, 'handles').andReturn(true),
             loadClassFn = spyOn(myLoader, 'loadClass');
 
-        // test async Ext.require
+        // test sync Ext.syncRequire
         Ext.syncRequire('Bancha.loader.TestClass2');
         expect(handlesFn).toHaveBeenCalledWith('Bancha.loader.TestClass2');
         expect(loadClassFn).toHaveBeenCalled();
