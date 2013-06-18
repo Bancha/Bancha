@@ -926,7 +926,7 @@ Ext.define('Bancha', {
                         if(!Ext.isDefined(scope)) {
                             scope = window;
                         }
-                        callback.call(scope, false, 'server-side failure with status code '+response.status);
+                        callback.call(scope, false, 'Server-side failure with status code '+response.status);
                     }
                 }
             });
