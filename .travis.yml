@@ -42,13 +42,14 @@ before_script:
   - mv .Bancha Bancha # unhide it for later use
   
   # Download cakephp
-  - wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERSION -O cake.tar.gz # get cakephp
-  - tar xf cake.tar.gz # extract cakephp
-  - mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
-  - chmod -R 777 ./cakephp/app/tmp # make tmp executable
+  - if [ $CAKEPHP_VERSION ]; then wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERSION -O cake.tar.gz # get cakephp
+  - if [ $CAKEPHP_VERSION ]; then tar xf cake.tar.gz # extract cakephp
+  - if [ $CAKEPHP_VERSION ]; then mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
+  - if [ $CAKEPHP_VERSION ]; then chmod -R 777 ./cakephp/app/tmp # make tmp executable
   
   # Setup the TestProject for Bancha
-  - rm -r ./cakephp/app #remove the default app
+  - if [ $CAKEPHP_VERSION ]; then rm -r ./cakephp/app #remove the default app
+  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/Plugin #create same structure, if cakephp is not used
   - git clone --recursive https://github.com/Bancha/BanchaTestProject.git cakephp/app # clone Testproject as base
   
   # Setup the Bancha plugin
