@@ -39,7 +39,7 @@ describe("Bancha.loader.Models", function() {
         // prepare
         var isLoadedFn = spyOn(Bancha, 'modelMetaDataIsLoaded').andReturn(true),
             resultClassName = '',
-            getModelFn = spyOn(Bancha, 'getModel').andCallFake(function(className) {
+            getLoadedModelFn = spyOn(Bancha, 'getLoadedModel').andCallFake(function(className) {
                 Ext.define('Bancha.model'+className, {});
                 resultClassName = className;
             }),
@@ -51,7 +51,7 @@ describe("Bancha.loader.Models", function() {
 
         // check execution
         expect(isLoadedFn).toHaveBeenCalled();
-        expect(getModelFn).toHaveBeenCalled();
+        expect(getLoadedModelFn).toHaveBeenCalled();
 
         // check that the classname was not manipulated
         expect(resultClassName).toEqual('ModelLoaderTestModel1');
@@ -68,7 +68,7 @@ describe("Bancha.loader.Models", function() {
         // prepare
         var isLoadedFn = spyOn(Bancha, 'modelMetaDataIsLoaded').andReturn(false),
             resultClassName = '',
-            getModelFn = spyOn(Bancha, 'getModel').andCallFake(function(className) {
+            getLoadedModelFn = spyOn(Bancha, 'getLoadedModel').andCallFake(function(className) {
                 Ext.define('Bancha.model'+className, {});
                 resultClassName = className;
             }),
@@ -82,7 +82,7 @@ describe("Bancha.loader.Models", function() {
         // class is not yet "loaded"
         expect(onLoad.callCount).toEqual(0);
         expect(onError.callCount).toEqual(0);
-        expect(getModelFn.callCount).toEqual(0);
+        expect(getLoadedModelFn.callCount).toEqual(0);
 
         // get correct load parameters
         expect(loadFn).toHaveBeenCalled();
@@ -95,7 +95,7 @@ describe("Bancha.loader.Models", function() {
         loadFn.mostRecentCall.args[1].call(loadFn.mostRecentCall.args[2],true,'');
 
         // check execution
-        expect(getModelFn).toHaveBeenCalled();
+        expect(getLoadedModelFn).toHaveBeenCalled();
 
         // check that the classname was not manipulated
         expect(resultClassName).toEqual('ModelLoaderTestModel2');

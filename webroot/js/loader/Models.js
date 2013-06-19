@@ -58,7 +58,7 @@ Ext.define('Bancha.loader.Models', {
         // in case everything is loaded
         if(Bancha.modelMetaDataIsLoaded(unqualifiedName)) {
             // metadata is already present, simply instanciate
-            Bancha.getModel(unqualifiedName);
+            Bancha.getLoadedModel(unqualifiedName);
             // model is ready
             onLoad.call(scope);
             return;
@@ -68,7 +68,7 @@ Ext.define('Bancha.loader.Models', {
         Bancha.loadModelMetaData([unqualifiedName], function(success, errorMsg) {
             if(success) {
                 // metadata is already present, simply instanciate
-                Bancha.getModel(unqualifiedName);
+                Bancha.getLoadedModel(unqualifiedName);
                 // model is ready
                 onLoad.call(scope);
             } else {

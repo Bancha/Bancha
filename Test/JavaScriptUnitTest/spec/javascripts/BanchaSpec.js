@@ -482,36 +482,46 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // setup model metadata
             h.init("GetModelCreateTestUser");
          
+            // spy that this is never called
+            var syncRequire = spyOn(Ext, 'syncRequire');
+
             // create model
             var model = Bancha.getModel('GetModelCreateTestUser');
             expect(model).toBeModelClass('Bancha.model.GetModelCreateTestUser');
-             
+            
+            // check that the require is never called
+            expect(syncRequire.callCount).toEqual(0);
         });
         
         it("should just return the already defined models with Bancha.getModel", function() {
         
             // setup model metadata
-             h.init("GetModelJustGetTestUser");
+            h.init("GetModelJustGetTestUser");
          
-             // create model
-             var created = Bancha.createModel('GetModelJustGetTestUser',{
-                 createdWithCreate: true
-             });
-             expect(created).toBeTruthy();
+            // spy that this is never called
+            var syncRequire = spyOn(Ext, 'syncRequire');
+            
+            // create model
+            var created = Bancha.createModel('GetModelJustGetTestUser',{
+                createdWithCreate: true
+            });
+            expect(created).toBeTruthy();
              
-             // now test getModel
-             var model = Bancha.getModel('GetModelJustGetTestUser');
-             expect(model).toBeModelClass('Bancha.model.GetModelJustGetTestUser');
+            // now test getModel
+            var model = Bancha.getModel('GetModelJustGetTestUser');
+            expect(model).toBeModelClass('Bancha.model.GetModelJustGetTestUser');
              
-             // check if it has the correct config
-             if(ExtSpecHelper.isExt) {
-                 // for ext configs are directly applied
-                 expect(model.prototype.createdWithCreate).toBeTruthy();
-             } else {
-                 // for touch configs are applied inside the 'config' config
-                 expect(model.prototype.config.createdWithCreate).toBeTruthy();
-             }
-             
+            // check if it has the correct config
+            if(ExtSpecHelper.isExt) {
+                // for ext configs are directly applied
+                expect(model.prototype.createdWithCreate).toBeTruthy();
+            } else {
+                // for touch configs are applied inside the 'config' config
+                expect(model.prototype.config.createdWithCreate).toBeTruthy();
+            } 
+            
+            // check that the require is never called
+            expect(syncRequire.callCount).toEqual(0);
         });
 
         it("should initialize Bancha, if getModel() is used", function() {
@@ -520,6 +530,23 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.initialized).toBeFalsy();
             expect(Bancha.getModel('User')).toBeTruthy();
             expect(Bancha.initialized).toBeTruthy();
+        });
+
+        it("should synchronously load a model if no metadata is present with Bancha.getModel", function() {
+        
+            // don't setup any model metadata
+            h.init();
+         
+            var syncRequire = spyOn(Ext, 'syncRequire').andCallFake(function() {
+                // now setup the model data
+                Bancha.REMOTE_API.metadata['GetModelSyncLoadTest'] = Ext.clone(Bancha.REMOTE_API.metadata.User);
+                Bancha.REMOTE_API.actions['GetModelSyncLoadTest'] = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition.actions.User);
+                Bancha.getStubsNamespace()['GetModelSyncLoadTest'] = Ext.clone(Bancha.getStubsNamespace().User);
+            });
+
+            // create model
+            var model = Bancha.getModel('GetModelSyncLoadTest');
+            expect(model).toBeModelClass('Bancha.model.GetModelSyncLoadTest');
         });
 
         it("should load all needed models on onModelReady and fire functions after the model is ready for a single modelname input", function() {

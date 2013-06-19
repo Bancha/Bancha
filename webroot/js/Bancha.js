@@ -1086,11 +1086,11 @@ Ext.define('Bancha', {
             
             if(this.modelMetaDataIsLoaded(modelName)) {
                 // all metadata already present, call callback with model
-                callback.call(scope,this.getModel(modelName));
+                callback.call(scope,this.getLoadedModel(modelName));
             } else {
                 this.preloadModelMetaData(modelName, function() {
                     // all metadata already present, call callback with model
-                    callback.call(scope,this.getModel(modelName));
+                    callback.call(scope,this.getLoadedModel(modelName));
                 },this);
             }
             return;
@@ -1110,7 +1110,7 @@ Ext.define('Bancha', {
         // iterate trought the models to load
         Ext.Array.forEach(modelNamesToLoad, function(modelName) {
             if(me.modelMetaDataIsLoaded(modelName)) {
-                loadedModels[modelName] = me.getModel(modelName);
+                loadedModels[modelName] = me.getLoadedModel(modelName);
             } else {
                 modelsToLoad.push(modelName);
             }
@@ -1120,7 +1120,7 @@ Ext.define('Bancha', {
         Ext.each(loadingModels, function(modelName) {
             if(me.modelMetaDataIsLoaded(modelName)) {
                 // that was the model which triggered the function, so we are finished here
-                loadedModels[modelName] = me.getModel(modelName);
+                loadedModels[modelName] = me.getLoadedModel(modelName);
                 return false; // stop
             }
         });
@@ -1492,13 +1492,21 @@ Ext.define('Bancha', {
         return true;
     },
     /**
-     * Get a bancha model by name.  
-     * If it isn't already defined this function will define the model.
+     * @deprecated Bancha allows to load dependencies through the normal Ext.Loader,
+     * therefore please use the require property in your class definitions, or 
+     * Ext.syncRequire('Bancha.model.SomeModel') to synchronously require a model.  
      * 
-     * In the debug version it will raise an Ext.Error if the model can't be created,
-     * in production it will just return null.
+     * Get a Bancha model by name.  
+     * If it isn't already defined this function will define the model.  
+     * 
+     * In the debug version it will raise an Ext.Error if the model can't 
+     * be created, in production it will just return null.  
+     *
+     * If the model definition is not yet loaded, it will synchronously 
+     * load the definition before returning.  
+     * 
      * @param {String} modelName The name of the model
-     * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist or the metadata is not loaded
+     * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist
      * @member Bancha
      * @method getModel
      */
@@ -1506,6 +1514,27 @@ Ext.define('Bancha', {
         if(!Bancha.initialized) {
             Bancha.init();
         }
+        if(!this.modelMetaDataIsLoaded(modelName)) {
+            Ext.syncRequire('Bancha.model.'+modelName);
+        }
+        return this.getLoadedModel(modelName);
+    },
+    /**
+     * @private
+     * Get a Bancha model by name.  
+     * If it isn't already defined this function will define the model.  
+     * 
+     * In the debug version it will raise an Ext.Error if the model can't 
+     * be created, in production it will just return null.  
+     *
+     * This function will not try to load metadata, instead it will fail!
+     * 
+     * @param {String} modelName The name of the model
+     * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist
+     * @member Bancha
+     * @method getLoadedModel
+     */
+    getLoadedModel: function(modelName) {
         return (this.isCreatedModel(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
     },
 
