@@ -14,7 +14,7 @@
  */
 /*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest, phantom */
 
 describe("Bancha Singleton - basic retrieval functions on the stubs and model metadata.", function() {
         var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
@@ -625,8 +625,13 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             
         });
 
-        /* This test works in the Browser, but fails using phantomjs test runner
         it("should trigger the onError function if in production mode and there is a script error", function() {
+            var isPhantomJS = (typeof phantom !== 'undefined' && phantom.fs);
+
+            if(isPhantomJS) {
+                return; // This test works in the Browser, but fails using phantomjs test runner
+            }
+
             var loadScript = function(src, cb) {
                 var script=document.createElement("script");
                 script.type="text/javascript";
@@ -689,7 +694,6 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 expect(Bancha.onError.mostRecentCall.args[0]).property('message').toEqual('Script error.');
             });
         });
-        */
 
 }); //eo describe basic functions
     
