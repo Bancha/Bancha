@@ -42,15 +42,15 @@ before_script:
   - mv .Bancha Bancha # unhide it for later use
   
   # Download cakephp
-  - if [ $CAKEPHP_VERSION ]; then wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERSION -O cake.tar.gz # get cakephp
-  - if [ $CAKEPHP_VERSION ]; then tar xf cake.tar.gz # extract cakephp
-  - if [ $CAKEPHP_VERSION ]; then mv cakephp-cakephp-* ./cakephp # move cakephp to its folder
-  - if [ $CAKEPHP_VERSION ]; then chmod -R 777 ./cakephp/app/tmp # make tmp executable
+  - if [ $CAKEPHP_VERSION ]; then wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERSION -O cake.tar.gz ; fi # get cakephp
+  - if [ $CAKEPHP_VERSION ]; then tar xf cake.tar.gz ; fi # extract cakephp
+  - if [ $CAKEPHP_VERSION ]; then mv cakephp-cakephp-* ./cakephp ; fi # move cakephp to its folder
+  - if [ $CAKEPHP_VERSION ]; then chmod -R 777 ./cakephp/app/tmp ; fi # make tmp executable
   
   # Setup the TestProject for Bancha
-  - if [ $CAKEPHP_VERSION ]; then rm -r ./cakephp/app #remove the default app
-  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/Plugin #create same structure, if cakephp is not used
-  - git clone --recursive https://github.com/Bancha/BanchaTestProject.git cakephp/app # clone Testproject as base
+  - if [ $CAKEPHP_VERSION ]; then rm -r ./cakephp/app ; fi #remove the default app
+  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/Plugin ; fi #create same structure, if cakephp is not used
+  - git clone --recursive https://github.com/Bancha/BanchaTestProject.git cakephp/app ; fi # clone Testproject as base
   
   # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
@@ -142,8 +142,8 @@ before_script:
   - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
-  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake # make sure to execute it
-  - if [ $CAKEPHP_VERSION ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
+  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake  ; fi # make sure to execute it
+  - if [ $CAKEPHP_VERSION ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
 
   # execute the jasmine tests
   - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
