@@ -1,4 +1,3 @@
-
 /*!
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
