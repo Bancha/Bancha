@@ -65,9 +65,9 @@ before_script:
   #- sudo node ./app/tmp/socket.js &
   
   # Setup the database config
-  - if [ !$CAKEPHP_VERSION ]; then touch app/Config/database.php ; fi
-  - if [ !$CAKEPHP_VERSION ]; then set +H ; fi# needed for pasting the following config file
-  - if [ !$CAKEPHP_VERSION ]; then echo "<?php
+  - if [ $CAKEPHP_VERSION ]; then touch app/Config/database.php ; fi
+  - if [ $CAKEPHP_VERSION ]; then set +H ; fi# needed for pasting the following config file
+  - if [ $CAKEPHP_VERSION ]; then echo "<?php
     class DATABASE_CONFIG {
     private \$identities = array(
       'mysql' => array(
