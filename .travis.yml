@@ -53,8 +53,10 @@ before_script:
   
   # If we don't need to test CakePHP code, simply mimik file structure
   - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp ; fi
-  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/Plugin ; fi
-  
+  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/app ; fi
+  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/app/Plugin ; fi
+  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/app/Plugin/Bancha ; fi
+
   # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
