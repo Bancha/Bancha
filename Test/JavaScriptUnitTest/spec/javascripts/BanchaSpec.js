@@ -170,6 +170,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.initialized).toBeTruthy();
         });
 
+
         it("should load model metadata using the direct stub in async mode.", function() {
             h.init();
       
@@ -227,12 +228,39 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
             
-            // now see if is is available
+            // now see if it's available
             expect(Bancha.modelMetaDataIsLoaded('LoadTestUser')).toBeTruthy();
             expect(Bancha.modelMetaDataIsLoaded('LoadTestArticle')).toBeTruthy();
 
             // check callback
             expect(scope.scopedExecution).toBeTruthy();
+        });
+
+
+        it("should handle errors when loading model metadata using the direct stub.", function() {
+            h.init();
+      
+            // create direct stub mock
+            var mock = Mock.Proxy();
+            mock.expectRPC("loadMetaData",['LoadTestImaginary']);
+            Bancha.RemoteStubs.Bancha = mock;
+            
+            // create callback
+            var callback = jasmine.createSpy();
+
+            // execute test
+            Bancha.loadModelMetaData(['LoadTestImaginary'], callback, {}, false);
+            mock.verify();
+            
+            // now fake answer
+            var result = {
+                success: false,
+                message: 'Model Imaginary could not be found.'
+            };
+            mock.callLastRPCCallback("loadMetaData",[result]);
+
+            // check callback
+            expect(callback).toHaveBeenCalledWith(false, 'Model Imaginary could not be found.');
         });
     
 
@@ -266,7 +294,8 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
         });
 
-        it("should load model metadata using the ajax in syncEnabled mode.", function() {
+
+        it("should load model metadata using ajax in syncEnabled mode.", function() {
             h.init();
       
             // create ajax spy
@@ -324,15 +353,39 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // trigger the ajax onLoaded callback
             loadFn.mostRecentCall.args[0].success(response);
             
-            // now see if is is available
+            // now see if it's available
             expect(Bancha.modelMetaDataIsLoaded('LoadTestUser')).toBeTruthy();
             expect(Bancha.modelMetaDataIsLoaded('LoadTestArticle')).toBeTruthy();
             
             // check custom callback
             expect(scope.scopedExecution).toBeTruthy();
-            
         });
     
+
+        it("should handle errors when loading model metadata using ajax in syncEnabled mode.", function() {
+            h.init();
+      
+            // create ajax spy
+            var loadFn = spyOn(Ext.Ajax, 'request'),
+                callback = jasmine.createSpy();
+
+            // execute test
+            Bancha.loadModelMetaData(['LoadTestImaginary'], callback, {}, true);
+            expect(loadFn).toHaveBeenCalled();
+
+            // now fake answer
+            var response = {
+                status: 500,
+                statusText: 'Internal Server Error'
+            }; //eo response
+
+            // trigger the ajax onLoaded callback
+            loadFn.mostRecentCall.args[0].failure(response);
+            
+            // check custom callback
+            expect(callback).toHaveBeenCalledWith(false, 'Server-side failure with status code 500');
+        });
+
 
         it("should support (the already deprecated) preloadModelMetaData function.", function() {
             var loadFn = spyOn(Bancha, 'loadModelMetaData'),

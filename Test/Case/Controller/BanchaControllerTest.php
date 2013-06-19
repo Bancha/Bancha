@@ -12,6 +12,8 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
+App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
+App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
  * BanchaControllerTest
@@ -192,22 +194,76 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($data->User)); // <-- this should be available
 	}
 
-	public function testLoadModelMetaData_ExtDirect_All() {
-		// fake an Ext.Direct request
-		$response = $this->testAction(
-			'/bancha/Bancha/loadMetaData.js',
-			array(
-				'data' => array('data'=>array("[Article,User]")), 
-				'method' => 'post'
-			)
-		);
-		$data = json_decode($response);
+	/**
+	 * AJAX requests to invalid models should throw an exception, 
+	 * so that Ext.Ajax triggers the failure routine.
+	 *
+	 * @expectedException MissingModelException
+	 */
+	public function testLoadModelMetaData_Ajax_Error() {
+		$this->testAction('/bancha-load-metadata/[Imaginary].js');
+	}
+
+	/**
+	 * Bancha via Ext.Direct requests send the data in a different peroperty
+	 * and also expects the result in a different format, check this.
+	 */
+	public function testLoadModelMetaData_ExtDirect_Multiple() {
+		// we can't fake an Bancha request that easily,
+		// (We would need to set $this->params['isBancha'])
+		// therefore we make a system test here
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'Bancha',
+			'method'		=> 'loadMetaData',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array("[Article,User]"),
+		)));
+
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+
+		// check the basic response and the result property
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertEquals(true, $responses[0]->result->success);
 
 		// check that only requested metadata is send
+		$data = $responses[0]->result->data;
 		$this->assertTrue(isset($data->Article)); // <-- this should be available
 		$this->assertFalse(isset($data->ArticlesTag));
 		$this->assertFalse(isset($data->Tag));
 		$this->assertTrue(isset($data->User)); // <-- this should be available
+	}
+
+	/**
+	 * Bancha via Ext.Direct requests to invalid models should return 
+	 * a result with success false, but should not throw a client-side 
+	 * exception, because Ext.loader.Models should be able to handle 
+	 * the error.
+	 */
+	public function testLoadModelMetaData_ExtDirect_Error() {
+		// we can't fake an Bancha request that easily,
+		// (We would need to set $this->params['isBancha'])
+		// therefore we make a system test here
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'Bancha',
+			'method'		=> 'loadMetaData',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array("[Imaginary]"),
+		)));
+
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		// check the basic response, the result property and message
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertEquals(false, $responses[0]->result->success);
+		$this->assertEquals('Model Imaginary could not be found.', $responses[0]->result->message);
 	}
 
 	public function testBanchaApiClass() {
