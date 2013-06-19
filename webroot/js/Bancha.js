@@ -14,7 +14,7 @@
  */
 /*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
-/*global Ext:false, Bancha:true, TraceKit:false, window:false */
+/*global Ext:false, Bancha:true, TraceKit:false */
 
 /**
  * @class Bancha.data.Model
@@ -355,7 +355,7 @@ Ext.define('Bancha', {
      * Default: If the remote api is already loaded, keep it.
      * Otherwise set to undefined.
      * */
-    REMOTE_API: window.Bancha ? Bancha.REMOTE_API : undefined,
+    REMOTE_API: (typeof Bancha !== 'undefined') ? Bancha.REMOTE_API : undefined,
     
     /**
      * @property
@@ -425,11 +425,11 @@ Ext.define('Bancha', {
                 globalObj;
             if (first === -1) {
                 // the whole path is only one object, so return the object
-                return window[path];
+                return Ext.global[path];
             }
             // else use the first part as global object name
             globalObjName = path.slice(0, first);
-            globalObj = window[globalObjName];
+            globalObj = Ext.global[globalObjName];
             if (typeof globalObj === 'undefined') {
                 // path seems to be false
                 return undefined;
@@ -642,7 +642,7 @@ Ext.define('Bancha', {
         // ENDIF
 
         // init error logging in production mode
-        if(Bancha.getDebugLevel()===0 && window.TraceKit && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
+        if(Bancha.getDebugLevel()===0 && (typeof TraceKit !== 'undefined') && TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
             TraceKit.report.subscribe(function(stackInfo) {
                 // make sure to not bind the function, but the locaton (for later overriding)
                 Bancha.onError(stackInfo);
@@ -888,8 +888,8 @@ Ext.define('Bancha', {
         // IFDEBUG
         Ext.each(modelNames, function(modelName) {
             if(Ext.isObject(Bancha.getModelMetaData(modelName))) {
-                if(window.console && Ext.isFunction(window.console.warn)) {
-                    window.console.warn(
+                if(Ext.global.console && Ext.isFunction(Ext.global.console.warn)) {
+                    Ext.global.console.warn(
                         'Bancha: The model '+modelName+' is already loaded, we will reload the meta data '+
                         'but this seems strange. Notice that this warning is only created in debug mode.');
                 }
@@ -921,13 +921,11 @@ Ext.define('Bancha', {
                     cb(result);
                 },
                 failure: function(response, opts) {
+
                     // error, tell user
-                    if(typeof callback==='function') {
-                        if(!Ext.isDefined(scope)) {
-                            scope = window;
-                        }
-                        callback.call(scope, false, 'Server-side failure with status code '+response.status);
-                    }
+                    callback = callback || Ext.emptyFn;
+                    scope = scope || Ext.global;
+                    callback.call(scope, false, 'Server-side failure with status code '+response.status);
                 }
             });
         } else {
@@ -974,12 +972,9 @@ Ext.define('Bancha', {
         
         // error handling
         if(!result.success) {
-            if(typeof callback==='function') {
-                if(!Ext.isDefined(scope)) {
-                    scope = window;
-                }
-                callback.call(scope, false, result.message);
-            }
+            callback = callback || Ext.emptyFn;
+            scope = scope || Ext.global;
+            callback.call(scope, false, result.message);
         }
         // save result
         Ext.apply(Bancha.getRemoteApi().metadata, result.data);
@@ -1005,12 +1000,9 @@ Ext.define('Bancha', {
         // ENDIF
 
         // user callback
-        if(typeof callback==='function') {
-            if(!Ext.isDefined(scope)) {
-                scope = window;
-            }
-            callback.call(scope, true, 'Successfully loaded '+modelNames.toString());
-        }
+        callback = callback || Ext.emptyFn;
+        scope = scope || Ext.global;
+        callback.call(scope, true, 'Successfully loaded '+modelNames.toString());
     },
     /**
      * Checks if the model is supported by the server
@@ -1242,8 +1234,8 @@ Ext.define('Bancha', {
                 msg: 'Tried to use Bancha.log, but the necessarry class Bancha.Logger is not present'
             });
             // ENDIF
-            if(window.console && window.console.error) {
-                window.console.error('Tried to use Bancha.log, but the necessarry class Bancha.Logger is not present');
+            if(Ext.global.console && Ext.global.console.error) {
+                Ext.global.console.error('Tried to use Bancha.log, but the necessarry class Bancha.Logger is not present');
             }
             return;
         }
@@ -1364,8 +1356,8 @@ Ext.define('Bancha', {
         
         // IFDEBUG
         if(!Ext.isDefined(this.getModelMetaData(modelName).idProperty)) {
-            if(window.console && Ext.isFunction(window.console.warn)) {
-                window.console.warn(
+            if(Ext.global.console && Ext.isFunction(Ext.global.console.warn)) {
+                Ext.global.console.warn(
                     'Bancha: The model meta data for '+modelName+' seems strange, probably this was '+
                     'not created by Bancha, or an error occured on the server-side. Please notice '+
                     'that this warning is only created in debug mode.');
@@ -1717,8 +1709,8 @@ Ext.define('Bancha', {
             Ext.Logger.deprecate(msg);
         } else if(Bancha.Logger) {
             Bancha.Logger.warn('[DEPRECATE]'+msg);
-        } else if(window.console && window.console.warn) {
-            window.console.warn('[DEPRECATE]'+msg);
+        } else if(Ext.global.console && Ext.global.console.warn) {
+            Ext.global.console.warn('[DEPRECATE]'+msg);
         }
     };
 
@@ -1869,7 +1861,7 @@ Ext.define('Bancha.Logger', {
         type = type || 'error';
         var typeText = type.replace(/_/,' ').toUpperCase();
 
-        if(window.console && typeof window.console.log === 'function') {
+        if(Ext.global.console && typeof Ext.global.console.log === 'function') {
             // just use the console
             Bancha.Logger.logToConsole(message, type);
         } else {
@@ -1889,21 +1881,21 @@ Ext.define('Bancha.Logger', {
         type = type || 'error';
         var typeText = type.replace(/_/,' ').toUpperCase();
 
-        if(type==='error' && typeof window.console.error === 'function') {
-            window.console.error(message);
+        if(type==='error' && typeof Ext.global.console.error === 'function') {
+            Ext.global.console.error(message);
             return;
         }
-        if((type==='warn' || type==='missing_translation') && typeof window.console.warn === 'function') {
-            window.console.warn((type==='missing_translation' ? 'MISSING TRANSLATION: ' : '') + message);
+        if((type==='warn' || type==='missing_translation') && typeof Ext.global.console.warn === 'function') {
+            Ext.global.console.warn((type==='missing_translation' ? 'MISSING TRANSLATION: ' : '') + message);
             return;
         }
-        if(type==='info' && typeof window.console.info === 'function') {
-            window.console.info(message);
+        if(type==='info' && typeof Ext.global.console.info === 'function') {
+            Ext.global.console.info(message);
             return;
         }
         
         // there is no specific log function, use default log
-        window.console.log(typeText+': '+message);
+        Ext.global.console.log(typeText+': '+message);
     }
 });
 

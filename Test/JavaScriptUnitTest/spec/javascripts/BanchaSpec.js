@@ -24,7 +24,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         
         it("internally uses objectFromPath to retrieve objects", function() {
             // simple unit tests
-            window.BanchaObjectFromPathTest = {
+            Ext.global.BanchaObjectFromPathTest = {
                 object: {
                     property: 2
                 },
