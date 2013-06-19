@@ -49,9 +49,11 @@ before_script:
   
   # Setup the TestProject for Bancha
   - if [ $CAKEPHP_VERSION ]; then rm -r ./cakephp/app ; fi #remove the default app
-  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp ; fi #create same structure, if cakephp is not used
+  - if [ $CAKEPHP_VERSION ]; then git clone --recursive https://github.com/Bancha/BanchaTestProject.git cakephp/app ; fi # clone Testproject as base
+  
+  # If we don't need to test CakePHP code, simply mimik file structure
+  - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp ; fi
   - if [ !$CAKEPHP_VERSION ]; then mkdir ./cakephp/Plugin ; fi
-  - git clone --recursive https://github.com/Bancha/BanchaTestProject.git cakephp/app ; fi # clone Testproject as base
   
   # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
