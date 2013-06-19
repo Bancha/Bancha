@@ -84,7 +84,7 @@ describe("Bancha.Loader", function() {
         expect(loadClassFn.mostRecentCall.args[3]).toBeAnObject();
         expect(loadClassFn.mostRecentCall.args[4]).toEqual(true); //syncEnabled!
 
-        // we do now check if the request is syncronous, since this is 
+        // we do now check if the request is synchronous, since this is 
         // part of the logger implementation
 
         // cleanup

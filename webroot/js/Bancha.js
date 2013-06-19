@@ -906,7 +906,7 @@ Ext.define('Bancha', {
         cb = Ext.Function.pass(this.onModelMetaDataLoaded, [callback, scope, modelNames], this);
 
         if(syncEnabled) {
-            // start syncronous ajax request (Ext.Direct does not support synchronous requests)
+            // start synchronous ajax request (Ext.Direct does not support synchronous requests)
             Ext.Ajax.request({
                 url: this.getMetaDataAjaxUrl(modelNames),
                 async: false,
