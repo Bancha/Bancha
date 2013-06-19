@@ -14,7 +14,7 @@
  */
 /*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
-/*global Ext:false, Bancha:true, TraceKit:false */
+/*global Ext:false, Bancha:true, TraceKit:false, alert */
 
 /**
  * @class Bancha.data.Model
