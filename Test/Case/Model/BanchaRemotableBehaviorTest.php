@@ -31,7 +31,7 @@ require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the test
  *
  */
 class BanchaRemotableBehaviorTest extends CakeTestCase {
-	public $fixtures = array('plugin.bancha.article_for_testing_save_behavior','plugin.bancha.user');
+	public $fixtures = array('plugin.bancha.article','plugin.bancha.article_for_testing_save_behavior','plugin.bancha.user');
 /**
  * Sets the plugins folder for this test
  *
@@ -147,7 +147,118 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				
 		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Bancha.model.Article', 'foreignKey' => 'user_id', 'name' => 'articles', 'getterName' => 'articles', 'setterName' => 'setArticles')));
 		}
-	
+
+
+	public static function providerExposeAndExclude() {
+		return array(
+			array(
+				array(""),
+				array(
+                    array(
+                        'name' => 'id',
+                        'allowNull' => '',
+                        'defaultValue' => '',
+                        'type' => 'int',
+                    ),
+                    array(
+                        'name' => 'title',
+                        'allowNull' => '1',
+                        'defaultValue' => '',
+                        'type' => 'string',
+                    ),
+                    array(
+                        'name' => 'date',
+                        'allowNull' => '1',
+                        'defaultValue' => '',
+                        'type' => 'date',
+                        'dateFormat' => 'Y-m-d H:i:s',
+                    ),
+                    array(
+                        'name' => 'body',
+                        'allowNull' => '1',
+                        'defaultValue' => '',
+                        'type' => 'string',
+                    ),
+                    array(
+                        'name' => 'published',
+                        'allowNull' => '1',
+                        'defaultValue' => '0',
+                        'type' => 'boolean',
+                    ),
+                    array(
+                        'name' => 'user_id',
+                        'allowNull' => '',
+                        'defaultValue' => '',
+                        'type' => 'int',
+                    )
+                )
+			),
+			array(
+				array('excludedFields' => 'body'),
+								array(
+                    array(
+                        'name' => 'id',
+                        'allowNull' => '',
+                        'defaultValue' => '',
+                        'type' => 'int',
+                    ),
+                    array(
+                        'name' => 'title',
+                        'allowNull' => '1',
+                        'defaultValue' => '',
+                        'type' => 'string',
+                    ),
+                    array(
+                        'name' => 'date',
+                        'allowNull' => '1',
+                        'defaultValue' => '',
+                        'type' => 'date',
+                        'dateFormat' => 'Y-m-d H:i:s',
+                    ),
+                    array(
+                        'name' => 'published',
+                        'allowNull' => '1',
+                        'defaultValue' => '0',
+                        'type' => 'boolean',
+                    ),
+                    array(
+                        'name' => 'user_id',
+                        'allowNull' => '',
+                        'defaultValue' => '',
+                        'type' => 'int',
+                    )
+                )
+			),
+			array(
+				array('exposedFields' => 'body'),
+				array(
+                    array(
+                        'name' => 'body',
+                        'allowNull' => '1',
+                        'defaultValue' => '',
+                        'type' => 'string',
+                    )
+                )
+			)
+		);
+	}
+/**
+ * Test expose and exclude
+ * This is component Test, more finegrained UnitTests exist too
+ *
+ * @dataProvider providerExposeAndExclude
+ * @return void
+ */
+		public function testExposeAndExclude($behaviorConfig=array(),$result=array()) {
+			$TestModel= ClassRegistry::init('Articles');
+//		$TestModel = new TestUserRelationships();		
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable',$behaviorConfig);
+		
+		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
+		print_r($ExtJSdata['fields']);	
+		$this->assertEquals($result , $ExtJSdata['fields']); 
+	}
+
 /**
  * general Test that prints out the array
  *
