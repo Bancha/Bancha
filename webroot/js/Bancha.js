@@ -522,15 +522,16 @@ Ext.define('Bancha', {
         // show all initialize errors as message
         defaultErrorHandle = Ext.Error.handle;
         Ext.Error.handle = function(err) {
-            Ext.Msg.alert('Bancha Error', err.msg);
+            try {
+                Ext.Msg.alert('Bancha Error', err.msg);
+            } catch(e) {
+                // this migh have been triggered before domready
+                // so it's possible that Ext.Msg fail, in these
+                // cases show an simply alert and let the 
+                // exception bubble up
+                alert(err.msg);
+            }
         };
-
-        if(Ext.versions.extjs && !Ext.isReady) {
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                msg: 'Bancha: Bancha should be initalized after the onReady event.'
-            });
-        }
         
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
 
