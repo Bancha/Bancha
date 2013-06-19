@@ -23,6 +23,77 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 class BanchaResponseTransformerTest extends CakeTestCase {
 
 /**
+ * Test how the BanchaResponseTransformer handles primitive and non-primitive
+ * results which are not tied to a model.
+ * 
+ * @param $cakeResponse cake response to transform
+ * @param $expectedResponse the expected sencha response
+ * 
+ * @dataProvider getArbitraryData
+ */
+	public function testTransformNonModelRecordCases($cakeResponse, $expectedResponse) {
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'		=> 'delete'
+		));
+
+		$result = BanchaResponseTransformer::transform($cakeResponse, $request);
+		$this->assertTrue(isset($result['success']), 'Expected result to have a sucesss property, instead got '.print_r($result,true));
+		$this->assertEquals($expectedResponse, $result);
+	}
+
+	// data provider
+	public function getArbitraryData() {
+		return array(
+			// responses with an success value are passed through
+			array( array('success'=>true,'msg'=>'lala'), array('success'=>true,'msg'=>'lala') ), // there is a success, nothing to change
+			array( array('success'=>true), array('success'=>true) ), // already in ext(-like) structure
+			array( array('success'=>'true'), array('success'=>true) ), // already in ext(-like) structure, only convert property into a boolean
+			array( array('success'=>'false'), array('success'=>false) ), // already in ext(-like) structure, only convert property into a boolean
+			array( array('success'=>'true','message'=>'lala'), array('success'=>true,'message'=>'lala') ), // already in ext(-like) structure
+			// primitive responses are the success value
+			array( true, array('success'=>true) ),
+			array( false, array('success'=>false) ),
+			// arbitary data is wrapped into the data property
+			array( 'lala', array('success'=>true,'data'=>'lala') ),
+			array( -1, array('success'=>true,'data'=>-1) ),
+			array( 0, array('success'=>true,'data'=>0) ),
+			array( 1, array('success'=>true,'data'=>1) ),
+			array( array('lala','lolo'), array('success'=>true,'data'=>array('lala','lolo')) ),
+		);
+	}
+
+/**
+ * Test how the BanchaResponseTransformer handles objects.
+ * This is a strange case, expect this should be the data.
+ */
+	public function testTransformObjectResults() {
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'		=> 'delete'
+		));
+
+		$cakeResponse = new stdClass();
+		$cakeResponse->someProperty = 'someValue';
+
+		// create a similar object
+		$expectedResponse = new stdClass();
+		$expectedResponse->someProperty = 'someValue';
+
+		// now build the expected response
+		$expectedResponse = array(
+			'success' => true,
+			'data' => $expectedResponse
+		);
+
+		$result = BanchaResponseTransformer::transform($cakeResponse, $request);
+		$this->assertTrue(isset($result['success']), 'Expected result to have a sucsess property, instead got '.print_r($result,true));
+		$this->assertEquals($expectedResponse, $result);
+	}
+
+/**
  * Tests the transform() method for multiple return records
  *
  */
@@ -160,46 +231,6 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 				array('Article'=>array('id'=>6,'name'=>'whatever2')))),     array('success'=>true,'total'=>9,'data'=>array(
 																						array('id'=>5,'name'=>'whatever'),
 																						array('id'=>6,'name'=>'whatever2')))    ),
-		);
-	}
-
-/**
- * Unrecognizable structures which include a success property
- * are just passed through, otherwise only the wrapper is added
- * @param $cakeResponse cake response to transform
- * @param $expectedResponse the expected sencha response
- * 
- * @dataProvider getArbitraryData
- */
-	public function testTransformArbitraryData($cakeResponse, $expectedResponse) {
-		$request = new CakeRequest();
-		$request->addParams(array(
-			'controller'	=> 'Articles',
-			'action'		=> 'delete'
-		));
-
-		$result = BanchaResponseTransformer::transform($cakeResponse, $request);
-		$this->assertTrue(isset($result['success']), 'Expected result to have a sucess property, instead got '.print_r($result,true));
-		$this->assertEquals($expectedResponse, $result);
-	}
-
-	// data provider
-	public function getArbitraryData() {
-		return array(
-			array( array('success'=>true,'msg'=>'lala'), array('success'=>true,'msg'=>'lala') ), // there is a success, nothing to change
-			array( array('success'=>true), array('success'=>true) ), // already in ext(-like) structure
-			array( array('success'=>'true'), array('success'=>true) ), // already in ext(-like) structure, only convert property into a boolean
-			array( array('success'=>'false'), array('success'=>false) ), // already in ext(-like) structure, only convert property into a boolean
-			array( array('success'=>'true','message'=>'lala'), array('success'=>true,'message'=>'lala') ), // already in ext(-like) structure
-			// primitive responses are the success value
-			array( true, array('success'=>true) ),
-			array( false, array('success'=>false) ),
-			array( 'lala', array('success'=>true,'data'=>'lala') ),
-			array( -1, array('success'=>true,'data'=>-1) ),
-			array( 0, array('success'=>true,'data'=>0) ),
-			array( 1, array('success'=>true,'data'=>1) ),
-			// arbitary data is wrapped into the data property
-			array( array('lala','lolo'), array('success'=>true,'data'=>array('lala','lolo')) ),
 		);
 	}
 }

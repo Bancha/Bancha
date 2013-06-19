@@ -41,7 +41,7 @@ class BanchaResponseTransformer {
 			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 		
-		return BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
+		return BanchaResponseTransformer::transformDataStructureToSencha($modelName,$response);
 	}
     
 	/**
@@ -54,11 +54,11 @@ class BanchaResponseTransformer {
 	 * @param $controller The used controller
 	 * @return extjs formated data array
 	 */
-	public static function transformDataStructureToExt($modelName, $response) {
+	private static function transformDataStructureToSencha($modelName, $response) {
 		
-		// if we only got an array with a asuccess proeprty we expect 
+		// if we only got an array with a success property we expect 
 		// that this data is already in the correct format, so only 
-		// enfore that the success value is a boolean and we're done
+		// enforce that the success value is a boolean and we're done
 		if(is_array($response) && isset($response['success'])) {
 			
 			// enforce that the success value is of type boolean
@@ -71,7 +71,7 @@ class BanchaResponseTransformer {
 
 		// understand primitive responses
 		if($response===true || $response===false) {
-			// this was an un-/successfull operation, return that to ext
+			// this was an un-/successfull operation, return that to ext/touch
 			return array(
 				'success' => $response,
 			);
@@ -134,7 +134,7 @@ class BanchaResponseTransformer {
 			// this is a paging response
 
 			// the records have standard cake structure, so get them by using this function
-			$data = BanchaResponseTransformer::transformDataStructureToExt($modelName, $response['records']);
+			$data = BanchaResponseTransformer::transformDataStructureToSencha($modelName, $response['records']);
 			// now add only the data to the response
 			$senchaResponse['data'] = $data['data'];
 
