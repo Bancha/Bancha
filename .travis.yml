@@ -7,12 +7,23 @@ php:
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
-  #- DB=mysql CAKEPHP_VERSION=2.1.5
-  - DB=mysql CAKEPHP_VERSION=master EXTJS_VERSION=4.1.1a TOUCH_VERSION=2.1.0
-  - DB=mysql CAKEPHP_VERSION=2.2.0 EXTJS_VERSION=4.1.0 TOUCH_VERSION=2.0.1.1
-  #- DB=mysql CAKEPHP_VERSION=2.0.6
-  #- DB=mysql CAKEPHP_VERSION=2.0.0
-  - DB=pgsql CAKEPHP_VERSION=master EXTJS_VERSION=4.0.7
+  - DB=mysql TOUCH_VERSION=2.2.2
+  - DB=mysql TOUCH_VERSION=2.2.0
+  - DB=mysql TOUCH_VERSION=2.1.1
+  - DB=mysql TOUCH_VERSION=2.1.0
+  - DB=mysql TOUCH_VERSION=2.0.1.1
+
+  - DB=mysql EXTJS_VERSION=4.2.0
+  - DB=mysql EXTJS_VERSION=4.1.1a
+  - DB=mysql EXTJS_VERSION=4.1.0
+  - DB=mysql EXTJS_VERSION=4.0.7
+
+  - DB=mysql CAKEPHP_VERSION=master
+  - DB=mysql CAKEPHP_VERSION=2.3.0
+  - DB=mysql CAKEPHP_VERSION=2.2.7
+  - DB=mysql CAKEPHP_VERSION=2.2.0
+
+  - DB=pgsql CAKEPHP_VERSION=master
   - DB=sqlite CAKEPHP_VERSION=master
 
 branches:
@@ -130,8 +141,8 @@ before_script:
   - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
-  - chmod a+x ./lib/Cake/Console/cake # make sure to execute it
-  - ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
+  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake # make sure to execute it
+  - if [ $CAKEPHP_VERSION ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr # execute all Tests
 
   # execute the jasmine tests
   - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
