@@ -34,11 +34,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	public $fixtures = array('plugin.bancha.article','plugin.bancha.article_for_testing_save_behavior','plugin.bancha.user');
 	private $standardDebugLevel;
 
-/**
- * Sets the plugins folder for this test
- *
- * @return void
- */
+	/**
+	 * Sets the plugins folder for this test
+	 *
+	 * @return void
+	 */
 	public function setUp() {
 		//App::build(array('plugins' => array( 'plugins' . DS . 'Bancha' . DS . 'Model' . DS . 'Behavior' . DS ), true));
 		//App::objects('plugins', null, false);
@@ -48,12 +48,12 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		);
 	}
 
-/**
- * tearDown method
- *
- * @access public
- * @return void
- */
+	/**
+	 * tearDown method
+	 *
+	 * @access public
+	 * @return void
+	 */
 	function tearDown() {
 		ClassRegistry::flush();
 	}
@@ -76,31 +76,31 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testGetExposedFields
 	 */
-	public static function testGetExposedFieldsDataProvider() {
+	public function testGetExposedFieldsDataProvider() {
 		return array(
 			array(
 				array(), // default config
-                array('id', 'title', 'date', 'body', 'published', 'user_id')
+				array('id', 'title', 'date', 'body', 'published', 'user_id')
 			),
 			array(
 				array('excludedFields' => null),
-                array('id', 'title', 'date', 'body', 'published', 'user_id')
+				array('id', 'title', 'date', 'body', 'published', 'user_id')
 			),
 			array(
 				array('excludedFields' => array('body')),
-                array('id', 'title', 'date', 'published', 'user_id')
+				array('id', 'title', 'date', 'published', 'user_id')
 			),
 			array(
 				array('exposedFields' => array('date', 'body')),
-                array('date', 'body')
+				array('date', 'body')
 			),
 			array(
 				array('exposedFields' => array('date', 'body', 'published'), 'excludedFields' => array()),
-                array('date', 'body', 'published')
+				array('date', 'body', 'published')
 			),
 			array(
 				array('exposedFields' => array('date', 'body', 'published'), 'excludedFields' => array('published')),
-                array('date', 'body')
+				array('date', 'body')
 			)
 		);
 	}
@@ -130,7 +130,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Data Provider for testGetExposedFields_Exceptions
 	 * The field names do not exist
 	 */
-	public static function testGetExposedFieldsDataProvider_Exceptions() {
+	public function testGetExposedFieldsDataProvider_Exceptions() {
 		return array(
 			array(
 				array('exposedFields' => array('imaginary')),
@@ -168,22 +168,22 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testIsExposedField
 	 */
-	public static function testIsExposedFieldDataProvider() {
+	public function testIsExposedFieldDataProvider() {
 		return array(
 			array(
 				array(),
-                'title',
-                true
+				'title',
+				true
 			),
 			array(
 				array('excludedFields' => array('title')),
-                'title',
-                false
+				'title',
+				false
 			),
 			array(
 				array('exposedFields' => array('date', 'body')),
-                'title',
-                false
+				'title',
+				false
 			)
 		);
 	}
@@ -232,7 +232,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 
 	/**
-	 * Get all associations in ExtJS/Sencha Touch format
+	 * Get all associations in ExtJS/Sencha Touch format.
+	 * Filter out belongTo associations of non-exposed fields.
 	 */
 	public function testGetAssociated_Filtered() {
 
@@ -265,6 +266,60 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$this->assertEqual($result, $expecedResult);
 	}
 
+
+	/**
+	 * Get all sorters in ExtJS/Sencha Touch format.
+	 * @dataProvider testGetSorterDataProvider
+	 */
+	public function testGetSorter($rules, $expecedResult) {
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array('excludedFields'=>array('user_id')));
+
+		// prepare sort rule
+		$TestModel->order = $rules;
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->getSorters($TestModel);
+		$this->assertEqual($result, $expecedResult);
+	}
+	/**
+	 * Data Provider for testGetSorter
+	 */
+	public function testGetSorterDataProvider() {
+		return array(
+			array(
+			  	array('Model.name' => 'DESC'), 
+			  	array(
+			  		array('property' => 'name', 'direction' => 'DESC')
+			  	)
+			),
+			array(
+			  	array('Model.field' => 'ASC', 'Model.field2' => 'DESC'),
+			  	array(
+			  		array('property' => 'field', 'direction' => 'ASC'),
+			  		array('property' => 'field2', 'direction' => 'DESC')
+			  	)
+			)
+	   // TODO write into TechDocu that only arrays are allowed for order behavior
+	/*	   array(
+		  	"field",
+		  	array(array( 'property' => 'name', 'direction' => 'DESC' ))),
+		  array(
+		  	"Model.field",
+		  	array(array( 'property' => 'filed', 'direction' => '' ))),
+		  array(
+		  	"Model.field asc",
+		  	array(array( 'property' => 'filed', 'direction' => '' ))),
+		 array(
+		  	"Model.field ASC",
+		  	array(array( 'property' => 'filed', 'direction' => '' ))),
+		  array(
+		  	"Model.field DESC",
+		  	array(array( 'property' => 'filed', 'direction' => '' ))), */
+		  	
+		);
+	}
+
+
 	/**
 	 * extractBanchaMetaData basically wraps different functions without internal logic,
 	 * so execute only a small integrational test.
@@ -283,58 +338,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$this->assertEqual(count($result['sorters']), 1);
 	}
 
-/**
- *  provider for testing the order attribute
- */
-    public static function providerOrder()
-    {
-        return array(
-          array(
-          	array('Model.name' => 'DESC'), 
-          	array(
-          		array( 'property' => 'name', 'direction' => 'DESC' )
-          	)
-          ),
-       // TODO write into TechDocu that only arrays are allowed for order behavior
-    /*       array(
-          	"field",
-          	array(array( 'property' => 'name', 'direction' => 'DESC' ))),
-          array(
-          	"Model.field",
-          	array(array( 'property' => 'filed', 'direction' => '' ))),
-          array(
-          	"Model.field asc",
-          	array(array( 'property' => 'filed', 'direction' => '' ))),
-         array(
-          	"Model.field ASC",
-          	array(array( 'property' => 'filed', 'direction' => '' ))),
-          array(
-          	"Model.field DESC",
-          	array(array( 'property' => 'filed', 'direction' => '' ))), */
-          array(
-          	array("Model.field" => "asc", "Model.field2" => "DESC"),
-          	array(
-          		array( 'property' => 'field', 'direction' => 'asc' ),
-          		array( 'property' => 'field2', 'direction' => 'DESC')
-          		)
-          	)
-          	
-        );
-    }
-
-/**
- * Tests order
- * @dataProvider providerOrder
- * @return void
- */
-	public function testMetaDataOrder3($in=array(),$out=array()) {
-		$TestModel = new TestUserOrder();
-		$TestModel->order = $in;
-		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
-		
-		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
-		$this->assertEqual($ExtJSdata['sorters'], $out);
-	}
 		
 /**
  * provider for relationships
@@ -366,91 +369,91 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 			array(
 				array(""),
 				array(
-                    array(
-                        'name' => 'id',
-                        'allowNull' => '',
-                        'defaultValue' => '',
-                        'type' => 'int',
-                    ),
-                    array(
-                        'name' => 'title',
-                        'allowNull' => '1',
-                        'defaultValue' => '',
-                        'type' => 'string',
-                    ),
-                    array(
-                        'name' => 'date',
-                        'allowNull' => '1',
-                        'defaultValue' => '',
-                        'type' => 'date',
-                        'dateFormat' => 'Y-m-d H:i:s',
-                    ),
-                    array(
-                        'name' => 'body',
-                        'allowNull' => '1',
-                        'defaultValue' => '',
-                        'type' => 'string',
-                    ),
-                    array(
-                        'name' => 'published',
-                        'allowNull' => '1',
-                        'defaultValue' => '0',
-                        'type' => 'boolean',
-                    ),
-                    array(
-                        'name' => 'user_id',
-                        'allowNull' => '',
-                        'defaultValue' => '',
-                        'type' => 'int',
-                    )
-                )
+					array(
+						'name' => 'id',
+						'allowNull' => '',
+						'defaultValue' => '',
+						'type' => 'int',
+					),
+					array(
+						'name' => 'title',
+						'allowNull' => '1',
+						'defaultValue' => '',
+						'type' => 'string',
+					),
+					array(
+						'name' => 'date',
+						'allowNull' => '1',
+						'defaultValue' => '',
+						'type' => 'date',
+						'dateFormat' => 'Y-m-d H:i:s',
+					),
+					array(
+						'name' => 'body',
+						'allowNull' => '1',
+						'defaultValue' => '',
+						'type' => 'string',
+					),
+					array(
+						'name' => 'published',
+						'allowNull' => '1',
+						'defaultValue' => '0',
+						'type' => 'boolean',
+					),
+					array(
+						'name' => 'user_id',
+						'allowNull' => '',
+						'defaultValue' => '',
+						'type' => 'int',
+					)
+				)
 			),
 			array(
 				array('excludedFields' => 'body'),
 								array(
-                    array(
-                        'name' => 'id',
-                        'allowNull' => '',
-                        'defaultValue' => '',
-                        'type' => 'int',
-                    ),
-                    array(
-                        'name' => 'title',
-                        'allowNull' => '1',
-                        'defaultValue' => '',
-                        'type' => 'string',
-                    ),
-                    array(
-                        'name' => 'date',
-                        'allowNull' => '1',
-                        'defaultValue' => '',
-                        'type' => 'date',
-                        'dateFormat' => 'Y-m-d H:i:s',
-                    ),
-                    array(
-                        'name' => 'published',
-                        'allowNull' => '1',
-                        'defaultValue' => '0',
-                        'type' => 'boolean',
-                    ),
-                    array(
-                        'name' => 'user_id',
-                        'allowNull' => '',
-                        'defaultValue' => '',
-                        'type' => 'int',
-                    )
-                )
+					array(
+						'name' => 'id',
+						'allowNull' => '',
+						'defaultValue' => '',
+						'type' => 'int',
+					),
+					array(
+						'name' => 'title',
+						'allowNull' => '1',
+						'defaultValue' => '',
+						'type' => 'string',
+					),
+					array(
+						'name' => 'date',
+						'allowNull' => '1',
+						'defaultValue' => '',
+						'type' => 'date',
+						'dateFormat' => 'Y-m-d H:i:s',
+					),
+					array(
+						'name' => 'published',
+						'allowNull' => '1',
+						'defaultValue' => '0',
+						'type' => 'boolean',
+					),
+					array(
+						'name' => 'user_id',
+						'allowNull' => '',
+						'defaultValue' => '',
+						'type' => 'int',
+					)
+				)
 			),
 			array(
 				array('exposedFields' => 'body'),
 				array(
-                    array(
-                        'name' => 'body',
-                        'allowNull' => '1',
-                        'defaultValue' => '',
-                        'type' => 'string',
-                    )
-                )
+					array(
+						'name' => 'body',
+						'allowNull' => '1',
+						'defaultValue' => '',
+						'type' => 'string',
+					)
+				)
 			)
 		);
 	}

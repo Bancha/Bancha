@@ -793,14 +793,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$this->result[$Model->alias] = true;
 	}
 	
-/**
- * Returns an ExtJS formated array describing sortable fields
- * this is '$order' in cakephp
- *
- * @param Model $Model the model using this behavior
- * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
- */
-	private function getSorters(Model $Model) {
+	/**
+	 * Returns an ExtJS formated array describing sortable fields
+	 * this is '$order' in cakephp
+	 *
+	 * @param Model $Model the model using this behavior
+	 * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
+	 */
+	public function getSorters(Model $Model) {
 		// TODO TechDocu: only arrays are allowed as $order
 		$sorters = array();
 		if ( is_array($Model->order) ) {
