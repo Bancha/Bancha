@@ -283,39 +283,53 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 	/**
 	 * Data Provider for testGetSorter
+	 * See http://book.cakephp.org/2.0/en/models/model-attributes.html#order
 	 */
 	public function testGetSorterDataProvider() {
 		return array(
 			array(
-			  	array('Model.name' => 'DESC'), 
-			  	array(
-			  		array('property' => 'name', 'direction' => 'DESC')
-			  	)
+				"title", 
+				array(
+					array('property' => 'title', 'direction' => 'ASC')
+				)
 			),
 			array(
-			  	array('Model.field' => 'ASC', 'Model.field2' => 'DESC'),
-			  	array(
-			  		array('property' => 'field', 'direction' => 'ASC'),
-			  		array('property' => 'field2', 'direction' => 'DESC')
-			  	)
+				"TestArticle.title", 
+				array(
+					array('property' => 'title', 'direction' => 'ASC')
+				)
+			),
+			array(
+				"TestArticle.title asc", 
+				array(
+					array('property' => 'title', 'direction' => 'ASC')
+				)
+			),
+			array(
+				"TestArticle.title ASC", 
+				array(
+					array('property' => 'title', 'direction' => 'ASC')
+				)
+			),
+			array(
+				"TestArticle.title DESC", 
+				array(
+					array('property' => 'title', 'direction' => 'DESC')
+				)
+			),
+			array(
+				array('TestArticle.title' => 'DESC'), 
+				array(
+					array('property' => 'title', 'direction' => 'DESC')
+				)
+			),
+			array(
+				array('TestArticle.title' => 'ASC', 'TestArticle.body' => 'DESC'),
+				array(
+					array('property' => 'title', 'direction' => 'ASC'),
+					array('property' => 'body', 'direction' => 'DESC')
+				)
 			)
-	   // TODO write into TechDocu that only arrays are allowed for order behavior
-	/*	   array(
-		  	"field",
-		  	array(array( 'property' => 'name', 'direction' => 'DESC' ))),
-		  array(
-		  	"Model.field",
-		  	array(array( 'property' => 'filed', 'direction' => '' ))),
-		  array(
-		  	"Model.field asc",
-		  	array(array( 'property' => 'filed', 'direction' => '' ))),
-		 array(
-		  	"Model.field ASC",
-		  	array(array( 'property' => 'filed', 'direction' => '' ))),
-		  array(
-		  	"Model.field DESC",
-		  	array(array( 'property' => 'filed', 'direction' => '' ))), */
-		  	
 		);
 	}
 
@@ -498,7 +512,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		//debug($ExtJSdata,true);
 		#do the assertions
 		//$this->assertEquals(json_encode($ExtJSdata), '{"idProperty":"id","fields":[{"name":"id","type":"integer"},{"name":"name","type":"string"},{"name":"login","type":"string"},{"name":"created","type":"datetime"},{"name":"email","type":"string"},{"name":"avatar","type":"string"},{"name":"weight","type":"float"},{"name":"heigth","type":"float"}],"validations":[{"type":"length","name":"id","max":null},{"type":"length","name":"name","max":64},{"type":"length","name":"login","max":64},{"type":"length","name":"created","max":null},{"type":"length","name":"email","max":64},{"type":"length","name":"avatar","max":64},{"type":"length","name":"weight","max":null},{"type":"length","name":"heigth","max":null}],"associations":[{"hasMany":"Article"}],"sorters":[{"property":"order","direction":"ASC"}]}' );
-		$this->assertEquals(true,  true);
+		$this->assertEquals(true, true);
 	}
 
 

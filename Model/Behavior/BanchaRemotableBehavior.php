@@ -801,16 +801,42 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
 	 */
 	public function getSorters(Model $Model) {
-		// TODO TechDocu: only arrays are allowed as $order
 		$sorters = array();
-		if ( is_array($Model->order) ) {
-			foreach($Model->order as $key => $value) {
-				$token = strtok($key, ".");
-				$key = strtok(".");
-				array_push($sorters, array( 'property' => $key, 'direction' => $value));
+
+		if(empty($Model->order)) {
+			return $sorters;
+		}
+
+		if(is_string($Model->order)) {
+			$order = trim($Model->order);
+
+			if(strpos($order, '.')===false) {
+				// this is just the field name
+				$fieldName = $order;
+				$direction = 'ASC';
+
+			} else if(strpos($order, ' ')===false) {
+				// this has a model name and a field name, but no direction
+				$modelName = strtok($order, ".");
+				$fieldName = strtok(" ");
+				$direction = 'ASC';
+			} else {
+				// this has a model name, a field name and a direction
+				$modelName = strtok($order, ".");
+				$fieldName = strtok(" ");
+				$direction = strtoupper(substr($order, strpos($order, ' ')+1));
 			}
+			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
+
+		} else if(is_array($Model->order)) {
+			foreach($Model->order as $key => $direction) {
+				$modelName = strtok($key, ".");
+				$fieldName = strtok(".");
+				array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
+			}
+
 		} else {
-			//debug("model->order is not an array");
+			throw new CakeException("The CakePHP ".$Model->alias." model configuration for order needs to be a string or array, instead got ".gettype($Model->order));
 		}
 		return $sorters;
 	}
