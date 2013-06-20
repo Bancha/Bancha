@@ -13,6 +13,62 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
+
+/**
+ * This model is used inside the 
+ * BanchaRemotableBehaviorTest::testGetAssociated
+ */
+class TestArticle extends CakeTestModel {
+	public $name = 'Article';
+	public $useTable = false;
+	public $order = array('name.order' => 'ASC');
+
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'title' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'date' => array('type' => 'datetime', 'null' => true, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'body' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'published' => array('type' => 'boolean', 'null' => true, 'default' => false, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+	//	'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
+	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+
+	public $validate = array(
+		'title' => array(
+			'alphaNumeric' => array(
+				'rule' => array('alphaNumeric'),
+			),
+			'notempty' => array(
+				'rule' => array('notempty'),
+			),
+		),
+		'body' => 'alphaNumeric',
+	);
+	// used in testGetAssociated
+	// tese rules are not fully valid
+	public $belongsTo = array(
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+		),
+	);
+	public $hasMany = array(
+		'ArticleTag',
+		'HasManyModel' => array(
+			'className' => 'HasManyModel',
+			'foreignKey' => 'article_id',
+		),
+	);
+	public $hasAndBelongsToMany = array(
+		'Tag' => array(
+			'className' => 'Tag',
+			'foreignKey' => 'article_id',
+		),
+	);
+} //eo TestArticle
+
+
 class TestUser extends CakeTestModel {
 
 /**
@@ -127,27 +183,6 @@ class TestUser extends CakeTestModel {
 				//'on' => 'create', // Limit validation to 'create' or 'update' operations
 			),
 		),
-	);
-	
-	/**
- * hasMany associations
- *
- * @var array
- */
-	public $hasMany = array(
-		'Article' => array(
-			'className' => 'Article',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
 	);
 }
 

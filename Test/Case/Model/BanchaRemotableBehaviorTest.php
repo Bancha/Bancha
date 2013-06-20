@@ -32,6 +32,8 @@ require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the test
  */
 class BanchaRemotableBehaviorTest extends CakeTestCase {
 	public $fixtures = array('plugin.bancha.article','plugin.bancha.article_for_testing_save_behavior','plugin.bancha.user');
+	private $standardDebugLevel;
+
 /**
  * Sets the plugins folder for this test
  *
@@ -56,10 +58,105 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 	
+
+
+	/**
+	 * Get all associations in ExtJS/Sencha Touch format
+	 */
+	public function testGetAssociated() {
+
+		// hasAndBelongsTo associations should be hidden
+		$expecedResult = array(
+			array(
+				'type' => 'belongsTo',
+				'model' => 'Bancha.model.User',
+				'foreignKey' => 'user_id',
+				'getterName' => 'getUser',
+				'setterName' => 'setUser',
+				'name' => 'user',
+			),
+			array(
+				'type' => 'hasMany',
+				'model' => 'Bancha.model.HasManyModel',
+				'foreignKey' => 'article_id',
+				'getterName' => 'hasManyModels',
+				'setterName' => 'setHasManyModels',
+				'name' => 'hasManyModels',
+			),
+			array(
+				'type' => 'hasMany',
+				'model' => 'Bancha.model.ArticleTag',
+				'foreignKey' => 'article_id',
+				'getterName' => 'articleTags',
+				'setterName' => 'setArticleTags',
+				'name' => 'articleTags',
+			),
+		);
+
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->getAssociated($TestModel);
+		$this->assertEqual(count($result), 3, "Expected three associations, instead got ".count($result));
+		$this->assertEqual($result, $expecedResult);
+	}
+
+
+	/**
+	 * Get all associations in ExtJS/Sencha Touch format
+	 */
+	public function testGetAssociated_Filtered() {
+
+		// the belongsTo association should be hidden 
+		// because the field user_id is hidden
+		$expecedResult = array(
+			array(
+				'type' => 'hasMany',
+				'model' => 'Bancha.model.HasManyModel',
+				'foreignKey' => 'article_id',
+				'getterName' => 'hasManyModels',
+				'setterName' => 'setHasManyModels',
+				'name' => 'hasManyModels',
+			),
+			array(
+				'type' => 'hasMany',
+				'model' => 'Bancha.model.ArticleTag',
+				'foreignKey' => 'article_id',
+				'getterName' => 'articleTags',
+				'setterName' => 'setArticleTags',
+				'name' => 'articleTags',
+			),
+		);
+
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array('excludedFields'=>array('user_id')));
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->getAssociated($TestModel);
+		$this->assertEqual(count($result), 2, "Expected three associations, instead got ".count($result));
+		$this->assertEqual($result, $expecedResult);
+	}
+
+	/**
+	 * extractBanchaMetaData basically wraps different functions without internal logic,
+	 * so execute only a small integrational test.
+	 */
+	public function testExtractBanchaMetaData() {
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
+
+		$result = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
+
+		// check results
+		$this->assertEqual($result['idProperty'], 'id');
+		$this->assertEqual(count($result['fields']), 6);
+		$this->assertEqual(count($result['validations']), 3);
+		$this->assertEqual(count($result['associations']), 3);
+		$this->assertEqual(count($result['sorters']), 1);
+	}
+
 /**
  *  provider for testing the order attribute
  */
-
     public static function providerOrder()
     {
         return array(
@@ -134,22 +231,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				
 	}
 
-/**
- * Tests relationships
- *
- * @return void
- */
-	public function testMetaDataRelationships() {
-		$TestModel = new TestUserRelationships();		
-		$TestModel->Behaviors->load('Bancha.BanchaRemotable',array('Model'));
-		
-		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
-				
-		$this->assertEqual($ExtJSdata['associations'],array( array( 'type' => 'hasMany', 'model' => 'Bancha.model.Article', 'foreignKey' => 'user_id', 'name' => 'articles', 'getterName' => 'articles', 'setterName' => 'setArticles')));
-		}
 
-
-	public static function providerExposeAndExclude() {
+	public function providerExposeAndExclude() {
 		return array(
 			array(
 				array(""),
@@ -248,16 +331,15 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  *
  * @dataProvider providerExposeAndExclude
  * @return void
- */
-		public function testExposeAndExclude($behaviorConfig=array(),$result=array()) {
-			$TestModel= ClassRegistry::init('Articles');
+ *
+	public function testExposeAndExclude($behaviorConfig=array(),$result=array()) {
+		$TestModel= ClassRegistry::init('Articles');
 //		$TestModel = new TestUserRelationships();		
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable',$behaviorConfig);
 		
 		$ExtJSdata = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
-		print_r($ExtJSdata['fields']);	
 		$this->assertEquals($result , $ExtJSdata['fields']); 
-	}
+	}*/
 
 /**
  * general Test that prints out the array
