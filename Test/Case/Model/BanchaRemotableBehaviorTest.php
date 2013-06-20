@@ -61,6 +61,135 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 
 	/**
+	 * Test if the internally used _getExposedFields method always
+	 * calculates the correct set of fields to expose.
+	 * 
+	 * @dataProvider testGetExposedFieldsDataProvider
+	 */
+	public function testGetExposedFields($behaviorConfig, $expecedResult) {
+		$TestModel= ClassRegistry::init('Article');
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
+		$this->assertEquals($result , $expecedResult);
+	}
+	/**
+	 * Data Provider for testGetExposedFields
+	 */
+	public static function testGetExposedFieldsDataProvider() {
+		return array(
+			array(
+				array(), // default config
+                array('id', 'title', 'date', 'body', 'published', 'user_id')
+			),
+			array(
+				array('excludedFields' => null),
+                array('id', 'title', 'date', 'body', 'published', 'user_id')
+			),
+			array(
+				array('excludedFields' => array('body')),
+                array('id', 'title', 'date', 'published', 'user_id')
+			),
+			array(
+				array('exposedFields' => array('date', 'body')),
+                array('date', 'body')
+			),
+			array(
+				array('exposedFields' => array('date', 'body', 'published'), 'excludedFields' => array()),
+                array('date', 'body', 'published')
+			),
+			array(
+				array('exposedFields' => array('date', 'body', 'published'), 'excludedFields' => array('published')),
+                array('date', 'body')
+			)
+		);
+	}
+	/**
+	 * Test if the internally used _getExposedFields method 
+	 * throws exceptions if misconfigured in debug mode
+	 * 
+	 * @dataProvider testGetExposedFieldsDataProvider_Exceptions
+	 * @expectedException CakeException
+	 */
+	public function testGetExposedFields_Exceptions($behaviorConfig) {
+		// turn debug mode on
+		$this->standardDebugLevel = Configure::read('debug');
+		Configure::write('debug', 2);
+
+		// run test
+		$TestModel= ClassRegistry::init('Article');
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+
+		// trigger exception
+		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
+
+		// turn debug mode back to default
+		Configure::write('debug', $this->standardDebugLevel);
+	}
+	/**
+	 * Data Provider for testGetExposedFields_Exceptions
+	 * The field names do not exist
+	 */
+	public static function testGetExposedFieldsDataProvider_Exceptions() {
+		return array(
+			array(
+				array('exposedFields' => array('imaginary')),
+			),
+			array(
+				array('exposedFields' => array('date', 'imaginary', 'body')),
+			),
+			array(
+				array('excludedFields' => array('imaginary')),
+			),
+			array(
+				array('excludedFields' => array('date', 'imaginary', 'body')),
+			),
+			array(
+				array(
+					'exposedFields' => array('date', 'imaginary', 'body'),
+					'excludedFields' => array('date', 'imaginary', 'body')),
+			),
+		);
+	}
+
+	/**
+	 * Test if that isExposedField already returns the corret value 
+	 * from given behvor config.
+	 * 
+	 * @dataProvider testIsExposedFieldDataProvider
+	 */
+	public function testIsExposedField($behaviorConfig, $fieldName, $expecedResult) {
+		$TestModel= ClassRegistry::init('Article');
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->isExposedField($TestModel, $fieldName);
+		$this->assertEquals($result , $expecedResult);
+	}
+	/**
+	 * Data Provider for testIsExposedField
+	 */
+	public static function testIsExposedFieldDataProvider() {
+		return array(
+			array(
+				array(),
+                'title',
+                true
+			),
+			array(
+				array('excludedFields' => array('title')),
+                'title',
+                false
+			),
+			array(
+				array('exposedFields' => array('date', 'body')),
+                'title',
+                false
+			)
+		);
+	}
+
+
+	/**
 	 * Get all associations in ExtJS/Sencha Touch format
 	 */
 	public function testGetAssociated() {

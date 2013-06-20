@@ -143,35 +143,78 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return $ExtMetaData;
 	}
 
-
 	/**
-	 * Custom validation rule for uploaded files.
-	 *
-	 *  @param Array $data CakePHP File info.
-	 *  @param Boolean $required Is this field required?
-	 *  @return Boolean
-	*/
-	public function validateFile($data, $required = false) {
-		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
-		$upload_info = array_shift($data);
+	 * Calculates an array of all exposed model fields.
+	 * @param Model $Model The model of the field to check
+	 * @return array Array of model field names (as strings)
+	 */
+	public function _getExposedFields($Model) {
+		$settings = $this->settings[$Model->alias];
 
-		// No file uploaded.
-		if ($required && $upload_info['size'] == 0) {
-				return false;
+		// cache pattern
+		if(isset($settings['_computedExposedFields'])) {
+			return $settings['_computedExposedFields'];
 		}
 
-		// Check for Basic PHP file errors.
-		if ($upload_info['error'] !== 0) {
-			return false;
-		}
-
-		// Finally, use PHP's own file validation method.
-		return is_uploaded_file($upload_info['tmp_name']);
-	}
+		// compute
+		$fields = array_merge(
+			array_keys($Model->schema()), // first get all model fields
+			array_keys($Model->virtualFields)); // and add all virtual fields
 		
-	// TODO remove workarround for 'file' validation
-	public function file($check) {
-		return true;
+
+		// if exposedFields is an array, match
+		if(isset($settings['exposedFields']) && is_array($settings['exposedFields'])) {
+			// remove all fields which are not in exposedFields
+			$fields = array_intersect($fields, $settings['exposedFields']);
+
+			// In debug mode check if all exposed fields are valid
+			if(Configure::read('debug')>0 && (count($fields)<count($settings['exposedFields']))) {
+				$wrongNames = array_diff($settings['exposedFields'], $fields);
+				throw new CakeException(
+					"Bancha: You have configured the BanchaRemotable to expose following fields for ".$Model->name.
+					" which do not exist in the schema: ".print_r($wrongNames,true).
+					"\nPlease remove them or fix your schema.\n".
+					"This error is only displayed in debug mode."
+				);
+			}
+		}
+
+		// if excludedFields is an array, exclude those
+		if(isset($settings['excludedFields']) && is_array($settings['excludedFields'])) {
+
+			// In debug mode check if all exposed fields are valid
+			if(Configure::read('debug')>0) {
+				$wrongNames = array_diff($settings['excludedFields'], $fields);
+				if(count($wrongNames)) {
+					throw new CakeException(
+						"Bancha: You have configured the BanchaRemotable to exclude following fields for ".$Model->name.
+						" which do not exist in the schema: ".print_r($wrongNames,true).
+						"\nPlease remove them or fix your schema.\n".
+						"This error is only displayed in debug mode."
+					);
+				}
+			}
+
+			// remove all fields which are in excludedFields
+			$fields = array_diff($fields, $settings['excludedFields']);
+		}
+
+		// fix the indexes
+		$fields = array_values($fields);
+
+		// set cache and return
+		$settings['_computedExposedFields'] = $fields;
+		return $fields;
+	}
+	/**
+	 * Returns true if the field is visible to the ExtJS/Sencha Touch frontend.
+	 * @param Model $Model The model of the field to check
+	 * @param string $fieldName The name of the field (see schema)
+	 * @return boolean True if it is exposed
+	 */
+	public function isExposedField($Model, $fieldName) {
+		return in_array($fieldName, $this->_getExposedFields($Model));
+	}
 	}
 
 	/**
@@ -505,6 +548,36 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		}
 		return $cols;
+	}
+
+	/**
+	 * Custom validation rule for uploaded files.
+	 *
+	 *  @param Array $data CakePHP File info.
+	 *  @param Boolean $required Is this field required?
+	 *  @return Boolean
+	*/
+	public function validateFile($data, $required = false) {
+		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
+		$upload_info = array_shift($data);
+
+		// No file uploaded.
+		if ($required && $upload_info['size'] == 0) {
+				return false;
+		}
+
+		// Check for Basic PHP file errors.
+		if ($upload_info['error'] !== 0) {
+			return false;
+		}
+
+		// Finally, use PHP's own file validation method.
+		return is_uploaded_file($upload_info['tmp_name']);
+	}
+		
+	// TODO remove workarround for 'file' validation
+	public function file($check) {
+		return true;
 	}
 
 	/**
