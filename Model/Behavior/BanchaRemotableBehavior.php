@@ -241,22 +241,29 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function getAssociated(Model $Model) {
 		$assocTypes = $Model->associations();
 		$assocs = array();
-		foreach ($assocTypes as $type) {
+		foreach ($assocTypes as $type) { // only 3 types
+			if($type == 'hasAndBelongsToMany') {
+				// ExtJS/Sencha Touch doesn't support hasAndBelongsToMany
+				continue;
+			}
 			foreach($Model->{$type} as $modelName => $config) {
-				if($type != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
-					
-					//generate the name to retrieve associations
-					$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
 
-					$assocs[] = array(
-						'type' => $type, 
-						'model' => 'Bancha.model.'.$config['className'], 
-						'foreignKey' => $config['foreignKey'],
-						'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
-						'setterName' => 'set'.$name,
-						'name' => lcfirst($name)
-						);
+				//generate the name to retrieve associations
+				$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
+
+				if($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+					// this field is hidden from ExtJS/Sencha Touch, so also hide the association
+					continue;
 				}
+
+				$assocs[] = array(
+					'type' => $type, 
+					'model' => 'Bancha.model.'.$config['className'], 
+					'foreignKey' => $config['foreignKey'],
+					'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
+					'setterName' => 'set'.$name,
+					'name' => lcfirst($name)
+					);
 			}
 		}
 		return $assocs;
