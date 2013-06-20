@@ -71,13 +71,27 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * the default behavor configuration
 	 */
 	private $_defaults = array(
-		/*
+		/**
 		 * If true the model also saves and validates records with missing
 		 * fields, like ExtJS is providing for edit operations.
 		 * If you set this to false please use $Model->saveFields($data,$options)
 		 * to save edit-data from extjs.
+		 * @var boolean
 		 */
 		'useOnlyDefinedFields' => true,
+		/**
+		 * Defined which field should be exposed. If defined these fields will
+		 * be taken as a base of field to expose, the excludeFields config will
+		 * still be applied.
+		 * @var string[]|null
+		 */
+		'exposedFields' => null,
+		/**
+		 * Defined which field should never be exposed. This config overrules
+		 * exposedFields.
+		 * @var string[]
+		 */
+		'excludedFields' => array()
 	);
 	/**
 	 * Sets up the BanchaRemotable behavior. For config options see 
@@ -146,7 +160,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	/**
 	 * Calculates an array of all exposed model fields.
 	 * @param Model $Model The model of the field to check
-	 * @return array Array of model field names (as strings)
+	 * @return string[] Array of model field names (as strings)
 	 */
 	public function _getExposedFields($Model) {
 		$settings = $this->settings[$Model->alias];
@@ -270,42 +284,44 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 	/**
-	 * return the model columns as ExtJS Fields
+	 * Return the model column schema as ExtJS/Sencha Touch structure.
 	 *
-	 * should look like
-	 *
-	 * 'User', {
-	 *   fields: [
-	 *     {name: 'id', type: 'int', allowNull:true, default:''},
-	 *     {name: 'name', type: 'string', allowNull:true, default:''}
-	 *   ]
-	 * }
+	 * Example:
+	 *     [
+	 *       {name: 'id', type: 'int', allowNull:true, default:''},
+	 *       {name: 'name', type: 'string', allowNull:true, default:''}
+	 *     ]
 	 *
 	 * @param Model $Model instance of model
 	 * @return Array An array of ExtJS/Sencha Touch model field definitions
 	 */
-	private function getColumnTypes(Model $Model) {
+	public function getColumnTypes(Model $Model) {
 		$schema = $Model->schema();
 		$fields = array();
 
 		// add all database fields
 		foreach ($schema as $field => $fieldSchema) {
-			array_push($fields, $this->getColumnType($Model, $field, $fieldSchema));
+			if($this->isExposedField($Model, $field)) {
+				array_push($fields, $this->getColumnType($Model, $field, $fieldSchema));
+			}
 		}
 
 		// add virtual fields
 		foreach ($Model->virtualFields as $field => $sql) {
-			array_push($fields, array(
-				'name' => $field,
-				'type' => 'auto', // we can't guess the type here
-				'persist' => false // nothing to save here
-			));
+			if($this->isExposedField($Model, $field)) {
+				array_push($fields, array(
+					'name' => $field,
+					'type' => 'auto', // we can't guess the type here
+					'persist' => false // nothing to save here
+				));
+			}
 		}
 
 		return $fields;
 	}
+
 	/**
-	 * @see getColumnTypes
+	 * @see #getColumnTypes
 	 */
 	private function getColumnType(Model $Model, $field, $fieldSchema) {
 
@@ -343,217 +359,265 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * Returns an ExtJS formated array of field names, validation types and constraints.
 	 *
 	 * @param Model $Model instance of model
-	 * @return Ext.data.validations rules
+	 * @return array Ext.data.validations rules
 	 */
-	private function getValidations(Model $Model) {
-		if (empty($Model->validate)) {
-			//some testcases fail with this
-			//trigger_error(__d('cake_dev', '(Model::getColumnTypes) Unable to build model field data. If you are using a model without a database table, try implementing schema()'), E_USER_WARNING);
+	public function getValidations(Model $Model) {
+		$rules = array();
+
+		// only use validation rules for exposed fields
+		foreach ($Model->validate as $fieldName => $fieldRules) {
+			if($this->isExposedField($Model, $fieldName)) {
+				$rules[$fieldName] = $fieldRules;
+			}
 		}
+
+		// normalize
+		$rules = $this->normalizeValidationRules($rules);
+
+		// transform rules
 		$cols = array();
-		foreach ($Model->validate as $field => $values) {
-			
-			// cake also supports a simple structure, like:
-			// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
-			// so to support that as well, transform it:
-			if(is_string($values)) {
-				$values = array(
-					$values => array('rule' => $values));
-			}
-
-			// and now add support for even another structure
-			// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
-			if(isset($values['rule'])) {
-				if(is_string($values['rule'])) { // this is the name of a validation rule
-					$values = array(
-						$values['rule'] => $values);
-				} else if(is_array($values['rule']) && is_string($values['rule'][0])) { // this is an array or name plus arguments
-					$values = array(
-						$values['rule'][0] => $values);
-				}
-				// otherwise the rule is malformed
-			}
-
-
-			// no check for rules
-
-
-			// check if the input is required
-			$presence = false;
-			foreach($values as $rule) {
-				if((isset($rule['required']) && $rule['required']) ||
-				   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
-					$presence = true;
-					break;
-				}
-			}
-			if(isset($values['notempty']) || $presence) {
-				$cols[] = array(
-					'type' => 'presence',
-					'field' => $field,
-				);
-			}
-
-			// isUnique can only be tested on the server, 
-			// so we would need some business logic for that
-			// as well, maybe integrate in Bancha Scaffold
-
-			if(isset($values['equalTo'])) {
-				$cols[] = array(
-					'type' => 'inclusion',
-					'field' => $field,
-					'list' => array($values['equalTo']['rule'][1])
-				);
-			}
-
-			if(isset($values['boolean'])) {
-				$cols[] = array(
-					'type' => 'inclusion',
-					'field' => $field,
-					'list' => array(true,false,'0','1',0,1)
-				);
-			}
-
-			if(isset($values['inList'])) {
-				$cols[] = array(
-					'type' => 'inclusion',
-					'field' => $field,
-					'list' => $values['inList']['rule'][1]
-				);
-			}
-
-			if(isset($values['minLength']) || isset($values['maxLength'])) {
-				$col = array(
-					'type' => 'length',
-					'field' => $field,
-				);
-				
-				if(isset($values['minLength'])) {
-					$col['min'] = $values['minLength']['rule'][1];
-				}
-				if(isset($values['maxLength'])) {
-					$col['max'] = $values['maxLength']['rule'][1];
-				}
-				$cols[] = $col;
-			}
-
-			if(isset($values['between'])) {
-				if(	isset($values['between']['rule'][1]) ||
-					isset($values['between']['rule'][2]) ) {
-					$cols[] = array(
-						'type' => 'length',
-						'field' => $field,
-						'min' => $values['between']['rule'][1],
-						'max' => $values['between']['rule'][2]
-					);
-				} else {
-					$cols[] = array(
-						'type' => 'length',
-						'field' => $field,
-					);
-				}
-			}
-
-			//TODO there is no alpha in cakephp
-			if(isset($values['alpha'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['alpha'],
-				);
-			}
-
-			if(isset($values['alphaNumeric'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['alphanum'],
-				);
-			}
-
-			if(isset($values['email'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['email'],
-				);
-			}
-
-			if(isset($values['url'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['url'],
-				);
-			}
-
-			// number validation rules
-			// numberformat = precision, min, max
-			if(isset($values['numeric']) || isset($values['naturalNumber'])) {
-				$col = array(
-					'type' => 'numberformat',
-					'field' => $field,
-				);
-
-				if(isset($values['numeric']['precision'])) {
-					$col['precision'] = $values['numeric']['precision'];
-				}
-				if(isset($values['naturalNumber'])) {
-					$col['precision'] = 0;
-				}
-
-				if(isset($values['naturalNumber'])) {
-					$col['min'] = (isset($values['naturalNumber']['rule'][1]) && $values['naturalNumber']['rule'][1]==true) ? 0 : 1;
-				}
-			}
-			
-			if(isset($values['range'])) {
-				// this rule is a bit ambiguous in cake, it tests like this: 
-				// return ($check > $lower && $check < $upper);
-				// since ext understands it like this:
-				// return ($check >= $lower && $check <= $upper);
-				// we have to change the value
-				$min = $values['range']['rule'][1];
-				$max = $values['range']['rule'][2];
-				
-				if(isset($values['numeric']['precision'])) {
-					// increment/decrease by the smallest possible value
-					$amount = 1*pow(10,-$values['numeric']['precision']);
-					$min += $amount;
-					$max -= $amount;
-				} else {
-					
-					// if debug tell dev about problem
-					if(Configure::read('debug')>0) {
-						throw new CakeException(
-							"Bancha: You are currently using the validation rule 'range' for ".$Model->name."->".$field.
-							". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
-							"map the validation rules. \nUsage: array('rule' => array('numeric'),'precision'=> ? ) \n".
-							"This error is only displayed in debug mode."
-						);
-					}
-					
-					// best guess
-					$min += 1;
-					$max += 1;
-				}
-				$cols[] = array(
-					'type' => 'numberformat',
-					'field' => $field,
-					'min' => $min,
-					'max' => $max,
-				);
-			}
-			// extension
-			if(isset($values['extension'])) {
-				$cols[] = array(
-					'type' => 'file',
-					'field' => $field,
-					'extension' => $values['extension']['rule'][1],
-				);
-			}
-
+		foreach ($rules as $fieldName => $fieldRules) {
+			$cols = array_merge($cols, $this->getValidationRulesForField($fieldName, $fieldRules));
 		}
+
+		return $cols;
+	}
+
+
+	public function normalizeValidationRules($rules) {
+
+		foreach ($rules as $fieldName => $fieldRules) {
+
+			$normalizedFieldRules = array();
+
+			if(is_string($fieldRules) || isset($fieldRules['rule'])) {
+				// this is only one rule
+				$fieldRule = $this->normalizeValidationRule($fieldRules);
+				$normalizedFieldRules[$fieldRule['rule'][0]] = $fieldRule;
+			} else {
+				// Transform multiple rules per field into our normalized structure
+				// http://book.cakephp.org/2.0/en/models/data-validation.html#multiple-rules-per-field
+				foreach ($fieldRules as $customRuleName => $fieldRule) {
+					$fieldRule = $this->normalizeValidationRule($fieldRule);
+					$normalizedFieldRules[$fieldRule['rule'][0]] = $fieldRule;
+				}
+			}
+
+			$rules[$fieldName] = $normalizedFieldRules;
+		}
+
+		return $rules;
+	}
+
+	private function normalizeValidationRule($fieldRule) {
+
+		// Transform simple rules into our normalized structure
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
+		if(is_string($fieldRule)) {
+			$fieldRule = array(
+				'rule' => array($fieldRule)
+			);
+		}
+
+		// Transform one rule per field with an string rule into our normalized structure
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+		if(isset($fieldRule['rule']) && is_string($fieldRule['rule'])) { 
+			$fieldRule['rule'] = array($fieldRule['rule']);
+		}
+
+		// The case below is as we expect it
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+		// if(isset($fieldRule['rule']) && is_array($fieldRule['rule'])) {
+
+		return $fieldRule;
+	}
+
+	public function getValidationRulesForField($fieldName, $rules) {
+		$cols = array();
+
+		// check if the input is required
+		$presence = false;
+		foreach($rules as $rule) {
+			if((isset($rule['required']) && $rule['required']) ||
+			   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
+				$presence = true;
+				break;
+			}
+		}
+		if(isset($rules['notEmpty']) || $presence) {
+			$cols[] = array(
+				'type' => 'presence',
+				'field' => $fieldName,
+			);
+		}
+
+		// isUnique can only be tested on the server, 
+		// so we would need some business logic for that
+		// as well, maybe integrate in Bancha Scaffold
+
+		if(isset($rules['equalTo'])) {
+			$cols[] = array(
+				'type' => 'inclusion',
+				'field' => $fieldName,
+				'list' => array($rules['equalTo']['rule'][1])
+			);
+		}
+
+		if(isset($rules['boolean'])) {
+			$cols[] = array(
+				'type' => 'inclusion',
+				'field' => $fieldName,
+				'list' => array(true,false,'0','1',0,1)
+			);
+		}
+
+		if(isset($rules['inList'])) {
+			$cols[] = array(
+				'type' => 'inclusion',
+				'field' => $fieldName,
+				'list' => $rules['inList']['rule'][1]
+			);
+		}
+
+		if(isset($rules['minLength']) || isset($rules['maxLength'])) {
+			$col = array(
+				'type' => 'length',
+				'field' => $fieldName,
+			);
+			
+			if(isset($rules['minLength'])) {
+				$col['min'] = $rules['minLength']['rule'][1];
+			}
+			if(isset($rules['maxLength'])) {
+				$col['max'] = $rules['maxLength']['rule'][1];
+			}
+			$cols[] = $col;
+		}
+
+		if(isset($rules['between'])) {
+			if(	isset($rules['between']['rule'][1]) ||
+				isset($rules['between']['rule'][2]) ) {
+				$cols[] = array(
+					'type' => 'length',
+					'field' => $fieldName,
+					'min' => $rules['between']['rule'][1],
+					'max' => $rules['between']['rule'][2]
+				);
+			} else {
+				$cols[] = array(
+					'type' => 'length',
+					'field' => $fieldName,
+				);
+			}
+		}
+
+		//TODO there is no alpha in cakephp
+		if(isset($rules['alpha'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['alpha'],
+			);
+		}
+
+		if(isset($rules['alphaNumeric'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['alphanum'],
+			);
+		}
+
+		if(isset($rules['email'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['email'],
+			);
+		}
+
+		if(isset($rules['url'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['url'],
+			);
+		}
+
+		// extension
+		if(isset($rules['extension'])) {
+			$cols[] = array(
+				'type' => 'file',
+				'field' => $fieldName,
+				'extension' => $rules['extension']['rule'][1],
+			);
+		}
+
+		// number validation rules
+		$setNumberRule = false; // collect all together
+		$numberRule = array(
+			'type' => 'numberformat',
+			'field' => $fieldName,
+		);
+
+		// numberformat = precision, min, max
+		if(isset($rules['numeric']) || isset($rules['naturalNumber'])) {
+			if(isset($rules['numeric']['precision'])) {
+				$numberRule['precision'] = $rules['numeric']['precision'];
+			}
+			if(isset($rules['naturalNumber'])) {
+				$numberRule['precision'] = 0;
+			}
+
+			if(isset($rules['naturalNumber'])) {
+				$numberRule['min'] = (isset($rules['naturalNumber']['rule'][1]) && $rules['naturalNumber']['rule'][1]==true) ? 0 : 1;
+			}
+
+			$setNumberRule = true;
+		}
+		
+		if(isset($rules['range'])) {
+			// this rule is a bit ambiguous in cake, it tests like this: 
+			// return ($check > $lower && $check < $upper);
+			// since ext understands it like this:
+			// return ($check >= $lower && $check <= $upper);
+			// we have to change the value
+			$min = $rules['range']['rule'][1];
+			$max = $rules['range']['rule'][2];
+			
+			if(isset($rules['numeric']['precision'])) {
+				// increment/decrease by the smallest possible value
+				$amount = 1*pow(10,-$rules['numeric']['precision']);
+				$min += $amount;
+				$max -= $amount;
+			} else {
+				
+				// if debug tell dev about problem
+				if(Configure::read('debug')>0) {
+					throw new CakeException(
+						"Bancha: You are currently using the validation rule 'range' for the model field ".$fieldName.
+						". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
+						"map the validation rules. \nUsage: array('rule' => array('numeric'),'precision'=> ? ) \n".
+						"This error is only displayed in debug mode."
+					);
+				}
+				
+				// best guess
+				$min += 1;
+				$max += 1;
+			}
+
+			// set min and max values
+			$numberRule['min'] = $min;
+			$numberRule['max'] = $max;
+
+			$setNumberRule = true;
+		}
+
+		if($setNumberRule) {
+			$cols[] = $numberRule;
+		}
+
 		return $cols;
 	}
 
