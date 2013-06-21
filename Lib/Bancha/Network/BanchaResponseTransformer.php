@@ -43,20 +43,32 @@ class BanchaResponseTransformer {
 			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 		
-		return BanchaResponseTransformer::transformDataStructureToSencha($modelName,$response);
+		// get the model
+		$Model = null;
+		try {
+			$Model = ClassRegistry::init($modelName);
+			if(get_class($Model) == 'AppModel') {
+				$Model = null; // the real model seems to not exist
+			}
+		} catch(Exception $e) {
+			// there migth be cases, where the controller
+			// has no similar record, in these cases do nothing
+		}
+
+		return BanchaResponseTransformer::transformDataStructureToSencha($response, $modelName, $Model);
 	}
     
 	/**
-	 * Transform a cake response to extjs structure (associated models are not supported!)
+	 * Transform a CakePHP response to ExtJS/Sencha Touch structure,
 	 * otherwise just return the original response.
 	 * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
 	 *
-	 * @param $modelName The model name of the current request
-	 * @param $response The input request from Bancha
-	 * @param $controller The used controller
-	 * @return extjs formated data array
+	 * @param  object     $response   The input request from Bancha
+	 * @param  string     $modelName  The model name of the current request
+	 * @param  Model|null $Model      The primary model or null
+	 * @return array                  ExtJS/Sencha Touch formated data
 	 */
-	private static function transformDataStructureToSencha($modelName, $response) {
+	private static function transformDataStructureToSencha($response, $modelName, $Model) {
 		
 		// if we only got an array with a success property we expect 
 		// that this data is already in the correct format, so only 
@@ -103,6 +115,18 @@ class BanchaResponseTransformer {
 			'data' => $response
 		);
 
+		if($modelName == 'Bancha') {
+			// this is a request from the BanchaApi, nothing to transform here
+			return $senchaResponse;
+		}
+
+
+		// now filter the data
+		if($Model) {
+			$response = $Model->filterRecords($response);
+		}
+
+		// transform model data
 		$mapper = new CakeSenchaDataMapper($response, $modelName);
 
 		if($mapper->isSingleRecord()) {
@@ -134,7 +158,7 @@ class BanchaResponseTransformer {
 			// this is a paging response
 
 			// the records have standard cake structure, so get them by using this function
-			$data = BanchaResponseTransformer::transformDataStructureToSencha($modelName, $response['records']);
+			$data = BanchaResponseTransformer::transformDataStructureToSencha($response['records'], $modelName, $Model);
 			// now add only the data to the response
 			$senchaResponse['data'] = $data['data'];
 
