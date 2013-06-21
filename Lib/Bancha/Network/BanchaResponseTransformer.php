@@ -12,6 +12,8 @@
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
+App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
+
 /**
  * BanchaResponseTransformer. Performs transformations on CakePHP responses in order to match Ext JS responses.
  *
@@ -101,13 +103,13 @@ class BanchaResponseTransformer {
 			'data' => $response
 		);
 
-		
-		if( isset($response[$modelName]) ) {
+		$mapper = new CakeSenchaDataMapper($response, $modelName);
+
+		if($mapper->isSingleRecord()) {
 			// this is standard cake single element structure
 			$senchaResponse['data'] = $response[$modelName];
 			
-		} else if( isset($response['0']) && isset($response['0'][$modelName]) && 
-					is_array($response['0'][$modelName])) {
+		} else if($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
 
 			$conversionSuccessfull = true;
@@ -128,9 +130,7 @@ class BanchaResponseTransformer {
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
 			
-		} else if( isset($response['records']) && isset($response['count']) && 
-				(isset($response['records']['0'][$modelName]) || 						// paginagted records with records
-				(is_array($response['records']) && $response['count']==0))) {   		// pagination with zero records
+		} else if($mapper->isPaginatedRecordSet()) {
 			// this is a paging response
 
 			// the records have standard cake structure, so get them by using this function
