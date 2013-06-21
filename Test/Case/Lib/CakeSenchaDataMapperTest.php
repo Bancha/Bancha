@@ -289,21 +289,21 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 
 	/**
-	 * Test isPaginatedRecordSet function
+	 * Test isPaginatedSet function
 	 *
-	 * @dataProvider isPaginatedRecordSetDataProvider
+	 * @dataProvider isPaginatedSetDataProvider
 	 */
-	public function testIsPaginatedRecordSet($data, $expectedResult) {
+	public function testIsPaginatedSet($data, $expectedResult) {
 
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
-		$result = $mapper->isPaginatedRecordSet();
+		$result = $mapper->isPaginatedSet();
 
 		$this->assertEquals($result, $expectedResult);
 	}
 	/**
-	 * Data Provider for testIsPaginatedRecordSet
+	 * Data Provider for testIsPaginatedSet
 	 */
-	public function isPaginatedRecordSetDataProvider() {
+	public function isPaginatedSetDataProvider() {
 		return array(
 			array(
 				$this->singleRecord,

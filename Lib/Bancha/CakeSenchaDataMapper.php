@@ -46,7 +46,7 @@ class CakeSenchaDataMapper {
 		return $this->isRecordSet() && isset($this->data[0]['children']);
 	}
 
-	public function isPaginatedRecordSet() {
+	public function isPaginatedSet() {
 		return isset($this->data['records']) && isset($this->data['count']) &&  // this is how a paginated result set should look with Bancha
 				(isset($this->data['records']['0'][$this->primary]) || 			// paginagted records with records
 				(is_array($this->data['records']) && $this->data['count']==0)); // pagination with zero records

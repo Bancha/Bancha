@@ -250,7 +250,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			foreach ($data as $key => $record) {
 				$data[$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
 			}
-		} else if($mapper->isPaginatedRecordSet()) {
+		} else if($mapper->isPaginatedSet()) {
 
 			// the records have standard cake handle each record
 			foreach ($data['records'] as $key => $record) {

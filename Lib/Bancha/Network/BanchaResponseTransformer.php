@@ -130,7 +130,7 @@ class BanchaResponseTransformer {
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
 			
-		} else if($mapper->isPaginatedRecordSet()) {
+		} else if($mapper->isPaginatedSet()) {
 			// this is a paging response
 
 			// the records have standard cake structure, so get them by using this function
