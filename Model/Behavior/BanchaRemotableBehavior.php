@@ -16,6 +16,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('BanchaException', 'Bancha.Bancha/Exception');
+App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 
 // backwards compability with 5.2
@@ -229,6 +230,60 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function isExposedField($Model, $fieldName) {
 		return in_array($fieldName, $this->_getExposedFields($Model));
 	}
+
+	/**
+	 * Filters all non-exposed fields from an CakePHP dataset. This
+	 * includes a single record, multiple records and nested data. // TODO
+	 *
+	 * @param  array $records The records to filter
+	 * @return array          Returns data in the same structure as input, but filtered.
+	 */
+	public function filterRecords($Model, $data) {
+
+		$mapper = new CakeSenchaDataMapper($data, $Model->name);
+
+		if($mapper->isSingleRecord()) {
+			// filter the data of the single record
+			$data[$Model->name] = $this->filterRecord($Model, $data[$Model->name]);
+		} else if($mapper->isRecordSet()) {
+			// handle each record
+			foreach ($data as $key => $record) {
+				$data[$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
+			}
+		} else if($mapper->isPaginatedRecordSet()) {
+
+			// the records have standard cake handle each record
+			foreach ($data['records'] as $key => $record) {
+				$data['records'][$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Filters all non-exposed fields from an indivudal record.
+	 *
+	 * This function expects only the record data in the following
+	 * form:  
+	 *     array(
+	 *         'fieldName'  => 'fieldValue',
+	 *         'fieldName2' => 'fieldValue2',
+	 *     )
+	 * 
+	 * @param  array $recData The record data to filter
+	 * @return array          Returns data in the same structure as input, but filtered.
+	 */
+	public function filterRecord($Model, $recData) {
+
+		$result = array();
+		foreach ($this->_getExposedFields($Model) as $fieldName) {
+			if(isset($recData[$fieldName])) {
+				$result[$fieldName] = $recData[$fieldName];
+			}
+		}
+
+		return $result;
 	}
 
 	/**

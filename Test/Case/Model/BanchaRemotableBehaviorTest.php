@@ -197,6 +197,350 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		);
 	}
 
+	/**
+	 * Test if that filterRecord filters all non-exposed fields
+	 * from an indivudal record
+	 * 
+	 * @dataProvider filterRecordDataProvider
+	 */
+	public function testFilterRecord($behaviorConfig, $input, $expecedResult) {
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->filterRecord($TestModel, $input);
+		$this->assertEquals($result, $expecedResult);
+	}
+	/**
+	 * Data Provider for testFilterRecord
+	 */
+	public function filterRecordDataProvider() {
+		return array(
+			array(
+				array(), // input==output
+				array(
+					'id' => 988,
+					'title' => 'Title 1',
+					'date' => '2011-11-24 03:40:04',
+					'headline' => '2011-11-24 03:40:04 Title 1',
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2
+				),
+				array(
+					'id' => 988,
+					'title' => 'Title 1',
+					'date' => '2011-11-24 03:40:04',
+					'headline' => '2011-11-24 03:40:04 Title 1',
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2
+				)
+			),
+			array(
+				// hide some fields
+				array('exposedFields' => array('id', 'date', 'body')),
+				array(
+					'id' => 988,
+					'title' => 'Title 1',
+					'date' => '2011-11-24 03:40:04',
+					'headline' => '2011-11-24 03:40:04 Title 1',
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2
+				),
+				array(
+					'id' => 988,
+					'date' => '2011-11-24 03:40:04',
+					'body' => 'Text 1',
+				)
+			),
+			array(
+				// hide some fields, make fields are not present input
+				array('exposedFields' => array('id', 'date', 'body')),
+				array(
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2
+				),
+				array(
+					'body' => 'Text 1',
+				)
+			),
+		);
+	}
+
+	/**
+	 * Test if that filterRecords filters all non-exposed fields
+	 * from all possible inputs (see test provider)
+	 * 
+	 * @dataProvider filterRecordsDataProvider
+	 */
+	public function testFilterRecords($behaviorConfig, $input, $expecedResult) {
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+		
+		$result = $TestModel->Behaviors->BanchaRemotable->filterRecords($TestModel, $input);
+		$this->assertEquals($result, $expecedResult);
+	}
+	/**
+	 * Data Provider for testFilterRecords
+	 */
+	public function filterRecordsDataProvider() {
+		return array(
+			array(
+				// find('first') structure, no filter
+				array(), // input==output
+				array(
+					'Article' => array(
+						'id' => 988,
+						'title' => 'Title 1',
+						'date' => '2011-11-24 03:40:04',
+						'headline' => '2011-11-24 03:40:04 Title 1',
+						'body' => 'Text 1',
+						'published' => true,
+						'user_id' => 2
+					)
+				),
+				array(
+					'Article' => array(
+						'id' => 988,
+						'title' => 'Title 1',
+						'date' => '2011-11-24 03:40:04',
+						'headline' => '2011-11-24 03:40:04 Title 1',
+						'body' => 'Text 1',
+						'published' => true,
+						'user_id' => 2
+					)
+				),
+			),
+			array(
+				// find('first') structure, hide some fields
+				array('exposedFields' => array('id', 'date', 'body')),
+				array(
+					'Article' => array(
+						'id' => 988,
+						'title' => 'Title 1',
+						'date' => '2011-11-24 03:40:04',
+						'headline' => '2011-11-24 03:40:04 Title 1',
+						'body' => 'Text 1',
+						'published' => true,
+						'user_id' => 2
+					)
+				),
+				array(
+					'Article' => array(
+						'id' => 988,
+						'date' => '2011-11-24 03:40:04',
+						'body' => 'Text 1',
+					)
+				),
+			),
+			array(
+				// find('first') structure, partial data
+				array('exposedFields' => array('id', 'date', 'body')),
+				array(
+					'Article' => array(
+						'body' => 'Text 1',
+						'published' => true,
+						'user_id' => 2
+					)
+				),
+				array(
+					'Article' => array(
+						'body' => 'Text 1',
+					)
+				),
+			),
+			array(
+				// find('all') structure, no filter
+				array(), // input==output
+				array(
+					array(
+						'Article' => array(
+							'id' => 988,
+							'title' => 'Title 1',
+							'date' => '2011-11-24 03:40:04',
+							'headline' => '2011-11-24 03:40:04 Title 1',
+							'body' => 'Text 1',
+							'published' => true,
+							'user_id' => 2
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 989,
+							'title' => 'Title 2',
+							'date' => '2011-12-24 03:40:04',
+							'body' => 'Text 2',
+							'published' => false,
+							'user_id' => 3,
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 990,
+							'title' => 'Title 3',
+							'date' => '2010-12-24 03:40:04',
+							'body' => 'Text 3',
+							'published' => false,
+							'user_id' => 3,
+						),
+					),
+				),
+				array(
+					array(
+						'Article' => array(
+							'id' => 988,
+							'title' => 'Title 1',
+							'date' => '2011-11-24 03:40:04',
+							'headline' => '2011-11-24 03:40:04 Title 1',
+							'body' => 'Text 1',
+							'published' => true,
+							'user_id' => 2
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 989,
+							'title' => 'Title 2',
+							'date' => '2011-12-24 03:40:04',
+							'body' => 'Text 2',
+							'published' => false,
+							'user_id' => 3,
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 990,
+							'title' => 'Title 3',
+							'date' => '2010-12-24 03:40:04',
+							'body' => 'Text 3',
+							'published' => false,
+							'user_id' => 3,
+						),
+					),
+				),
+			),
+			array(
+				// find('all') structure, hide some fields and partial data
+				array('exposedFields' => array('id', 'date', 'body')),
+				array(
+					array(
+						'Article' => array(
+							'title' => 'Title 1',
+							'date' => '2011-11-24 03:40:04',
+							'headline' => '2011-11-24 03:40:04 Title 1',
+							'body' => 'Text 1',
+							'published' => true,
+							'user_id' => 2
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 989,
+							'title' => 'Title 2',
+							'body' => 'Text 2',
+							'published' => false,
+							'user_id' => 3,
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 990,
+							'title' => 'Title 3',
+							'date' => '2010-12-24 03:40:04',
+							'body' => 'Text 3',
+							'published' => false,
+							'user_id' => 3,
+						),
+					),
+				),
+				array(
+					array(
+						'Article' => array(
+							'date' => '2011-11-24 03:40:04',
+							'body' => 'Text 1',
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 989,
+							'body' => 'Text 2',
+						),
+					),
+					array(
+						'Article' => array(
+							'id' => 990,
+							'date' => '2010-12-24 03:40:04',
+							'body' => 'Text 3',
+						),
+					),
+				),
+			),
+			array(
+				// paginated data structure, hide some fields and partial data
+				array('exposedFields' => array('id', 'date', 'body')),
+				array(
+					'count' => 100,
+					'records' => array(
+						array(
+							'Article' => array(
+								'title' => 'Title 1',
+								'date' => '2011-11-24 03:40:04',
+								'headline' => '2011-11-24 03:40:04 Title 1',
+								'body' => 'Text 1',
+								'published' => true,
+								'user_id' => 2
+							),
+						),
+						array(
+							'Article' => array(
+								'id' => 989,
+								'title' => 'Title 2',
+								'body' => 'Text 2',
+								'published' => false,
+								'user_id' => 3,
+							),
+						),
+						array(
+							'Article' => array(
+								'id' => 990,
+								'title' => 'Title 3',
+								'date' => '2010-12-24 03:40:04',
+								'body' => 'Text 3',
+								'published' => false,
+								'user_id' => 3,
+							),
+						),
+					),
+				),
+				array(
+					'count' => 100,
+					'records' => array(
+						array(
+							'Article' => array(
+								'date' => '2011-11-24 03:40:04',
+								'body' => 'Text 1',
+							),
+						),
+						array(
+							'Article' => array(
+								'id' => 989,
+								'body' => 'Text 2',
+							),
+						),
+						array(
+							'Article' => array(
+								'id' => 990,
+								'date' => '2010-12-24 03:40:04',
+								'body' => 'Text 3',
+							),
+						),
+					),
+				),
+			),
+		);
+	}
 
 	/**
 	 * Get all associations in ExtJS/Sencha Touch format
