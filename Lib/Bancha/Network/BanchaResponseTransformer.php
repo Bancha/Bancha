@@ -44,13 +44,10 @@ class BanchaResponseTransformer {
 		}
 		
 		// get the model
-		$Model = null;
+		$Model = false;
 		try {
-			$Model = ClassRegistry::init($modelName);
-			if(get_class($Model) == 'AppModel') {
-				$Model = null; // the real model seems to not exist
-			}
-		} catch(Exception $e) {
+			$Model = ClassRegistry::init($modelName, true);
+		} catch(CakeException $e) {
 			// there migth be cases, where the controller
 			// has no similar record, in these cases do nothing
 		}
@@ -63,10 +60,10 @@ class BanchaResponseTransformer {
 	 * otherwise just return the original response.
 	 * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
 	 *
-	 * @param  object     $response   The input request from Bancha
-	 * @param  string     $modelName  The model name of the current request
-	 * @param  Model|null $Model      The primary model or null
-	 * @return array                  ExtJS/Sencha Touch formated data
+	 * @param  object      $response   The input request from Bancha
+	 * @param  string      $modelName  The model name of the current request
+	 * @param  Model|false $Model      The primary model or null
+	 * @return array                   ExtJS/Sencha Touch formated data
 	 */
 	private static function transformDataStructureToSencha($response, $modelName, $Model) {
 		
@@ -122,7 +119,7 @@ class BanchaResponseTransformer {
 
 
 		// now filter the data
-		if($Model) {
+		if($Model != false) {
 			$response = $Model->filterRecords($response);
 		}
 
