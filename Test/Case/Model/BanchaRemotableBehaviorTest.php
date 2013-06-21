@@ -64,19 +64,19 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test if the internally used _getExposedFields method always
 	 * calculates the correct set of fields to expose.
 	 * 
-	 * @dataProvider testGetExposedFieldsDataProvider
+	 * @dataProvider getExposedFieldsDataProvider
 	 */
 	public function testGetExposedFields($behaviorConfig, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
 		
 		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
-		$this->assertEquals($result , $expecedResult);
+		$this->assertEquals($result, $expecedResult);
 	}
 	/**
 	 * Data Provider for testGetExposedFields
 	 */
-	public function testGetExposedFieldsDataProvider() {
+	public function getExposedFieldsDataProvider() {
 		return array(
 			array(
 				array(), // default config
@@ -112,7 +112,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test if the internally used _getExposedFields method 
 	 * throws exceptions if misconfigured in debug mode
 	 * 
-	 * @dataProvider testGetExposedFieldsDataProvider_Exceptions
+	 * @dataProvider getExposedFieldsDataProvider_Exceptions
 	 * @expectedException CakeException
 	 */
 	public function testGetExposedFields_Exceptions($behaviorConfig) {
@@ -134,7 +134,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Data Provider for testGetExposedFields_Exceptions
 	 * The field names do not exist
 	 */
-	public function testGetExposedFieldsDataProvider_Exceptions() {
+	public function getExposedFieldsDataProvider_Exceptions() {
 		return array(
 			array(
 				array('exposedFields' => array('id', 'imaginary')),
@@ -160,19 +160,19 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test if that isExposedField already returns the corret value 
 	 * from given behvor config.
 	 * 
-	 * @dataProvider testIsExposedFieldDataProvider
+	 * @dataProvider isExposedFieldDataProvider
 	 */
 	public function testIsExposedField($behaviorConfig, $fieldName, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
 		
 		$result = $TestModel->Behaviors->BanchaRemotable->isExposedField($TestModel, $fieldName);
-		$this->assertEquals($result , $expecedResult);
+		$this->assertEquals($result, $expecedResult);
 	}
 	/**
 	 * Data Provider for testIsExposedField
 	 */
-	public function testIsExposedFieldDataProvider() {
+	public function isExposedFieldDataProvider() {
 		return array(
 			array(
 				array(),
@@ -279,7 +279,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Get all sorters in ExtJS/Sencha Touch format.
 	 * 
-	 * @dataProvider testGetSorterDataProvider
+	 * @dataProvider getSorterDataProvider
 	 */
 	public function testGetSorter($rules, $expecedResult) {
 		$TestModel = new TestArticle();
@@ -295,7 +295,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Data Provider for testGetSorter
 	 * See http://book.cakephp.org/2.0/en/models/model-attributes.html#order
 	 */
-	public function testGetSorterDataProvider() {
+	public function getSorterDataProvider() {
 		return array(
 			array(
 				"title", 
@@ -347,7 +347,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test that getColumnTypes returns all column definitions in 
 	 * ExtJS/Sencha Touch format
 	 * 
-	 * @dataProvider testGetColumnTypesDataProvider
+	 * @dataProvider getColumnTypesDataProvider
 	 */
 	public function testGetColumnTypes($behaviorConfig, $expecedResult) {
 		$TestModel = new TestArticle();
@@ -359,7 +359,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testGetColumnTypes
 	 */
-	public function testGetColumnTypesDataProvider() {
+	public function getColumnTypesDataProvider() {
 		return array(
 			array(
 				array(), // default config
@@ -515,7 +515,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test that normalizeValidationRules returns a normalized
 	 * array to process validation rules
 	 * 
-	 * @dataProvider testNormalizeValidationRulesDataProvider
+	 * @dataProvider normalizeValidationRulesDataProvider
 	 */
 	public function testNormalizeValidationRules($input, $expecedResult) {
 		$TestModel = new TestArticle();
@@ -527,7 +527,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testNormalizeValidationRules
 	 */
-	public function testNormalizeValidationRulesDataProvider() {
+	public function normalizeValidationRulesDataProvider() {
 		return array(
 			array(
 				// Simple Rules
@@ -756,7 +756,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test that getValidationRulesForField returns all validation definitions 
 	 * for one model field in ExtJS/Sencha Touch format
 	 * 
-	 * @dataProvider testGetValidationRulesForFieldDataProvider
+	 * @dataProvider getValidationRulesForFieldDataProvider
 	 */
 	public function testGetValidationRulesForField($fieldName, $rules, $expecedResult) {
 		$TestModel = new TestArticle();
@@ -769,7 +769,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testGetValidationRulesForField
 	 */
-	public function testGetValidationRulesForFieldDataProvider() {
+	public function getValidationRulesForFieldDataProvider() {
 		return array(
 			// test cake alphaNumeric rule
 			array(
@@ -1222,7 +1222,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * Test that getValidationRulesForField returns all validation definitions 
 	 * for one model field in ExtJS/Sencha Touch format
 	 * 
-	 * @dataProvider testGetValidationRulesForFieldDataProvider_Exceptions
+	 * @dataProvider getValidationRulesForFieldDataProvider_Exceptions
 	 */
 	public function testGetValidationRulesForField_Exceptions($fieldName, $rules) {
 		// turn debug mode on
@@ -1242,7 +1242,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testGetValidationRulesForField_Exceptions
 	 */
-	public function testGetValidationRulesForFieldDataProvider_Exceptions() {
+	public function getValidationRulesForFieldDataProvider_Exceptions() {
 		return array(
 			// range requires a precision
 			array(
@@ -1265,7 +1265,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 *
 	 * This is only an integration test, the individual rules are tested above
 	 * 
-	 * @dataProvider testGetValidationsDataProvider
+	 * @dataProvider getValidationsDataProvider
 	 */
 	public function testGetValidations($TestModelName, $behaviorConfig, $expecedResult) {
 		$TestModel = new $TestModelName();
@@ -1278,7 +1278,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Data Provider for testGetValidations
 	 */
-	public function testGetValidationsDataProvider() {
+	public function getValidationsDataProvider() {
 		return array(
 			array(
 				'TestUser', // Simple and One Rule Per Field Rules
