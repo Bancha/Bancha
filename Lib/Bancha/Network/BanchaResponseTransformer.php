@@ -1,16 +1,18 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
  * @subpackage    Lib.Network
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
+
+App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 /**
  * BanchaResponseTransformer. Performs transformations on CakePHP responses in order to match Ext JS responses.
@@ -41,24 +43,33 @@ class BanchaResponseTransformer {
 			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 		
-		return BanchaResponseTransformer::transformDataStructureToExt($modelName,$response);
+		// get the model
+		$Model = false;
+		try {
+			$Model = ClassRegistry::init($modelName, true);
+		} catch(CakeException $e) {
+			// there migth be cases, where the controller
+			// has no similar record, in these cases do nothing
+		}
+
+		return BanchaResponseTransformer::transformDataStructureToSencha($response, $modelName, $Model);
 	}
     
 	/**
-	 * Transform a cake response to extjs structure (associated models are not supported!)
+	 * Transform a CakePHP response to ExtJS/Sencha Touch structure,
 	 * otherwise just return the original response.
 	 * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
 	 *
-	 * @param $modelName The model name of the current request
-	 * @param $response The input request from Bancha
-	 * @param $controller The used controller
-	 * @return extjs formated data array
+	 * @param  object      $response   The input request from Bancha
+	 * @param  string      $modelName  The model name of the current request
+	 * @param  Model|false $Model      The primary model or null
+	 * @return array                   ExtJS/Sencha Touch formated data
 	 */
-	public static function transformDataStructureToExt($modelName, $response) {
+	private static function transformDataStructureToSencha($response, $modelName, $Model) {
 		
-		// if we only got an array with a asuccess proeprty we expect 
+		// if we only got an array with a success property we expect 
 		// that this data is already in the correct format, so only 
-		// enfore that the success value is a boolean and we're done
+		// enforce that the success value is a boolean and we're done
 		if(is_array($response) && isset($response['success'])) {
 			
 			// enforce that the success value is of type boolean
@@ -71,7 +82,7 @@ class BanchaResponseTransformer {
 
 		// understand primitive responses
 		if($response===true || $response===false) {
-			// this was an un-/successfull operation, return that to ext
+			// this was an un-/successfull operation, return that to ext/touch
 			return array(
 				'success' => $response,
 			);
@@ -101,13 +112,25 @@ class BanchaResponseTransformer {
 			'data' => $response
 		);
 
-		
-		if( isset($response[$modelName]) ) {
+		if($modelName == 'Bancha') {
+			// this is a request from the BanchaApi, nothing to transform here
+			return $senchaResponse;
+		}
+
+
+		// now filter the data
+		if($Model != false) {
+			$response = $Model->filterRecords($response);
+		}
+
+		// transform model data
+		$mapper = new CakeSenchaDataMapper($response, $modelName);
+
+		if($mapper->isSingleRecord()) {
 			// this is standard cake single element structure
 			$senchaResponse['data'] = $response[$modelName];
 			
-		} else if( isset($response['0']) && isset($response['0'][$modelName]) && 
-					is_array($response['0'][$modelName])) {
+		} else if($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
 
 			$conversionSuccessfull = true;
@@ -128,13 +151,11 @@ class BanchaResponseTransformer {
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
 			
-		} else if( isset($response['records']) && isset($response['count']) && 
-				(isset($response['records']['0'][$modelName]) || 						// paginagted records with records
-				(is_array($response['records']) && $response['count']==0))) {   		// pagination with zero records
+		} else if($mapper->isPaginatedSet()) {
 			// this is a paging response
 
 			// the records have standard cake structure, so get them by using this function
-			$data = BanchaResponseTransformer::transformDataStructureToExt($modelName, $response['records']);
+			$data = BanchaResponseTransformer::transformDataStructureToSencha($response['records'], $modelName, $Model);
 			// now add only the data to the response
 			$senchaResponse['data'] = $data['data'];
 

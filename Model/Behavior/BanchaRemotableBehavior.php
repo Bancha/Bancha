@@ -3,11 +3,11 @@
  * AllBehaviorsTest file
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
  * @subpackage    Model.Behavior
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -16,6 +16,7 @@
 
 App::uses('ModelBehavior', 'Model');
 App::uses('BanchaException', 'Bancha.Bancha/Exception');
+App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 
 // backwards compability with 5.2
@@ -71,13 +72,27 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * the default behavor configuration
 	 */
 	private $_defaults = array(
-		/*
+		/**
 		 * If true the model also saves and validates records with missing
 		 * fields, like ExtJS is providing for edit operations.
 		 * If you set this to false please use $Model->saveFields($data,$options)
 		 * to save edit-data from extjs.
+		 * @var boolean
 		 */
 		'useOnlyDefinedFields' => true,
+		/**
+		 * Defined which field should be exposed. If defined these fields will
+		 * be taken as a base of field to expose, the excludeFields config will
+		 * still be applied.
+		 * @var string[]|null
+		 */
+		'exposedFields' => null,
+		/**
+		 * Defined which field should never be exposed. This config overrules
+		 * exposedFields.
+		 * @var string[]
+		 */
+		'excludedFields' => array()
 	);
 	/**
 	 * Sets up the BanchaRemotable behavior. For config options see 
@@ -143,35 +158,132 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return $ExtMetaData;
 	}
 
+	/**
+	 * Calculates an array of all exposed model fields.
+	 * @param Model $Model The model of the field to check
+	 * @return string[] Array of model field names (as strings)
+	 */
+	public function _getExposedFields($Model) {
+		$settings = $this->settings[$Model->alias];
+
+		// cache pattern
+		if(isset($settings['_computedExposedFields'])) {
+			return $settings['_computedExposedFields'];
+		}
+
+		// compute
+		$fields = array_merge(
+			array_keys($Model->schema()), // first get all model fields
+			array_keys($Model->virtualFields)); // and add all virtual fields
+		
+
+		// if exposedFields is an array, match
+		if(isset($settings['exposedFields']) && is_array($settings['exposedFields'])) {
+			// remove all fields which are not in exposedFields
+			$fields = array_intersect($fields, $settings['exposedFields']);
+
+			// In debug mode check if all exposed fields are valid
+			if(Configure::read('debug')>0 && (count($fields)<count($settings['exposedFields']))) {
+				$wrongNames = array_diff($settings['exposedFields'], $fields);
+				throw new CakeException(
+					"Bancha: You have configured the BanchaRemotable to expose following fields for ".$Model->name.
+					" which do not exist in the schema: ".print_r($wrongNames,true).
+					"\nPlease remove them or fix your schema.\n".
+					"This error is only displayed in debug mode."
+				);
+			}
+		}
+
+		// if excludedFields is an array, exclude those
+		if(isset($settings['excludedFields']) && is_array($settings['excludedFields'])) {
+
+			// In debug mode check if all exposed fields are valid
+			if(Configure::read('debug')>0) {
+				$wrongNames = array_diff($settings['excludedFields'], $fields);
+				if(count($wrongNames)) {
+					throw new CakeException(
+						"Bancha: You have configured the BanchaRemotable to exclude following fields for ".$Model->name.
+						" which do not exist in the schema: ".print_r($wrongNames,true).
+						"\nPlease remove them or fix your schema.\n".
+						"This error is only displayed in debug mode."
+					);
+				}
+			}
+
+			// remove all fields which are in excludedFields
+			$fields = array_diff($fields, $settings['excludedFields']);
+		}
+
+		// fix the indexes
+		$fields = array_values($fields);
+
+		// set cache and return
+		$settings['_computedExposedFields'] = $fields;
+		return $fields;
+	}
+	/**
+	 * Returns true if the field is visible to the ExtJS/Sencha Touch frontend.
+	 * @param Model $Model The model of the field to check
+	 * @param string $fieldName The name of the field (see schema)
+	 * @return boolean True if it is exposed
+	 */
+	public function isExposedField($Model, $fieldName) {
+		return in_array($fieldName, $this->_getExposedFields($Model));
+	}
 
 	/**
-	 * Custom validation rule for uploaded files.
+	 * Filters all non-exposed fields from an CakePHP dataset. This
+	 * includes a single record, multiple records and nested data. // TODO
 	 *
-	 *  @param Array $data CakePHP File info.
-	 *  @param Boolean $required Is this field required?
-	 *  @return Boolean
-	*/
-	public function validateFile($data, $required = false) {
-		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
-		$upload_info = array_shift($data);
+	 * @param  array $records The records to filter
+	 * @return array          Returns data in the same structure as input, but filtered.
+	 */
+	public function filterRecords($Model, $data) {
 
-		// No file uploaded.
-		if ($required && $upload_info['size'] == 0) {
-				return false;
+		$mapper = new CakeSenchaDataMapper($data, $Model->name);
+
+		if($mapper->isSingleRecord()) {
+			// filter the data of the single record
+			$data[$Model->name] = $this->filterRecord($Model, $data[$Model->name]);
+		} else if($mapper->isRecordSet()) {
+			// handle each record
+			foreach ($data as $key => $record) {
+				$data[$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
+			}
+		} else if($mapper->isPaginatedSet()) {
+
+			// the records have standard cake handle each record
+			foreach ($data['records'] as $key => $record) {
+				$data['records'][$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
+			}
 		}
 
-		// Check for Basic PHP file errors.
-		if ($upload_info['error'] !== 0) {
-			return false;
-		}
-
-		// Finally, use PHP's own file validation method.
-		return is_uploaded_file($upload_info['tmp_name']);
+		return $data;
 	}
-		
-	// TODO remove workarround for 'file' validation
-	public function file($check) {
-		return true;
+
+	/**
+	 * Filters all non-exposed fields from an indivudal record.
+	 *
+	 * This function expects only the record data in the following
+	 * form:  
+	 *     array(
+	 *         'fieldName'  => 'fieldValue',
+	 *         'fieldName2' => 'fieldValue2',
+	 *     )
+	 * 
+	 * @param  array $recData The record data to filter
+	 * @return array          Returns data in the same structure as input, but filtered.
+	 */
+	public function filterRecord($Model, $recData) {
+
+		$result = array();
+		foreach ($this->_getExposedFields($Model) as $fieldName) {
+			if(isset($recData[$fieldName])) {
+				$result[$fieldName] = $recData[$fieldName];
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -198,64 +310,73 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function getAssociated(Model $Model) {
 		$assocTypes = $Model->associations();
 		$assocs = array();
-		foreach ($assocTypes as $type) {
+		foreach ($assocTypes as $type) { // only 3 types
+			if($type == 'hasAndBelongsToMany') {
+				// ExtJS/Sencha Touch doesn't support hasAndBelongsToMany
+				continue;
+			}
 			foreach($Model->{$type} as $modelName => $config) {
-				if($type != 'hasAndBelongsToMany') { // extjs doesn't support hasAndBelongsToMany
-					
-					//generate the name to retrieve associations
-					$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
 
-					$assocs[] = array(
-						'type' => $type, 
-						'model' => 'Bancha.model.'.$config['className'], 
-						'foreignKey' => $config['foreignKey'],
-						'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
-						'setterName' => 'set'.$name,
-						'name' => lcfirst($name)
-						);
+				//generate the name to retrieve associations
+				$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
+
+				if($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+					// this field is hidden from ExtJS/Sencha Touch, so also hide the association
+					continue;
 				}
+
+				$assocs[] = array(
+					'type' => $type, 
+					'model' => 'Bancha.model.'.$config['className'], 
+					'foreignKey' => $config['foreignKey'],
+					'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
+					'setterName' => 'set'.$name,
+					'name' => lcfirst($name)
+					);
 			}
 		}
 		return $assocs;
 	}
 
 	/**
-	 * return the model columns as ExtJS Fields
+	 * Return the model column schema as ExtJS/Sencha Touch structure.
 	 *
-	 * should look like
-	 *
-	 * 'User', {
-	 *   fields: [
-	 *     {name: 'id', type: 'int', allowNull:true, default:''},
-	 *     {name: 'name', type: 'string', allowNull:true, default:''}
-	 *   ]
-	 * }
+	 * Example:
+	 *     [
+	 *       {name: 'id', type: 'int', allowNull:true, default:''},
+	 *       {name: 'name', type: 'string', allowNull:true, default:''}
+	 *     ]
 	 *
 	 * @param Model $Model instance of model
 	 * @return Array An array of ExtJS/Sencha Touch model field definitions
 	 */
-	private function getColumnTypes(Model $Model) {
+	public function getColumnTypes(Model $Model) {
 		$schema = $Model->schema();
 		$fields = array();
 
 		// add all database fields
 		foreach ($schema as $field => $fieldSchema) {
-			array_push($fields, $this->getColumnType($Model, $field, $fieldSchema));
+			if($this->isExposedField($Model, $field)) {
+				array_push($fields, $this->getColumnType($Model, $field, $fieldSchema));
+			}
 		}
 
 		// add virtual fields
 		foreach ($Model->virtualFields as $field => $sql) {
-			array_push($fields, array(
-				'name' => $field,
-				'type' => 'auto', // we can't guess the type here
-				'persist' => false // nothing to save here
-			));
+			if($this->isExposedField($Model, $field)) {
+				array_push($fields, array(
+					'name' => $field,
+					'type' => 'auto', // we can't guess the type here
+					'persist' => false // nothing to save here
+				));
+			}
 		}
 
 		return $fields;
 	}
+
 	/**
-	 * @see getColumnTypes
+	 * @see #getColumnTypes
 	 */
 	private function getColumnType(Model $Model, $field, $fieldSchema) {
 
@@ -293,218 +414,296 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * Returns an ExtJS formated array of field names, validation types and constraints.
 	 *
 	 * @param Model $Model instance of model
-	 * @return Ext.data.validations rules
+	 * @return array Ext.data.validations rules
 	 */
-	private function getValidations(Model $Model) {
-		if (empty($Model->validate)) {
-			//some testcases fail with this
-			//trigger_error(__d('cake_dev', '(Model::getColumnTypes) Unable to build model field data. If you are using a model without a database table, try implementing schema()'), E_USER_WARNING);
+	public function getValidations(Model $Model) {
+		$rules = array();
+
+		// only use validation rules for exposed fields
+		foreach ($Model->validate as $fieldName => $fieldRules) {
+			if($this->isExposedField($Model, $fieldName)) {
+				$rules[$fieldName] = $fieldRules;
+			}
 		}
+
+		// normalize
+		$rules = $this->normalizeValidationRules($rules);
+
+		// transform rules
 		$cols = array();
-		foreach ($Model->validate as $field => $values) {
-			
-			// cake also supports a simple structure, like:
-			// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
-			// so to support that as well, transform it:
-			if(is_string($values)) {
-				$values = array(
-					$values => array('rule' => $values));
-			}
-
-			// and now add support for even another structure
-			// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
-			if(isset($values['rule'])) {
-				if(is_string($values['rule'])) { // this is the name of a validation rule
-					$values = array(
-						$values['rule'] => $values);
-				} else if(is_array($values['rule']) && is_string($values['rule'][0])) { // this is an array or name plus arguments
-					$values = array(
-						$values['rule'][0] => $values);
-				}
-				// otherwise the rule is malformed
-			}
-
-
-			// no check for rules
-
-
-			// check if the input is required
-			$presence = false;
-			foreach($values as $rule) {
-				if((isset($rule['required']) && $rule['required']) ||
-				   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
-					$presence = true;
-					break;
-				}
-			}
-			if(isset($values['notempty']) || $presence) {
-				$cols[] = array(
-					'type' => 'presence',
-					'field' => $field,
-				);
-			}
-
-			// isUnique can only be tested on the server, 
-			// so we would need some business logic for that
-			// as well, maybe integrate in Bancha Scaffold
-
-			if(isset($values['equalTo'])) {
-				$cols[] = array(
-					'type' => 'inclusion',
-					'field' => $field,
-					'list' => array($values['equalTo']['rule'][1])
-				);
-			}
-
-			if(isset($values['boolean'])) {
-				$cols[] = array(
-					'type' => 'inclusion',
-					'field' => $field,
-					'list' => array(true,false,'0','1',0,1)
-				);
-			}
-
-			if(isset($values['inList'])) {
-				$cols[] = array(
-					'type' => 'inclusion',
-					'field' => $field,
-					'list' => $values['inList']['rule'][1]
-				);
-			}
-
-			if(isset($values['minLength']) || isset($values['maxLength'])) {
-				$col = array(
-					'type' => 'length',
-					'field' => $field,
-				);
-				
-				if(isset($values['minLength'])) {
-					$col['min'] = $values['minLength']['rule'][1];
-				}
-				if(isset($values['maxLength'])) {
-					$col['max'] = $values['maxLength']['rule'][1];
-				}
-				$cols[] = $col;
-			}
-
-			if(isset($values['between'])) {
-				if(	isset($values['between']['rule'][1]) ||
-					isset($values['between']['rule'][2]) ) {
-					$cols[] = array(
-						'type' => 'length',
-						'field' => $field,
-						'min' => $values['between']['rule'][1],
-						'max' => $values['between']['rule'][2]
-					);
-				} else {
-					$cols[] = array(
-						'type' => 'length',
-						'field' => $field,
-					);
-				}
-			}
-
-			//TODO there is no alpha in cakephp
-			if(isset($values['alpha'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['alpha'],
-				);
-			}
-
-			if(isset($values['alphaNumeric'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['alphanum'],
-				);
-			}
-
-			if(isset($values['email'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['email'],
-				);
-			}
-
-			if(isset($values['url'])) {
-				$cols[] = array(
-					'type' => 'format',
-					'field' => $field,
-					'matcher' => $this->formater['url'],
-				);
-			}
-
-			// number validation rules
-			// numberformat = precision, min, max
-			if(isset($values['numeric']) || isset($values['naturalNumber'])) {
-				$col = array(
-					'type' => 'numberformat',
-					'field' => $field,
-				);
-
-				if(isset($values['numeric']['precision'])) {
-					$col['precision'] = $values['numeric']['precision'];
-				}
-				if(isset($values['naturalNumber'])) {
-					$col['precision'] = 0;
-				}
-
-				if(isset($values['naturalNumber'])) {
-					$col['min'] = (isset($values['naturalNumber']['rule'][1]) && $values['naturalNumber']['rule'][1]==true) ? 0 : 1;
-				}
-			}
-			
-			if(isset($values['range'])) {
-				// this rule is a bit ambiguous in cake, it tests like this: 
-				// return ($check > $lower && $check < $upper);
-				// since ext understands it like this:
-				// return ($check >= $lower && $check <= $upper);
-				// we have to change the value
-				$min = $values['range']['rule'][1];
-				$max = $values['range']['rule'][2];
-				
-				if(isset($values['numeric']['precision'])) {
-					// increment/decrease by the smallest possible value
-					$amount = 1*pow(10,-$values['numeric']['precision']);
-					$min += $amount;
-					$max -= $amount;
-				} else {
-					
-					// if debug tell dev about problem
-					if(Configure::read('debug')>0) {
-						throw new CakeException(
-							"Bancha: You are currently using the validation rule 'range' for ".$Model->name."->".$field.
-							". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
-							"map the validation rules. \nUsage: array('rule' => array('numeric'),'precision'=> ? ) \n".
-							"This error is only displayed in debug mode."
-						);
-					}
-					
-					// best guess
-					$min += 1;
-					$max += 1;
-				}
-				$cols[] = array(
-					'type' => 'numberformat',
-					'field' => $field,
-					'min' => $min,
-					'max' => $max,
-				);
-			}
-			// extension
-			if(isset($values['extension'])) {
-				$cols[] = array(
-					'type' => 'file',
-					'field' => $field,
-					'extension' => $values['extension']['rule'][1],
-				);
-			}
-
+		foreach ($rules as $fieldName => $fieldRules) {
+			$cols = array_merge($cols, $this->getValidationRulesForField($fieldName, $fieldRules));
 		}
+
 		return $cols;
+	}
+
+
+	public function normalizeValidationRules($rules) {
+
+		foreach ($rules as $fieldName => $fieldRules) {
+
+			$normalizedFieldRules = array();
+
+			if(is_string($fieldRules) || isset($fieldRules['rule'])) {
+				// this is only one rule
+				$fieldRule = $this->normalizeValidationRule($fieldRules);
+				$normalizedFieldRules[$fieldRule['rule'][0]] = $fieldRule;
+			} else {
+				// Transform multiple rules per field into our normalized structure
+				// http://book.cakephp.org/2.0/en/models/data-validation.html#multiple-rules-per-field
+				foreach ($fieldRules as $customRuleName => $fieldRule) {
+					$fieldRule = $this->normalizeValidationRule($fieldRule);
+					$normalizedFieldRules[$fieldRule['rule'][0]] = $fieldRule;
+				}
+			}
+
+			$rules[$fieldName] = $normalizedFieldRules;
+		}
+
+		return $rules;
+	}
+
+	private function normalizeValidationRule($fieldRule) {
+
+		// Transform simple rules into our normalized structure
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
+		if(is_string($fieldRule)) {
+			$fieldRule = array(
+				'rule' => array($fieldRule)
+			);
+		}
+
+		// Transform one rule per field with an string rule into our normalized structure
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+		if(isset($fieldRule['rule']) && is_string($fieldRule['rule'])) { 
+			$fieldRule['rule'] = array($fieldRule['rule']);
+		}
+
+		// The case below is as we expect it
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+		// if(isset($fieldRule['rule']) && is_array($fieldRule['rule'])) {
+
+		return $fieldRule;
+	}
+
+	public function getValidationRulesForField($fieldName, $rules) {
+		$cols = array();
+
+		// check if the input is required
+		$presence = false;
+		foreach($rules as $rule) {
+			if((isset($rule['required']) && $rule['required']) ||
+			   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
+				$presence = true;
+				break;
+			}
+		}
+		if(isset($rules['notEmpty']) || $presence) {
+			$cols[] = array(
+				'type' => 'presence',
+				'field' => $fieldName,
+			);
+		}
+
+		// isUnique can only be tested on the server, 
+		// so we would need some business logic for that
+		// as well, maybe integrate in Bancha Scaffold
+
+		if(isset($rules['equalTo'])) {
+			$cols[] = array(
+				'type' => 'inclusion',
+				'field' => $fieldName,
+				'list' => array($rules['equalTo']['rule'][1])
+			);
+		}
+
+		if(isset($rules['boolean'])) {
+			$cols[] = array(
+				'type' => 'inclusion',
+				'field' => $fieldName,
+				'list' => array(true,false,'0','1',0,1)
+			);
+		}
+
+		if(isset($rules['inList'])) {
+			$cols[] = array(
+				'type' => 'inclusion',
+				'field' => $fieldName,
+				'list' => $rules['inList']['rule'][1]
+			);
+		}
+
+		if(isset($rules['minLength']) || isset($rules['maxLength'])) {
+			$col = array(
+				'type' => 'length',
+				'field' => $fieldName,
+			);
+			
+			if(isset($rules['minLength'])) {
+				$col['min'] = $rules['minLength']['rule'][1];
+			}
+			if(isset($rules['maxLength'])) {
+				$col['max'] = $rules['maxLength']['rule'][1];
+			}
+			$cols[] = $col;
+		}
+
+		if(isset($rules['between'])) {
+			if(	isset($rules['between']['rule'][1]) ||
+				isset($rules['between']['rule'][2]) ) {
+				$cols[] = array(
+					'type' => 'length',
+					'field' => $fieldName,
+					'min' => $rules['between']['rule'][1],
+					'max' => $rules['between']['rule'][2]
+				);
+			} else {
+				$cols[] = array(
+					'type' => 'length',
+					'field' => $fieldName,
+				);
+			}
+		}
+
+		//TODO there is no alpha in cakephp
+		if(isset($rules['alpha'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['alpha'],
+			);
+		}
+
+		if(isset($rules['alphaNumeric'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['alphanum'],
+			);
+		}
+
+		if(isset($rules['email'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['email'],
+			);
+		}
+
+		if(isset($rules['url'])) {
+			$cols[] = array(
+				'type' => 'format',
+				'field' => $fieldName,
+				'matcher' => $this->formater['url'],
+			);
+		}
+
+		// extension
+		if(isset($rules['extension'])) {
+			$cols[] = array(
+				'type' => 'file',
+				'field' => $fieldName,
+				'extension' => $rules['extension']['rule'][1],
+			);
+		}
+
+		// number validation rules
+		$setNumberRule = false; // collect all together
+		$numberRule = array(
+			'type' => 'numberformat',
+			'field' => $fieldName,
+		);
+
+		// numberformat = precision, min, max
+		if(isset($rules['numeric']) || isset($rules['naturalNumber'])) {
+			if(isset($rules['numeric']['precision'])) {
+				$numberRule['precision'] = $rules['numeric']['precision'];
+			}
+			if(isset($rules['naturalNumber'])) {
+				$numberRule['precision'] = 0;
+			}
+
+			if(isset($rules['naturalNumber'])) {
+				$numberRule['min'] = (isset($rules['naturalNumber']['rule'][1]) && $rules['naturalNumber']['rule'][1]==true) ? 0 : 1;
+			}
+
+			$setNumberRule = true;
+		}
+		
+		if(isset($rules['range'])) {
+			// this rule is a bit ambiguous in cake, it tests like this: 
+			// return ($check > $lower && $check < $upper);
+			// since ext understands it like this:
+			// return ($check >= $lower && $check <= $upper);
+			// we have to change the value
+			$min = $rules['range']['rule'][1];
+			$max = $rules['range']['rule'][2];
+			
+			if(isset($rules['numeric']['precision'])) {
+				// increment/decrease by the smallest possible value
+				$amount = 1*pow(10,-$rules['numeric']['precision']);
+				$min += $amount;
+				$max -= $amount;
+			} else {
+				
+				// if debug tell dev about problem
+				if(Configure::read('debug')>0) {
+					throw new CakeException(
+						"Bancha: You are currently using the validation rule 'range' for the model field ".$fieldName.
+						". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
+						"map the validation rules. \nUsage: array('rule' => array('numeric'),'precision'=> ? ) \n".
+						"This error is only displayed in debug mode."
+					);
+				}
+				
+				// best guess
+				$min += 1;
+				$max += 1;
+			}
+
+			// set min and max values
+			$numberRule['min'] = $min;
+			$numberRule['max'] = $max;
+
+			$setNumberRule = true;
+		}
+
+		if($setNumberRule) {
+			$cols[] = $numberRule;
+		}
+
+		return $cols;
+	}
+
+	/**
+	 * Custom validation rule for uploaded files.
+	 *
+	 *  @param Array $data CakePHP File info.
+	 *  @param Boolean $required Is this field required?
+	 *  @return Boolean
+	*/
+	public function validateFile($data, $required = false) {
+		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
+		$upload_info = array_shift($data);
+
+		// No file uploaded.
+		if ($required && $upload_info['size'] == 0) {
+				return false;
+		}
+
+		// Check for Basic PHP file errors.
+		if ($upload_info['error'] !== 0) {
+			return false;
+		}
+
+		// Finally, use PHP's own file validation method.
+		return is_uploaded_file($upload_info['tmp_name']);
+	}
+		
+	// TODO remove workarround for 'file' validation
+	public function file($check) {
+		return true;
 	}
 
 	/**
@@ -523,10 +722,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$this->result[$Model->alias][$Model->name]['id'] = $Model->id;
 		} else {
 			// load the full record from the database
-			$currentRecursive = $Model->recursive;
-			$Model->recursive = -1;
+			// Setting recursive to -1 may result in an error if the virtual field uses associated data
+			// On the other hand not setting the recursion to -1 has some negative performance impacts
+			// $currentRecursive = $Model->recursive;
+			// $Model->recursive = -1;
 			$this->result[$Model->alias] = $Model->read();
-			$Model->recursive = $currentRecursive;
+			// $Model->recursive = $currentRecursive;
 		}
 		
 		return true;
@@ -599,11 +800,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 			if(!$valid) {
 				throw new BanchaException(
-					'Could nto find even one model field to save to database. Probably this occurs '.
-					'because you send from your own model or you one save invocation. Please use the '.
+					'You try to save a record, but Bancha is not able to find the data. Bancha could '.
+					'not find even one model field in the send data. Probably this occurs because you '.
+					'saved a record from your own model with a wrong configuration. Please use the '.
 					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
-					'you really have to create your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
-					'(Sencha Touch) is set to "data". <br /><br />'.
+					'you really have to create your own models, make sure that the JsonWriter property '.
+					'"root" (ExtJS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />'.
 					'Got following data to save: <br />'.print_r($Model->data,true));
 			}
 		} //eo debugging checks
@@ -712,24 +914,50 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$this->result[$Model->alias] = true;
 	}
 	
-/**
- * Returns an ExtJS formated array describing sortable fields
- * this is '$order' in cakephp
- *
- * @param Model $Model the model using this behavior
- * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
- */
-	private function getSorters(Model $Model) {
-		// TODO TechDocu: only arrays are allowed as $order
+	/**
+	 * Returns an ExtJS formated array describing sortable fields
+	 * this is '$order' in cakephp
+	 *
+	 * @param Model $Model the model using this behavior
+	 * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
+	 */
+	public function getSorters(Model $Model) {
 		$sorters = array();
-		if ( is_array($Model->order) ) {
-			foreach($Model->order as $key => $value) {
-				$token = strtok($key, ".");
-				$key = strtok(".");
-				array_push($sorters, array( 'property' => $key, 'direction' => $value));
+
+		if(empty($Model->order)) {
+			return $sorters;
+		}
+
+		if(is_string($Model->order)) {
+			$order = trim($Model->order);
+
+			if(strpos($order, '.')===false) {
+				// this is just the field name
+				$fieldName = $order;
+				$direction = 'ASC';
+
+			} else if(strpos($order, ' ')===false) {
+				// this has a model name and a field name, but no direction
+				$modelName = strtok($order, ".");
+				$fieldName = strtok(" ");
+				$direction = 'ASC';
+			} else {
+				// this has a model name, a field name and a direction
+				$modelName = strtok($order, ".");
+				$fieldName = strtok(" ");
+				$direction = strtoupper(substr($order, strpos($order, ' ')+1));
 			}
+			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
+
+		} else if(is_array($Model->order)) {
+			foreach($Model->order as $key => $direction) {
+				$modelName = strtok($key, ".");
+				$fieldName = strtok(".");
+				array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
+			}
+
 		} else {
-			//debug("model->order is not an array");
+			throw new CakeException("The CakePHP ".$Model->alias." model configuration for order needs to be a string or array, instead got ".gettype($Model->order));
 		}
 		return $sorters;
 	}

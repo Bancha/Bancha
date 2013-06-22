@@ -1,11 +1,17 @@
 Bancha Update Info
 ==================
 
-Following changes need to be kept in mind when upgrading from 1.2 to 1.3
-------------------------------------------------------------------------
+Upgrading from 1.3 to 2.0
+-------------------------
 
-Controller Method Return Value
-------------------------------
+The whole API stayed the same, only the javascript functions Bancha.getModel() 
+and Bancha.onModelReady() got deprecated in favor of Ext.require or the 
+require property in class definitions.
+
+Upgrading from 1.2 to 2.0
+-------------------------
+
+From 1.2 to 1.3 the Controller Method Return Values changed a little:
 
 Bancha now follows a more straight forward way of how to determin if the controllers result value
 is the data portion of the response or the whole response:  

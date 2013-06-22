@@ -3,346 +3,205 @@
  * BanchaRemotableBehaviorTest test models file.
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha.Test.Case.Model
  * @category      tests
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
-class TestUser extends CakeTestModel {
 
 /**
- * name property
- *
- * @var string 'User'
- * @access public
+ * This model is used inside multiple 
+ * BanchaRemotableBehaviorTest tests
  */
-	public $name = 'User';
-	
+class TestArticle extends CakeTestModel {
+	public $name = 'Article';
 	public $useTable = false;
-	
-	/** order property
-	 * 
-	 * Enter description here ...
-	 * @var unknown_type
-	 */
-	
 	public $order = array('name.order' => 'ASC');
-	
-	
-	/**
- * schema property
- *
- * @var array
- * @access protected
- */
+
 	protected $_schema = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
-		'name' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'title' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'date' => array('type' => 'datetime', 'null' => true, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'body' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'published' => array('type' => 'boolean', 'null' => true, 'default' => false, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+	//	'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
+	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+
+	public $virtualFields = array(
+		'headline' => 'CONCAT(TestArticle.date, " ", TestArticle.title' // we simply need a virtual field to test as well
+	);
+
+	public $validate = array(
+		'title' => array(
+			'alphaNumeric' => array(
+				'rule' => array('alphaNumeric'),
+			),
+			'notEmpty' => array(
+				'rule' => array('notEmpty'),
+			),
+		),
+		'body' => 'alphaNumeric',
+	);
+
+	// used in testGetAssociated
+	// tese rules are not fully valid
+	public $belongsTo = array(
+		'User' => array(
+			'className' => 'User',
+			'foreignKey' => 'user_id',
+		),
+	);
+	public $hasMany = array(
+		'ArticleTag',
+		'HasManyModel' => array(
+			'className' => 'HasManyModel',
+			'foreignKey' => 'article_id',
+		),
+	);
+	public $hasAndBelongsToMany = array(
+		'Tag' => array(
+			'className' => 'Tag',
+			'foreignKey' => 'article_id',
+		),
+	);
+} //eo TestArticle
+
+
+/**
+ * This model is used inside  
+ * BanchaRemotableBehaviorTest::testGetValidations_NoValidationRules
+ */
+class TestArticleNoValidationRules extends CakeTestModel {
+	public $name = 'ArticleNoValidationRules';
+	public $useTable = false;
+	public $order = array('name.order' => 'ASC');
+
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'title' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'date' => array('type' => 'datetime', 'null' => true, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'body' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'published' => array('type' => 'boolean', 'null' => true, 'default' => false, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'user_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+	//	'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
+	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
+	);
+} //eo TestArticleNoValidationRules
+
+
+/**
+ * This model is used inside 
+ * BanchaRemotableBehaviorTest::testGetValidations_BasicStructure
+ */
+class TestUser extends CakeTestModel {
+	public $name = 'User';
+	public $useTable = false;
+	public $order = array('TestUser.name' => 'ASC');
+	
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
 		'login' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'published' => array('type' => 'boolean', 'null' => true, 'default' => false, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'name' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
 		'created' => array('type' => 'datetime', 'null' => false, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
 		'email' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
 		'avatar' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
 		'weight' => array('type' => 'float', 'null' => false, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
 		'heigth' => array('type' => 'float', 'null' => true, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'a_or_ab_only' => array('type' => 'string', 'null' => true, 'default' => NULL, 'length' => NULL, 'collate' => NULL, 'comment' => ''),
 	//	'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
 	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
 	
-	/**
- * Validation rules
- *
- * @var array
- */
 	public $validate = array(
-		'name' => array(
-			'alphanumeric' => array(
-				'rule' => array('alphanumeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+		// Simple Rules
+		// See http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
+		'login' => 'alphaNumeric',
+		'email' => 'email',
+
+		// One Rule Per Field
+		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
+		'id' => array(
+			'rule' => 'numeric', // rule as string
+			'precision' => 0,
+			'required'   => true, // create only one present rule
+			'allowEmpty' => true,
+		),
+		'avatar' => array(
+		   'rule' => array('minLength', 8), // rule as array with argument
+			'required' => true, // currently simply mapped to present rule
+			'allowEmpty' => false,
+		),
+	);
+}
+
+class TestUserCoreValidationRules extends TestUser {
+	public $name = 'UserCoreValidationRules';
+
+	
+	public $validate = array(
+		// Check all Core Validation rules
+		'id' => array(
+			'numeric' => array(
+				'rule' => 'numeric'
 			),
 		),
+		// Multiple Rules per Field
 		'login' => array(
-			'alphanumeric' => array(
-				'rule' => array('alphanumeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			'loginRule-1' => array( // this has to be checked by the server (so there's nothing onthe frontend for this)
+				'rule' => array('isUnique'),
+				'message' => "Login is already taken."
 			),
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
+			'loginRule-2' => array(
+				'rule'	 => 'alphaNumeric',
+				'required' => true,
+				'message'  => 'Alphabets and numbers only'
+			),
+			'between' => array(
+				'rule'	=> array('between', 5, 15),
+				'message' => 'Between 5 to 15 characters'
+			)
+		),
+		'published' => array(
+			'rule' => 'boolean',
+		),
+	   'name' => array(
+			'notEmpty' => array(
+				'rule' => array('notEmpty')
+			),
+			'minLength' => array(
+				'rule' => array('minLength',3),
+			),
+			'maxLength' => array(
+				'rule' => array('maxLength',64),
 			),
 		),
 		'email' => array(
-			'email' => array(
-				'rule' => array('email'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
+			'rule'    => array('email', true), // second argument (host resolutin) can only be checked on the server
+			'message' => 'Please supply a valid email address.'
 		),
 		'avatar' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
+			'file' => array( // this validation rule forces Bancha.scaffold in the frontend to render a fileuploadfield
+				 'rule' => array('file') // TODO Does this work?
+			 ),
+			'extension' => array(
+				 'rule' => array('extension', array('gif', 'jpeg', 'png', 'jpg')),
+				 'message' => 'Please supply a valid image.'
+			 ),
 		),
-		'weight' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
+		'a_or_ab_only' => array(
+			'rule'    => array('inList', array('a', 'ab')),
+			'message' => 'This file can only be "a" or "ab" or undefined.'
 		),
-		'heigth' => array(
-			'decimal' => array(
-				'rule' => array('decimal'),
-				//'message' => 'Your custom message here',
-				//'allowEmpty' => false,
-				//'required' => false,
-				//'last' => false, // Stop validation after this rule
-				//'on' => 'create', // Limit validation to 'create' or 'update' operations
-			),
-		),
-	);
-	
-	/**
- * hasMany associations
- *
- * @var array
- */
-	public $hasMany = array(
-		'Article' => array(
-			'className' => 'Article',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
 	);
 }
-
-/**
- *
- * @package       Bancha.Test.Case.Model
- * @category      tests
- *
- */
-
-class TestUserOrder extends CakeTestModel {
-	public $name = 'User';
-	public $useTable = false; //users
-	public $order = array('name.order' => 'ASC');
-
-/**
- * schema property
- *
- * @var array
- * @access protected
- */
-	protected $_schema = array(
-		'id' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
-		'title' => array('type' => 'string', 'null' => '', 'default' => '', 'length' => '255'),
-		'body' => array('type' => 'string', 'null' => '1', 'default' => '', 'length' => ''),
-		'number' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
-		'created' => array('type' => 'date', 'null' => '1', 'default' => '', 'length' => ''),
-		'modified' => array('type' => 'datetime', 'null' => '1', 'default' => '', 'length' => null)
-	);
-	
-	/**
- * Validation rules
- *
- * @var array
- */
-	public $validate = array( // TODO example for validation rule "url" missing
-	   'id' => array(
-            'numeric' => array(
-                'rule' => array('numeric'),
-				'precision' => 0
-            ),
-	   ),
-	   'name' => array(
-            'notempty' => array(
-                'rule' => array('notempty')
-            ),
-            'minLength' => array(
-                'rule' => array('minLength',3),
-            ),
-            'maxLength' => array(
-                'rule' => array('maxLength',64),
-            ),
-		),
-		'login' => array(
-            'isUnique' => array( // this has to be checked by the server (so there's nothing onthe frontend for this
-                'rule' => array('isUnique'),
-		        'message' => "Login is already taken."
-            ),
-            'minLength' => array(
-                'rule' => array('minLength', 3),
-                'required' => true, // this one is slick
-            ),
-            'maxLength' => array(
-                'rule' => array('maxLength',64),
-            ),
-            'alphaNumeric' => array(
-                'rule' => array('alphaNumeric')
-            ),
-		),
-        'email' => array(
-            'email' => array(
-                'rule' => array('email'),
-                'required' => true,
-            ),
-        ),
-        'created' => array(
-            'created' => array(
-                'rule' => array('date'),
-            ),
-        ),
-        'weight' => array(
-            'numeric' => array(
-                'rule' => array('decimal', 2)
-            ),
-        ),
-        'height' => array(
-            'numeric' => array(
-                'rule' => array('numeric', 0),
-				'precision' => 0
-            ),
-            'range' => array(
-                'rule' => array('range', 49, 301),
-                'message' => 'Please enter a value between 50 and 300cm.'
-            )
-        ),
-        'avatar' => array(
-            'file' => array( // this validation rule forces Bancha.scaffold in the frontend to render a fileuploadfield
-                 'rule' => array('file')
-             ),
-            'extension' => array(
-                 'rule' => array('extension', array('gif', 'jpeg', 'png', 'jpg')),
-                 'message' => 'Please supply a valid image.'
-             ),
-		),
-	);
-	
-	
-	/**
-	 * Returns an array of table metadata (column names and types) for testing.
-	 * $field => keys(type, null, default, key, length, extra)
-	 *
-	 * @param boolean|string $field Set to true to reload schema, or a string to return a specific field
-	 * @return array Array of table metadata
-	 */
-	function schema($field = false) {
-		if (is_string($field)) {
-			if (isset($this->_schema[$field])) {
-				return $this->_schema[$field];
-			} else {
-				return null;
-			}
-		}
-		return $this->_schema;
-	}
-}
-	
-/**
- *
- * @package       Bancha.Test.Case.Model
- * @category      tests
- *
- */
-
-class TestUserRelationships extends CakeTestModel {
-
-/**
- * name property
- *
- * @var string 'User'
- * @access public
- */
-	public $name = 'User';
-	
-/**
- * useTable property
- *
- * @var bool false
- * @access public
- */
-	public $useTable = false;
-	
-	//public $hasOne = NULL;
-	
-	/**
- * hasMany associations
- *
- * @var array
- */
-	public $hasMany = array(
-		'Article' => array(
-			'className' => 'Article',
-			'foreignKey' => 'user_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
-	);
-	/**
- * schema property
- *
- * @var array
- * @access protected
- */
-	protected $_schema = array(
-		'id' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
-		'title' => array('type' => 'string', 'null' => '', 'default' => '', 'length' => '255'),
-		'body' => array('type' => 'string', 'null' => '1', 'default' => '', 'length' => ''),
-		'number' => array('type' => 'integer', 'null' => '', 'default' => '', 'length' => '8'),
-		'created' => array('type' => 'date', 'null' => '1', 'default' => '', 'length' => ''),
-		'modified' => array('type' => 'datetime', 'null' => '1', 'default' => '', 'length' => null)
-	);
-	//public $hasMany = array('Device' => array('order' => array('Device.id' => 'ASC')));
-}
-
-
-
-
-
-
 
 
 /**
@@ -401,8 +260,8 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 	public $validate = array(
 		'title' => array(
 			// standard validation rule
-			'notempty' => array(
-				'rule' => array('notempty')
+			'notEmpty' => array(
+				'rule' => array('notEmpty')
 			),
 			// custom validation rule
 			// we just need a custom function, so it is not allowed

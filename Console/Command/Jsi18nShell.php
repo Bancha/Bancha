@@ -1,11 +1,11 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
- * @subpackage    Console
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @subpackage    Console.Command
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 1.0.1
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -14,7 +14,7 @@
 /**
  * Shell for I18N management.
  *
- * @package       Cake.Console.Command
+ * @package       Bancha.Console.Command
  */
 class Jsi18nShell extends AppShell {
 

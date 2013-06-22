@@ -3,11 +3,11 @@
  * AllTestsTest file.
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
  * @category      tests
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -40,8 +40,9 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile($path . DS . 'AllNetworkTest.php');
 		$suite->addTestFile($path . DS . 'AllRoutingTest.php');
 		$suite->addTestFile($path . DS . 'AllSystemTest.php');
-		$suite->addTestFile($path . DS . 'BanchaApiTest.php');
-		$suite->addTestFile($path . DS . 'Console' . DS .'Command' . DS . 'Task' . DS . 'BanchaExtractTaskTest.php');
+		$suite->addTestFile($path . DS . 'Lib' . DS .'BanchaApiTest.php');
+		$suite->addTestFile($path . DS . 'Lib' . DS .'CakeSenchaDataMapperTest.php');
+		$suite->addTestFile($path . DS . 'Console' . DS . 'Command' . DS . 'Task' . DS . 'BanchaExtractTaskTest.php');
 		
 		//$suite->addTestDirectory($path);
 		return $suite;

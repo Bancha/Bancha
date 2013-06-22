@@ -2,11 +2,11 @@
 
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
  * @subpackage    Controller
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
@@ -46,9 +46,15 @@ class BanchaController extends BanchaAppController {
 	 * @param string $metadataFilter Model metadata that should be exposed through the Bancha API. Either 'all' or '[all]'
 	 *                               to get the metadata for all models or a comma separated list of models like 
 	 *                               '[User,Article]'.
+	 * @param string $asClass        If you want to package your whole app using Sencha CMD defining an extra runtime inclusion
+	 *                               can be hard since the Sencha library is not yet loaded when you include external dependencies.
+	 *                               Also you have to load multiple javascript files and can not automatically saving the BanchaAPI
+	 *                               on the client though the generated manifest file.
+	 *                               To solve all of these issues you can include a generated javascript file in your packaging process.
+	 *                               To make this happen include the API as a class.
 	 * @return void
 	 */
-	public function index($metadataFilter='') {
+	public function index($metadataFilter='', $asClass=false) {
 		$metadataFilter = urldecode($metadataFilter);
 		$banchaApi = new BanchaApi();
 		
@@ -104,31 +110,74 @@ class BanchaController extends BanchaAppController {
 		);
 		
 		// no extra view file needed, simply output
-		$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+
+		// Just to keep in mind:
+		// Using json_encode will quote the object keys. 
+		// If you are using Sencha CMD (which uses the Google Closure Compiler) this is
+		// important, because we refer to the Bancha.loadMetaData function by name and so
+		// the advanced mdoe renaming would rename the method, but not the string reference
+		// except we quote the key. 
+		// For a detailed description see https://developers.google.com/closure/compiler/docs/limitations
+		// under "Using string names to refer to object properties"
+		if($asClass) {
+			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
+			$this->response->body(sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+		} else {
+			$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+		}
 	}
 
 	/**
 	 * @access private
-	 * loadMetaData returns the Metadata of the models passed as an argument or 
-	 * in params['pass'] array. params['pass'] is created by cakephp from the arguments 
-	 * passed in the url. e.g.: http://localhost/Bancha/loadMetaData/User/Tag
-	 * will load the metadata from the models Users and Tags.
-	 *
-	 * This function is only used by Bancha internally, see the JavaScript 
-	 * Bancha.onModelReady function.
+	 * loadMetaData returns the Metadata of the models passed.
 	 * 
-	 * @return array 
+	 * Ext.Direct will pass them in params['data'], Ext.Ajax in params['pass'].
+	 * 
+	 * E.g. for Ext.Ajax: http://localhost/bancha-load-metadata/[User,Article].js
+	 * will load the metadata from the models Users and Articles.
+	 *
+	 * This function is only used by Bancha internally for dependency resolution 
+	 * in the Bancha.loader.Models and in Ext#onModelReady. Internally this is 
+	 * triggered from Bancha#loadModelMetaData.
+	 * 
+	 * @return void 
 	 */
 	public function loadMetaData() {
-		$models = isset($this->params['data'][0]) ? $this->params['data'][0] : null;
+		$models = null;
+		if(isset($this->params['data'][0])) { $models = $this->params['data'][0]; } //for Ext.Direct
+		if(isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync
 		if ($models == null) {
 			return false;
 		}
 		
-		// get the result
-		$banchaApi = new BanchaApi();
-		return $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+		try {
+			// get the result
+			$banchaApi = new BanchaApi();
+			$result = $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+
+			// support both direct ajax requests and Bancha requests
+			if($this->params['isBancha']) {
+				return $result;
+			} else {
+				$this->response->body(json_encode($result));
+			}
+		} catch(MissingModelException $e) {
+			// in the case of an error return with false, but don't throw an exception
+			// So the Bancha class loader can handle the error handling
+
+			// support both direct ajax requests and Bancha requests
+			if($this->params['isBancha']) {
+				return array(
+					'success' => false,
+					'message' => $e->getMessage()
+				);
+			} else {
+				// for Ajax
+				throw $e;
+			}
+		}
 	}
+	
 	
 	
 	/**

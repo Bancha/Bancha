@@ -1,11 +1,11 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
  * @subpackage    Console
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 1.0.1
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -13,6 +13,12 @@
 
 App::uses('ExtractTask', 'Console/Command/Task');
 
+/**
+ * This class represents a token for extracting translations from JavaScript.
+ * The class is used by BanchaExtractTask.
+ *
+ * @package       Bancha.Console.Command.Task
+ */
 class Bancha_JavaScriptToken {
 	public static $TYPE_ERROR = false;
 	public static $TYPE_STRING = 1;
@@ -601,8 +607,7 @@ class BanchaExtractTask extends ExtractTask {
 
 				// check strings if possible %s match given arguments
 				// if($arguments[0])
-				// TOD: $replacements = preg_match_all("%s", $singular, $matches);
-				// TODO
+				// TODO $replacements = preg_match_all("%s", $singular, $matches);
 				
 				// add the translation
 				

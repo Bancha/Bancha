@@ -1,11 +1,11 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2012 StudioQ OG
+ * Copyright 2011-2013 StudioQ OG
  *
  * @package       Bancha
  * @category      tests
- * @copyright     Copyright 2011-2012 StudioQ OG
+ * @copyright     Copyright 2011-2013 StudioQ OG
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -56,6 +56,8 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$this->assertEquals($requests[0]['controller'], 'Tests');
 		// method -> action AND "create" -> "add"
 		$this->assertEquals($requests[0]['action'], 'add');
+		// not inside a plugin
+		$this->assertEquals($requests[0]['plugin'], null);
 
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
 		$this->assertTrue(isset($requests[0]['pass']));
@@ -107,6 +109,9 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		// method -> action AND "create" -> "add" / "update" -> "edit"
 		$this->assertEquals($requests[0]['action'], 'add');
 		$this->assertEquals($requests[1]['action'], 'edit');
+		// not inside a plugin
+		$this->assertEquals($requests[0]['plugin'], null);
+		$this->assertEquals($requests[1]['plugin'], null);
 	}
 
 /**
@@ -135,6 +140,8 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$this->assertEquals($requests[0]['controller'], 'Tests');
 		// method -> action AND "submit" + id -> "edit"
 		$this->assertEquals($requests[0]['action'], 'edit');
+		// not inside a plugin
+		$this->assertEquals($requests[0]['plugin'], null);
 
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
 		$this->assertTrue(isset($requests[0]['pass']));
@@ -170,4 +177,46 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$this->assertEquals(true, $requests[0]['extUpload']);
 	}
 
+/**
+ * Transforms one Ext JS request for Bancha into a CakePHP request. 
+ * Need to set the plugin value.
+ */
+	function testGetRequestsBancha() {
+
+		// We need to provide a request which looks like an actual Ext JS request in JSON syntax.
+		// It is notated as a PHP array and transformed into JSON because it is easier to read that way.
+		$rawPostData = json_encode(array(
+			'action'	=> 'Bancha',
+			'method'	=> 'loadMetaData',
+			'data'		=> array(array('data'=>array(
+				'User',
+				'Article'
+			))),
+			'type'		=> 'rpc',
+			'tid'		=> 1,
+		));
+
+		// Create a new request collection and parse the requests by calling getRequests().
+		$collection = new BanchaRequestCollection($rawPostData);
+		$requests = $collection->getRequests();
+
+		// This should generate 1 CakeRequest object packed in an array.
+		$this->assertEquals(1, count($requests));
+		$this->assertThat($requests[0], $this->isInstanceOf('CakeRequest'));
+
+		// action -> controller
+		// controller should be pluralized
+		$this->assertEquals($requests[0]['controller'], 'Bancha'); // this always stays singular
+		// method -> action AND "create" -> "add"
+		$this->assertEquals($requests[0]['action'], 'loadMetaData');
+		// This is part of the Bancha plugin
+		$this->assertEquals($requests[0]['plugin'], 'Bancha');
+
+		// Cake has some special params like paginate, pass and named. Assure that these are there.
+		$this->assertTrue(isset($requests[0]['pass']));
+		$this->assertTrue(isset($requests[0]['named']));
+
+		// TID is set?
+		$this->assertEquals(1, $requests[0]['tid']);
+	}
 }
