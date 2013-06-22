@@ -123,6 +123,9 @@ Ext.define('Bancha.Loader', {
             var className = this.getPathLastClassName,
                 current;
 
+            // ExtJS 4.0.7 returns undefined instead of false, fix this
+            synchronous = synchronous || false;
+
             // if we have a default class loader set, use it
             if(this.getDefaultLoader()) {
                 // see if the child class loader wants to handle this
