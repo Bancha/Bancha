@@ -653,7 +653,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         });
 
         it("should trigger the onError function if in production mode and there is a script error", function() {
-            var isPhantomJS = (typeof phantom !== 'undefined' && phantom.version);
+            var isPhantomJS = (typeof phantom !== 'undefined' && phantom.fs);
 
             if(isPhantomJS) {
                 return; // This test works in the Browser, but fails using phantomjs test runner
