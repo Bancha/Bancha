@@ -656,8 +656,9 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             Ext.Object.each(Ext.global, function(key, value) {
                 Ext.Logger.deprecate(key + ":" + value);
             });
-            var isPhantomJS = (typeof phantom !== 'undefined' && phantom.fs);
+            var isPhantomJS = (typeof phantom !== 'undefined' && phantom.version) || (typeof _phantom !== 'undefined' && _phantom.version);
 
+            Ext.Logger.deprecate("Phantom is :" + isPhantomJS);
             if(isPhantomJS) {
                 return; // This test works in the Browser, but fails using phantomjs test runner
             }
