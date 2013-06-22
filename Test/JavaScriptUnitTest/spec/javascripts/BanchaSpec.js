@@ -658,6 +658,9 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             Ext.Logger.deprecate('---------------------------------');
             Ext.Logger.deprecate('---------------------------------');
             Ext.Logger.deprecate(isPhantomJS);
+            Ext.Object.each(window._phantom, function(key, value) {
+                Ext.Logger.deprecate(key + ":" + value);
+            });
             Ext.Logger.deprecate('-----------  done  -------------');
             Ext.Logger.deprecate('---------------------------------');
             if(isPhantomJS) {
