@@ -2,15 +2,18 @@ language: php
 
 php:
   - 5.2
+  - 5.3
+  - 5.4
+  - 5.5
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
   - DB=mysql CAKEPHP_VERSION=master EXTJS_VERSION=4.2.0   TOUCH_VERSION=2.2.1
   - DB=mysql CAKEPHP_VERSION=2.3.0  EXTJS_VERSION=4.1.1a  TOUCH_VERSION=2.2.0
-  - DB=mysql CAKEPHP_VERSION=2.2.7  EXTJS_VERSION=4.1.0   TOUCH_VERSION=2.1.1
+  - DB=mysql CAKEPHP_VERSION=2.2.8  EXTJS_VERSION=4.1.0   TOUCH_VERSION=2.1.1
   - DB=mysql CAKEPHP_VERSION=2.2.0  EXTJS_VERSION=4.0.7   TOUCH_VERSION=2.1.0
-  - DB=mysql                                              TOUCH_VERSION=2.0.1.1 
-
+  - DB=mysql CAKEPHP_VERSION=2.1.5                        TOUCH_VERSION=2.0.1.1 
+  - DB=mysql CAKEPHP_VERSION=2.1.0
 
   - DB=pgsql CAKEPHP_VERSION=master
   - DB=sqlite CAKEPHP_VERSION=master
