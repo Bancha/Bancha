@@ -19,7 +19,8 @@
 describe("Bancha.Loader", function() {
     // prepare test loader
     var loader = Ext.Loader,
-        myLoader = Ext.create('Bancha.loader.Interface');
+        myLoader = Ext.create('Bancha.loader.Interface'),
+        loaderEnabled = Ext.Loader.getConfig('enabled');
 
     it("should extend Ext.Loader to allow setting own class loaders.", function() {
         expect(loader.getDefaultLoader).toBeAFunction();
@@ -35,6 +36,8 @@ describe("Bancha.Loader", function() {
     });
 
     it("should allow using own class loaders for sync requires in the whole application.", function() {
+        Ext.Loader.setConfig('enabled', true);
+
         // use test loader
         loader.setDefaultLoader(myLoader);
 
@@ -63,10 +66,13 @@ describe("Bancha.Loader", function() {
 
         // cleanup
         loader.setDefaultLoader(null);
+        Ext.Loader.setConfig('enabled', loaderEnabled);
     });
 
 
     it("should allow using own class loaders for sync requires in the whole application.", function() {
+        Ext.Loader.setConfig('enabled', true);
+
         // use test loader
         loader.setDefaultLoader(myLoader);
 
@@ -89,6 +95,7 @@ describe("Bancha.Loader", function() {
 
         // cleanup
         loader.setDefaultLoader(null);
+        Ext.Loader.setConfig('enabled', loaderEnabled);
     });
 
 }); //eo describe loader proxy functions
