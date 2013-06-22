@@ -13,10 +13,6 @@
     if(!window.Ext) {
       alert('Please copy the Sencha Touch 2 library into Bancha/Test/JavaScriptUnitTest/lib/sencha-touch-all-debug.js');
     }
-
-    // this is quite tricky, for Sencha Touch be be ready we need to trigger 
-    // the setup process (e.g. to make Ext.Msg available)
-    Ext.setup({});
     
     Bancha = {};
     Bancha.REMOTE_API = {}; // set this to not load the api as requirement
@@ -49,8 +45,13 @@
 <body>
 
 <script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
+    Ext.setup({
+      onReady: function() {
+        // make sure all classes are ready before testing
+        jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+        jasmine.getEnv().execute();
+      }
+    });
 </script>
 
 </body>
