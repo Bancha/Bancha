@@ -653,7 +653,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         });
 
         it("should trigger the onError function if in production mode and there is a script error", function() {
-            Ext.Object.each(Ext.global, function(key, value) {
+            Ext.Object.each(window, function(key, value) {
                 Ext.Logger.deprecate(key + ":" + value);
             });
             var isPhantomJS = (typeof phantom !== 'undefined' && phantom.version) || (typeof _phantom !== 'undefined' && _phantom.version);
