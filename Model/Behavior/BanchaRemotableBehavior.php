@@ -722,10 +722,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$this->result[$Model->alias][$Model->name]['id'] = $Model->id;
 		} else {
 			// load the full record from the database
-			$currentRecursive = $Model->recursive;
-			$Model->recursive = -1;
+			// Setting recursive to -1 may result in an error if the virtual field uses associated data
+			// On the other hand not setting the recursion to -1 has some negative performance impacts
+			// $currentRecursive = $Model->recursive;
+			// $Model->recursive = -1;
 			$this->result[$Model->alias] = $Model->read();
-			$Model->recursive = $currentRecursive;
+			// $Model->recursive = $currentRecursive;
 		}
 		
 		return true;
