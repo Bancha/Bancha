@@ -116,7 +116,7 @@ before_script:
         \$this->{\$source} = \$config;
       }
     }
-    }" > .cakephp/app/Config/database.php ; fi #create database config file for cakephp
+    }" > ./cakephp/app/Config/database.php ; fi #create database config file for cakephp
 
   # Setup the Bancha plugin
   - rm -r ./cakephp/app/Plugin/Bancha
