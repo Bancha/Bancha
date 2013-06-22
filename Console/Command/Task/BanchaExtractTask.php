@@ -91,13 +91,6 @@ class Bancha_JavaScriptToken {
 /**
  * Language string extractor for Bancha.t translations
  *
- * It would be very nice here if we could use a real JavaScript tokenizer to collect all translatable strings,
- * but there doesn't exist any performant and correct working JavaScript tokenizer implementation in PHP. 
- * Besides that we still would need another implementation to handle PHP files where the might not have cleanly
- * separated the javascript.
- *
- * So this is a quite robust implementation using a text search and partially tokenizing the code.
- *
  * @package       Bancha.Console.Command.Task
  */
 class BanchaExtractTask extends ExtractTask {
