@@ -2,8 +2,6 @@ language: php
 
 php:
   - 5.2
-  - 5.3
-  - 5.4
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
