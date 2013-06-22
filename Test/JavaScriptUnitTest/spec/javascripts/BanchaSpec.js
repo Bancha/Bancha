@@ -658,11 +658,15 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             });
             var isPhantomJS = (typeof phantom !== 'undefined' && phantom.version) || (typeof _phantom !== 'undefined' && _phantom.version);
 
-            Ext.Logger.log("Phantom is :" + isPhantomJS, 'info');
-            Ext.Logger.log("Phantom :" + phantom, 'info');
-            Ext.Logger.log("Phantom w:" + window.phantom, 'info');
-            Ext.Logger.log("_phantom :" + _phantom, 'info');
-            Ext.Logger.log("Phantom w:" + window._phantom, 'info');
+            Ext.Object.each({
+                isPhantomJS: isPhantomJS,
+                phantom: phantom,
+                windowphantom: window.phantom,
+                _phantom: _phantom,
+                window_phantom: window._phantom
+            }, function(key, value) {
+                Ext.Logger.deprecate(key + ":" + value);
+            });
             if(isPhantomJS) {
                 return; // This test works in the Browser, but fails using phantomjs test runner
             }
