@@ -660,7 +660,9 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
             Ext.Logger.deprecate("Phantom is :" + isPhantomJS);
             Ext.Logger.deprecate("Phantom :" + phantom);
+            Ext.Logger.deprecate("Phantom w:" + window.phantom);
             Ext.Logger.deprecate("_phantom :" + _phantom);
+            Ext.Logger.deprecate("Phantom w:" + window._phantom);
             if(isPhantomJS) {
                 return; // This test works in the Browser, but fails using phantomjs test runner
             }
