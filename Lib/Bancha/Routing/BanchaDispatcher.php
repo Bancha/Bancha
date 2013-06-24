@@ -15,6 +15,9 @@
 App::uses('Dispatcher', 'Routing');
 App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
 App::uses('BanchaSingleDispatcher', 'Bancha.Bancha/Routing');
+App::uses('BanchaAuthLoginException', 'Bancha.Bancha/Exception');
+App::uses('BanchaAuthAccessRightsException', 'Bancha.Bancha/Exception');
+App::uses('BanchaRedirectException', 'Bancha.Bancha/Exception');
 
 /**
  * BanchaDispatcher
@@ -39,6 +42,23 @@ class BanchaDispatcher {
 
 		// CakePHP should think that every Bancha request is a POST request.
 		$_SERVER['REQUEST_METHOD'] = 'POST';
+		
+		// setup a handler for redirects
+		CakeEventManager::instance()->attach(function($event) {
+			$controller = $event->subject();
+			list($url, $status, $exit) = $event->data;
+
+			// Handle actions fron AuthComponent
+			if(isset($controller->Auth) && !$controller->Auth->loggedIn()) {
+				throw new BanchaAuthLoginException('Please login first. Maybe your session expired.');
+			}
+			if(isset($controller->Auth) && !$controller->Auth->isAuthorized($controller->Auth->user())) {
+				throw new BanchaAuthAccessRightsException('You are not allowed to see this page.');
+			}
+
+			// general redirect handling, will trigger an exception
+			throw new BanchaRedirectException($event->subject()->name . 'Controller forced a redirect to ' . $url . (empty($status) ? '' : ' with status '.$status));
+		}, 'Controller.beforeRedirect');
 		
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {

@@ -85,6 +85,11 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		if(isset($controller->RequestHandler)) {
 			$controller->Components->disable('RequestHandler');
 		}
+
+		// If there is a AuthComponent, missing rights should trigger a redirect, not a rendering
+		if(isset($controller->Auth)) {
+			$controller->Auth->ajaxLogin = null;
+		}
 	}
 /**
  * Main execution method. Handles validating of allowed filter constraints.

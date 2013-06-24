@@ -759,14 +759,30 @@ Ext.define('Bancha', {
             } : err;
             
             // handle error
-            if(data.code==="parse") {
+            if(data.code==='parse') {
                 // parse error
                 Ext.Msg.alert('Bancha: Server-Response can not be decoded',data.data.msg);
+            } else if(data.exceptionType === 'BanchaAuthLoginException' || data.exceptionType === 'BanchaAuthAccessRightsException') {
+                // AuthComponent prevented loading
+                if(Ext.isFunction(Bancha.onAuthException)) {
+                    Bancha.onAuthException(data.exceptionType,data.message);
+                    return;
+                }
+                Ext.Msg.alert('Bancha: AuthComponent prevented execution', [
+                    '<b>'+data.message+'</b><br />',
+                    'This is triggerd by your AuthComponent configuration. ',
+                    'You can add your custom authentification error handler ',
+                    'by setting <i>Bancha.onAuthException(exceptionType,message)</i>.<br />'
+                    ].join(''));
             } else {
                 // exception from server
-                Ext.Msg.alert('Bancha: Exception from Server',
-                    "<br/><b>"+(data.exceptionType || "Exception")+": "+data.message+"</b><br /><br />"+
-                    ((data.where) ? data.where+"<br /><br />Trace:<br />"+data.trace : "<i>Turn on the debug mode in cakephp to see the trace.</i>"));
+                Ext.Msg.alert('Bancha: Exception from Server', [
+                    '<b>'+(data.exceptionType || 'Exception')+': '+data.message,
+                    '</b><br /><br />',
+                    ((data.where) ? 
+                        data.where+'<br /><br />Trace:<br />'+data.trace :
+                        '<i>Turn on the debug mode in cakephp to see the trace.</i>')
+                    ].join(''));
             }
         });
         //ENDIF
@@ -1272,6 +1288,17 @@ Ext.define('Bancha', {
          });
      },
     
+
+    /**
+     * @property {Function|False} onAuthException
+     * You can define your custom authetification error handler. This function 
+     * is triggered every time the CakePHP AuthComponent prevented the 
+     * execution of a Bancha request.
+     * @param {String} exceptionType This is either 'BanchaAuthLoginException' or 'BanchaAuthAccessRightsException'
+     * @param {String} message       The exception message from the server-side.
+     * @since Bancha v 2.0.0
+     */
+    onAuthException: false,
 
 	/**
      * Checks if a Bancha model is already created (convinience function)

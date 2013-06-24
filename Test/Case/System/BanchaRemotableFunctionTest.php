@@ -16,6 +16,7 @@
 
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
+App::uses('AuthComponent', 'Controller/Component');
 
 
 App::uses('Controller', 'Controller');
@@ -40,12 +41,35 @@ class RemotableFunctionsController extends Controller {
 		}
 		return $this->request->data;
 	}
+	/**
+	 * This method will redirect to a different url
+	 */
+	public function redirectMethod() {
+		$this->redirect('redirected-page.html', 302);
+	}
 }
 class RemotableFunctionWithRequestHandlersController extends RemotableFunctionsController {
 	/**
 	 * Add the RequestHandler here to test compability
 	 */
 	public $components = array('Session', 'RequestHandler', 'Paginator' => array('className' => 'Bancha.BanchaPaginator'));
+}
+class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsController {
+	/**
+	 * Add the RequestHandler here to test compability
+	 */
+	public $components = array('Session', 'Auth' => array(
+		// this config would normally lead to problemy, test that BanchaPagiantorComponent fixes the problem
+		'ajaxLogin' => '/users/session_expired',
+		// make sure we can check for authorizations as well
+		'authorize' => 'Controller'
+	), 'Paginator' => array('className' => 'Bancha.BanchaPaginator'));
+
+	public function isAuthorized($user = null) {
+		return $this->request->action !== 'prohibitMethod';
+	}
+
+	public function prohibitMethod() {}
 }
 
 
@@ -182,4 +206,130 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$_SERVER['CONTENT_TYPE'] = $content_type;
 	}
 
+	/**
+	 * Returns an AuthComponent to log in and out.
+	 * @return AuthComponent
+	 */
+	private function getAuthComponent() {
+        // setup the component collection
+        $Collection = new ComponentCollection();
+
+        // setup the auth component
+		$auth = new AuthComponent($Collection, array());
+
+		return $auth;
+	}
+
+	/**
+	 * The redirect method does not make sense when using Bancha. Therefore
+	 * if a redirect happens we want to throw an exception.
+	 */
+	public function testRedirectHandling() {
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'RemotableFunction',
+			'method'		=> 'redirectMethod',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		)));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('BanchaRedirectException', $responses[0]->exceptionType);
+	}
+
+	/**
+	 * Without any adoption the AuthComponent would render an element if the config
+	 * ajaxLogin is set and the user is not logged in.
+	 *
+	 * This is fixed in the BanchaPaginatorComponent::initialize. 
+	 *
+	 * Since it makes no sense to test this in a unit test, this provides an 
+	 * integration test where we go though the Dispatcher to check if everything
+	 * works as expected.
+	 */
+	public function testAuthComponent_NotLoggedIn() {
+		// make sure we are logged out
+		$this->getAuthComponent()->logout();
+
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'RemotableFunctionWithAuthComponent',
+			'method'		=> 'returnInputRequestData',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array('my param1', 'my param2'),
+		)));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('BanchaAuthLoginException', $responses[0]->exceptionType);
+	}
+
+	/**
+	 * Without any adoption the AuthComponent would trigger a redirect if the user
+	 * is not authorized to use this method.
+	 *
+	 * Since it makes no sense to test this in a unit test, this provides an 
+	 * integration test where we go though the Dispatcher to check if everything
+	 * works as expected. 
+	 */
+	public function testAuthComponent_NotAuthorized() {
+		// log in
+		$this->getAuthComponent()->login(array('name'=>'LoggedIn'));
+
+		// ******************************************************
+		//       Test that allowed method works as normal
+		// ******************************************************
+
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'RemotableFunctionWithAuthComponent',
+			'method'		=> 'returnInputRequestData',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array('my param1', 'my param2'),
+		)));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
+		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
+		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got '.print_r($responses,true));
+		$this->assertEquals('my param1', $responses[0]->result->data[0]);
+		$this->assertEquals('my param2', $responses[0]->result->data[1]);
+
+		// ******************************************************
+		//   Test that denied method returns a proper exception
+		// ******************************************************
+
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'RemotableFunctionWithAuthComponent',
+			'method'		=> 'prohibitMethod',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array('my param1', 'my param2'),
+		)));
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('BanchaAuthAccessRightsException', $responses[0]->exceptionType);
+
+		// tear down
+		$this->getAuthComponent()->logout();
+	}
 }
