@@ -298,20 +298,23 @@ if (!Array.prototype.reduce) {
  * For documentation on how to use it please look at the docs at banchaproject.org  
  * 
  * example usage:
- *     <!-- include Bancha and the remote API -->
- *     <script type="text/javascript" src="/Bancha/js/Bancha-dev.js"></script>
- *     <script type="text/javascript" src="/bancha-api/models/all.js"></script>
- *     <script>
- *         // when Bancha is ready, the model meta data is loaded
- *         // from the server and the model is created....
- *         Bancha.onModelReady('User', function(userModel) {
+ *     // load Bancha
+ *     Ext.Loader.setPath('Bancha','/Bancha/js');
+ *     Ext.syncRequire('Bancha.Initializer');
+ *
+ *     // Simply require Bancha models
+ *     // Bancha will load the model meta data from the server,
+ *     // create the model definition and then trigger the execution
+ *     Ext.define('MyApp.view.MyGrid', {
+ *         requires: [
+ *             'Bancha.model.Article'
+ *         ]
+ *            
+ *         ... your code ...
  *             
- *             ... your code ...
- *             
- *         }); //eo onModelReady
- *     </script>
+ *     }); //eo define
  *   
- * If you want to listen for exceptions, please do this directly on Ext.direct.Manager
+ * To handle remote exceptions, please override Bancha.onRemoteException(proxy, response, operation)
  *
  * @singleton
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -1273,21 +1276,21 @@ Ext.define('Bancha', {
         // to the console or to the server
         Bancha.log(Ext.encode(stackInfo), 'error');
     },
+    
     /**
      * @property {Function|False} onRemoteException
      * This function will be added to each model to handle remote errors.
      * (modelConfig.listeners.exception).  
      * Use false to don't have exception handling on models.
      */
-     onRemoteException: function(proxy, response, operation){
+    onRemoteException: function(proxy, response, operation){
          Ext.MessageBox.show({
              title: 'REMOTE EXCEPTION',
              msg: operation.getError(),
              icon: Ext.MessageBox.ERROR,
              buttons: Ext.Msg.OK
          });
-     },
-    
+    },
 
     /**
      * @property {Function|False} onAuthException
