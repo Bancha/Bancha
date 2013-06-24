@@ -44,7 +44,7 @@ if(Ext.Loader) {
     // this will only be used in the debug version, the production version should be shipped in a packaged version
     // See our integration in Sencha CMD for this feature.
     if(!Ext.Loader.getConfig('paths')['Bancha.REMOTE_API']) {
-        Ext.Loader.setPath('Bancha.REMOTE_API', '/bancha-api-class/models/all.js');
+        Ext.Loader.setPath('Bancha.REMOTE_API', Ext.Loader.getPath('Bancha')+'/../../bancha-api-class/models/all.js');
     }
 }
 

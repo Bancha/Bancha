@@ -298,20 +298,23 @@ if (!Array.prototype.reduce) {
  * For documentation on how to use it please look at the docs at banchaproject.org  
  * 
  * example usage:
- *     <!-- include Bancha and the remote API -->
- *     <script type="text/javascript" src="/Bancha/js/Bancha-dev.js"></script>
- *     <script type="text/javascript" src="/bancha-api/models/all.js"></script>
- *     <script>
- *         // when Bancha is ready, the model meta data is loaded
- *         // from the server and the model is created....
- *         Bancha.onModelReady('User', function(userModel) {
+ *     // load Bancha
+ *     Ext.Loader.setPath('Bancha','/Bancha/js');
+ *     Ext.syncRequire('Bancha.Initializer');
+ *
+ *     // Simply require Bancha models
+ *     // Bancha will load the model meta data from the server,
+ *     // create the model definition and then trigger the execution
+ *     Ext.define('MyApp.view.MyGrid', {
+ *         requires: [
+ *             'Bancha.model.Article'
+ *         ]
+ *            
+ *         ... your code ...
  *             
- *             ... your code ...
- *             
- *         }); //eo onModelReady
- *     </script>
+ *     }); //eo define
  *   
- * If you want to listen for exceptions, please do this directly on Ext.direct.Manager
+ * To handle remote exceptions, please override Bancha.onRemoteException(proxy, response, operation)
  *
  * @singleton
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -759,14 +762,30 @@ Ext.define('Bancha', {
             } : err;
             
             // handle error
-            if(data.code==="parse") {
+            if(data.code==='parse') {
                 // parse error
                 Ext.Msg.alert('Bancha: Server-Response can not be decoded',data.data.msg);
+            } else if(data.exceptionType === 'BanchaAuthLoginException' || data.exceptionType === 'BanchaAuthAccessRightsException') {
+                // AuthComponent prevented loading
+                if(Ext.isFunction(Bancha.onAuthException)) {
+                    Bancha.onAuthException(data.exceptionType,data.message);
+                    return;
+                }
+                Ext.Msg.alert('Bancha: AuthComponent prevented execution', [
+                    '<b>'+data.message+'</b><br />',
+                    'This is triggerd by your AuthComponent configuration. ',
+                    'You can add your custom authentification error handler ',
+                    'by setting <i>Bancha.onAuthException(exceptionType,message)</i>.<br />'
+                    ].join(''));
             } else {
                 // exception from server
-                Ext.Msg.alert('Bancha: Exception from Server',
-                    "<br/><b>"+(data.exceptionType || "Exception")+": "+data.message+"</b><br /><br />"+
-                    ((data.where) ? data.where+"<br /><br />Trace:<br />"+data.trace : "<i>Turn on the debug mode in cakephp to see the trace.</i>"));
+                Ext.Msg.alert('Bancha: Exception from Server', [
+                    '<b>'+(data.exceptionType || 'Exception')+': '+data.message,
+                    '</b><br /><br />',
+                    ((data.where) ? 
+                        data.where+'<br /><br />Trace:<br />'+data.trace :
+                        '<i>Turn on the debug mode in cakephp to see the trace.</i>')
+                    ].join(''));
             }
         });
         //ENDIF
@@ -1257,21 +1276,32 @@ Ext.define('Bancha', {
         // to the console or to the server
         Bancha.log(Ext.encode(stackInfo), 'error');
     },
+    
     /**
      * @property {Function|False} onRemoteException
      * This function will be added to each model to handle remote errors.
      * (modelConfig.listeners.exception).  
      * Use false to don't have exception handling on models.
      */
-     onRemoteException: function(proxy, response, operation){
+    onRemoteException: function(proxy, response, operation){
          Ext.MessageBox.show({
              title: 'REMOTE EXCEPTION',
              msg: operation.getError(),
              icon: Ext.MessageBox.ERROR,
              buttons: Ext.Msg.OK
          });
-     },
-    
+    },
+
+    /**
+     * @property {Function|False} onAuthException
+     * You can define your custom authetification error handler. This function 
+     * is triggered every time the CakePHP AuthComponent prevented the 
+     * execution of a Bancha request.
+     * @param {String} exceptionType This is either 'BanchaAuthLoginException' or 'BanchaAuthAccessRightsException'
+     * @param {String} message       The exception message from the server-side.
+     * @since Bancha v 2.0.0
+     */
+    onAuthException: false,
 
 	/**
      * Checks if a Bancha model is already created (convinience function)
