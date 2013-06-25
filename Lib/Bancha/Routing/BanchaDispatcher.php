@@ -27,16 +27,16 @@ App::uses('BanchaRedirectException', 'Bancha.Bancha/Exception');
  */
 class BanchaDispatcher {
 
-/**
- * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
- * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
- * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
- * response is returned instead of directly sent to the browser.
- *
- * @param BanchaRequestCollection $requests A BanchaRequestCollection can contain multiple CakeRequest objects.
- * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
- * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
- */
+	/**
+	 * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
+	 * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
+	 * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
+	 * response is returned instead of directly sent to the browser.
+	 *
+	 * @param BanchaRequestCollection $requests A BanchaRequestCollection can contain multiple CakeRequest objects.
+	 * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
+	 * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
+	 */
 	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
 		$collection = new BanchaResponseCollection();
 
