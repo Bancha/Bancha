@@ -762,31 +762,49 @@ Ext.define('Bancha', {
             } : err;
             
             // handle error
+            var title,
+                msg;
             if(data.code==='parse') {
                 // parse error
-                Ext.Msg.alert('Bancha: Server-Response can not be decoded',data.data.msg);
+                title = 'Bancha: Server-Response can not be decoded';
+                msg = data.data.msg;
+            } else if(data.code==='xhr') {
+                // connection error
+                title = 'Connection Error: '+data.message;
+                msg = 'Please make sure your internet connection is working and your server is running.';
             } else if(data.exceptionType === 'BanchaAuthLoginException' || data.exceptionType === 'BanchaAuthAccessRightsException') {
-                // AuthComponent prevented loading
+                // CakePHP AuthComponent prevented loading
                 if(Ext.isFunction(Bancha.onAuthException)) {
                     Bancha.onAuthException(data.exceptionType,data.message);
                     return;
                 }
-                Ext.Msg.alert('Bancha: AuthComponent prevented execution', [
+                title = 'Bancha: AuthComponent prevented execution';
+                msg = [
                     '<b>'+data.message+'</b><br />',
                     'This is triggerd by your AuthComponent configuration. ',
                     'You can add your custom authentification error handler ',
                     'by setting <i>Bancha.onAuthException(exceptionType,message)</i>.<br />'
-                    ].join(''));
+                    ].join('');
             } else {
                 // exception from server
-                Ext.Msg.alert('Bancha: Exception from Server', [
+                title = 'Bancha: Exception from Server';
+                msg = [
                     '<b>'+(data.exceptionType || 'Exception')+': '+data.message,
                     '</b><br /><br />',
                     ((data.where) ? 
                         data.where+'<br /><br />Trace:<br />'+data.trace :
                         '<i>Turn on the debug mode in cakephp to see the trace.</i>')
-                    ].join(''));
+                    ].join('');
             }
+
+            // Show the error and then throw an exception (don't use Ext.Error.raise to not trigger the handler above)
+             Ext.Msg.show({
+                 title: title,
+                 message: msg,
+                 icon: Ext.MessageBox.ERROR,
+                 buttons: Ext.Msg.OK
+             });
+            throw new Error(msg);
         });
         //ENDIF
     },
@@ -1284,9 +1302,9 @@ Ext.define('Bancha', {
      * Use false to don't have exception handling on models.
      */
     onRemoteException: function(proxy, response, operation){
-         Ext.MessageBox.show({
+         Ext.Msg.show({
              title: 'REMOTE EXCEPTION',
-             msg: operation.getError(),
+             message: operation.getError(),
              icon: Ext.MessageBox.ERROR,
              buttons: Ext.Msg.OK
          });
