@@ -1321,16 +1321,16 @@ Ext.define('Bancha', {
      */
     onAuthException: false,
 
-	/**
+    /**
      * Checks if a Bancha model is already created (convinience function)
      * 
      * @param {String} modelName The model name (without any namespace)
      * @return {Boolean} True if the model exists
      */
-	isCreatedModel: function(modelName) {
-		return Ext.ClassManager.isCreated(Bancha.modelNamespace+'.'+modelName);
-	},
-	
+    isCreatedModel: function(modelName) {
+        return Ext.ClassManager.isCreated(Bancha.modelNamespace+'.'+modelName);
+    },
+
     /**
      * @deprecated Please only define your model on the backend to have a clean separation of concerns. 
      * This function will be removed soon.
