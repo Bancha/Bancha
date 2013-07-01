@@ -1,14 +1,12 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Lib
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Lib.Bancha
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
- * @since         Bancha v 0.9.3
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @since         Bancha v 2.0.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
@@ -17,8 +15,9 @@
  * A Helper class for building the ExtJS/Sencha Touch data structures from 
  * CakePHP ones.
  *
- * @package       Bancha
- * @subpackage    Lib
+ * @package       Bancha.Lib.Bancha
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 2.0.0
  */
 class CakeSenchaDataMapper {
 	private $data;

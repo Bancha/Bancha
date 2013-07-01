@@ -1,14 +1,21 @@
 <?php
 /**
-* @package       Bancha
-* @category      TestFixtures
+ * This script is used by the ConsistentModelTest to simulate executing multiple HTTP requests in parallel.
+ *
+ * this script can be called using
+ * php _fake_request.php client_id article_id tid title sleep_time
+ *
+ * 
+ * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
+ *
+ * @package       Bancha.Test.Case.System
+ * @copyright     Copyright 2011-2013 codeQ e.U.
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
-// this script is used by the ConsistentModelTest to simulate executing multiple HTTP requests in parallel.
-
-// this script can be called using
-// php _fake_request.php client_id article_id tid title sleep_time
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', realpath(dirname(__FILE__) . '/../../../../..'));

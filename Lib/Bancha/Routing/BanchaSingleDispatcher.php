@@ -1,11 +1,10 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Lib.Routing
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Lib.Bancha.Routing
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -18,6 +17,13 @@ App::uses('Dispatcher', 'Routing');
 // To support PHP 5.4 strict we need to match the method signature exactly, therefore this workaround
 // to support the old before 2.2 and the new 2.2+ signature.
 if(substr(Configure::version(), 2, 3) < 2) {
+	/**
+	 * See BanchaSingleDispatcher class.
+	 * 
+	 * @package       Bancha.Lib.Bancha.Routing
+	 * @since         Bancha v 2.0.0
+	 * @author        Roland Schuetz <mail@rolandschuetz.at>
+	 */
 	class BanchaSingleDispatcher_Parent extends Dispatcher {
 		/**
 		 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
@@ -38,6 +44,13 @@ if(substr(Configure::version(), 2, 3) < 2) {
 		}
 	}
 } else {
+	/**
+	 * See BanchaSingleDispatcher class.
+	 * 
+	 * @package       Bancha.Lib.Bancha.Routing
+	 * @since         Bancha v 2.0.0
+	 * @author        Roland Schuetz <mail@rolandschuetz.at>
+	 */
 	class BanchaSingleDispatcher_Parent extends Dispatcher {
 		/**
 		 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
@@ -63,8 +76,10 @@ if(substr(Configure::version(), 2, 3) < 2) {
  *
  * See the method descriptions why this is required.
  *
- * @package    Bancha
- * @subpackage Lib.Routing
+ * @package       Bancha.Lib.Bancha.Routing
+ * @since         Bancha v 0.9.0
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 class BanchaSingleDispatcher extends BanchaSingleDispatcher_Parent {
 

@@ -3,9 +3,10 @@
  * BanchaControllerTest file.
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Test.Case.Controller
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
@@ -17,8 +18,11 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
  * BanchaControllerTest
- * @package       Bancha
- * @category      tests
+ * 
+ * @package       Bancha.Test.Case.Controller
+ * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 0.9.0
  */
 class BanchaControllerTest extends ControllerTestCase {
 

@@ -1,11 +1,10 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Lib.ExceptionHandler
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Lib.Bancha.ExceptionHandler
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -18,9 +17,8 @@
 /**
  * BanchaExceptionHandler.
  *
- * @package    Bancha
- * @subpackage Lib.ExceptionHandler
- * @author     Kung Wong
+ * @package       Bancha.Lib.Bancha.ExceptionHandler
+ * @author        Kung Wong <kung.wong@gmail.com>
  */
 class BanchaExceptionHandler extends Object {
 

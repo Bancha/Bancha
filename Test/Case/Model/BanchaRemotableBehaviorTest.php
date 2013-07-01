@@ -3,12 +3,10 @@
  * BanchaRemotableBehaviorTest file.
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
- *
+ * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Test.Case.Model
- * @category      tests
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -27,7 +25,9 @@ require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the test
  * BanchaRemotableBehaviorTest class
  *
  * @package       Bancha.Test.Case.Model
- * @category      tests
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @since         Bancha v 0.9.0
  *
  */
 class BanchaRemotableBehaviorTest extends CakeTestCase {

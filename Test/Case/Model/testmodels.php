@@ -3,11 +3,10 @@
  * BanchaRemotableBehaviorTest test models file.
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Test.Case.Model
- * @category      tests
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -17,6 +16,11 @@
 /**
  * This model is used inside multiple 
  * BanchaRemotableBehaviorTest tests
+ * 
+ * @package       Bancha.Test.Case.Model
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @since         Bancha v 0.9.0
  */
 class TestArticle extends CakeTestModel {
 	public $name = 'Article';
@@ -77,6 +81,10 @@ class TestArticle extends CakeTestModel {
 /**
  * This model is used inside  
  * BanchaRemotableBehaviorTest::testGetValidations_NoValidationRules
+ * 
+ * @package       Bancha.Test.Case.Model
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 2.0.0
  */
 class TestArticleNoValidationRules extends CakeTestModel {
 	public $name = 'ArticleNoValidationRules';
@@ -99,6 +107,10 @@ class TestArticleNoValidationRules extends CakeTestModel {
 /**
  * This model is used inside 
  * BanchaRemotableBehaviorTest::testGetValidations_BasicStructure
+ * 
+ * @package       Bancha.Test.Case.Model
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 2.0.0
  */
 class TestUser extends CakeTestModel {
 	public $name = 'User';
@@ -142,6 +154,15 @@ class TestUser extends CakeTestModel {
 	);
 }
 
+
+/**
+ * This model is used inside 
+ * BanchaRemotableBehaviorTest::testGetValidations
+ * 
+ * @package       Bancha.Test.Case.Model
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 2.0.0
+ */
 class TestUserCoreValidationRules extends TestUser {
 	public $name = 'UserCoreValidationRules';
 
@@ -207,7 +228,9 @@ class TestUserCoreValidationRules extends TestUser {
 /**
  * TestingSaveArticleModel class
  *
- * @package       Bancha.Test.Case.Model.Behavior
+ * @package       Bancha.Test.Case.Model
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 0.9.3
  */
 class ArticleForTestingSaveBehavior extends CakeTestModel {
 /**

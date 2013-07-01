@@ -3,11 +3,10 @@
  * BanchaRemotableFunctionTest file.
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @category      Tests
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Test.Case.System
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -17,9 +16,16 @@
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 App::uses('AuthComponent', 'Controller/Component');
-
-
 App::uses('Controller', 'Controller');
+
+/**
+ * Provides some controller functions to use for system tests.
+ * 
+ * @package       Bancha.Test.Case.System
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 0.9.0
+ */
 class RemotableFunctionsController extends Controller {
 	/**
 	 * Use the BanchaPaginatorComponent to also support pagination

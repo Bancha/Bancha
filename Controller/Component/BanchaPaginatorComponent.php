@@ -1,11 +1,10 @@
 <?php
-
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Controller.Component
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 1.1.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -21,8 +20,8 @@ App::uses('BanchaException', 'Bancha.Bancha/Exception');
  * remote filtering from inside any ExtJS/Sencha Touch store with
  * remoteFiltering:true and a Bancha model.
  *
- * @package    Bancha.Controller.Component
- * @author     Roland Schuetz <mail@rolandschuetz.at>
+ * @package       Bancha.Controller.Component
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 class BanchaPaginatorComponent extends PaginatorComponent {
 
