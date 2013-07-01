@@ -1,11 +1,10 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Lib.Routing
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Lib.Bancha.Routing
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -22,21 +21,22 @@ App::uses('BanchaRedirectException', 'Bancha.Bancha/Exception');
 /**
  * BanchaDispatcher
  *
- * @package    Bancha
- * @subpackage Lib.Routing
+ * @package       Bancha.Lib.Bancha.Routing
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 class BanchaDispatcher {
 
-/**
- * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
- * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
- * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
- * response is returned instead of directly sent to the browser.
- *
- * @param BanchaRequestCollection $requests A BanchaRequestCollection can contain multiple CakeRequest objects.
- * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
- * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
- */
+	/**
+	 * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
+	 * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
+	 * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
+	 * response is returned instead of directly sent to the browser.
+	 *
+	 * @param BanchaRequestCollection $requests A BanchaRequestCollection can contain multiple CakeRequest objects.
+	 * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
+	 * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
+	 */
 	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
 		$collection = new BanchaResponseCollection();
 
@@ -44,21 +44,7 @@ class BanchaDispatcher {
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 		
 		// setup a handler for redirects
-		CakeEventManager::instance()->attach(function($event) {
-			$controller = $event->subject();
-			list($url, $status, $exit) = $event->data;
-
-			// Handle actions fron AuthComponent
-			if(isset($controller->Auth) && !$controller->Auth->loggedIn()) {
-				throw new BanchaAuthLoginException('Please login first. Maybe your session expired.');
-			}
-			if(isset($controller->Auth) && !$controller->Auth->isAuthorized($controller->Auth->user())) {
-				throw new BanchaAuthAccessRightsException('You are not allowed to see this page.');
-			}
-
-			// general redirect handling, will trigger an exception
-			throw new BanchaRedirectException($event->subject()->name . 'Controller forced a redirect to ' . $url . (empty($status) ? '' : ' with status '.$status));
-		}, 'Controller.beforeRedirect');
+		CakeEventManager::instance()->attach(array($this, 'redirectHandler'), 'Controller.beforeRedirect');
 		
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
@@ -95,4 +81,60 @@ class BanchaDispatcher {
 		$responses->send();
 	}
 
+	/**
+	 * This handler will be called every time a redirect is triggered.
+	 * Instead of doing a redirect this handler with throw an exception,
+	 * createswhich will be catched by the BanchaDispatcher::dispatch  
+	 * and a ExtJS/Sencha Touch exception.
+	 * 
+	 * @since  Bancha v 2.0.0
+	 * @throws BanchaAuthLoginException If the user is not logged in and tried to access a denied method
+	 * @throws BanchaAuthAccessRightsException If the user is not authorized to access this method
+	 * @throws BanchaRedirectException If a redirect was triggered from app code
+	 * @param  CakeEvent $event The event which triggered the redirect
+	 * @return void
+	 */
+	public function redirectHandler($event) {
+		$controller = $event->subject();
+		list($url, $status, $exit) = $event->data;
+
+		// Handle actions fron AuthComponent
+		if(isset($controller->Auth) && !$controller->Auth->loggedIn()) {
+			throw new BanchaAuthLoginException('Please login first. Maybe your session expired.');
+		}
+		if(isset($controller->Auth) && !$controller->Auth->isAuthorized($controller->Auth->user())) {
+			throw new BanchaAuthAccessRightsException('You are not allowed to see this page.');
+		}
+
+		// general redirect handling, will trigger an exception
+		throw new BanchaRedirectException($event->subject()->name . 'Controller forced a redirect to ' . $url . (empty($status) ? '' : ' with status '.$status));
+	}
+
+	/**
+	 * When a Controller throws a exception we will write it to the error log,
+	 * since this is in normal cases a unwanted behavior. In most cases you
+	 * want to return an array with success=>false to indicate to 
+	 * ExtJS/Sencha Touch that the request was not successfull.
+	 * 
+	 * @since  Bancha v 2.0.0
+	 * @param  CakeRequest $request   The request which caused the error
+	 * @param  Exception   $exception The caugth exception
+	 * @return void
+	 */
+	public function logException($request, $exception) {
+
+		// build a string representation of the invocaton signature
+		$signature = (!empty($request->params['plugin']) ? $request->params['plugin'].'.' : '').
+						$request->params['controller'].'::'.$request->params['action'] . '(';
+		foreach($request->params['pass'] as $pass) {
+			$signature .= var_export($pass,true) . ', ';
+		}
+		$signature = substr($signature, 0, strlen($signature)-2) . ')';
+
+		// log the error
+		$obj = new Object(); // just get an element to log the error
+		$obj->log(
+			'A Bancha request to '.$signature.' did result into the below shown Exception:'.
+			"\n".$exception."\n\n");
+	}
 }

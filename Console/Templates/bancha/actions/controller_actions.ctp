@@ -7,17 +7,15 @@
  *
  * PHP 5
  *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Copyright 2011-2013 codeQ e.U.
  *
- * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice.
- *
+ * @package       Cake.Console.Templates.bancha.actions
  * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       Cake.Console.Templates.default.actions
- * @since         CakePHP(tm) v 1.3
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @copyright     Copyright 2011-2013 codeQ e.U.
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v 1.0.1
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 ?>
 

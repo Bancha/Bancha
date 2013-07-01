@@ -1,11 +1,10 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Lib.Network
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Lib.Bancha.Network
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -21,8 +20,9 @@ App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
  * This is a helper class which provides a convenient interface to extract, transform and retrieve data from an Ext JS
  * request in a format suited for CakePHP.
  *
- * @package    Bancha
- * @subpackage Lib.Network
+ * @package       Bancha.Lib.Bancha.Network
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 class BanchaRequestTransformer {
 

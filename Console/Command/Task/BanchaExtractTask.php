@@ -1,13 +1,12 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Console
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Console.Command.Task
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
- * @since         Bancha v 1.0.1
+ * @since         Bancha v 1.3.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
@@ -18,6 +17,8 @@ App::uses('ExtractTask', 'Console/Command/Task');
  * The class is used by BanchaExtractTask.
  *
  * @package       Bancha.Console.Command.Task
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 1.3.0
  */
 class Bancha_JavaScriptToken {
 	public static $TYPE_ERROR = false;
@@ -98,6 +99,8 @@ class Bancha_JavaScriptToken {
  * Language string extractor for Bancha.t translations
  *
  * @package       Bancha.Console.Command.Task
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 1.3.0
  */
 class BanchaExtractTask extends ExtractTask {
 

@@ -1,16 +1,15 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package		Bancha
- * @subpackage	Lib.Network
- * @copyright	Copyright 2011-2013 StudioQ OG
- * @link		http://banchaproject.org Bancha Project
- * @since		Bancha v 0.1.0
- * @author		Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @author		Roland Schuetz <mail@rolandschuetz.at>
- * @author		Kung Wong <kung.wong@gmail.com>
+ * @package       Bancha.Lib.Bancha.Network
+ * @copyright     Copyright 2011-2013 codeQ e.U.
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v 0.1.0
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Kung Wong <kung.wong@gmail.com>
  */
 
 App::uses('CakeResponse', 'Network');
@@ -19,8 +18,10 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 /**
  * BanchaResponseCollection
  *
- * @package	Bancha
- * @subpackage Lib.Network
+ * @package       Bancha.Lib.Bancha.Network
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Kung Wong <kung.wong@gmail.com>
  */
 class BanchaResponseCollection {
 

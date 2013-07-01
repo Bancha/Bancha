@@ -1,11 +1,10 @@
 <?php
 /**
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Lib.Network
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Lib.Bancha.Network
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -22,8 +21,11 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
  * BanchaRequestCollection. The purpose of this class is to take a POST request (either as $_POST array or as raw POST
  * data), extract batch requests form it into an array of CakeRequest objects.
  *
- * @package    Bancha
- * @subpackage Lib.Network
+ * @package       Bancha.Lib.Bancha.Network
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @author        Andreas Kern <andreas.kern@gmail.com>
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Kung Wong <kung.wong@gmail.com>
  */
 class BanchaRequestCollection {
 
