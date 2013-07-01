@@ -1,34 +1,25 @@
 <?php
 /**
- * Application model for Cake.
+ * Application model for test app.
+ * 
+ * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Copyright 2011-2013 codeQ e.U.
  *
- * This file is application-wide model file. You can put all
- * application-wide model-related methods here.
- *
- * PHP 5
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       app.Model
- * @since         CakePHP(tm) v 0.2.9
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+ * @package       Bancha.Test.test_app.Model
+ * @copyright     Copyright 2011-2013 codeQ e.U.
+ * @link          http://banchaproject.org Bancha Project
+ * @since         Bancha v 0.9.0
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
 App::uses('Model', 'Model');
 
 /**
- * Application model for Cake.
+ * Application model for test app.
  *
- * Add your application-wide methods in the class below, your models
- * will inherit them.
- *
- * @package       app.Model
+ * @package       Bancha.Test.test_app.Model
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @since         Bancha v 0.9.0
  */
 class AppModel extends Model {
 }
