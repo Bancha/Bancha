@@ -3,11 +3,10 @@
  * AllBehaviorsTest file
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 StudioQ OG
+ * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
- * @subpackage    Model.Behavior
- * @copyright     Copyright 2011-2013 StudioQ OG
+ * @package       Bancha.Model.Behavior
+ * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -30,8 +29,10 @@ if ( false === function_exists('lcfirst') ) {
  * The behaviour extends remotly available models with the 
  * necessary functions to use Bancha.
  *
- * @package    Bancha
- * @subpackage Model.Behavior
+ * @package       Bancha.Model.Behavior
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Andreas Kern <andreas.kern@gmail.com>
+ * @since         Bancha v 0.9.0
  */
 class BanchaRemotableBehavior extends ModelBehavior {
 
