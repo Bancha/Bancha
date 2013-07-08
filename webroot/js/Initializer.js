@@ -34,12 +34,6 @@
  */
 
 if(Ext.Loader) {
-    // these lines should be removed after some refactoring
-    Ext.Loader.setPath('Bancha.Main', Ext.Loader.getPath('Bancha')+'/Bancha.js');
-    Ext.Loader.setPath('Bancha.Logger', Ext.Loader.getPath('Bancha')+'/Bancha.js');
-    Ext.Loader.setPath('Bancha.data.Model', Ext.Loader.getPath('Bancha')+'/Bancha.js');
-    Ext.Loader.setPath('Bancha.data.writer.JsonWithDateTime', Ext.Loader.getPath('Bancha')+'/Bancha.js');
-    Ext.Loader.setPath('Bancha.data.override.Validations', Ext.Loader.getPath('Bancha')+'/Bancha.js');
 
     // this will only be used in the debug version, the production version should be shipped in a packaged version
     // See our integration in Sencha CMD for this feature.
