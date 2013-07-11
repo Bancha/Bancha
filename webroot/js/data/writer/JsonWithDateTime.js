@@ -86,6 +86,10 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
      * http://www.sencha.com/forum/showthread.php?249288-Ext.data.writer.Json-doesn-t-use-dateFormat
      */
     writeDate: function(field, date) {
+        if(date===null || !Ext.isDefined(date)) { // <-- added support for null and undefined
+            return date;
+        }
+        
         var dateFormat = field.dateFormat || (field.getDateFormat ? field.getDateFormat() : false) || 'timestamp'; // <-- fixed this line
         switch (dateFormat) {
             case 'timestamp':
@@ -93,9 +97,6 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
             case 'time':
                 return date.getTime();
             default:
-                if(date===null || !Ext.isDefined(date)) { // <-- added support for null and undefined
-                    return date;
-                }
                 return Ext.Date.format(date, dateFormat);
         }
     }
