@@ -14,7 +14,7 @@
  */
 /*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
 /*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, Mock, BanchaSpecHelper */
+/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, Mock, ExtSpecHelper, BanchaSpecHelper */
 
 describe("Bancha.data.Model tests", function() {
     var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
@@ -53,7 +53,7 @@ describe("Bancha.data.Model tests", function() {
         expect(model).toBeModelClass('Bancha.model.CreateModelUser');
         
         // check if the additional config was used
-        if(h.isExt) {
+        if(ExtSpecHelper.isExt) {
             // for ext it is directly applied
             expect(model.prototype.additionalSettings).toBeTruthy();
         } else {
@@ -80,7 +80,7 @@ describe("Bancha.data.Model tests", function() {
         
         //verify the expectations were met
         // TODO Not yet working in touch: http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
-        if(h.isExt) {
+        if(ExtSpecHelper.isExt) {
             mockProxy.verify();
         }
     });

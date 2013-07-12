@@ -88,7 +88,10 @@ Ext.define('Bancha.data.Model', {
          */
         applyCakeSchema: function(modelCls, extJsOnClassExtendedData) {
             var modelName = modelCls.getName().split('.').pop(), // CakePHP model name, e.g. "User"
-                config;
+                config,
+                // below is used for Ext JS 4.0 support
+                fields,
+                i = 0, len;
 
             if(!Bancha.initialized) {
                 Bancha.init();
@@ -133,11 +136,10 @@ Ext.define('Bancha.data.Model', {
             // Support for ExtJS 4.0.7
             if(typeof modelCls.setFields !== 'function') {
                 // setFields only exists in ExtJS 4.1+
-                var fields,
-                    i = 0, len = config.fields.length;
                 fields = new Ext.util.MixedCollection(false, function(field) {
                     return field.name;
                 });
+                len = config.fields.length;
                 for (; i < len; i++) {
                     fields.add(new Ext.data.Field(fields[i]));
                 }
