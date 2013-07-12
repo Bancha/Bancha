@@ -98,8 +98,15 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
-        expect(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
-        expect(writer.getRecordData(record)).property('time').toEqual(1373584360035);
+        // Sencha Touch returns timestamps as numbers, ExtJS still casts them to strings
+        // But this doesn't matter, since our backend can handle both cases.
+        if(Ext.versions.touch) {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
+            expect(writer.getRecordData(record)).property('time').toEqual(1373584360035);
+        } else {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual('1373584360');
+            expect(writer.getRecordData(record)).property('time').toEqual('1373584360035');
+        }
         expect(writer.getRecordData(record).nulldate).toBeNull();
         expect(writer.getRecordData(record).nullts).toBeNull();
         expect(writer.getRecordData(record).nulltime).toBeNull();
@@ -121,8 +128,13 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
-        expect(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);
-        expect(writer.getRecordData(record)).property('time').toEqual(1373585326000);
+        if(Ext.versions.touch) {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);
+            expect(writer.getRecordData(record)).property('time').toEqual(1373585326000);
+        } else {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual('1373585326');
+            expect(writer.getRecordData(record)).property('time').toEqual('1373585326000');
+        }
         expect(writer.getRecordData(record).nulldate).toBeNull();
         expect(writer.getRecordData(record).nullts).toBeNull();
         expect(writer.getRecordData(record).nulltime).toBeNull();
