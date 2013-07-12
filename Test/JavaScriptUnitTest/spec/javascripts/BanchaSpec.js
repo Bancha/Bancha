@@ -401,47 +401,16 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(loadFn.mostRecentCall.args[3]).toEqual(false);
         });
 
-
-        it("should throw an error in debug mode / returns false in prodiction mode "+
-            "when Bancha#createModel is called for a not yet loaded metadata of a model", function() {
-            
-            // prepare a remote api without the user metadata
-            Bancha.REMOTE_API = Ext.clone(rs);
-            delete Bancha.REMOTE_API.metadata.User;
-            
-            // init
-            Bancha.init();
-            
-            // now test
-            expect(function() {
-                
-                // in debug mode this should throw an error
-                var result = Bancha.createModel('User');
-                
-                // in production mode var result should be false, so 
-                // throw an error to pass the test for production code
-                if(result===false) {
-                    throw 'Bancha: Couldn\'t create the model cause the metadata is not loaded yet, '+
-                          'please use onModelReady instead.';
-                }
-            }).toThrowExtErrorMsg('Bancha: Couldn\'t create the model cause the metadata is not loaded yet, '+
-                                  'please use onModelReady instead.');
-        });
-        
-        
+        // @deprecated since 2.0
         it("should create Models with Bancha#createModel", function() {
             
             // setup model metadata
             h.init('CreateModelUser');
-
-            // create a mock object for the proxy
-            var mockProxy = Mock.Proxy();
             
-            // should create a user defintion
+            // should create a model defintion
             expect(
                 Bancha.createModel('CreateModelUser', {
-                    additionalSettings: true,
-                    proxy: mockProxy
+                    additionalSettings: true
             })).toBeTruthy();
             
             // check if the model really got created
@@ -457,6 +426,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 expect(model.prototype.config.additionalSettings).toBeTruthy();
             }
 
+            // create a mock object for the proxy
+            var mockProxy = Mock.Proxy();
+            model.setProxy(mockProxy);
+
             // test if the model saves data through ext direct
             var user = Ext.create('Bancha.model.CreateModelUser',{
                 firstname: 'Micky',
@@ -471,10 +444,12 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             user.save();
             
             //verify the expectations were met
-            // TODO Not yet working in touch: http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
-            if(ExtSpecHelper.isExt)
-            mockProxy.verify();
-            
+            if(ExtSpecHelper.isExt) {
+                // this currently only works with Ext JS, but since this is 
+                // only legacy support testing and the behavior is tested
+                // more extensive in Bancha.data.ModelSpec this is fine
+                mockProxy.verify();
+            }
         });
 
         it("should create a model if not defined with Bancha.getModel", function() {
@@ -482,24 +457,25 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // setup model metadata
             h.init("GetModelCreateTestUser");
          
-            // spy that this is never called
-            var syncRequire = spyOn(Ext, 'syncRequire');
+            // should be delegated to syncRequire
+            var syncRequire = spyOn(Ext, 'syncRequire').andCallFake(function() {
+                Ext.define('Bancha.model.GetModelCreateTestUser', {
+                    extend: 'Ext.data.Model'
+                });
+            });
 
             // create model
             var model = Bancha.getModel('GetModelCreateTestUser');
             expect(model).toBeModelClass('Bancha.model.GetModelCreateTestUser');
             
-            // check that the require is never called
-            expect(syncRequire.callCount).toEqual(0);
+            // check that the require is was called
+            expect(syncRequire).toHaveBeenCalled();
         });
         
         it("should just return the already defined models with Bancha.getModel", function() {
         
             // setup model metadata
             h.init("GetModelJustGetTestUser");
-         
-            // spy that this is never called
-            var syncRequire = spyOn(Ext, 'syncRequire');
             
             // create model
             var created = Bancha.createModel('GetModelJustGetTestUser',{
@@ -518,17 +494,17 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             } else {
                 // for touch configs are applied inside the 'config' config
                 expect(model.prototype.config.createdWithCreate).toBeTruthy();
-            } 
-            
-            // check that the require is never called
-            expect(syncRequire.callCount).toEqual(0);
+            }
         });
 
         it("should initialize Bancha, if getModel() is used", function() {
             Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
 
+            // prevent loading of the user model, we don't care
+            var syncRequire = spyOn(Ext, 'syncRequire');
+
             expect(Bancha.initialized).toBeFalsy();
-            expect(Bancha.getModel('User')).toBeTruthy();
+            Bancha.getModel('User');
             expect(Bancha.initialized).toBeTruthy();
         });
 
@@ -542,6 +518,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 Bancha.REMOTE_API.metadata['GetModelSyncLoadTest'] = Ext.clone(Bancha.REMOTE_API.metadata.User);
                 Bancha.REMOTE_API.actions['GetModelSyncLoadTest'] = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition.actions.User);
                 Bancha.getStubsNamespace()['GetModelSyncLoadTest'] = Ext.clone(Bancha.getStubsNamespace().User);
+
+                Ext.define('Bancha.model.GetModelSyncLoadTest', {
+                    extend: 'Bancha.data.Model' // expect Bancha model to be applied
+                });
             });
 
             // create model

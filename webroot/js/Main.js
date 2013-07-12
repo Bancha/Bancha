@@ -84,7 +84,11 @@ Ext.define('Bancha', {
     
     /* Begin Definitions */
     singleton: true,
-    
+
+    uses: [
+        'Bancha.REMOTE_API'
+    ],
+
     requires: [
         'Ext.data.*',
         'Ext.direct.*',
@@ -1110,197 +1114,34 @@ Ext.define('Bancha', {
      * @return {Boolean} Returns true is model was created successfully
      */
     createModel: function(modelName, modelConfig) {
-        var metaData,
-            defaults,
-            // IFDEBUG
-            safeDirectFn,
-            // ENDIF
-            stub,
-            idProperty,
-            configWithRootPropertySet;
-        
+
         // IFDEBUG
-        if(Ext.isDefined(modelConfig) && Ext.Logger && Ext.Logger.deprecate) {
+        if(Ext.Logger && Ext.Logger.deprecate) {
             Ext.Logger.deprecate('Bancha.created is deprecated and will be removed soon. Please only define your model on the backend to have a clean separation of concerns.', 1);
         }
         // ENDIF
 
-        if(!Bancha.initialized) {
-            Bancha.init();
-        }
-        
-        if(!this.isRemoteModel(modelName)) {
-            // IFDEBUG
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                modelName: modelName,
-                modelConfig: modelConfig,
-                msg: 'Bancha: Couldn\'t create the model "'+modelName+'" cause the model is not supported by the server (no remote model).'
-            });
-            // ENDIF
-            return false;
-        }
-        
-        if(!this.modelMetaDataIsLoaded(modelName)) {
-            // IFDEBUG
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                modelName: modelName,
-                modelConfig: modelConfig,
-                msg: 'Bancha: Couldn\'t create the model cause the metadata is not loaded yet, please use onModelReady instead.'
-            });
-            // ENDIF
-            return false;
-        }
-        
-        if(Bancha.isCreatedModel(modelName)) {
-            // IFDEBUG
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                modelName: modelName,
-                modelConfig: modelConfig,
-                msg: 'Bancha: The model class '+modelName+' is already defined.'
-            });
-            // ENDIF
-            return false;
-        }
-        
-        // IFDEBUG
-        if(!Ext.isDefined(this.getModelMetaData(modelName).idProperty)) {
-            if(Ext.global.console && Ext.isFunction(Ext.global.console.warn)) {
-                Ext.global.console.warn(
-                    'Bancha: The model meta data for '+modelName+' seems strange, probably this was '+
-                    'not created by Bancha, or an error occured on the server-side. Please notice '+
-                    'that this warning is only created in debug mode.');
-            }
-        }
-        // ENDIF
-        
-        // IFDEBUG
-        safeDirectFn = function(stub,method,modelName) {
-            if(Ext.isDefined(stub[method] && typeof stub[method] === 'function')) {
-                return stub[method];
-            }
-            
-            // function doesn't exit, create fake which will throw an error on first use
-            var map = {
-                    create : 'add',
-                    read   : 'view or index',
-                    update : 'edit',
-                    destroy: 'delete'
-                },
-                fakeFn = function() {
-                    Ext.Error.raise({
-                        plugin: 'Bancha',
-                        modelName: modelName,
-                        msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'sController->'+ map[method]+'(...). (If you have special inflection rules, the serverside is maybe looking for a different controller name, this is jsut a guess)'
-                    });
-                };
-            
-            // this is not part of the official Ext API!, but it seems to be necessary to do this for better bancha debugging
-            fakeFn.directCfg = { // TODO testen
-                len: 1,
-                name: method,
-                formHandler: false
-            };
-            // fake the execution method
-            fakeFn.directCfg.method = function() {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    modelName: modelName,
-                    msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'sController->'+ map[method]+'(...). (If you have special inflection rules, the serverside is maybe looking for a different controller name, this is jsut a guess)'
-                });
-            };
-            
-            return fakeFn;
-        }; 
-        // ENDIF
+        // Sencha Touch puts all configs in a config object,
+        // ExtJS places it directly in the model.
+        // Adopt correctly.
+        modelConfig = (Ext.versions.touch) ? {config:modelConfig} : modelConfig;
 
-        // Sencha Touch uses the new rootProperty property for configuring the reader and writer
-        // ExtJS still uses root. 
-        // This all would be fine, but now Sencha Touch throws deprecated warning for using the old
-        // ExtJS syntax, so we can't just assign both anymore, instead we need to create a config
-        // prototype here
-        if(Ext.versions.touch) {
-            configWithRootPropertySet = {
-                rootProperty: 'data'
-            };
-        } else {
-            configWithRootPropertySet = {
-                root: 'data'
-            };
-        }
-
-        // create the metadata
-        modelConfig = modelConfig || {};
-        stub = this.getStubsNamespace()[modelName];
-        idProperty = this.getModelMetaData(modelName).idProperty;
-        defaults = {
-            extend: 'Bancha.data.Model',
-            idProperty: idProperty,
-            proxy: {
-                type: 'direct', // TODO batch requests: http://www.sencha.com/forum/showthread.php?156917
-                batchActions: false, // don't batch requests on the store level, they will be batched batched by Ext.Direct on the application level
-                api: {
-                    /* IFPRODUCTION
-                    // if method is not supported by remote it get's set to undefined
-                    read    : stub.read,
-                    create  : stub.create,
-                    update  : stub.update,
-                    destroy : stub.destroy
-                    ENDIF */
-                    // IFDEBUG
-                    read    : safeDirectFn(stub,'read',modelName),
-                    create  : safeDirectFn(stub,'create',modelName),
-                    update  : safeDirectFn(stub,'update',modelName),
-                    destroy : safeDirectFn(stub,'destroy',modelName)
-                    // ENDIF
-                },
-                // because of an error in ext the following directFn def. has to be 
-                // defined, which should be read from api.read instead...
-                // see http://www.sencha.com/forum/showthread.php?134505-Model-proxy-for-a-Store-doesn-t-seem-to-work-if-the-proxy-is-a-direct-proxy&p=606283&viewfull=1#post606283
-                /* IFPRODUCTION
-                directFn: stub.read,
-                ENDIF */
-                // IFDEBUG
-                directFn: safeDirectFn(stub,'read',modelName),
-                // ENDIF
-                reader: Ext.apply({
-                    type: 'json',
-                    messageProperty: 'message'
-                }, configWithRootPropertySet),
-                writer: (modelConfig.forceConsistency) ? Ext.apply({
-                    type: 'consitentjson',
-                    writeAllFields: false
-                }, configWithRootPropertySet) : Ext.apply({
-                    type: 'jsondate',
-                    writeAllFields: false
-                }, configWithRootPropertySet),
-                listeners: {
-                    exception: this.onRemoteException || Ext.emptyFn
-                }
-            }
-        };
-        metaData = Ext.clone(this.getModelMetaData(modelName));
-        modelConfig = Ext.apply(metaData, modelConfig, defaults);
-        
-        // The Sencha Touch and ExtJS model structure differ
-        // Therefore we msut recognize here if it is a Touch version and
-        // in this case adopt the config structure
-        if(Ext.versions.touch) {
-            // place all configs in the config property
-            modelConfig = {
-                extend: modelConfig.extend,
-                config: modelConfig
-            };
-            
-            // this one should only be on the model itself
-            delete modelConfig.config.extend;
-        }
-        
         // create the model
-        Ext.define(Bancha.modelNamespace+'.'+modelName, modelConfig);
+        this._createModel(modelName, modelConfig);
+
         return true;
+    },
+    /**
+     * @private
+     * Internal usage, because from getLoadedModel should not trigger deprecated warnings.
+     *
+     * @inheritDoc #createModel
+     */
+    _createModel: function(modelName, modelConfig) {
+        // create the model
+        Ext.define(Bancha.modelNamespace+'.'+modelName, Ext.apply(modelConfig || {}, {
+            extend: 'Bancha.data.Model'
+        }));
     },
     /**
      * @deprecated Bancha allows to load dependencies through the normal Ext.Loader,
@@ -1325,10 +1166,9 @@ Ext.define('Bancha', {
         if(!Bancha.initialized) {
             Bancha.init();
         }
-        if(!this.modelMetaDataIsLoaded(modelName)) {
-            Ext.syncRequire('Bancha.model.'+modelName);
-        }
-        return this.getLoadedModel(modelName);
+        
+        Ext.syncRequire(Bancha.modelNamespace+'.'+modelName);
+        return Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName);
     },
     /**
      * @private
@@ -1346,7 +1186,7 @@ Ext.define('Bancha', {
      * @method getLoadedModel
      */
     getLoadedModel: function(modelName) {
-        return (this.isCreatedModel(modelName) || this.createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
+        return (this.isCreatedModel(modelName) || this._createModel(modelName)) ? Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName) : null;
     },
 
     /**
