@@ -57,7 +57,14 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
             Ext.each(fieldItems, function(field) {
                 var name = field[nameProperty] || field.name; 
                 if (field.type === Ext.data.Types.DATE && field.dateFormat && record.get(field.name)===null) {
+                    // add support for null dates
                     data[name] = null;
+                } else if (field.type === Ext.data.Types.DATE && field.dateFormat==='timestamp') {
+                    // Ext JS 4.1.1 does not convert timestamps correctly, fix this
+                    data[name] = Math.round(record.get(field.name).getTime()/1000);
+                } else if (field.type === Ext.data.Types.DATE && field.dateFormat==='time') {
+                    // Ext JS 4.1.1 does not convert times correctly, fix this
+                    data[name] = Math.round(record.get(field.name).getTime());
                 }
             });
 
