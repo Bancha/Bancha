@@ -338,10 +338,7 @@ describe("Bancha.data.Model tests", function() {
         rec.save();
         
         // verify the expectations were met
-        // TODO Not yet working in touch: http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
-        if(ExtSpecHelper.isExt) {
-            mockProxy.verify();
-        }
+        mockProxy.verify();
 
         // Test 2:
         // create a test record
@@ -359,10 +356,7 @@ describe("Bancha.data.Model tests", function() {
         rec.save();
         
         // verify the expectations were met
-        // TODO Not yet working in touch: http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
-        if(ExtSpecHelper.isExt) {
-            mockProxy.verify();
-        }
+        mockProxy.verify();
     });
 });
 

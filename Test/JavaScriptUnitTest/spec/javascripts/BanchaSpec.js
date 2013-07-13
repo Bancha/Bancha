@@ -461,13 +461,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // test
             user.save();
             
-            //verify the expectations were met
-            if(ExtSpecHelper.isExt) {
-                // this currently only works with Ext JS, but since this is 
-                // only legacy support testing and the behavior is tested
-                // more extensive in Bancha.data.ModelSpec this is fine
-                mockProxy.verify();
-            }
+            mockProxy.verify();
         });
 
         it("should create a model if not defined with Bancha.getModel", function() {
