@@ -165,6 +165,58 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+	public function testBanchaApiPackaged() {
+		// get response with models, packaged
+		$response = $this->testAction('/bancha-api-packaged/models/all.js');
+
+		// the api starts with Ext.define('Bancha.REMOTE_API',
+		$this->assertEquals('Ext.define(\'Bancha.REMOTE_API\',', substr($response, 0, 31));
+		$api = substr($response, 31); // remove the define in the beginning
+		$api = substr($api, 0, strpos($api, ');'));
+		$api = json_decode($api);
+
+		// check basic configurations
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
+		$this->assertEquals('remoting', $api->type);
+
+		// check that all direct methods are exposed
+		$this->assertTrue(isset($api->actions->Article));
+		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Tag));
+		$this->assertTrue(isset($api->actions->User));
+		$this->assertTrue(isset($api->actions->HelloWorld));
+		$this->assertTrue(isset($api->actions->Bancha));
+
+		// check that all metadata is exposed
+		$this->assertTrue(isset($api->metadata->Article));
+		$this->assertTrue(isset($api->metadata->ArticlesTag));
+		$this->assertTrue(isset($api->metadata->Tag));
+		$this->assertTrue(isset($api->metadata->User));
+		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data
+		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
+
+		// ok, now to the interesting part
+		// find all defines
+		$classes = new stdClass();
+		$defines = explode('Ext.define(', $response);
+		array_shift($defines); // first is empty, since it starts with Ext.define
+		array_shift($defines); // second, the remote api
+		foreach ($defines as $define) {
+			$class = substr($define, 14); // remove: 'Bancha.model.
+			$class = substr($class, 0, strpos($class, "'")); // only get the name
+			$classes->{$class} = true;
+		}
+
+		// check that all classes are defined
+		$this->assertTrue(isset($classes->Article));
+		$this->assertTrue(isset($classes->ArticlesTag));
+		$this->assertTrue(isset($classes->Tag));
+		$this->assertTrue(isset($classes->User));
+		$this->assertFalse(isset($classes->HelloWorld)); // there is no exposed model
+		$this->assertFalse(isset($classes->Bancha)); // there is no exposed model
+	}
+
 	public function testLoadModelMetaData_Ajax_One() {
 		$response = $this->testAction('/bancha-load-metadata/User.js');
 		$data = json_decode($response);

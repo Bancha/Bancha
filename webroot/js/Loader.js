@@ -90,7 +90,7 @@ Ext.define('Bancha.Loader', {
          * code duplication and update issues.
          *
          * @member Ext.Loader
-         * @inheritDoc Ext.Loader#getPath
+         * @inheritdoc Ext.Loader#getPath
          */
         getPath: Ext.Function.createInterceptor(Ext.Loader.getPath, function(className) {
             this.getPathLastClassName = className;
