@@ -75,12 +75,16 @@ Ext.define('Bancha.data.Model', {
             me.applyCakeSchema(cls, data);
         }
 
-        // Ext JS internally maps onClassExtended to $onExtended so it's only aplied to the immediate
-        // subclasses, but not child-child classes.
-        // If we wouldn't call it here the Ext.data.Model#onClassExtended would only be applied to
-        // Bancha.data.Model, but not to it's childs. With the sequence we get the expeceted behavior.
-        // this is basically similar to a this.callOverriden() on overrides.
-        Ext.data.Model.prototype.$onExtended.apply(this, arguments);
+        // Legacy Support for Ext JS 4.0
+        // Ext JS 4.1+ applies onClassExtended methods of superclasses and super-superclasses and so on,
+        // the whole inheritance chain up. 
+        // Ext JS 4.0 applies the method only to the immediate subclasses, but not child-child classes.
+        // Normalize to the new behavior
+        if(Ext.versions.extjs.shortVersion < 410) {
+            // If we wouldn't call it here the Ext.data.Model#onClassExtended would only be applied to
+            // Bancha.data.Model, but not to it's childs. With the sequence we get the expeceted behavior.
+            Ext.data.Model.prototype.$onExtended.apply(this, arguments);
+        }
     },
 
     /**
