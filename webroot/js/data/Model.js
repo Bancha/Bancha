@@ -80,7 +80,7 @@ Ext.define('Bancha.data.Model', {
         // the whole inheritance chain up. 
         // Ext JS 4.0 applies the method only to the immediate subclasses, but not child-child classes.
         // Normalize to the new behavior
-        if(Ext.versions.extjs.shortVersion < 410) {
+        if(Ext.versions.extjs && Ext.versions.extjs.shortVersion < 410) {
             // If we wouldn't call it here the Ext.data.Model#onClassExtended would only be applied to
             // Bancha.data.Model, but not to it's childs. With the sequence we get the expeceted behavior.
             Ext.data.Model.prototype.$onExtended.apply(this, arguments);
@@ -166,7 +166,7 @@ Ext.define('Bancha.data.Model', {
             config = Bancha.getModelMetaData(modelName);
 
             // Support for ExtJS 4.0.7
-            if(typeof modelCls.setFields2 !== 'function') {
+            if(typeof modelCls.setFields !== 'function') {
                 // setFields only exists in ExtJS 4.1+
                 extJsOnClassExtendedData.fields = config.fields;
             } else {
