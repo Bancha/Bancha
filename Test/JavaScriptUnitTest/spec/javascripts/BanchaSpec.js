@@ -691,7 +691,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             };
 
             // make an asyn test
-            var testPrepared = false;
+            var testPrepared = false,
+                onError = window.onerror,
+                setTimeout = window.setTimeout,
+                setInterval = window.setInterval;
             runs(function() {
                 // load TraceKit before initializing Bancha
                 loadScript('../../webroot/js/tracekit/tracekit.js', function() {
@@ -717,6 +720,11 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 // verify that the error was catched
                 expect(Bancha.onError).toHaveBeenCalled();
                 expect(Bancha.onError.mostRecentCall.args[0]).property('message').toEqual('Script error.');
+
+                // on, now that the test is over remove TraceKit
+                window.onerror = onError;
+                window.setTimeout = setTimeout;
+                window.setInterval = setInterval;
             });
         });
 
