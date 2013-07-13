@@ -40,7 +40,27 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
                     type:'date',
                     dateFormat:'Y-m-d'
                 },{
+                    name:'timestamp',
+                    type:'date',
+                    dateFormat:'timestamp'
+                },{
+                    name:'time',
+                    type:'date',
+                    dateFormat:'time'
+                },{
                     name:'nulldate',
+                    type:'date',
+                    dateFormat:'Y-m-d'
+                },{
+                    name:'nullts',
+                    type:'date',
+                    dateFormat:'timestamp'
+                },{
+                    name:'nulltime',
+                    type:'date',
+                    dateFormat:'time'
+                },{
+                    name:'undefineddate',
                     type:'date',
                     dateFormat:'Y-m-d'
                 }
@@ -58,23 +78,69 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         }
 
         // create it
-        Ext.define('Bancha.model.JsonWithDateTimeTestModel', config);
+        Ext.define('Bancha.test.model.JsonWithDateTimeTestModel', config);
 
         // create a writer for testing
         var writer = Ext.create('Bancha.data.writer.JsonWithDateTime');
         
         // sample record
-        var record = Ext.create('Bancha.model.JsonWithDateTimeTestModel', {
+        var record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
             id       : 1,
             date     : '2012-11-30',
             datetime : '2012-11-30 10:00:05',
-            nulldate : null
+            timestamp: 1373584360,
+            time     : 1373584360035, // javascript time in miliseconds
+            nulldate : null,
+            nullts   : null,
+            nulltime : null
         });
 
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
+        // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
+        // But this doesn't matter, since our backend can handle both cases. So both cases are valid
+        if(typeof writer.getRecordData(record).timestamp === 'number') {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
+            expect(writer.getRecordData(record)).property('time').toEqual(1373584360035);
+        } else {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual('1373584360');
+            expect(writer.getRecordData(record)).property('time').toEqual('1373584360035');
+        }
         expect(writer.getRecordData(record).nulldate).toBeNull();
+        expect(writer.getRecordData(record).nullts).toBeNull();
+        expect(writer.getRecordData(record).nulltime).toBeNull();
+        expect(writer.getRecordData(record).undefineddate).toBeNull();
+
+
+        // sample record
+        record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
+            id       : 1,
+            date     : new Date('2013-07-12 01:28:46'),
+            datetime : new Date('2013-07-12 01:28:46'),
+            timestamp: new Date('2013-07-12 01:28:46'),
+            time     : new Date('2013-07-12 01:28:46'),
+            nulldate : null,
+            nullts   : null,
+            nulltime : null
+        });
+
+        // test
+        expect(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
+        expect(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
+        // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
+        // But this doesn't matter, since our backend can handle both cases. So both cases are valid
+        if(typeof writer.getRecordData(record).timestamp === 'number') {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);
+            expect(writer.getRecordData(record)).property('time').toEqual(1373585326000);
+        } else {
+            expect(writer.getRecordData(record)).property('timestamp').toEqual('1373585326');
+            expect(writer.getRecordData(record)).property('time').toEqual('1373585326000');
+        }
+        expect(writer.getRecordData(record).nulldate).toBeNull();
+        expect(writer.getRecordData(record).nullts).toBeNull();
+        expect(writer.getRecordData(record).nulltime).toBeNull();
+        expect(writer.getRecordData(record).undefineddate).toBeNull();
     });
 
 }); //eo describe datetimewriter

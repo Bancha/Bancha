@@ -39,10 +39,12 @@ if(Router::extensions() !== true) { // if all extensions are supported we are do
 /**
  * connect the remote api
  */
-Router::connect('/bancha-api', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'));
-Router::connect('/bancha-api/models/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'),array('pass'=>array('metaDataForModels')));
-Router::connect('/bancha-api-class', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', '', true),array('pass'=>array('metaDataForModels')));
-Router::connect('/bancha-api-class/models/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', true),array('pass'=>array('metaDataForModels',true)));
+Router::connect('/bancha-api',                                    array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'));
+Router::connect('/bancha-api/models/:metaDataForModels',          array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index'), array('pass'=>array('metaDataForModels')));
+Router::connect('/bancha-api-class',                              array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', '', true), array('pass'=>array('metaDataForModels')));
+Router::connect('/bancha-api-class/models/:metaDataForModels',    array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', true), array('pass'=>array('metaDataForModels', 'development')));
+Router::connect('/bancha-api-packaged',                           array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', '', true),array('pass'=>array('metaDataForModels')));
+Router::connect('/bancha-api-packaged/models/:metaDataForModels', array('plugin' => 'bancha', 'controller' => 'bancha', 'action' => 'index', true),array('pass'=>array('metaDataForModels', 'packaged')));
 
 /**
  * connect ajax metadata loading
