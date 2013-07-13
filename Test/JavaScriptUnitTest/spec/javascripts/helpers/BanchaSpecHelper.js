@@ -129,6 +129,30 @@ BanchaSpecHelper.initAssociatedModels = function() {
     });
 };
 
+// Bancha tries to connect to the api in debug mode, mimik that is works
+// but there should never be any other Ajax requests
+Ext.Ajax.requestExceptionHasAlreadyBeenThrownOnce = false;
+Ext.Ajax.request = function(config) {
+    var dispatcher = BanchaSpecHelper.SampleData.remoteApiDefinition.url,
+        to;
+    if(config.url.indexOf(dispatcher+'?setup-check=true') !== -1) {
+        // this is a check of the bancha dispatcher, everything ok
+        return {
+            status: 200,
+            responseText: '{"BanchaDispatcherIsSetup":true}'
+        };
+    } else if(!Ext.Ajax.requestExceptionHasAlreadyBeenThrownOnce) {
+        if(config.url.indexOf(dispatcher) === -1) {
+            to = config.url;
+        } else {
+            to = 'CakePHP: '+config.jsonData.action+'.'+config.jsonData.method+'('+Ext.encode(config.jsonData.data).slice(1,-1)+')';
+        }
+
+        Ext.Ajax.requestExceptionHasAlreadyBeenThrownOnce = true;
+        throw new Error('Unexpected usage of Ext.Ajax.request to '+to);
+    }
+};
+
 beforeEach(function() {
     this.addMatchers({
         toEqualConfig: function(expected) {
@@ -147,20 +171,6 @@ beforeEach(function() {
             return true;
         }
     });
-
-    // Bancha tries to connect to the api in debug mode, mimik that is works
-    // but there should never be any other Ajax requests
-    Ext.Ajax.request = function(config) {
-        if(config.url.search(BanchaSpecHelper.SampleData.remoteApiDefinition) !== -1) {
-            // this is a check of the bancha dispatcher, everything ok
-            return {
-                status: 200,
-                responseText: '{"BanchaDispatcherIsSetup":true}'
-            };
-        } else {
-            throw new Error('Unexpected usage of Ext.Ajax.request');
-        }
-    };
 });
 
 //eof

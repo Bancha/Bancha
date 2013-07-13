@@ -164,9 +164,27 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // make sure it is not yet
             expect(Bancha.initialized).toBeFalsy();
 
+            // expect an Ajax request
+            var spy = spyOn(Ext.Ajax, 'request').andCallFake(function(config) {
+                var dispatcher = BanchaSpecHelper.SampleData.remoteApiDefinition.url;
+                if(config.url.indexOf(dispatcher+'?setup-check=true') !== -1) {
+                    // this is a check of the bancha dispatcher, everything ok
+                    return {
+                        status: 200,
+                        responseText: '{"BanchaDispatcherIsSetup":true}'
+                    };
+                }
+                // for the model metadata loading
+                return {
+                    status: 200,
+                    responseText: ''
+                };
+            });
+
             // trigger initialization
             Bancha.loadModelMetaData(['LoadMetaDataInitializationTest'],Ext.emptyFn,{},true); // use sync for ajax
 
+            // check that it's initialized
             expect(Bancha.initialized).toBeTruthy();
         });
 
