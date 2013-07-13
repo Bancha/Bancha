@@ -23,7 +23,9 @@ describe("Bancha.data.Model tests", function() {
     beforeEach(h.reset);
 
     it("should apply the cake schema to all Bancha models defined in the Bancha.model namespace", function() {
-        
+        // prepare
+        var ns = Bancha.modelNamespace;
+
         // expect the apply function to be called
         var spy = spyOn(Ext.ClassManager.get('Bancha.data.Model'), 'applyCakeSchema');
 
@@ -38,6 +40,9 @@ describe("Bancha.data.Model tests", function() {
         Bancha.modelNamespace = 'Lala.model';
         Ext.define('Lala.model.ModelTestCreateUser3', {extend: 'Bancha.data.Model'});
         expect(spy.callCount).toEqual(3);
+
+        // tear down
+        Bancha.modelNamespace = ns;
     });
 
 
