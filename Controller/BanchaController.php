@@ -101,7 +101,7 @@ class BanchaController extends BanchaAppController {
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
-								$this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
+								$this->getMetadata($banchaApi, $remotableModels, $metadataFilter),
 								array('_ServerError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
@@ -119,18 +119,19 @@ class BanchaController extends BanchaAppController {
 		// For a detailed description see https://developers.google.com/closure/compiler/docs/limitations
 		// under "Using string names to refer to object properties"
 		if($schema == false) {
-			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
 			$result = sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api));
 		} else {
+			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
 			$result = sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api));
 		}
 
-		if($schema == 'packaged') {
+		if($schema === 'packaged') {
 			// add the class definitions
-			foreach ($remotableModelsActions as $modelName) {
+			$result .= "\n\n";
+			foreach($banchaApi->filterRemotableModels($remotableModels, $metadataFilter) as $modelName) {
 				$result .= sprintf(
 					"Ext.define('Bancha.model.%s', {\n".
-					"	extend: 'Bancha.data.Model'\n".
+					"    extend: 'Bancha.data.Model'\n".
 					"});\n", $modelName);
 			}
 		}
