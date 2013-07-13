@@ -58,8 +58,8 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {name:'height', type:'int'}
                 ],
                 associations: [
-                    {type:'hasMany', model:'Bancha.model.Post', name:'posts'}, // these models need to exist
-                    {type:'belongsTo', model:'Bancha.model.Country', name:'country'}
+                    {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
+                    {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
                 ],
                 validations: [
                     { type:"numberformat", field:"id", precision:0},
@@ -118,6 +118,16 @@ BanchaSpecHelper.reset = function() {
     Bancha.initialized = false;
 };
 
+// initializes the from User associated model once
+BanchaSpecHelper.initAssociatedModels = function() {
+    Ext.each(BanchaSpecHelper.SampleData.remoteApiDefinition.metadata.User.associations, function(association) {
+        if(!Ext.ClassManager.get(association.model)) {
+            Ext.define(association.model, {
+                extend: 'Ext.data.Model'
+            });
+        }
+    });
+};
 
 beforeEach(function() {
     this.addMatchers({

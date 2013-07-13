@@ -60,18 +60,46 @@ Ext.define('Bancha.data.Model', {
      *    proxy this way.
      */
     onClassExtended: function(cls, data, hooks) {
-        if(Ext.versions.touch) {
-            return; // // nothing to do for Sencha Touch, see Ext.ClassManager.registerPostprocessor below
+
+        // only apply this for ExtJS, see Ext.ClassManager.registerPostprocessor below for Sencha Touch
+        if(Ext.versions.extjs) {
+
+            // Support for ExtJS 4.0.7
+            var me = this;
+            if(typeof me.applyCakeSchema !== 'function') {
+                // In Ext JS 4.1+ the scope is the Bancha.data.Model,
+                // In Ext JS 4.0 the scope is the newly created class, fix this
+                me = Ext.ClassManager.get('Bancha.data.Model');
+            }
+
+            me.applyCakeSchema(cls, data);
         }
 
-        // Support for ExtJS 4.0.7
-        var me = this;
-        if(typeof me.applyCakeSchema !== 'function') {
-            me = Ext.ClassManager.get('Bancha.data.Model');
-        }
-
-        me.applyCakeSchema(cls, data);
+        // Ext JS internally maps onClassExtended to $onExtended so it's only aplied to the immediate
+        // subclasses, but not child-child classes.
+        // If we wouldn't call it here the Ext.data.Model#onClassExtended would only be applied to
+        // Bancha.data.Model, but not to it's childs. With the sequence we get the expeceted behavior.
+        // this is basically similar to a this.callOverriden() on overrides.
+        Ext.data.Model.prototype.$onExtended.apply(this, arguments);
     },
+
+    /**
+     * Support for Ext JS 4.0
+     * The getFields method was introduced in Ext JS 4.1 and has a different
+     * implementation in Sencha Touch, but the same effect. Therefore to cleanly
+     * set fields in all version we need to add getFields support to Ext JS 4.0
+     * 
+     * @return {Ext.data.Field[]} The defined Fields for this Model.
+     */
+    getFields: function() {
+        // If there exists an implementation on Ext.data.Model, use it
+        if(typeof this.superclass.superclass.getFields === 'function') {
+            return this.superclass.superclass.getFields.apply(this, arguments);
+        }
+        // legacy support for Ext JS 4.0
+        return this.fields.items;
+    },
+
     statics: {
         /**
          * @private
@@ -134,16 +162,9 @@ Ext.define('Bancha.data.Model', {
             config = Bancha.getModelMetaData(modelName);
 
             // Support for ExtJS 4.0.7
-            if(typeof modelCls.setFields !== 'function') {
+            if(typeof modelCls.setFields2 !== 'function') {
                 // setFields only exists in ExtJS 4.1+
-                fields = new Ext.util.MixedCollection(false, function(field) {
-                    return field.name;
-                });
-                len = config.fields.length;
-                for (; i < len; i++) {
-                    fields.add(new Ext.data.Field(fields[i]));
-                }
-                extJsOnClassExtendedData.fields = fields;
+                extJsOnClassExtendedData.fields = config.fields;
             } else {
                 // default case for ExtJS and Sencha Touch
                 modelCls.setFields(config.fields);
