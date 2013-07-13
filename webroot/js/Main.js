@@ -1133,9 +1133,11 @@ Ext.define('Bancha', {
     },
     /**
      * @private
+     * This function simply defines a Bancha model.  
+     * 
      * Internal usage, because from getLoadedModel should not trigger deprecated warnings.
      *
-     * @inheritDoc #createModel
+     * @inheritdoc #createModel
      */
     _createModel: function(modelName, modelConfig) {
         // create the model
