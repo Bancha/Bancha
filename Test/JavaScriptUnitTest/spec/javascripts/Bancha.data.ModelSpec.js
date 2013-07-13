@@ -60,11 +60,52 @@ describe("Bancha.data.Model tests", function() {
         expect(model).toBeModelClass('Bancha.model.ModelTestSchema1');
 
         // test that a correct proxy is set
-        expect(model.getProxy()).property('type').toEqual('direct');
-        expect(model.getProxy()).property('reader.type').toEqual('json');
-        expect(model.getProxy()).property('writer.type').toEqual('jsondate');
+        if(Ext.versions.extjs) {
+            // for Ext JS
+            expect(model.getProxy()).property('type').toEqual('direct');
+            expect(model.getProxy()).property('reader.type').toEqual('json');
+            expect(model.getProxy()).property('writer.type').toEqual('jsondate');
+        } else {
+            // For Sencha Touch
+            expect(model.getProxy().alias).toEqual(['proxy.direct']);
+            expect(model.getProxy().getReader().alias).toEqual(['reader.json']);
+            expect(model.getProxy().getWriter().alias).toEqual(['writer.jsondate']);
+        }
     });
 
+    Ext.define('Ext.data.override.Model', {
+        override: 'Ext.data.Model',
+        /**
+         * #getFields behaves very differently on different versions, see below.
+         * getFieldNames provides a way to get all field names in a normalized manner.
+         * 
+         * Support for Ext JS 4.0
+         * #getFields does not exist.
+         * 
+         * Support for Ext JS 4.1+
+         * In Ext JS this method is only available as static method, and returns an array
+         * 
+         * Support for Sench Touch
+         * Returns a collection of fields, where getName() must be executed to get the name.
+         * 
+         * @return {String[]} The defined field names for this Model.
+         */
+        getFieldNames: function() {
+            var result = [];
+            if(Ext.versions.touch) {
+                this.getFields().each(function(field) {
+                    result.push(field.getName());
+                });
+                return result;
+            }
+            
+            // for Ext JS, all versions
+            Ext.each(this.fields.items, function(field) {
+                result.push(field.name);
+            });
+            return result;
+        }
+    });
 
     it("should behave like a normal model, check normal model behavior", function() {
         // Since the behavior of Ext JS model changes between release this one jsut makes sure
@@ -73,36 +114,85 @@ describe("Bancha.data.Model tests", function() {
         // But no Bancha code
 
         // create a model with all the configs the Bancha model should have as well
-        Ext.define('Bancha.model.ModelTestSchema_PreTest', Ext.applyIf({
-            extend: 'Ext.data.Model',
-            idProperty: 'login', // <-- for testing the idProperty value
-            validations: [
-                { type:"numberformat", field:"id", precision:0},
-                { type:"presence",     field:"name"},
-                { type:"length",       field:'name', min: 2},
-                { type:"length",       field:"name", max:64},
-                { type:"format",       field:"login", matcher:/^[a-zA-Z0-9_]+$/} // <-- Bancha validation rules use matcher:'banchaAlphanum'
-            ],
-            getFields: function() { // legacy support for Ext JS 4.0, should be added by Bancha.data.Model as well
-                return this.fields.items;
-            }
-        }, BanchaSpecHelper.SampleData.remoteApiDefinition.metadata.User));
+        if(Ext.versions.extjs) {
+
+            Ext.define('Bancha.test.model.ModelTestSchema_PreTest', {
+                extend: 'Ext.data.Model',
+                idProperty: 'login', // <-- for testing the idProperty value
+                fields: [
+                    {name:'id', type:'int'},
+                    {name:'name', type:'string'},
+                    {name:'login', type:'string'},
+                    {name:'created', type:'date'},
+                    {name:'email', type:'string'},
+                    {name:'avatar', type:'string'},
+                    {name:'weight', type:'float'},
+                    {name:'height', type:'int'},
+                    {name:'country_id', type:'int'}
+                ],
+                associations: [
+                    {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
+                    {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
+                ],
+                validations: [
+                    { type:"numberformat", field:"id", precision:0},
+                    { type:"presence",     field:"name"},
+                    { type:"length",       field:'name', min: 2},
+                    { type:"length",       field:"name", max:64},
+                    { type:"format",       field:"login", matcher:/^[a-zA-Z0-9_]+$/} // <-- Bancha validation rules use matcher:'banchaAlphanum'
+                ]
+            }); //eo define
+        } else {
+
+            // For Sencha Touch
+            Ext.define('Bancha.test.model.ModelTestSchema_PreTest', {
+                extend: 'Ext.data.Model',
+                config: {
+                    idProperty: 'login', // <-- for testing the idProperty value
+                    fields: [
+                        {name:'id', type:'int'},
+                        {name:'name', type:'string'},
+                        {name:'login', type:'string'},
+                        {name:'created', type:'date'},
+                        {name:'email', type:'string'},
+                        {name:'avatar', type:'string'},
+                        {name:'weight', type:'float'},
+                        {name:'height', type:'int'},
+                        {name:'country_id', type:'int'}
+                    ],
+                    associations: [
+                        {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
+                        {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
+                    ],
+                    validations: [
+                        { type:"numberformat", field:"id", precision:0},
+                        { type:"presence",     field:"name"},
+                        { type:"length",       field:'name', min: 2},
+                        { type:"length",       field:"name", max:64},
+                        { type:"format",       field:"login", matcher:/^[a-zA-Z0-9_]+$/} // <-- Bancha validation rules use matcher:'banchaAlphanum'
+                    ]
+                }
+            }); //eo define
+        }
 
         // Create a test record
-        var rec = Ext.create('Bancha.model.ModelTestSchema_PreTest', {
+        var rec = Ext.create('Bancha.test.model.ModelTestSchema_PreTest', {
             id: 23,
             login: 'bad-sign',
             name: 'Micky Mouse'
         });
 
+        // Ext JS returns a fields array, Sencha Touch a collection
+
+
         // expect a getFields method and the value should be an array of fields
-        expect(rec.getFields().length).toEqual(8);
-        expect(rec.getFields()).property('0.name').toEqual('id');
-        expect(rec.getFields()).property('1.name').toEqual('name');
-        expect(rec.getFields()).property('2.name').toEqual('login');
+        expect(rec.getFieldNames().length).toEqual(9);
+        expect(rec.getFieldNames()).property('0').toEqual('id');
+        expect(rec.getFieldNames()).property('1').toEqual('name');
+        expect(rec.getFieldNames()).property('2').toEqual('login');
 
         // expect the idProperty to be set on the model prototype
-        expect(rec.idProperty).toEqual('login');
+        expect(rec.idProperty || rec.getIdProperty()).toEqual('login');
 
         // expect the validation rules to be applied using a validate method
         expect(rec.validate().getCount()).toEqual(1);
@@ -118,10 +208,10 @@ describe("Bancha.data.Model tests", function() {
         expect(rec.associations.getCount()).toEqual(2);
 
         // expect that associations create a store of related data
-        expect(rec.posts().isStore).toEqual(true);
-        expect(rec.posts().model.getName()).toEqual('Bancha.test.model.Post');
+        var posts = rec.posts();
+        expect(posts.isStore).toEqual(true);
+        expect((posts.model || posts.getModel()).getName()).toEqual('Bancha.test.model.Post');
     });
-
 
     it("should set the fields and idProperty on Bancha models (integrative test)", function() {
         // setup model metadata
@@ -143,13 +233,13 @@ describe("Bancha.data.Model tests", function() {
         });
 
         // test that the fields are set correctly
-        expect(rec.getFields().length).toEqual(8);
-        expect(rec.getFields()).property('0.name').toEqual('id');
-        expect(rec.getFields()).property('1.name').toEqual('name');
-        expect(rec.getFields()).property('2.name').toEqual('login');
+        expect(rec.getFieldNames().length).toEqual(9);
+        expect(rec.getFieldNames()).property('0').toEqual('id');
+        expect(rec.getFieldNames()).property('1').toEqual('name');
+        expect(rec.getFieldNames()).property('2').toEqual('login');
 
         // test that the id property is set correctly
-        expect(rec.idProperty).toEqual('login');
+        expect(rec.idProperty || rec.getIdProperty()).toEqual('login');
     });
 
 
@@ -185,7 +275,6 @@ describe("Bancha.data.Model tests", function() {
         expect(rec.validate().getCount()).toEqual(0);
     });
 
-
     it("should set the associations on Bancha models (integrative test)", function() {
         // setup model metadata
         h.init('ModelTestSchema4');
@@ -210,8 +299,9 @@ describe("Bancha.data.Model tests", function() {
         expect(rec.associations.getCount()).toEqual(2);
 
         // expect that associations create a store of related data
-        expect(rec.posts().isStore).toEqual(true);
-        expect(rec.posts().model.getName()).toEqual('Bancha.test.model.Post');
+        var posts = rec.posts();
+        expect(posts.isStore).toEqual(true);
+        expect((posts.model || posts.getModel()).getName()).toEqual('Bancha.test.model.Post');
     });
 
 
@@ -274,7 +364,6 @@ describe("Bancha.data.Model tests", function() {
             mockProxy.verify();
         }
     });
-
 });
 
 //eof

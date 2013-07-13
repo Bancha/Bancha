@@ -87,23 +87,6 @@ Ext.define('Bancha.data.Model', {
         }
     },
 
-    /**
-     * Support for Ext JS 4.0
-     * The getFields method was introduced in Ext JS 4.1 and has a different
-     * implementation in Sencha Touch, but the same effect. Therefore to cleanly
-     * set fields in all version we need to add getFields support to Ext JS 4.0
-     * 
-     * @return {Ext.data.Field[]} The defined Fields for this Model.
-     */
-    getFields: function() {
-        // If there exists an implementation on Ext.data.Model, use it
-        if(typeof this.superclass.superclass.getFields === 'function') {
-            return this.superclass.superclass.getFields.apply(this, arguments);
-        }
-        // legacy support for Ext JS 4.0
-        return this.fields.items;
-    },
-
     statics: {
         /**
          * @private

@@ -55,7 +55,8 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {name:'email', type:'string'},
                     {name:'avatar', type:'string'},
                     {name:'weight', type:'float'},
-                    {name:'height', type:'int'}
+                    {name:'height', type:'int'},
+                    {name:'country_id', type:'int'}
                 ],
                 associations: [
                     {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
