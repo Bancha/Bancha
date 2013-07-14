@@ -183,10 +183,10 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertEquals(true, $api->singleton);
 
 		// check that no metadata is send
-		$this->assertTrue(isset($api->metadata->Article));
-		$this->assertTrue(isset($api->metadata->ArticlesTag));
-		$this->assertTrue(isset($api->metadata->Tag));
-		$this->assertTrue(isset($api->metadata->User));
+		$this->assertFalse(isset($api->metadata->Article));
+		$this->assertFalse(isset($api->metadata->ArticlesTag));
+		$this->assertFalse(isset($api->metadata->Tag));
+		$this->assertFalse(isset($api->metadata->User));
 		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
