@@ -343,7 +343,7 @@ describe("Bancha.data.Model tests", function() {
         // Test 2:
         // create a test record
         rec = Ext.create('Bancha.model.ModelTestSchema4', {
-            id: 23, // record already exists
+            id: 22, // record already exists (use a different id, since Sencha Touch 2.0.1.1 has an bug in useCache:false)
             login: 'mickymouse',
             name: 'Micky Mouse'
         });
