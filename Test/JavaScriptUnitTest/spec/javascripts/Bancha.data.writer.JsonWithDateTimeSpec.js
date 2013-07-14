@@ -24,6 +24,10 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
     
     it("The writer correctly formates dates in various forms accordingly to their dateFormat", function() {
         
+        // debugging
+        console.info(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'));
+        console.info(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s').getTime());
+        console.info(Ext.Date.format(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'), 'Y-m-d H:i:s'));
         // This test fails in PhantomJS, because the date, datetime and timestamp strings
         // are set to undefined in PhantomJS
         var isPhantomJS = (typeof phantom !== 'undefined' || typeof _phantom !== 'undefined');
