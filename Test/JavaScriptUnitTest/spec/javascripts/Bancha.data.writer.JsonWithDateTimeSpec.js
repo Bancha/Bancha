@@ -83,6 +83,28 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         // create a writer for testing
         var writer = Ext.create('Bancha.data.writer.JsonWithDateTime');
         console.info('Test 1:');
+        
+        var expect2 = function(value) {
+            return {
+                property: function(property) {
+                    return expect2(value.property);
+                },
+                toEqual: function(expected) {
+                    if(value === expected) {
+                        console.info('Seems fine: '+value+expected);
+                    } else {
+                        console.info('!!!ERROR!!!: '+value+expected);
+                    }
+                },
+                toBeNull: function() {
+                    if(value === null) {
+                        console.info('Seems fine: '+value+expected);
+                    } else {
+                        console.info('!!!ERROR!!!: '+value+expected);
+                    }
+                }
+            }
+        }
         // sample record
         var record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
             id       : 1,
@@ -94,27 +116,23 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
             nullts   : null,
             nulltime : null
         });
-console.info('a'+writer.getRecordData(record).data);
         // test
-        expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
-console.info('b'+writer.getRecordData(record).datetime);
-        expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
+        expect2(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
+        expect2(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
         // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
         // But this doesn't matter, since our backend can handle both cases. So both cases are valid
-console.info('d'+writer.getRecordData(record).timestamp);
         if(typeof writer.getRecordData(record).timestamp === 'number') {
-            expect(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
-            expect(writer.getRecordData(record)).property('time').toEqual(1373584360035);
+            expect2(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
+            expect2(writer.getRecordData(record)).property('time').toEqual(1373584360035);
         } else {
-            expect(writer.getRecordData(record)).property('timestamp').toEqual('1373584360');
-            expect(writer.getRecordData(record)).property('time').toEqual('1373584360035');
+            expect2(writer.getRecordData(record)).property('timestamp').toEqual('1373584360');
+            expect2(writer.getRecordData(record)).property('time').toEqual('1373584360035');
         }
-console.info('e'+writer.getRecordData(record).nulldate);
-        expect(writer.getRecordData(record).nulldate).toBeNull();
-        expect(writer.getRecordData(record).nullts).toBeNull();
-        expect(writer.getRecordData(record).nulltime).toBeNull();
-        expect(writer.getRecordData(record).undefineddate).toBeNull();
-console.info('f'+writer.getRecordData(record).undefineddate);
+        expect2(writer.getRecordData(record).nulldate).toBeNull();
+        expect2(writer.getRecordData(record).nullts).toBeNull();
+        expect2(writer.getRecordData(record).nulltime).toBeNull();
+        expect2(writer.getRecordData(record).undefineddate).toBeNull();
+
 console.info('Test 2:');
         // sample record
         record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
@@ -131,28 +149,21 @@ console.info('Test 2:');
         // test
 console.info(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'));
 console.info(Ext.encode(record));
-console.info('a'+writer.getRecordData(record).data);
-        expect(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
-console.info('b'+writer.getRecordData(record).datetime);
-        expect(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
+        expect2(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
+        expect2(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
         // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
         // But this doesn't matter, since our backend can handle both cases. So both cases are valid
-console.info('d'+writer.getRecordData(record).timestamp);
         if(typeof writer.getRecordData(record).timestamp === 'number') {
-            expect(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);
-            expect(writer.getRecordData(record)).property('time').toEqual(1373585326000);
+            expect2(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);
+            expect2(writer.getRecordData(record)).property('time').toEqual(1373585326000);
         } else {
-            expect(writer.getRecordData(record)).property('timestamp').toEqual('1373585326');
-            expect(writer.getRecordData(record)).property('time').toEqual('1373585326000');
+            expect2(writer.getRecordData(record)).property('timestamp').toEqual('1373585326');
+            expect2(writer.getRecordData(record)).property('time').toEqual('1373585326000');
         }
-console.info('e'+writer.getRecordData(record).nulldate);
-        expect(writer.getRecordData(record).nulldate).toBeNull();
-console.info('f'+writer.getRecordData(record).nullts);
-        expect(writer.getRecordData(record).nullts).toBeNull();
-console.info('g'+writer.getRecordData(record).nulltime);
-        expect(writer.getRecordData(record).nulltime).toBeNull();
-console.info('h'+writer.getRecordData(record).undefineddate);
-        expect(writer.getRecordData(record).undefineddate).toBeNull();
+        expect2(writer.getRecordData(record).nulldate).toBeNull();
+        expect2(writer.getRecordData(record).nullts).toBeNull();
+        expect2(writer.getRecordData(record).nulltime).toBeNull();
+        expect2(writer.getRecordData(record).undefineddate).toBeNull();
     });
 
 }); //eo describe datetimewriter
