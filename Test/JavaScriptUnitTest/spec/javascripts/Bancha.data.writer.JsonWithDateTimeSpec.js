@@ -116,10 +116,10 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         // sample record
         record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
             id       : 1,
-            date     : new Date('2013-07-12 01:28:46'),
-            datetime : new Date('2013-07-12 01:28:46'),
-            timestamp: new Date('2013-07-12 01:28:46'),
-            time     : new Date('2013-07-12 01:28:46'),
+            date     : Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'),
+            datetime : Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'),
+            timestamp: Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'),
+            time     : Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'),
             nulldate : null,
             nullts   : null,
             nulltime : null
