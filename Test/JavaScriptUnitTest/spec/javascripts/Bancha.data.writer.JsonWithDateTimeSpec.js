@@ -102,10 +102,6 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
             nulltime : null
         });
 
-        console.info('MyWriter: '+Ext.encode(writer.getRecordData(record)));
-        // create a writer for testing
-        var writer = Ext.create('Ext.data.writer.Json');
-        console.info('Ext: '+Ext.encode(writer.getRecordData(record)));
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
@@ -136,6 +132,10 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
             nulltime : null
         });
 
+        console.info('MyWriter: '+Ext.encode(writer.getRecordData(record)));
+        // create a writer for testing
+        var writer = Ext.create('Ext.data.writer.Json');
+        console.info('Ext: '+Ext.encode(writer.getRecordData(record)));
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
