@@ -23,7 +23,7 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
     beforeEach(h.reset);
     
     it("The writer correctly formates dates in various forms accordingly to their dateFormat", function() {
-
+    
         // This test fails in PhantomJS, because the date, datetime and timestamp strings
         // are set to undefined in PhantomJS
         var isPhantomJS = (typeof phantom !== 'undefined' || typeof _phantom !== 'undefined');
