@@ -2,9 +2,6 @@ language: php
 
 php:
   - 5.2
-  - 5.3
-  - 5.4
-  - 5.5
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
@@ -131,7 +128,8 @@ before_script:
   - cd ../../../../../../
 
   # get pahntomjs for jasmine
-  - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
+  - "wget https://raw.github.com/rolandschuetz/OpenPhantomScripts/master/phantom-jasmine.js"
+  #- "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
   - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake  ; fi # make sure to execute it
