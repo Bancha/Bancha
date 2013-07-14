@@ -94,15 +94,14 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
             nullts   : null,
             nulltime : null
         });
-console.info('a');
+console.info('a'+writer.getRecordData(record).data);
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
-console.info('b');
+console.info('b'+writer.getRecordData(record).datetime);
         expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
-console.info('c');
         // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
         // But this doesn't matter, since our backend can handle both cases. So both cases are valid
-console.info('d');
+console.info('d'+writer.getRecordData(record).timestamp);
         if(typeof writer.getRecordData(record).timestamp === 'number') {
             expect(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
             expect(writer.getRecordData(record)).property('time').toEqual(1373584360035);
@@ -110,12 +109,12 @@ console.info('d');
             expect(writer.getRecordData(record)).property('timestamp').toEqual('1373584360');
             expect(writer.getRecordData(record)).property('time').toEqual('1373584360035');
         }
-console.info('e');
+console.info('e'+writer.getRecordData(record).nulldate);
         expect(writer.getRecordData(record).nulldate).toBeNull();
         expect(writer.getRecordData(record).nullts).toBeNull();
         expect(writer.getRecordData(record).nulltime).toBeNull();
         expect(writer.getRecordData(record).undefineddate).toBeNull();
-console.info('f');
+console.info('f'+writer.getRecordData(record).undefineddate);
 console.info('Test 2:');
         // sample record
         record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
@@ -132,14 +131,13 @@ console.info('Test 2:');
         // test
 console.info(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'));
 console.info(Ext.encode(record));
-console.info('a');
+console.info('a'+writer.getRecordData(record).data);
         expect(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
-console.info('b');
+console.info('b'+writer.getRecordData(record).datetime);
         expect(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
-console.info('c');
         // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
         // But this doesn't matter, since our backend can handle both cases. So both cases are valid
-console.info('d');
+console.info('d'+writer.getRecordData(record).timestamp);
         if(typeof writer.getRecordData(record).timestamp === 'number') {
             expect(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);
             expect(writer.getRecordData(record)).property('time').toEqual(1373585326000);
@@ -147,15 +145,14 @@ console.info('d');
             expect(writer.getRecordData(record)).property('timestamp').toEqual('1373585326');
             expect(writer.getRecordData(record)).property('time').toEqual('1373585326000');
         }
-console.info('e');
+console.info('e'+writer.getRecordData(record).nulldate);
         expect(writer.getRecordData(record).nulldate).toBeNull();
-console.info('f');
+console.info('f'+writer.getRecordData(record).nullts);
         expect(writer.getRecordData(record).nullts).toBeNull();
-console.info('g');
+console.info('g'+writer.getRecordData(record).nulltime);
         expect(writer.getRecordData(record).nulltime).toBeNull();
-console.info('h');
+console.info('h'+writer.getRecordData(record).undefineddate);
         expect(writer.getRecordData(record).undefineddate).toBeNull();
-console.info('i');
     });
 
 }); //eo describe datetimewriter
