@@ -23,15 +23,11 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
     beforeEach(h.reset);
     
     it("The writer correctly formates dates in various forms accordingly to their dateFormat", function() {
-        
-        // debugging
-        console.info(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'));
-        console.info(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s').getTime());
-        console.info(Ext.Date.format(Ext.Date.parse('2013-07-12 01:28:46', 'Y-m-d H:i:s'), 'Y-m-d H:i:s'));
+
         // This test fails in PhantomJS, because the date, datetime and timestamp strings
         // are set to undefined in PhantomJS
         var isPhantomJS = (typeof phantom !== 'undefined' || typeof _phantom !== 'undefined');
-        if(isPhantomJS) {
+        if(!isPhantomJS) {
             return; // This test works in the Browser, but fails using phantomjs test runner
         }
         
@@ -106,6 +102,10 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
             nulltime : null
         });
 
+        console.info('MyWriter: '+Ext.encode(writer.getRecordData(record)));
+        // create a writer for testing
+        var writer = Ext.create('Ext.data.writer.Json');
+        console.info('Ext: '+Ext.encode(writer.getRecordData(record)));
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
