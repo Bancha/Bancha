@@ -55,11 +55,12 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                     {name:'email', type:'string'},
                     {name:'avatar', type:'string'},
                     {name:'weight', type:'float'},
-                    {name:'height', type:'int'}
+                    {name:'height', type:'int'},
+                    {name:'country_id', type:'int'}
                 ],
                 associations: [
-                    {type:'hasMany', model:'Bancha.model.Post', name:'posts'}, // these models need to exist
-                    {type:'belongsTo', model:'Bancha.model.Country', name:'country'}
+                    {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
+                    {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
                 ],
                 validations: [
                     { type:"numberformat", field:"id", precision:0},
@@ -118,6 +119,40 @@ BanchaSpecHelper.reset = function() {
     Bancha.initialized = false;
 };
 
+// initializes the from User associated model once
+BanchaSpecHelper.initAssociatedModels = function() {
+    Ext.each(BanchaSpecHelper.SampleData.remoteApiDefinition.metadata.User.associations, function(association) {
+        if(!Ext.ClassManager.get(association.model)) {
+            Ext.define(association.model, {
+                extend: 'Ext.data.Model'
+            });
+        }
+    });
+};
+
+// Bancha tries to connect to the api in debug mode, mimik that is works
+// but there should never be any other Ajax requests
+Ext.Ajax.requestExceptionHasAlreadyBeenThrownOnce = false;
+Ext.Ajax.request = function(config) {
+    var dispatcher = BanchaSpecHelper.SampleData.remoteApiDefinition.url,
+        to;
+    if(config.url.indexOf(dispatcher+'?setup-check=true') !== -1) {
+        // this is a check of the bancha dispatcher, everything ok
+        return {
+            status: 200,
+            responseText: '{"BanchaDispatcherIsSetup":true}'
+        };
+    } else if(!Ext.Ajax.requestExceptionHasAlreadyBeenThrownOnce) {
+        if(config.url.indexOf(dispatcher) === -1) {
+            to = config.url;
+        } else {
+            to = 'CakePHP: '+config.jsonData.action+'.'+config.jsonData.method+'('+Ext.encode(config.jsonData.data).slice(1,-1)+')';
+        }
+
+        Ext.Ajax.requestExceptionHasAlreadyBeenThrownOnce = true;
+        throw new Error('Unexpected usage of Ext.Ajax.request to '+to);
+    }
+};
 
 beforeEach(function() {
     this.addMatchers({
@@ -137,20 +172,6 @@ beforeEach(function() {
             return true;
         }
     });
-
-    // Bancha tries to connect to the api in debug mode, mimik that is works
-    // but there should never be any other Ajax requests
-    Ext.Ajax.request = function(config) {
-        if(config.url.search(BanchaSpecHelper.SampleData.remoteApiDefinition) !== -1) {
-            // this is a check of the bancha dispatcher, everything ok
-            return {
-                status: 200,
-                responseText: '{"BanchaDispatcherIsSetup":true}'
-            };
-        } else {
-            throw new Error('Unexpected usage of Ext.Ajax.request');
-        }
-    };
 });
 
 //eof

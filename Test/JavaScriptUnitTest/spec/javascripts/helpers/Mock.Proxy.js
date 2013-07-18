@@ -17,6 +17,14 @@
 /*global Ext, Mock */
 
 
+// Replacing proxies makes problems, it sure why
+// For more detaIls see http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy&p=981245#post981245
+// This is a quick fix
+Ext.define('Ext.data.proxy.override.Direct', {
+    override: 'Ext.data.proxy.Direct',
+    destroy: Ext.emptyFn
+});
+
 /**
  * Mock.Proxy extends the Mock object and provides 
  * an easier interface for ExtJS testing
@@ -26,7 +34,20 @@ Mock.Proxy = (function() {
     // extend Mock
     var proxyPrototype = new Mock();
     
-    
+    // Sencha Touch checks if this is already a class with the property
+    // See http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
+    proxyPrototype.isInstance = true;
+
+    // setModel is always called when creating 
+    // an Proxy from model/store, totally unimportant for us
+    proxyPrototype.setModel = function(model) {
+        // make sure that Sencha Touch does not use Caching
+        if(model.setUseCache) { model.setUseCache(false); }
+    };
+
+    // provide a destroy function if the mock is replace by another proxy
+    proxyPrototype.destroy = Ext.emptyFn;
+
     // add an expectRPC method to the proxy
     proxyPrototype.expectRPC = function(method, /*Optional*/firstArg) {
         // expect ext direct call
@@ -58,12 +79,7 @@ Mock.Proxy = (function() {
     
     // constructor
     return function() {
-        var proxy = Object.create(proxyPrototype);
-        
-        // setModel is always called when creating 
-        // an Proxy from model/store, totally unimportant for us
-        proxy.setModel = function() {};
-        return proxy;
+        return Object.create(proxyPrototype);
     };
 }());
 

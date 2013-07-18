@@ -43,15 +43,15 @@ class BanchaController extends BanchaAppController {
 	 * @param string $metadataFilter Model metadata that should be exposed through the Bancha API. Either 'all' or '[all]'
 	 *                               to get the metadata for all models or a comma separated list of models like 
 	 *                               '[User,Article]'.
-	 * @param string $asClass        If you want to package your whole app using Sencha CMD defining an extra runtime inclusion
-	 *                               can be hard since the Sencha library is not yet loaded when you include external dependencies.
-	 *                               Also you have to load multiple javascript files and can not automatically saving the BanchaAPI
-	 *                               on the client though the generated manifest file.
-	 *                               To solve all of these issues you can include a generated javascript file in your packaging process.
-	 *                               To make this happen include the API as a class.
+	 * @param string $schema         Possible Values: false (default), 'development', 'packaged'
+	 *                               If set to false, the default Ext.Direct definition will be output.
+	 *                               In development we use the Ext.Loader for loading dependencies including the Remote API. In that
+	 *                               case (/bancha-api-class.js) $schema will be set to 'development'.
+	 *                               For packaging, Sencha CMD is used. Sencha CMD expects explicit define statements, these will be
+	 *                               added when $schema is set to 'packaged' (/bancha-api-packaged.js)
 	 * @return void
 	 */
-	public function index($metadataFilter='', $asClass=false) {
+	public function index($metadataFilter='', $schema=false) {
 		$metadataFilter = urldecode($metadataFilter);
 		$banchaApi = new BanchaApi();
 		
@@ -101,13 +101,15 @@ class BanchaController extends BanchaAppController {
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
-								$this->getMetadata($banchaApi,$remotableModels, $metadataFilter),
+								$this->getMetadata($banchaApi, $remotableModels, $metadataFilter),
 								array('_ServerError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
 		
 		// no extra view file needed, simply output
+		$result = '';
 
+		// Add the remote api
 		// Just to keep in mind:
 		// Using json_encode will quote the object keys. 
 		// If you are using Sencha CMD (which uses the Google Closure Compiler) this is
@@ -116,12 +118,25 @@ class BanchaController extends BanchaAppController {
 		// except we quote the key. 
 		// For a detailed description see https://developers.google.com/closure/compiler/docs/limitations
 		// under "Using string names to refer to object properties"
-		if($asClass) {
-			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
-			$this->response->body(sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+		if($schema == false) {
+			$result = sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api));
 		} else {
-			$this->response->body(sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api)));
+			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
+			$result = sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api));
 		}
+
+		if($schema === 'packaged') {
+			// add the class definitions
+			$result .= "\n\n";
+			foreach($banchaApi->filterRemotableModels($remotableModels, $metadataFilter) as $modelName) {
+				$result .= sprintf(
+					"Ext.define('Bancha.model.%s', {\n".
+					"    extend: 'Bancha.data.Model'\n".
+					"});\n", $modelName);
+			}
+		}
+		
+		$this->response->body($result);
 	}
 
 	/**
