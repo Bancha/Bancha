@@ -17,8 +17,17 @@
 // don't make "Banchas", keep it Bancha
 Inflector::rules('plural', array('/^Bancha$/i' => 'Bancha'));
 
+/**
+ * If this config is set to true all exceptions which are send via Bancha
+ * are written to the CakePHP error logs.
+ * 
+ * To change this please override it in your core.php
+ */
+Configure::write('Bancha.logExceptions',true);
+
 // config defaults
 Configure::write('Bancha.Api.AuthConfig',false);
 Configure::write('Bancha.Api.stubsNamespace','Bancha.RemoteStubs');
 Configure::write('Bancha.Api.remoteApiNamespace','Bancha.REMOTE_API');
+
 Configure::write('Bancha.allowMultiRecordRequests',false);

@@ -106,10 +106,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 	}
 
 /**
- * Tests the exception handling.
- *
+ * That that different exceptions are catched correctly and
+ * also the response contains the correct exceptions.
  */
-	public function testExceptions() {
+	public function testExceptionDebugMode_Exceptions() {
 		
 		Configure::write('debug', 2);
 
@@ -169,6 +169,80 @@ class BanchaExceptionsTest extends CakeTestCase {
 				$responses[2]->where, 'message');
 	}
 
+
+/**
+ * Tests the exception logging.
+ *
+ */
+	public function testExceptionLogging() {
+		
+		// this should log exceptions
+		Configure::write('debug', 0);
+		Configure::write('Bancha.logExceptions', true);
+
+		// delete the log file
+		if (file_exists(LOGS . 'error.log')) {
+			unlink(LOGS . 'error.log');
+		}
+
+		// Create some requests.
+		$rawPostData = json_encode(array(
+			array(
+				'action'		=> 'ThisControllerDoesNotExist',
+				'method'		=> 'index',
+				'tid'			=> 1,
+				'type'			=> 'rpc',
+				'data'			=> array('param1','param2'),
+			)
+		));
+
+		// Create dispatcher and dispatch requests.
+		$dispatcher = new BanchaDispatcher();
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+
+		// Expect a missing conroller exception in the result
+		// In Production mode the exact type is not send, only the Ext.Direct type
+		$this->assertEquals('exception', $responses[0]->type);
+
+		// Expect a missing conroller exception in the logs
+		$this->assertTrue(file_exists(LOGS . 'error.log'));
+		$result = file_get_contents(LOGS . 'error.log');
+		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: A Bancha request to '.
+							'ThisControllerDoesNotExists::index\(\'param1\', \'param2\'\)'. // signature
+							' resulted in the following MissingControllerException:/', $result);
+		unlink(LOGS . 'error.log');
+
+		// this should not log
+		Configure::write('Bancha.logExceptions', false);
+		Configure::write('debug', 2);
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+		
+		// Expect a missing conroller exception in the result
+		// In Production mode the exact type is not send, only the Ext.Direct type
+		$this->assertEquals('exception', $responses[0]->type);
+		$this->assertFalse(file_exists(LOGS . 'error.log'));
+		
+		
+		// In Debug Mode we want to see no error log
+		Configure::write('Bancha.logExceptions', true);
+		Configure::write('debug', 2);
+		$responses = json_decode($dispatcher->dispatch(
+			new BanchaRequestCollection($rawPostData), array('return' => true)
+		));
+
+		// Expect a missing conroller exception in the result
+		// In Production mode the exact type is not send, only the Ext.Direct type
+		$this->assertEquals('exception', $responses[0]->type);
+		$this->assertFalse(file_exists(LOGS . 'error.log'));
+		
+
+		// set debug level back to normal
+		Configure::write('debug', $this->standardDebugLevel);
+	}
 }
 
 /**

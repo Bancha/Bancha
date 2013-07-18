@@ -68,6 +68,7 @@ class BanchaDispatcher {
 						$request
 					);
 				} catch (Exception $e) {
+					$this->logException($request, $e);
 					$collection->addException($request['tid'], $e, $request);
 				} // try catch
 			} // if (!$skip_request)
@@ -123,18 +124,26 @@ class BanchaDispatcher {
 	 */
 	public function logException($request, $exception) {
 
+		if(!Configure::read('Bancha.logExceptions') || Configure::read('debug')==2) {
+			return; // don't log
+		}
+
 		// build a string representation of the invocaton signature
 		$signature = (!empty($request->params['plugin']) ? $request->params['plugin'].'.' : '').
 						$request->params['controller'].'::'.$request->params['action'] . '(';
 		foreach($request->params['pass'] as $pass) {
 			$signature .= var_export($pass,true) . ', ';
 		}
-		$signature = substr($signature, 0, strlen($signature)-2) . ')';
+		if(!empty($request->params['pass'])) {
+			// remove the trailing comma
+			$signature = substr($signature, 0, strlen($signature)-2);
+		}
+		$signature =  $signature . ')';
 
 		// log the error
 		$obj = new Object(); // just get an element to log the error
 		$obj->log(
-			'A Bancha request to '.$signature.' did result into the below shown Exception:'.
+			'A Bancha request to '.$signature.' resulted in the following '.get_class($exception).':'.
 			"\n".$exception."\n\n");
 	}
 }
