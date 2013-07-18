@@ -754,8 +754,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// otherwise send error
 			throw new BanchaException(
 				'There was nothing saved to be returned. Probably this occures because the data '.
-				'you send from ExtJS was malformed. Please use the Bancha.getModel(ModelName) '.
-				'function to create, load and save model records. If you really have to create '.
+				'you send from ExtJS was malformed. Please use the Bancha.model.ModelName '.
+				'model to create, load and save model records. If you really have to create '.
 				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
 				'(Sencha Touch) is set to "data".');
 		}
@@ -773,8 +773,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		if(isset($Model->data[$Model->name][0]) && is_array($Model->data[$Model->name][0])) {
 			throw new BanchaException(
 				'The data to be saved seems malformed. Probably this occures because you send '.
-				'from your own model or you one save invokation. Please use the Bancha.getModel(ModelName) '.
-				'function to create, load and save model records. If you really have to create '.
+				'from your own model or you one save invokation. Please use the Bancha.model.ModelName '.
+				'model to create, load and save model records. If you really have to create '.
 				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
 				'(Sencha Touch) is set to "data". <br /><br />'.
 				'Got following data to save: <br />'.print_r($Model->data,true));
@@ -804,7 +804,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					'You try to save a record, but Bancha is not able to find the data. Bancha could '.
 					'not find even one model field in the send data. Probably this occurs because you '.
 					'saved a record from your own model with a wrong configuration. Please use the '.
-					'Bancha.getModel(ModelName) function to create, load and save model records. If '.
+					'Bancha.model.ModelName model to create, load and save model records. If '.
 					'you really have to create your own models, make sure that the JsonWriter property '.
 					'"root" (ExtJS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />'.
 					'Got following data to save: <br />'.print_r($Model->data,true));
