@@ -305,39 +305,20 @@ Ext.define('Bancha', {
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
 
             // the remote api is not available, check if this is because of an error on the bancha-api.js or because it is not included
-            scripts = Ext.DomQuery.select('script');
-            Ext.each(scripts, function(script) {
-                if(script.src && (script.src.search(/bancha-api\.js/)!==-1 || script.src.search(/bancha-api\/models\/([A-Za-z]*)\.js/)!==-1)) {
-                    // the bancha-api seems to be included
-                    foundApi = true;
-                    apiPath = script.src;
-                }
-            });
+            Ext.syncRequire('Bancha.REMOTE_API');
 
-            if(!apiPath) {
-                // try in the root directory
-                apiPath = '/bancha-api.js';
+            if(Ext.isObject(this.objectFromPath(this.remoteApi)) && Ext.Logger && typeof Ext.Logger.warn==='function') {
+                Ext.Logger.warn([
+                    "[Bancha.init] Synchronously loading 'Bancha.REMOTE_API'; This is a Bug in Bancha, please ",
+                    "report this on https://github.com/Bancha/Bancha/issues. Thanks!"
+                ].join());
             }
 
             // load the api
             response = Ext.Ajax.request({
-                url: apiPath,
+                url: Ext.Loader.getPath('Bancha.REMOTE_API'),
                 async: false
             });
-
-            if(!foundApi) {
-                // user just forgot to include the api
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    msg: [
-                        '<b>Bancha Configuration Error:</b><br />',
-                        'Please include the Bancha API before using Bancha by adding into your html:<br /><br />',
-                        response.status===200 ? 
-                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;/bancha-api.js&quot;&gt;&lt;/script&gt;</i>' :
-                            '<i>&lt;script type=&quot;text/javascript&quot; src=&quot;path/to/your/webroot/bancha-api.js&quot;&gt;&lt;/script&gt;</i>'
-                    ].join('')
-                });
-            }
 
             if(response.status === 404) {
                 //the api is included, but there seems to be an error
