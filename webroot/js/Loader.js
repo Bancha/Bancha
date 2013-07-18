@@ -21,7 +21,7 @@
  * @private
  * @class Bancha.Loader
  *
- * The Sencha class loading is a beautiful concept and brings a enormous power to 
+ * The Sencha class loading is a beautiful concept and brings an enormous power to 
  * javascript. But the Sencha class loader does not allow any custom behavior.
  *
  * Since Bancha creates models and stores dynamically from server models the 
@@ -33,6 +33,8 @@
  * 
  * This class now simply extends {@class Ext.Loader} to allow the usage of custom
  * loaders, while the actual Bancha loading logic lies in {@Bancha.loader.Models}.
+ *
+ * See also http://banchaproject.org/blog-entry/items/building-a-customer-class-loader-for-sencha.html
  *
  * @since Bancha v 2.0.0
  * @author Roland Schuetz <mail@rolandschuetz.at>
