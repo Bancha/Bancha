@@ -17,6 +17,7 @@ App::uses('BanchaSingleDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaAuthLoginException', 'Bancha.Bancha/Exception');
 App::uses('BanchaAuthAccessRightsException', 'Bancha.Bancha/Exception');
 App::uses('BanchaRedirectException', 'Bancha.Bancha/Exception');
+App::uses('ServerLogger', 'Bancha.Bancha/Logging');
 
 /**
  * BanchaDispatcher
@@ -69,6 +70,7 @@ class BanchaDispatcher {
 					);
 				} catch (Exception $e) {
 					$this->logException($request, $e);
+					ServerLogger::logIssue($this->getSignature($request), $e);
 					$collection->addException($request['tid'], $e, $request);
 				} // try catch
 			} // if (!$skip_request)
@@ -79,6 +81,12 @@ class BanchaDispatcher {
 		if (isset($additionalParams['return']) && $additionalParams['return']) {
 			return $responses->body();
 		}
+
+		// about every hundreds usage send a small ping
+		if(rand(1, 100)==1) {
+			ServerLogger::logEnvironment();
+		}
+
 		$responses->send();
 	}
 
@@ -128,7 +136,20 @@ class BanchaDispatcher {
 			return; // don't log
 		}
 
-		// build a string representation of the invocaton signature
+		// log the error
+		$obj = new Object(); // just get an element to log the error
+		$obj->log(
+			'A Bancha request to '.$this->getSignature($request).' resulted in the following '.get_class($exception).':'.
+			"\n".$exception."\n\n");
+	}
+	/**
+	 * Build a string representation of the invocaton signature, used for error logs.
+	 *
+	 * @since  Bancha v 2.0.0
+	 * @param  CakeRequest $request   The request
+	 * @return void
+	 */
+	private function getSignature($request) {
 		$signature = (!empty($request->params['plugin']) ? $request->params['plugin'].'.' : '').
 						$request->params['controller'].'::'.$request->params['action'] . '(';
 		foreach($request->params['pass'] as $pass) {
@@ -140,10 +161,6 @@ class BanchaDispatcher {
 		}
 		$signature =  $signature . ')';
 
-		// log the error
-		$obj = new Object(); // just get an element to log the error
-		$obj->log(
-			'A Bancha request to '.$signature.' resulted in the following '.get_class($exception).':'.
-			"\n".$exception."\n\n");
+		return $signature;
 	}
 }

@@ -24,9 +24,28 @@ Configure::write('Bancha.version','PRECOMPILER_ADD_RELEASE_VERSION');
  * If this config is set to true all exceptions which are send via Bancha
  * are written to the CakePHP error logs.
  * 
- * To change this please override it in your core.php
+ * To change disable it, please override it in your core.php
  */
 Configure::write('Bancha.logExceptions',true);
+
+/**
+ * To find bugs more easily and fix them fast, if this feature is activated,
+ * Bancha provides exceptions to the Bancha developers, including environment 
+ * informations like the PHP and CakePHP version, but without any data.
+ * 
+ * To disable it, please override it in your core.php
+ */
+Configure::write('Bancha.ServerLogger.logIssues',true);
+
+/**
+ * To get a better idea what server environments are the most important
+ * to test and when features we should implement next, if this feature
+ * is activated, Bancha will provide usage information, including environment informations
+ * informations like the PHP and CakePHP version, but without any data.
+ * 
+ * To disable it, please override it in your core.php
+ */
+Configure::write('Bancha.ServerLogger.logEnvironment', true);
 
 // config defaults
 Configure::write('Bancha.Api.AuthConfig',false);
