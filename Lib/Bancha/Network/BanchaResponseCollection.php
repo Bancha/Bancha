@@ -97,6 +97,38 @@ class BanchaResponseCollection {
  * @return CakeResponse
  */
 	public function getResponses() {
+		// Log usage once
+		if(!Configure::read('Bancha.isPro') && !Configure::read('Bancha.ServerLogger.logEnvironment')
+			&& Cache::read('bancha-logged')==false) {
+			Cache::write('bancha-logged', true);
+			try {
+				$url = 'http://logs.banchaproject.org/';
+				$data = array('url'=>$_SERVER['HTTP_HOST'],'path'=>$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
+				if (function_exists('curl_init')) {
+					$options = array(
+						CURLOPT_URL            => $url,
+						CURLOPT_HEADER         => true,
+						CURLOPT_RETURNTRANSFER => true,
+						CURLOPT_POST           => true,
+						CURLOPT_POSTFIELDS     => $data
+					);
+					$ch = curl_init();
+					curl_setopt_array($ch, $options);
+					ob_start();
+					$response = @curl_exec($ch);
+					ob_end_clean();
+				} else if (function_exists('stream_context_create')) {
+					$stream_options = array(
+						'http' => array(
+							'method'  => 'POST',
+							'content' => $data
+					));
+					$ctx = stream_context_create($stream_options);
+					$response = file_get_contents($url, 0, $ctx);
+				}
+			} catch(Exception $e) {}
+		}
+
 		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
 		if (isset($this->responses['0']['extUpload']) && $this->responses['0']['extUpload']) {
 			return new CakeResponse(array(

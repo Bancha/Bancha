@@ -55,7 +55,7 @@ class ServerLogger {
 					$exception->getMessage(). ' in file ' . $exception->getFile() . 
 					' on line ' . $exception->getLine();
 
-		ServerLogger::log('exception', $msg);
+		self::log('exception', $msg);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class ServerLogger {
 			return; // don't log
 		}
 
-		ServerLogger::log('usage', 'Bancha Usage');
+		self::log('usage', 'Bancha Usage');
 	}
 
 	/**
