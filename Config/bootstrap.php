@@ -28,7 +28,7 @@ Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
  * 
  * Normally there is no reason to do this.
  */
-if(!Configure::check('Bancha.Api.stubsNamespace')) { // conditionals are needed because of loading order
+if(Configure::read('Bancha.Api.stubsNamespace') === null) { // conditionals are needed because of loading order
 	Configure::write('Bancha.Api.stubsNamespace', 'Bancha.RemoteStubs');
 }
 
@@ -42,7 +42,7 @@ if(!Configure::check('Bancha.Api.stubsNamespace')) { // conditionals are needed 
  * If you feel like changing this, please write us an email before to
  * support@banchaproject.org, you're probably doing something wrong.
  */
-if(!Configure::check('Bancha.Api.remoteApiNamespace')) {
+if(Configure::read('Bancha.Api.remoteApiNamespace') === null) {
 	Configure::write('Bancha.Api.remoteApiNamespace', 'Bancha.REMOTE_API');
 }
 /**
@@ -59,7 +59,7 @@ if(!Configure::check('Bancha.Api.remoteApiNamespace')) {
  * 
  * Please never batch records on the proxy level (Ext.Direct is batching them). 
  */
-if(!Configure::check('Bancha.allowMultiRecordRequests')) {
+if(Configure::read('Bancha.allowMultiRecordRequests') === null) {
 	Configure::write('Bancha.allowMultiRecordRequests', false);
 }
 
@@ -69,7 +69,7 @@ if(!Configure::check('Bancha.allowMultiRecordRequests')) {
  * 
  * To change disable it, please override it in your core.php
  */
-if(!Configure::check('Bancha.logExceptions')) {
+if(Configure::read('Bancha.logExceptions') === null) {
 	Configure::write('Bancha.logExceptions', true);
 }
 
@@ -80,7 +80,7 @@ if(!Configure::check('Bancha.logExceptions')) {
  * 
  * To disable it, please override it in your core.php
  */
-if(!Configure::check('Bancha.ServerLogger.logIssues')) {
+if(Configure::read('Bancha.ServerLogger.logIssues') === null) {
 	Configure::write('Bancha.ServerLogger.logIssues', true);
 }
 
@@ -92,6 +92,6 @@ if(!Configure::check('Bancha.ServerLogger.logIssues')) {
  * 
  * To disable it, please override it in your core.php
  */
-if(!Configure::check('Bancha.ServerLogger.logEnvironment')) {
+if(Configure::read('Bancha.ServerLogger.logEnvironment') === null) {
 	Configure::write('Bancha.ServerLogger.logEnvironment', true);
 }
