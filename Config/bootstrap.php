@@ -56,7 +56,7 @@ Configure::write('Bancha.Api.remoteApiNamespace', 'Bancha.REMOTE_API');
  * 
  * Please never batch records on the proxy level (Ext.Direct is batching them). 
  */
-Configure::write('Bancha.allowMultiRecordRequests', alse);
+Configure::write('Bancha.allowMultiRecordRequests', false);
 
 /**
  * If this config is set to true all exceptions which are send via Bancha
