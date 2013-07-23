@@ -82,8 +82,8 @@ class BanchaDispatcher {
 			return $responses->body();
 		}
 
-		// about every hundreds usage send a small ping
-		if(rand(1, 100)==1) {
+		// about every tenth usage send a small ping
+		if(rand(1, 10)==1) {
 			ServerLogger::logEnvironment();
 		}
 
