@@ -14,8 +14,10 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 
+// Currently the Dispatcher handles exceptions
+
 // load exceptionhandler
-App::uses('BanchaExceptionHandler', 'Bancha.Bancha/ExceptionHandler');
-App::load('BanchaExceptionHandler');
+//App::uses('BanchaExceptionHandler', 'Bancha.Bancha/ExceptionHandler');
+//App::load('BanchaExceptionHandler');
 // register exceptionhandler
-Configure::write('Exception.handler', array('BanchaExceptionHandler', 'handleException'));
+//Configure::write('Exception.handler', array('BanchaExceptionHandler', 'handleException'));

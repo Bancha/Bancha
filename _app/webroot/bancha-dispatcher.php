@@ -122,9 +122,9 @@ if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'ba
 	if(!include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 		$failed = true;
 	}
-} else if (file_exists(APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+} else if (file_exists(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 	// Bancha is in the app Plugin folder
-	if(!include(APP_DIR . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+	if(!include(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 		$failed = true;
 	}
 }
