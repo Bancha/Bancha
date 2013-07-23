@@ -28,7 +28,9 @@ Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
  * 
  * Normally there is no reason to do this.
  */
-Configure::write('Bancha.Api.stubsNamespace', 'Bancha.RemoteStubs');
+if(!Configure::check('Bancha.Api.stubsNamespace')) { // conditionals are needed because of loading order
+	Configure::write('Bancha.Api.stubsNamespace', 'Bancha.RemoteStubs');
+}
 
 /**
  * This is the namespace for the Ext.Direct Remote API.  
@@ -40,8 +42,9 @@ Configure::write('Bancha.Api.stubsNamespace', 'Bancha.RemoteStubs');
  * If you feel like changing this, please write us an email before to
  * support@banchaproject.org, you're probably doing something wrong.
  */
-Configure::write('Bancha.Api.remoteApiNamespace', 'Bancha.REMOTE_API');
-
+if(!Configure::check('Bancha.Api.remoteApiNamespace')) {
+	Configure::write('Bancha.Api.remoteApiNamespace', 'Bancha.REMOTE_API');
+}
 /**
  * There is no known reason to every enable this, please think twice before 
  * enabling it, since it maybe makes it very hard for you to find errors.  
@@ -56,7 +59,9 @@ Configure::write('Bancha.Api.remoteApiNamespace', 'Bancha.REMOTE_API');
  * 
  * Please never batch records on the proxy level (Ext.Direct is batching them). 
  */
-Configure::write('Bancha.allowMultiRecordRequests', false);
+if(!Configure::check('Bancha.allowMultiRecordRequests')) {
+	Configure::write('Bancha.allowMultiRecordRequests', false);
+}
 
 /**
  * If this config is set to true all exceptions which are send via Bancha
@@ -64,7 +69,9 @@ Configure::write('Bancha.allowMultiRecordRequests', false);
  * 
  * To change disable it, please override it in your core.php
  */
-Configure::write('Bancha.logExceptions', true);
+if(!Configure::check('Bancha.logExceptions')) {
+	Configure::write('Bancha.logExceptions', true);
+}
 
 /**
  * To find bugs more easily and fix them fast, if this feature is activated,
@@ -73,7 +80,9 @@ Configure::write('Bancha.logExceptions', true);
  * 
  * To disable it, please override it in your core.php
  */
-Configure::write('Bancha.ServerLogger.logIssues', true);
+if(!Configure::check('Bancha.ServerLogger.logIssues')) {
+	Configure::write('Bancha.ServerLogger.logIssues', true);
+}
 
 /**
  * To get a better idea what server environments are the most important
@@ -83,5 +92,6 @@ Configure::write('Bancha.ServerLogger.logIssues', true);
  * 
  * To disable it, please override it in your core.php
  */
-Configure::write('Bancha.ServerLogger.logEnvironment', true);
-
+if(!Configure::check('Bancha.ServerLogger.logEnvironment')) {
+	Configure::write('Bancha.ServerLogger.logEnvironment', true);
+}
