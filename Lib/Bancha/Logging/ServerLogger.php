@@ -45,8 +45,12 @@ class ServerLogger {
 			$type=='ConfigureException' ||
 			$type=='MethodNotAllowedException' || 
 			$type=='NotFoundException' ||
+			$type=='BanchaAuthAccessRightsException' ||
+			$type=='BanchaAuthLoginException' ||
+			$type=='BanchaException' ||
+			$type=='BanchaRedirectException' ||
 			class_exists('CakeTestSuiteDispatcher')) {
-			return; // exception seem to bit legit and not a Bancha error
+			return; // exception seem to be legit and not a Bancha error
 		}
 
 		// we are not interested in any data!
@@ -106,8 +110,11 @@ class ServerLogger {
 			}
 
 			// set environment variables
-			$t->setCustomVariable(1, 'HTTP_HOST', $_SERVER['HTTP_HOST'].' - '.$_SERVER['SERVER_NAME']);
-			$t->setCustomVariable(2, 'APP', $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
+			$host = empty($_SERVER['SERVER_NAME']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+			$pos = strpos($_SERVER['REQUEST_URI'], '?_dc='); // used for cache busting
+			$path = ($pos===-1) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $pos);
+			$t->setCustomVariable(1, 'HTTP_HOST', $host);
+			$t->setCustomVariable(2, 'APP', $host.$path);
 			$t->setCustomVariable(3, 'PHP_VERSION', phpversion());
 			$t->setCustomVariable(4, 'BANCHA_VERSION', Configure::read('Bancha.version'));
 			$t->setCustomVariable(5, 'CAKE_VERSION', 
