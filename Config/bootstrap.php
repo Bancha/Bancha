@@ -75,7 +75,7 @@ if(Configure::read('Bancha.logExceptions') === null) {
 
 /**
  * To find bugs more easily and fix them fast, if this feature is activated,
- * Bancha provides exceptions to the Bancha developers, including environment 
+ * Bancha provides exceptions to the Bancha core team, including environment 
  * informations like the PHP and CakePHP version, but without any data.  
  * 
  * To disable it, please override it in your core.php
@@ -87,8 +87,9 @@ if(Configure::read('Bancha.ServerLogger.logIssues') === null) {
 /**
  * To get a better idea what server environments are the most important
  * to test and when features we should implement next, if this feature
- * is activated, Bancha will provide usage information, including environment 
- * informations like the PHP and CakePHP version, but without any data.  
+ * is activated, Bancha will provide usage information to the Bancha 
+ * core team, including environment informations like the PHP and CakePHP 
+ * version, but without any data.  
  * 
  * To disable it, please override it in your core.php
  */
