@@ -1,4 +1,3 @@
-
 /*!
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
@@ -13,9 +12,6 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: false, plusplus: true, white: true, sloppy: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false, strict:false */
-/*global Ext:false, Bancha:true */
 
 /**
  * @private
@@ -47,7 +43,7 @@ Ext.define('Bancha.Loader', {
     // Ext.Loader is a singleton,
     // so we need to directly apply the overrides
     Ext.apply(Ext.Loader, {
-        
+
         /**
          * @private
          * @member Bancha.Loader
@@ -120,7 +116,7 @@ Ext.define('Bancha.Loader', {
          * @param  {Object}   scope       The scope to use for onLoad and onError
          * @param  {Boolean}  synchronous True is the file should be loaded synchronous.
          */
-        loadScriptFile: Ext.Function.createInterceptor(Ext.Loader.loadScriptFile, 
+        loadScriptFile: Ext.Function.createInterceptor(Ext.Loader.loadScriptFile,
             function(url, onLoad, onError, scope, synchronous) {
 
             // from original function
