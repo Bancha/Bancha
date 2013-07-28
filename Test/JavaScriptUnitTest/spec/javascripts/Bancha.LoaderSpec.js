@@ -12,9 +12,6 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
 
 describe("Bancha.Loader", function() {
     // prepare test loader
@@ -50,7 +47,9 @@ describe("Bancha.Loader", function() {
         Ext.require('Bancha.loader.TestClass1', callback);
         expect(handlesFn).toHaveBeenCalledWith('Bancha.loader.TestClass1');
         expect(loadClassFn).toHaveBeenCalled();
-        expect(loadClassFn.mostRecentCall.args[0]).toEqual('Bancha.loader.TestClass1'); // check that the className was correctly injected
+        // check that the className was correctly injected
+        expect(loadClassFn.mostRecentCall.args[0]).toEqual('Bancha.loader.TestClass1');
+        // chck other params
         expect(loadClassFn.mostRecentCall.args[1]).toBeAFunction();
         expect(loadClassFn.mostRecentCall.args[2]).toBeAFunction();
         expect(loadClassFn.mostRecentCall.args[3]).toBeAnObject();
@@ -84,7 +83,9 @@ describe("Bancha.Loader", function() {
         Ext.syncRequire('Bancha.loader.TestClass2');
         expect(handlesFn).toHaveBeenCalledWith('Bancha.loader.TestClass2');
         expect(loadClassFn).toHaveBeenCalled();
-        expect(loadClassFn.mostRecentCall.args[0]).toEqual('Bancha.loader.TestClass2'); // check that the className was correctly injected
+        // check that the className was correctly injected
+        expect(loadClassFn.mostRecentCall.args[0]).toEqual('Bancha.loader.TestClass2');
+        // chck other params
         expect(loadClassFn.mostRecentCall.args[1]).toBeAFunction();
         expect(loadClassFn.mostRecentCall.args[2]).toBeAFunction();
         expect(loadClassFn.mostRecentCall.args[3]).toBeAnObject();
@@ -98,4 +99,4 @@ describe("Bancha.Loader", function() {
         Ext.Loader.setConfig('enabled', loaderEnabled);
     });
 
-}); //eo describe loader proxy functions
+});

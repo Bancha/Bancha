@@ -12,15 +12,11 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
 
 describe("Bancha localizer functions for i18n support", function() {
 
-    
     it("The Localizer translates strings", function() {
-        
+
         // add some fake data
         Bancha.Localizer.locales = new Ext.util.HashMap();
         Bancha.Localizer.locales.add('eng', new Ext.util.HashMap()); // no translations
@@ -36,24 +32,27 @@ describe("Bancha localizer functions for i18n support", function() {
         expect(Bancha.Localizer.getLocalizedString(1)).toEqual('1'); // always return a string
         expect(typeof Bancha.Localizer.getLocalizedString(1)).toEqual('string'); // always return a string
 
-        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable string')).toEqual('translatable string'); // no translation in english
-        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable %s', 'fun')).toEqual('translatable fun'); // no translation, str replace
+        // no translation in english
+        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable string')).toEqual('translatable string');
+        // no translation, with str replace
+        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable %s', 'fun')).toEqual('translatable fun');
 
         Bancha.Localizer.currentLang = 'deu';
 
         expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable string')).toEqual('Übersetzbarer String');
-        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable %s', 'fun')).toEqual('Übersetzbarer fun'); // second argument is expected to be data, so it's not translated
-        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable %s', Bancha.Localizer.getLocalizedString('fun'))).toEqual('Übersetzbarer Spaß');
+        // second argument is expected to be data, so it's not translated
+        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable %s', 'fun')).toEqual('Übersetzbarer fun');
+        expect(Bancha.Localizer.getLocalizedStringWithReplacements('translatable %s', Bancha.Localizer.getLocalizedString('fun'))).
+                toEqual('Übersetzbarer Spaß');
 
         // Bancha.t should be a shortcut
         expect(Bancha.t('translatable string')).toEqual('Übersetzbarer String');
     });
-        
+
     it("The Localizer allows the usage of multiple %s always replacing just one per argument", function() {
-        expect(Bancha.Localizer.getLocalizedStringWithReplacements('I have many %s and all are %s and should be written to the %s.', 'many replacements', 'very important', 'correct place')).
+        expect(Bancha.Localizer.getLocalizedStringWithReplacements('I have many %s and all are %s and should be written to the %s.',
+            'many replacements', 'very important', 'correct place')).
             toEqual('I have many many replacements and all are very important and should be written to the correct place.');
     });
 
-}); //eo describe localizer functions
-    
-//eof
+});

@@ -12,16 +12,13 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest, phantom */
 
 describe("Bancha Singleton - basic retrieval functions on the stubs and model metadata.", function() {
         var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
             h = BanchaSpecHelper; // helper shortcut
-    
+
         beforeEach(h.reset);
-        
+
         it("internally uses objectFromPath to retrieve objects", function() {
             // simple unit tests
             Ext.global.BanchaObjectFromPathTest = {
@@ -32,19 +29,19 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                     property: 3
                 }]
             };
-            
+
             // successfulles
             expect(Bancha.objectFromPath('BanchaObjectFromPathTest.object.property')).toEqual(2);
-            expect(Bancha.objectFromPath('object.property',BanchaObjectFromPathTest)).toEqual(2);
-            expect(Bancha.objectFromPath('property',BanchaObjectFromPathTest['object'])).toEqual(2);
-            
+            expect(Bancha.objectFromPath('object.property', BanchaObjectFromPathTest)).toEqual(2);
+            expect(Bancha.objectFromPath('property', BanchaObjectFromPathTest.object)).toEqual(2);
+
             expect(Bancha.objectFromPath('BanchaObjectFromPathTest.array.2.property')).toEqual(3);
             expect(Bancha.objectFromPath('2.property',BanchaObjectFromPathTest.array)).toEqual(3);
             expect(Bancha.objectFromPath('1',BanchaObjectFromPathTest.array)).toEqual('b');
             expect(Bancha.objectFromPath(1,BanchaObjectFromPathTest.array)).toEqual('b');
-            
+
             expect(Bancha.objectFromPath('BanchaObjectFromPathTest')).toEqual(BanchaObjectFromPathTest);
-            
+
             // can't find these pathes
             expect(Bancha.objectFromPath('')).toBeFalsy();
             expect(Bancha.objectFromPath('',BanchaObjectFromPathTest)).toBeFalsy();
@@ -53,12 +50,12 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.objectFromPath(undefined)).toBeFalsy();
             expect(Bancha.objectFromPath(null)).toBeFalsy();
         });
-        
+
         it("should return the stubs namespace on getStubsNamespace() if already instanciated", function() {
             h.init();
-    
+
             var ns = Bancha.getStubsNamespace();
-        
+
             expect(ns).toBeDefined();
             expect(ns.User).toBeDefined();
             expect(ns.User.create).toBeDefined(); // looks good
@@ -66,9 +63,9 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         it("should return a stubs on getStub(), if defined", function() {
             h.init();
-            
+
             expect(Bancha.getStub('User')).toEqual(Bancha.getStubsNamespace().User);
-            
+
             var handle = spyOn(Ext.Error, 'handle');
             try {
                 expect(Bancha.getStub('DoesntExist')).toBeUndefined();
@@ -86,7 +83,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.getStub('User')).toEqual(Bancha.getStubsNamespace().User);
             expect(Bancha.initialized).toBeTruthy();
         });
-    
+
         it("should in debug mode return an expection when calling getRemoteApi() before init()", function() {
             // The RemoteApi to was already set during the startup to correctly load dependencies
             // so unset it first
@@ -99,25 +96,23 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                                       "please define the api before using Bancha.getRemoteApi().");
             }
         });
-    
-    
+
         it("should return the remote api if already defined in js with getRemoteApi()", function() {
             h.init();
-        
+
             var api = Bancha.getRemoteApi();
             expect(api).property("type").toEqual("remoting");
         });
-    
-    
+
         it("should init all stubs on init()", function() {
             expect(Bancha.init).toBeAFunction();
 
             // setup test data
             Bancha.REMOTE_API = Ext.clone(rs);
-        
+
             // test
             Bancha.init();
-        
+
             expect(Bancha.initialized).toBeTruthy();
 
             //var expected = {
@@ -132,14 +127,12 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.RemoteStubs).property("User.destroy").toBeAFunction(); //"The RemoteStub User supports create"
         });
 
-    
         it("should return if a metadata is loaded with modelMetaDataIsLoaded()", function() {
             h.init();
-        
+
             expect(Bancha.modelMetaDataIsLoaded('Phantasy')).toBeFalsy(); // doesn't exist
             expect(Bancha.modelMetaDataIsLoaded('User')).toBeTruthy(); // remote object exists
-          });
-
+        });
 
         it("should return is a model is loaded with isRemoteModel after init", function() {
             h.init();
@@ -147,8 +140,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.isRemoteModel('Phantasy')).toBeFalsy(); // doesn't exist
             expect(Bancha.isRemoteModel('User')).toBeTruthy(); // remote object exists
         });
-     
-     
+
         it("Check Bancha.getModelMetaData function", function() {
             h.init();
 
@@ -156,7 +148,6 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.getModelMetaData('User')).property('fields.2.name').toEqual('login'); // it's really the metadata
         });
 
-    
         it("should initialize Bancha, if loadModelMetaData() is used", function() {
             // prepare remote api for beeing initialized
             Bancha.REMOTE_API = Ext.clone(BanchaSpecHelper.SampleData.remoteApiDefinition);
@@ -188,15 +179,14 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(Bancha.initialized).toBeTruthy();
         });
 
-
         it("should load model metadata using the direct stub in async mode.", function() {
             h.init();
-      
+
             // create direct stub mock
             var mock = Mock.Proxy();
             mock.expectRPC("loadMetaData",['LoadTestUser','LoadTestArticle']);
             Bancha.RemoteStubs.Bancha = mock;
-            
+
             // create callback
             var scope = {
                 scopedExecution: false,
@@ -208,7 +198,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // execute test
             Bancha.loadModelMetaData(['LoadTestUser','LoadTestArticle'], scope.callback, scope, false);
             mock.verify();
-            
+
             // now fake answer
             var result = {
                 success: true,
@@ -245,7 +235,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 }
             };
             mock.callLastRPCCallback("loadMetaData",[result]);
-            
+
             // now see if it's available
             expect(Bancha.modelMetaDataIsLoaded('LoadTestUser')).toBeTruthy();
             expect(Bancha.modelMetaDataIsLoaded('LoadTestArticle')).toBeTruthy();
@@ -254,22 +244,21 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             expect(scope.scopedExecution).toBeTruthy();
         });
 
-
         it("should handle errors when loading model metadata using the direct stub.", function() {
             h.init();
-      
+
             // create direct stub mock
             var mock = Mock.Proxy();
             mock.expectRPC("loadMetaData",['LoadTestImaginary']);
             Bancha.RemoteStubs.Bancha = mock;
-            
+
             // create callback
             var callback = jasmine.createSpy();
 
             // execute test
             Bancha.loadModelMetaData(['LoadTestImaginary'], callback, {}, false);
             mock.verify();
-            
+
             // now fake answer
             var result = {
                 success: false,
@@ -280,7 +269,6 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             // check callback
             expect(callback).toHaveBeenCalledWith(false, 'Model Imaginary could not be found.');
         });
-    
 
         it("should allow to just give a string as argument when loading only one model metadata.", function() {
             h.init();
@@ -294,7 +282,6 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
             Bancha.loadModelMetaData('LoadSingleTestUser');
             mock.verify();
         });
-    
 
         it("should be able to translate model metadata requires into ajax urls", function() {
             // in the project root
@@ -302,23 +289,24 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 url: '/bancha-dispatcher.php'
             };
             expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser'])).toEqual('/bancha-load-metadata/[LoadTestUser].js');
-            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).toEqual('/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
+            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).
+                    toEqual('/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
 
             // in a sub directory
             Bancha.REMOTE_API = {
                 url: '/my/subdir/bancha-dispatcher.php'
             };
             expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser'])).toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser].js');
-            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
+            expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).
+                    toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
         });
-
 
         it("should load model metadata using ajax in syncEnabled mode.", function() {
             h.init();
-      
+
             // create ajax spy
             var loadFn = spyOn(Ext.Ajax, 'request');
-            
+
             // create callback
             var scope = {
                 scopedExecution: false,
@@ -370,19 +358,18 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
             // trigger the ajax onLoaded callback
             loadFn.mostRecentCall.args[0].success(response);
-            
+
             // now see if it's available
             expect(Bancha.modelMetaDataIsLoaded('LoadTestUser')).toBeTruthy();
             expect(Bancha.modelMetaDataIsLoaded('LoadTestArticle')).toBeTruthy();
-            
+
             // check custom callback
             expect(scope.scopedExecution).toBeTruthy();
         });
-    
 
         it("should handle errors when loading model metadata using ajax in syncEnabled mode.", function() {
             h.init();
-      
+
             // create ajax spy
             var loadFn = spyOn(Ext.Ajax, 'request'),
                 callback = jasmine.createSpy();
@@ -399,7 +386,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
             // trigger the ajax onLoaded callback
             loadFn.mostRecentCall.args[0].failure(response);
-            
+
             // check custom callback
             expect(callback).toHaveBeenCalledWith(false, 'Server-side failure with status code 500');
         });
@@ -421,16 +408,16 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         // @deprecated since 2.0
         it("should create Models with Bancha#createModel", function() {
-            
+
             // setup model metadata
             h.init('CreateModelUser');
-            
+
             // should create a model defintion
             expect(
                 Bancha.createModel('CreateModelUser', {
                     additionalSettings: true
             })).toBeTruthy();
-            
+
             // check if the model really got created
             var model = Ext.ClassManager.get('Bancha.model.CreateModelUser');
             expect(model).toBeModelClass('Bancha.model.CreateModelUser');

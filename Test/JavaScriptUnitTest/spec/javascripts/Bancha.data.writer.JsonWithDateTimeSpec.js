@@ -12,16 +12,12 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock, ExtSpecHelper, BanchaSpecHelper */
 
 describe("Test that Bancha handles all date marshalling correctly", function() {
-    var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
-        h = BanchaSpecHelper; // helper shortcut
+    var h = BanchaSpecHelper; // helper shortcut
 
     beforeEach(h.reset);
-    
+
     it("The writer correctly formates dates in various forms accordingly to their dateFormat", function() {
 
         // This test fails in PhantomJS, because the date, datetime and timestamp strings
@@ -30,7 +26,7 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         if(isPhantomJS) {
             return; // This test works in the Browser, but fails using phantomjs test runner
         }
-        
+
         // prepare a test model
         var config = {
             idProperty:'id',
@@ -89,7 +85,7 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
 
         // create a writer for testing
         var writer = Ext.create('Bancha.data.writer.JsonWithDateTime');
-        
+
         // sample record
         var record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {
             id       : 1,
@@ -151,5 +147,3 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
     });
 
 }); //eo describe datetimewriter
-    
-//eof

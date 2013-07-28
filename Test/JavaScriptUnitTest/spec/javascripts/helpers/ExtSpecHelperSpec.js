@@ -12,19 +12,14 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock */
-
-
 
 // test expect().toThrowExtErrorMsg()
-var origEnv;
-describe("ExtSpecHelpers toThrowExtError matcher", function() {
-    var env, spec;
+//var origEnv;
+describe('ExtSpecHelpers toThrowExtError matcher', function() {
 
     // TODO
     /*
+    var env, spec;
     origEnv = jasmine.getEnv();
     / from MatchersSpec /
     beforeEach(function() {
@@ -87,5 +82,3 @@ describe("ExtSpecHelpers toThrowExtError matcher", function() {
     */
     // TODO test toBeModelClass
 });
-
-//eof

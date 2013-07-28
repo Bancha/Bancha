@@ -12,33 +12,33 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine */
-
+/* global window */
 
 /*
  * Add some basic matcher functions for type checks
  */
 beforeEach(function() {
-  this.addMatchers({
-    toBeAFunction: function() {
-      return (typeof this.actual === 'function');
-    },
-    toBeAnObject: function() {
-        return typeof this.actual === 'object';
-    },
-    toBeAnArray: function() {
-        var isArray = function(testObject) { return testObject && !(testObject.propertyIsEnumerable('length')) && typeof testObject === 'object' && typeof testObject.length === 'number'; };
-        return isArray(this.actual);
-    },
-    toBeAString: function() {
-        return typeof this.actual === 'string';
-    },
-    toBeANumber: function() {
-        return typeof this.actual === 'number';
-    }
-  });
+    this.addMatchers({
+        toBeAFunction: function() {
+            return (typeof this.actual === 'function');
+        },
+        toBeAnObject: function() {
+            return typeof this.actual === 'object';
+        },
+        toBeAnArray: function() {
+            var isArray = function(testObject) {
+                return testObject && !(testObject.propertyIsEnumerable('length')) &&
+                        typeof testObject === 'object' && typeof testObject.length === 'number';
+            };
+            return isArray(this.actual);
+        },
+        toBeAString: function() {
+            return typeof this.actual === 'string';
+        },
+        toBeANumber: function() {
+            return typeof this.actual === 'number';
+        }
+    });
 });
 
 
@@ -87,12 +87,12 @@ beforeEach(function() {
      */
     jasmine.Matchers.prototype.property = function(path) {
         var property = objectFromPath(path,this.actual);
-    
+
         // if the property doesn't exist fail
         if(property===null) {
             this.fail("Property "+path+" doesn't exist.");
         }
-    
+
         // return expect for property
         return expect(property);
     };

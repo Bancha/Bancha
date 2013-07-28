@@ -12,9 +12,6 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
 
 describe("Bancha.loader.Models", function() {
     var loader = Bancha.loader.Models;
@@ -66,8 +63,7 @@ describe("Bancha.loader.Models", function() {
 
     it("should load required models (sync and async logic only differs in Bancha#getloadModelMetaData).", function() {
         // prepare
-        var isLoadedFn = spyOn(Bancha, 'modelMetaDataIsLoaded').andReturn(false),
-            resultClassName = '',
+        var resultClassName = '',
             getLoadedModelFn = spyOn(Bancha, 'getLoadedModel').andCallFake(function(className) {
                 Ext.define('Bancha.model'+className, {});
                 resultClassName = className;
@@ -99,7 +95,7 @@ describe("Bancha.loader.Models", function() {
 
         // check that the classname was not manipulated
         expect(resultClassName).toEqual('ModelLoaderTestModel2');
-        
+
         // check callbacks
         expect(onLoad).toHaveBeenCalled();
         expect(onError.callCount).toEqual(0);
@@ -108,4 +104,4 @@ describe("Bancha.loader.Models", function() {
         expect(scope.scoped).toEqual(true);
     });
 
-}); //eo describe loader proxy functions
+});

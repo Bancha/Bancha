@@ -12,9 +12,7 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, Mock, BanchaSpecHelper:true */
+/* global BanchaSpecHelper:true */
 
 /** helpers */
 BanchaSpecHelper = {};
@@ -22,59 +20,59 @@ BanchaSpecHelper.SampleData = {};
 BanchaSpecHelper.SampleData.remoteApiDefinition = {
     url: 'bancha-dispatcher-mock.js',
     namespace: 'Bancha.RemoteStubs',
-    "type":"remoting",
-    "actions":{
-        "User":[{
-            "name":"submit",
-            "formHandler": true,
-            "len":1
+    'type':'remoting',
+    'actions':{
+        'User':[{
+            'name':'submit',
+            'formHandler': true,
+            'len':1
         },{
-            "name":"read",
-            "len":1
+            'name':'read',
+            'len':1
         },{
-            "name":"create",
-            "len":1
+            'name':'create',
+            'len':1
         },{
-            "name":"update",
-            "len":1
+            'name':'update',
+            'len':1
         },{
-            "name":"destroy",
-            "len":1
+            'name':'destroy',
+            'len':1
         }]
     },
     metadata: {
         _UID: '550e8400e29b11d4a7164466554400004',
         _ServerDebugLevel: 0, // set the debug level to zero to suppress Banchas debug error handling
         User: {
-                idProperty: 'id',
-                fields: [
-                    {name:'id', type:'int'},
-                    {name:'name', type:'string'},
-                    {name:'login', type:'string'},
-                    {name:'created', type:'date'},
-                    {name:'email', type:'string'},
-                    {name:'avatar', type:'string'},
-                    {name:'weight', type:'float'},
-                    {name:'height', type:'int'},
-                    {name:'country_id', type:'int'}
-                ],
-                associations: [
-                    {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
-                    {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
-                ],
-                validations: [
-                    { type:"numberformat", field:"id", precision:0},
-                    { type:"presence",     field:"name"},
-                    { type:"length",       field:'name', min: 2},
-                    { type:"length",       field:"name", max:64},
-                    { type:"format",       field:"login", matcher:"banchaAlphanum"}
-                ],
-                sorters: [{
-                    property: 'name',
-                    direction: 'ASC'
-                }]
-      }
-   }
+            idProperty: 'id',
+            fields: [
+                {name:'id', type:'int'},
+                {name:'name', type:'string'},
+                {name:'login', type:'string'},
+                {name:'created', type:'date'},
+                {name:'email', type:'string'},
+                {name:'avatar', type:'string'},
+                {name:'weight', type:'float'},
+                {name:'height', type:'int'},
+                {name:'country_id', type:'int'}
+            ],
+            associations: [
+                {type:'hasMany', model:'Bancha.test.model.Post', name:'posts'}, // these models need to exist
+                {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
+            ],
+            validations: [
+                { type:'numberformat', field:'id', precision:0},
+                { type:'presence',     field:'name'},
+                { type:'length',       field:'name', min: 2},
+                { type:'length',       field:'name', max:64},
+                { type:'format',       field:'login', matcher:'banchaAlphanum'}
+            ],
+            sorters: [{
+                property: 'name',
+                direction: 'ASC'
+            }]
+        } //eo User
+    }
 };
 
 
@@ -85,7 +83,7 @@ var testErrorHandler = function(err) {
 BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName,/*optional*/additionalConfigs) {
     var api = BanchaSpecHelper.SampleData.remoteApiDefinition;
     Bancha.REMOTE_API = Ext.clone(api);
-    
+
     // catch all errors thrown in the init
     var alert = Ext.Msg.alert;
     Ext.Msg.alert = function(title, msg) {
@@ -173,5 +171,3 @@ beforeEach(function() {
         }
     });
 });
-
-//eof

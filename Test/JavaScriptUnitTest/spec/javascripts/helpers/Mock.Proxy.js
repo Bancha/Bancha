@@ -12,10 +12,6 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Mock */
-
 
 // Replacing proxies makes problems, it sure why
 // For more detaIls see http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy&p=981245#post981245
@@ -30,10 +26,10 @@ Ext.define('Ext.data.proxy.override.Direct', {
  * an easier interface for ExtJS testing
  */
 Mock.Proxy = (function() {
-    
+
     // extend Mock
     var proxyPrototype = new Mock();
-    
+
     // Sencha Touch checks if this is already a class with the property
     // See http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
     proxyPrototype.isInstance = true;
@@ -57,30 +53,28 @@ Mock.Proxy = (function() {
             Mock.Value.Object
         );
     };
-    
+
     // looks like the server has answered with some data
     proxyPrototype.callLastRPCCallback = function(method,args) {
         if(!this[method] || !this[method].mostRecentCall || !this[method].mostRecentCall.args) {
-            throw "The mock was not called yet!";
+            throw 'The mock was not called yet!';
         }
-        
+
         // undefined as data is allowed
         args = args || [];
-        
+
         var methodArgs     = this[method].mostRecentCall.args,
             callback = methodArgs[1],
             scope    = methodArgs[2];
-        
+
         callback.apply(scope,args);
     };
-    
+
     // fake proxy property for ext
     proxyPrototype.isProxy = true;
-    
+
     // constructor
     return function() {
         return Object.create(proxyPrototype);
     };
 }());
-
-//eof

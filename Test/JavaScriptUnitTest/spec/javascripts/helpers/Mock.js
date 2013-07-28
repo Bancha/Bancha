@@ -13,10 +13,7 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, Mock:true, BanchaSpecHelper */
-
+/* global Mock:true */
 
 /**
  * create an mock
@@ -28,7 +25,7 @@
     /*
      * helper functions for verify
      */
-    var isArray = function(testObject) {   
+    var isArray = function(testObject) {
         return testObject && !(testObject.propertyIsEnumerable('length')) &&
                 typeof testObject === 'object' && typeof testObject.length === 'number';
     };
@@ -45,7 +42,7 @@
             return '"'+obj+'"';
         } else if(getType(obj)==='array') {
             // arrays should have brackets
-            return "["+obj+"]";
+            return '['+obj+']';
         } else {
             return obj;
         }
@@ -56,35 +53,40 @@
             if(msg) {
                 throw (path+msg);
             } else {
-                throw (path+": Expected "+toString(actual)+"("+getType(actual)+") to be equal to "+toString(expected)+"("+getType(expected)+")");
+                throw [
+                    path+': Expected '+toString(actual)+'('+getType(actual)+') ',
+                    'to be equal to '+toString(expected)+'('+getType(expected)+')'
+                ].join('');
             }
         }
     };
+    /* jshint maxcomplexity: 20 */ /* it's ok, that this one is complex */
     var verifyArguments = function(expected,actual,path) {
         var i, len, name;
-        
+
         switch(expected) {
-            case Mock.Value.Any: return; // everything done
-            case Mock.Value.Function: 
-                expectEqual(true,(typeof actual==='function'),path,": Expected "+toString(actual)+"("+getType(actual)+") to be a function.");
-                return;
-            case Mock.Value.Object: 
-                expectEqual(true,(getType(actual)==='object'),path,": Expected "+toString(actual)+"("+getType(actual)+") to be an object.");
-                return;
-            case Mock.Value.Array: 
-                expectEqual(true,isArray(actual),path,": Expected "+toString(actual)+"("+getType(actual)+") to be an array.");
-                return;
-            case Mock.Value.String: 
-                expectEqual(true,(typeof actual==='string'),path,": Expected "+toString(actual)+"("+getType(actual)+") to be a string.");
-                return;
-            case Mock.Value.Number: 
-                expectEqual(true,(typeof actual==='number'),path,": Expected "+toString(actual)+"("+getType(actual)+") to be a number.");
-                return;
-            case Mock.Value.Boolean: 
-                expectEqual(true,(typeof actual==='boolean'),path,": Expected "+toString(actual)+"("+getType(actual)+") to be a boolean.");
-                return;
+        case Mock.Value.Any:
+            return; // everything done
+        case Mock.Value.Function:
+            expectEqual(typeof actual,'function',path,': Expected '+toString(actual)+'('+getType(actual)+') to be a function.');
+            return;
+        case Mock.Value.Object:
+            expectEqual(getType(actual),'object',path,': Expected '+toString(actual)+'('+getType(actual)+') to be an object.');
+            return;
+        case Mock.Value.Array:
+            expectEqual(true, isArray(actual),path,': Expected '+toString(actual)+'('+getType(actual)+') to be an array.');
+            return;
+        case Mock.Value.String:
+            expectEqual(typeof actual,'string',path,': Expected '+toString(actual)+'('+getType(actual)+') to be a string.');
+            return;
+        case Mock.Value.Number:
+            expectEqual(typeof actual,'number',path,': Expected '+toString(actual)+'('+getType(actual)+') to be a number.');
+            return;
+        case Mock.Value.Boolean:
+            expectEqual(typeof actual,'boolean',path,': Expected '+toString(actual)+'('+getType(actual)+') to be a boolean.');
+            return;
         }
-        
+
         // really compare elements
         if(getType(expected) !== getType(actual)) {
             // output the error
@@ -93,10 +95,10 @@
         }
         if(isArray(expected)) {
             if(expected.length!==actual.length) {
-                throw (path+": Expected an array of length "+expected.length+", but got "+actual.length);
+                throw (path+': Expected an array of length '+expected.length+', but got '+actual.length);
             }
             for(i=0,len=expected.length; i<len; i++) {
-                verifyArguments(expected[i],actual[i],path+"["+i+"]");
+                verifyArguments(expected[i],actual[i],path+'['+i+']');
             }
             return;
         }
@@ -104,12 +106,12 @@
             //  check all properties on both sides
             for (name in expected) {
                 if (expected.hasOwnProperty(name)) {
-                    verifyArguments(expected[name],actual[name],path+"."+name);
+                    verifyArguments(expected[name],actual[name],path+'.'+name);
                 }
             }
             for (name in actual) {
                 if (actual.hasOwnProperty(name)) {
-                    verifyArguments(expected[name],actual[name],path+"."+name);
+                    verifyArguments(expected[name],actual[name],path+'.'+name);
                 }
             }
             return;
@@ -119,21 +121,24 @@
         expectEqual(expected,actual,path);
         return; // we're done
     };
+    /* jshint maxcomplexity: 10 */
+
     var verifySpy = function(expectations,spy,path) {
         var i, len, spyArgs;
 
         // first of all the spy should be called exactly as often as the expectations where
-        expectEqual(spy.callCount,expectations.length,"","Expected "+path+" to be called "+expectations.length+"x instead of "+spy.callCount+"x");
+        expectEqual(spy.callCount,expectations.length,'',
+            'Expected '+path+' to be called '+expectations.length+'x instead of '+spy.callCount+'x');
 
         // so now check each calls arguments
         for(i=0,len=expectations.length;i<len;i++) {
             spyArgs = Array.prototype.slice.call(spy.argsForCall[i]);
-            verifyArguments(expectations[i],spyArgs,path+"'s call "+i+". Argument");
+            verifyArguments(expectations[i],spyArgs,path+'\'s call '+i+'. Argument');
         }
     };
-    
+
     var mockPrototype = {}; // used in the Mock() fn
-    
+
     /**
      * define a new expectation
      */
@@ -141,7 +146,7 @@
         var expectations = this.expectations,
             result,
             current; // queue reference nr. for nested function withArguments
-        
+
         if(this[method] && this[method].isSpy) {
             // there's already an method, add expectation to the queue
             current = expectations[method].length;
@@ -149,15 +154,15 @@
         } else {
             // hock spy to the mock
             this[method] = result = jasmine.createSpy();
-            
+
             // create expectations queue
             expectations[method] = [];
             current = 0; // it's the first expectation
         }
-        
+
         // create expectation, just that it got called
         expectations[method][current] = Mock.Value.Any;
-        
+
         // the spy already support functions like andCallThrough()
         // add a function for arguments validation
         result.withArguments = function(arg1,arg2,arg3) {
@@ -166,32 +171,32 @@
         };
         return result;
     };
-    
+
     /**
      * checks if all expectations are met and ONLY those
      */
     mockPrototype.verify = function() {
         var method;
-        
+
         // go through all spy functions
         for (method in this) {
             if (this.hasOwnProperty(method) && this[method].isSpy) {
-                verifySpy(this.expectations[method],this[method],"mock function \""+method+'"');
+                verifySpy(this.expectations[method],this[method], 'mock function "'+method+'"');
             }
         }
     };
-    
-    
+
+
     // ES5 15.2.3.5
     // https://github.com/kriskowal/es5-shim/blob/master/es5-shim.js
     if (!Object.create) {
         Object.create = function create(prototype, properties) {
             var object;
             if (prototype === null) {
-                object = { "__proto__": null };
+                object = { '__proto__': null };
             } else {
-                if (typeof prototype !== "object") {
-                    throw new TypeError("typeof prototype["+(typeof prototype)+"] != 'object'");
+                if (typeof prototype !== 'object') {
+                    throw new TypeError('typeof prototype['+(typeof prototype)+'] != \'object\'');
                 }
                 var Type = function () {};
                 Type.prototype = prototype;
@@ -202,20 +207,20 @@
                 // objects created using `Object.create`
                 object.__proto__ = prototype;
             }
-            if (typeof properties !== "undefined") {
+            if (typeof properties !== 'undefined') {
                 Object.defineProperties(object, properties);
             }
             return object;
         };
     }
-    
+
     /*
      * Create a new Mock
      * It doesn't matter if you use 'new' or not
      */
     Mock = function() {
         var mock = Object.create(mockPrototype);
-        
+
         mock.isMock = true;
         mock.expectations = {};
         /* expectations structure: {

@@ -1,0 +1,59 @@
+{
+	"globals": {
+		"Ext": false,
+		"Bancha": false,
+		"TraceKit": false,
+
+		/* Jasmine */
+		"jasmine": false,
+		"describe": false,
+		"it": false,
+		"expect": false,
+		"beforeEach": false,
+		"spyOn": false,
+
+		"Mock": false,
+		"BanchaSpecHelper": false
+	},
+
+	/*
+	 * coding standards
+	 */
+	"bitwise": true,
+	"camelcase": true,
+	"curly": true,
+	"eqeqeq": true,
+	"es3": true, /* we need to support IE 6 */
+	"forin":true,
+	"immed":true,
+	"indent": 4, /* code standards, always use 4 spaces for indent */
+	"latedef": true,
+	"newcap": true,
+	"noarg": true,
+	"noempty": true,
+	"nonew": true,
+	"plusplus": false,
+	"quotmark": false, /* this doesn't matter for test cases */
+	"undef": true,
+	"unused": "vars",
+	"strict": false, /* this does not match the Sencha coding style */
+	"trailing": true,
+
+	/*
+	 * Below are some code quality metrics
+	 */
+	"maxparams": 5,
+	"maxdepth": 3,
+	"maxstatements": 50,
+	/**
+	 * maxcomplexity checks the cyclomatic complexity of code.
+	 *
+	 * In the 2nd edition of Steve McConnell's Code Complete he recommends that 
+	 * a cyclomatic complexity from 0 to 5 is typically fine, but you should be 
+	 * aware if the complexity starts to get in the 6 to 10 range. He further 
+	 * explains that anything over a complexity of 10 you should strongly 
+	 * consider refactoring your code.
+	 */
+	"maxcomplexity": 10,
+	"maxlen": 135
+}

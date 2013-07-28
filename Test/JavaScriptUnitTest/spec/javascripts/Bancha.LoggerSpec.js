@@ -12,15 +12,13 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, runs, waitsFor, Mock, ExtSpecHelper, BanchaSpecHelper, BanchaObjectFromPathTest */
+/* global window */
 
 describe("Bancha Logger", function() {
     var h = BanchaSpecHelper; // helper shortcut
 
     beforeEach(h.reset);
-    
+
     it("should write to the console using logToConsole", function() {
 
         // this may make problems if console is native to the browser
@@ -176,8 +174,9 @@ describe("Bancha Logger", function() {
         Bancha.Logger.error('My error',true);
         expect(serverlog.callCount).toEqual(2);
         expect(serverlog.mostRecentCall.args).toEqual(['My error','js_error']);
+
+        // tear down
+        Bancha.Logger.logToBrowser = log;
     });
 
-}); //eo describe logging functions
-    
-//eof
+});

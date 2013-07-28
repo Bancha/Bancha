@@ -12,13 +12,9 @@
  *
  * For more information go to http://banchaproject.org
  */
-/*jslint browser: true, vars: true, undef: true, nomen: true, eqeq: false, plusplus: true, bitwise: true, regexp: true, newcap: true, sloppy: true, white: true */
-/*jshint bitwise:true, curly:true, eqeqeq:true, forin:true, immed:true, latedef:true, newcap:true, noarg:true, noempty:true, regexp:true, undef:true, trailing:false */
-/*global Ext, Bancha, describe, it, beforeEach, expect, jasmine, spyOn, Mock, ExtSpecHelper, BanchaSpecHelper */
 
 describe("Bancha.data.Model tests", function() {
-    var rs = BanchaSpecHelper.SampleData.remoteApiDefinition, // remote sample
-        h = BanchaSpecHelper; // helper shortcut
+    var h = BanchaSpecHelper; // helper shortcut
 
     beforeEach(h.reset);
 
@@ -98,7 +94,7 @@ describe("Bancha.data.Model tests", function() {
                 });
                 return result;
             }
-            
+
             // for Ext JS, all versions
             Ext.each(this.fields.items, function(field) {
                 result.push(field.name);
@@ -169,7 +165,8 @@ describe("Bancha.data.Model tests", function() {
                         { type:"presence",     field:"name"},
                         { type:"length",       field:'name', min: 2},
                         { type:"length",       field:"name", max:64},
-                        { type:"format",       field:"login", matcher:/^[a-zA-Z0-9_]+$/} // <-- Bancha validation rules use matcher:'banchaAlphanum'
+                        // the match regex below matches the Bancha validation rules 'banchaAlphanum'
+                        { type:"format",       field:"login", matcher:/^[a-zA-Z0-9_]+$/}
                     ]
                 }
             }); //eo define
@@ -336,7 +333,7 @@ describe("Bancha.data.Model tests", function() {
 
         // test
         rec.save();
-        
+
         // verify the expectations were met
         mockProxy.verify();
 
@@ -354,10 +351,8 @@ describe("Bancha.data.Model tests", function() {
 
         // test
         rec.save();
-        
+
         // verify the expectations were met
         mockProxy.verify();
     });
 });
-
-//eof
