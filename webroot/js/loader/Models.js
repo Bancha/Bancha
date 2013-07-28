@@ -41,7 +41,7 @@ Ext.define('Bancha.loader.Models', {
      * @inheritdoc Ext.Loader#require
      */
     handles: function(className) {
-        return className.substr(0,13) === "Bancha.model.";
+        return className.substr(0,13) === 'Bancha.model.';
     },
     /**
      * Handle loading of Bancha models.
@@ -73,9 +73,11 @@ Ext.define('Bancha.loader.Models', {
                 // IFDEBUG
                 // signature: errorMessage, isSynchronous
                 var mode = syncEnabled ? 'synchronously via XHR' : 'asynchronously via Ext.Direct';
-                onError.call(this, "Failed loading "+mode+": '" + className + "'; please " +
-                                   "verify that the CakePHP model "+unqualifiedName+" exists. "+
-                                   errorMsg, syncEnabled);
+                onError.call(this, [
+                    'Failed loading '+mode+': \'' + className + '\'; please ',
+                    'verify that the CakePHP model '+unqualifiedName+' exists. ',
+                    errorMsg
+                ].join(''), syncEnabled);
                 // ENDIF
             }
         }, this, syncEnabled);

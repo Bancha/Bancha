@@ -34,7 +34,7 @@
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
 Ext.define('Bancha.loader.Interface', {
-    
+
     config: {
 		/**
          * @cfg {Bancha.loader.Interface|null}

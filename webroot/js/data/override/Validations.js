@@ -37,7 +37,7 @@ Ext.define('Bancha.data.override.Validations', {
         var ext = filename.split('.').pop();
         return Ext.Array.contains(validExtensions,ext);
     };
-    
+
     /**
      * @class Ext.data.validations
      * 
@@ -54,12 +54,12 @@ Ext.define('Bancha.data.override.Validations', {
          * @property
          * The default error message used when a numberformat validation fails.
          */
-        numberformatMessage: "is not a number or not in the allowed range",
+        numberformatMessage: 'is not a number or not in the allowed range',
         /**
          * @property
          * The default error message used when a file validation fails.
          */
-        fileMessage: "is not a valid file",
+        fileMessage: 'is not a valid file',
         /**
          * @method
          * Validates that the number is in the range of min and max.

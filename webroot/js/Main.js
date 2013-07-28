@@ -297,12 +297,10 @@ Ext.define('Bancha', {
      * Inits Bancha with the RemotingProvider, always init before using Bancha.  
      * ({@link Bancha#onModelReady} will init automatically)
      */
+    /* jshint maxstatements: 50, maxcomplexity: 20 */ /* don't optimize this anymore, it's already deprecated */
     init: function() {
         var remoteApi,
-            regex,
             defaultErrorHandle,
-            scripts,
-            foundApi = false,
             apiPath,
             response,
             result;
@@ -319,7 +317,7 @@ Ext.define('Bancha', {
                 // so it's possible that Ext.Msg fail, in these
                 // cases show an simply alert and let the 
                 // exception bubble up
-                alert(err.msg);
+                Ext.global.alert(err.msg);
             }
         };
 
@@ -514,6 +512,7 @@ Ext.define('Bancha', {
             this.setupDebugErrorHandler();
         }
     },
+    /* jshint maxstatements: 25, maxcomplexity: 10 */
     /**
      * If you are using Bancha when CakePHP is in debug mode this 
      * function will be set up during initializiation to setup 
@@ -705,7 +704,7 @@ Ext.define('Bancha', {
         }
 
         // get remote stub function
-        var fn, cb, directUrl, url;
+        var fn, cb;
 
         // IFDEBUG
         if(!Bancha.REMOTE_API) { // with syncEnable needed for getMetaDataAjaxUrl, otherwise for Ext.Direct
@@ -795,7 +794,6 @@ Ext.define('Bancha', {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 result: result,
-                event: event,
                 msg: [
                     'Bancha: The Bancha.loadModelMetaData('+modelNames.toString(),
                     ',..) expected to get the metadata from the server, ',
@@ -1383,7 +1381,7 @@ Ext.define('Bancha', {
             // replace %s and %d
             var bits = key.split('%'),
                 result = bits[0],
-                i, len, p;
+                i, len;
 
             // IFDEBUG
             if(bits.length !== arguments.length) { // replacements+first substr should equal key+replacements

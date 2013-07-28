@@ -2,6 +2,7 @@
 	"globals": {
 		"Ext": false,
 		"Bancha": false,
+		"TraceKit": false
 	},
 
 	/*
@@ -42,6 +43,6 @@
 	 * explains that anything over a complexity of 10 you should strongly 
 	 * consider refactoring your code.
 	 */
-	"maxcomplexity": 6,
+	"maxcomplexity": 10,
 	"maxlen": 135
 }

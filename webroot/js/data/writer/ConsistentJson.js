@@ -23,13 +23,13 @@
 Ext.define('Bancha.data.writer.ConsistentJson', {
     extend: 'Bancha.data.writer.JsonWithDateTime',
     alias: 'writer.consistent',
-    
+
     /**
      * @config
      * the name of the field to send the consistent uid in
      */
     uidProperty: '__bcid',
-    
+
     /**
      * @config {Bancha.data.Model} model
      * the model to write for, needed to determine the value of 
@@ -38,7 +38,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
     model: undefined,
     //inherit docs
     writeRecords: function(request, data) {
-        
+
         // IFDEBUG
         if(!this.model) {
             Ext.Error.raise({
@@ -47,7 +47,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
             });
         }
         // ENDIF
-        
+
         // set consistent uid if expected
         if(this.model && this.model.forceConsistency) {
             if (this.encode) {
@@ -57,7 +57,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
                 request.jsonData[this.uidProperty] = Bancha.getConsistentUid();
             }
         }
-        
+
         // let the json writer do all the work:
         return this.superclass.writeRecords.apply(this,arguments);
     }

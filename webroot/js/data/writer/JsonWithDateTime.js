@@ -31,14 +31,14 @@
 Ext.define('Bancha.data.writer.JsonWithDateTime', {
     extend: 'Ext.data.writer.Json',
     alias: 'writer.jsondate',
-    
+
     /**
      * Add support for null dates to ExtJS
      */
     getRecordData: function(record, operation) {
         // let the json writer do the real work
         var data = this.superclass.getRecordData.apply(this,arguments),
-            nameProperty = this.nameProperty, 
+            nameProperty = this.nameProperty,
             fields = record.fields,
             fieldItems = fields.items,
             me = this;
@@ -52,7 +52,7 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
         // for ExtJS 4.1.1+ versions add support for null
         if(parseInt(Ext.versions.extjs.shortVersion,10) >= 411) {
             Ext.each(fieldItems, function(field) {
-                var name = field[nameProperty] || field.name; 
+                var name = field[nameProperty] || field.name;
                 if (field.type === Ext.data.Types.DATE && field.dateFormat && record.get(field.name)===null) {
                     // add support for null dates
                     data[name] = null;
@@ -68,7 +68,7 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
         // for older ExtJS versions add full date conversion support
         } else {
             Ext.each(fieldItems, function(field) {
-                var name = field[nameProperty] || field.name; 
+                var name = field[nameProperty] || field.name;
                 if (field.type === Ext.data.Types.DATE && field.dateFormat) {
                     data[name] = me.writeDate(field, record.get(field.name));
                 }
@@ -93,15 +93,16 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
         if(date===null || !Ext.isDefined(date)) { // <-- added support for null and undefined
             return date;
         }
-        
-        var dateFormat = field.dateFormat || (field.getDateFormat ? field.getDateFormat() : false) || 'timestamp'; // <-- fixed this line
+
+        // fixed the single-next line below
+        var dateFormat = field.dateFormat || (field.getDateFormat ? field.getDateFormat() : false) || 'timestamp';
         switch (dateFormat) {
-            case 'timestamp':
-                return date.getTime()/1000;
-            case 'time':
-                return date.getTime();
-            default:
-                return Ext.Date.format(date, dateFormat);
+        case 'timestamp':
+            return date.getTime()/1000;
+        case 'time':
+            return date.getTime();
+        default:
+            return Ext.Date.format(date, dateFormat);
         }
     }
 });

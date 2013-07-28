@@ -33,7 +33,7 @@ Ext.define('Bancha.data.Model', {
         'Bancha.data.writer.ConsistentJson'
     ],
     uses: [
-       'Bancha.Main'
+        'Bancha.Main'
     ],
 
     /**
@@ -100,26 +100,27 @@ Ext.define('Bancha.data.Model', {
          */
         applyCakeSchema: function(modelCls, extJsOnClassExtendedData) {
             var modelName = modelCls.getName().split('.').pop(), // CakePHP model name, e.g. "User"
-                config,
-                // below is used for Ext JS 4.0 support
-                fields,
-                i = 0, len;
+                config;
 
             if(!Bancha.initialized) {
                 Bancha.init();
             }
-            
+
             if(!Bancha.isRemoteModel(modelName)) {
                 // IFDEBUG
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
-                    msg: 'Bancha: Couldn\'t create the model "'+modelName+'" cause the model is not supported by the server (no remote model).'
+                    msg: [
+                        'Bancha: Couldn\'t create the model "'+modelName+'" ',
+                        'cause the model is not supported by the server ',
+                        '(no remote model).'
+                    ].join('')
                 });
                 // ENDIF
                 return false;
             }
-            
+
             if(!Bancha.modelMetaDataIsLoaded(modelName)) {
                 // IFDEBUG
                 Ext.Error.raise({
@@ -130,7 +131,7 @@ Ext.define('Bancha.data.Model', {
                 // ENDIF
                 return false;
             }
-            
+
             // IFDEBUG
             if(!Ext.isDefined(Bancha.getModelMetaData(modelName).idProperty)) {
                 if(Ext.global.console && Ext.isFunction(Ext.global.console.warn)) {
@@ -141,7 +142,7 @@ Ext.define('Bancha.data.Model', {
                 }
             }
             // ENDIF
-            
+
             // configure the new model
             config = Bancha.getModelMetaData(modelName);
 
@@ -179,7 +180,7 @@ Ext.define('Bancha.data.Model', {
             if(Ext.isDefined(stub[method] && typeof stub[method] === 'function')) {
                 return stub[method];
             }
-            
+
             // function doesn't exit, create fake which will throw an error on first use
             var map = {
                     create : 'add',
@@ -191,10 +192,17 @@ Ext.define('Bancha.data.Model', {
                     Ext.Error.raise({
                         plugin: 'Bancha',
                         modelName: modelName,
-                        msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'sController->'+ map[method]+'(...). (If you have special inflection rules, the serverside is maybe looking for a different controller name, this is jsut a guess)'
+                        msg: [
+                            'Bancha: Tried to call '+modelName+'.'+method+'(...), ',
+                            'but the server-side has not implemented ',
+                            modelName+'sController->'+ map[method]+'(...). ',
+                            '(If you have special inflection rules, the server-side ',
+                            'is maybe looking for a different controller name, ',
+                            'this is just a guess)'
+                        ].join('')
                     });
                 };
-            
+
             // this is not part of the official Ext API!, but it seems to be necessary to do this for better bancha debugging
             fakeFn.directCfg = { // TODO testen
                 len: 1,
@@ -206,10 +214,16 @@ Ext.define('Bancha.data.Model', {
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
-                    msg: 'Bancha: Tried to call '+modelName+'.'+method+'(...), but the server-side has not implemented '+modelName+'sController->'+ map[method]+'(...). (If you have special inflection rules, the serverside is maybe looking for a different controller name)'
+                    msg: [
+                        'Bancha: Tried to call '+modelName+'.'+method+'(...), ',
+                        'but the server-side has not implemented ',
+                        modelName+'sController->'+ map[method]+'(...). ',
+                        '(If you have special inflection rules, the server-side ',
+                        'is maybe looking for a different controller name)'
+                    ].join('')
                 });
             };
-            
+
             return fakeFn;
         },
         // ENDIF
@@ -237,7 +251,9 @@ Ext.define('Bancha.data.Model', {
             stub = Bancha.getStubsNamespace()[modelName];
             return { // the proxy configuration
                 type: 'direct', // TODO batch requests: http://www.sencha.com/forum/showthread.php?156917
-                batchActions: false, // don't batch requests on the store level, they will be batched batched by Ext.Direct on the application level
+                // don't batch requests on the store level, they will be batched 
+                // by Ext.Direct on the application level
+                batchActions: false,
                 api: {
                     /* IFPRODUCTION
                     // if method is not supported by remote it get's set to undefined
@@ -255,7 +271,7 @@ Ext.define('Bancha.data.Model', {
                 },
                 // because of an error in ext the following directFn def. has to be 
                 // defined, which should be read from api.read instead...
-                // see http://www.sencha.com/forum/showthread.php?134505-Model-proxy-for-a-Store-doesn-t-seem-to-work-if-the-proxy-is-a-direct-proxy&p=606283&viewfull=1#post606283
+                // see http://www.sencha.com/forum/showthread.php?134505&p=606283&viewfull=1#post606283
                 /* IFPRODUCTION
                 directFn: stub.read,
                 ENDIF */

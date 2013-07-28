@@ -162,7 +162,7 @@ Ext.define('Bancha.Logger', {
             Ext.global.console.info(message);
             return;
         }
-        
+
         // there is no specific log function, use default log
         Ext.global.console.log(typeText+': '+message);
     }
