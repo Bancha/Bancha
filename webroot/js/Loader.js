@@ -50,20 +50,22 @@ Ext.define('Bancha.Loader', {
         
         /**
          * @private
-         * @param {Ext.loader.Interface} current default class loader
+         * @member Bancha.Loader
+         * @config {Bancha.loader.Interface} current default class loader
          */
         defaultLoader: null,
 
         /**
+         * @private
          * @member Ext.Loader
+         * 
          * Registers a new Loader as the default loader inside
          * the whole application.  
          *
-         * To create your own loader extend {class Ext.loader.Interface}
+         * To create your own loader extend {class Bancha.loader.Interface}
          * and add your own logic. You might chain loaders.
          * 
-         * @member Ext.Loader
-         * @param  {Ext.loader.Interface} loader The loader to use
+         * @param  {Bancha.loader.Interface} loader The loader to use
          * @return {void}
          */
         setDefaultLoader: function(loader) {
@@ -71,10 +73,12 @@ Ext.define('Bancha.Loader', {
         },
 
         /**
+         * @private
+         * @member Ext.Loader
+         * 
          * Returns the currently set up loader.
          * 
-         * @member Ext.Loader
-         * @return {Ext.loader.Interface|null} application class loader
+         * @return {Bancha.loader.Interface|null} application class loader
          */
         getDefaultLoader: function() {
             return this.defaultLoader;
@@ -83,6 +87,8 @@ Ext.define('Bancha.Loader', {
 
         /**
          * @private // the override is private
+         * @member Ext.Loader
+         * 
          * The highjacked #loadScriptFile doesn't get the className as 
          * argument, only the filePath. Inside #require #getPath is 
          * called.  
@@ -91,7 +97,6 @@ Ext.define('Bancha.Loader', {
          * Yes, this is a dirty hack. But it prevents a lot of 
          * code duplication and update issues.
          *
-         * @member Ext.Loader
          * @inheritdoc Ext.Loader#getPath
          */
         getPath: Ext.Function.createInterceptor(Ext.Loader.getPath, function(className) {
@@ -99,6 +104,9 @@ Ext.define('Bancha.Loader', {
         }, Ext.Loader),
 
         /**
+         * @private
+         * @member Ext.Loader
+         * 
          * The original method Loads a script file, supports both asynchronous and 
          * synchronous approaches.  
          *
@@ -140,7 +148,7 @@ Ext.define('Bancha.Loader', {
                     current = current.getParentLoader();
                     if(current.handles(className)) {
                         current.loadClass(className, onLoad, onError, scope, synchronous);
-                    return false; // don't call the original fn
+                        return false; // don't call the original fn
                     }
                 }
             }
