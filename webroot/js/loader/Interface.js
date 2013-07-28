@@ -21,15 +21,16 @@
  * @class Bancha.loader.Interface
  * 
  * A base class for implementing alternative loaders for 
- * {@class Ext.Loader}. These can be chained.  
+ * {@link Ext.Loader}. These can be chained.  
  *
  * Defining your own loader requires you to implement 
- * #handles and #loadClass. Also set the #singleton 
- * property to true.  
+ * {@link #handles} and {@link #loadClass}. Also set the 
+ * singleton property to true.  
  *
- * Then call Ext.Loader.setDefaultLoader(loader);  
+ * Then call 
+ *     Ext.Loader.setDefaultLoader(loader);  
  *
- * For more information see {@class Bancha.Loader}.
+ * For more information see {@link Bancha.Loader}.
  * 
  * @since Bancha v 2.0.0
  * @author Roland Schuetz <mail@rolandschuetz.at>

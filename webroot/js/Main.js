@@ -117,6 +117,7 @@ Ext.define('Bancha', {
     /**
      * @private
      * @export
+     * @property
      * The internal reference to the Remote API.  
      *
      * Export annotation is for Google Closure compiler.  

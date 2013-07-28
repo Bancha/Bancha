@@ -28,6 +28,8 @@
  * This class does not require any method, all necesarry 
  * adjustments are done during initialization.  
  *
+ * For more information see the {@link Bancha} singleton.
+ * 
  * @since Bancha v 2.0.0
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>

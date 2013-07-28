@@ -20,7 +20,7 @@
  * @private
  * @class Bancha.data.override.Validations
  * 
- * Add custom validators to {@class Ext.data.validations}.  
+ * Add custom validators to Ext.data.validations.  
  * 
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>

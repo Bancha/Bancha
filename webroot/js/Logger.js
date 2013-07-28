@@ -21,7 +21,7 @@
  * @class Bancha.Logger
  *
  * This class encalpsulates some logging features.
- * For more see {Bancha.Logger.log}
+ * For more see {@link Bancha.Logger.log}
  * 
  * example usage:
  *     Bancha.log('My error message');
