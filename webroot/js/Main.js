@@ -52,12 +52,12 @@ if (!Array.prototype.reduce) {
 
 /**
  * @class Bancha
- * 
- * This singleton is the core of Bancha on the client-side.  
- * For documentation on how to use it please look at the docs at 
- * banchaproject.org  
- * 
- * Usage:  
+ *
+ * This singleton is the core of Bancha on the client-side.
+ * For documentation on how to use it please look at the docs at
+ * banchaproject.org
+ *
+ * Usage:
  *     // load Bancha
  *     Ext.Loader.setPath('Bancha','/Bancha/js');
  *     Ext.syncRequire('Bancha.Initializer');
@@ -69,12 +69,12 @@ if (!Array.prototype.reduce) {
  *         requires: [
  *             'Bancha.model.Article'
  *         ]
- *            
+ *
  *         ... your code ...
- *             
+ *
  *     }); //eo define
- *   
- * To handle remote exceptions, please override 
+ *
+ * To handle remote exceptions, please override
  * {@link Bancha#onRemoteException Bancha.onRemoteException(proxy, response, operation)}
  *
  * @singleton
@@ -97,7 +97,7 @@ Ext.define('Bancha', {
         'Bancha.data.override.Validations'
     ],
 
-    // If you want to include Bancha using the Microloader use this class name 
+    // If you want to include Bancha using the Microloader use this class name
     // instead of simply 'Bancha', sine this is also a namespace
     alternateClassName: [
         'Bancha.Main'
