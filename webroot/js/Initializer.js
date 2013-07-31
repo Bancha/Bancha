@@ -16,17 +16,17 @@
 /**
  * @class Bancha.Initializer
  *
- * Initializes all core features of Bancha.  
- * 
- * This needs to be loaded synchronously to make sure that 
- * all required Bancha models are loaded using the Bancha 
- * loader.  
+ * Initializes all core features of Bancha.
  *
- * This class does not require any method, all necesarry 
- * adjustments are done during initialization.  
+ * This needs to be loaded synchronously to make sure that
+ * all required Bancha models are loaded using the Bancha
+ * loader.
+ *
+ * This class does not require any method, all necesarry
+ * adjustments are done during initialization.
  *
  * For more information see the {@link Bancha} singleton.
- * 
+ *
  * @since Bancha v 2.0.0
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
