@@ -108,7 +108,7 @@ Ext.define('Bancha', {
     /**
      * @private
      * @property
-     * This property only exists in the debug version to indicate 
+     * This property only exists in the debug version to indicate
      * to jasmine tests that this is a debug version
      */
     debugVersion: true,
@@ -118,9 +118,9 @@ Ext.define('Bancha', {
      * @private
      * @export
      * @property
-     * The internal reference to the Remote API.  
+     * The internal reference to the Remote API.
      *
-     * Export annotation is for Google Closure compiler.  
+     * Export annotation is for Google Closure compiler.
      *
      * Default: If the remote api is already loaded, keep it.
      * Otherwise set to undefined.
@@ -134,19 +134,19 @@ Ext.define('Bancha', {
     version: 'PRECOMPILER_ADD_RELEASE_VERSION',
     /**
      * @property
-     * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')  
-     * 
-     * Only change this if you changed 'Bancha.remote_api' in the CakePHP 
+     * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')
+     *
+     * Only change this if you changed 'Bancha.remote_api' in the CakePHP
      * config, never change after {@link Bancha#init}
      */
     remoteApi: 'Bancha.REMOTE_API',
     /**
      * @private
      * @property
-     * This function should normally not be changed, it corresponds to the 
-     * server-side BanchaController method.  
-     * 
-     * The path of the RCP for loading model meta data from the server, 
+     * This function should normally not be changed, it corresponds to the
+     * server-side BanchaController method.
+     *
+     * The path of the RCP for loading model meta data from the server,
      * without the namespace. (Default: 'Bancha.loadMetaData')
      */
     metaDataLoadFunction: 'Bancha.loadMetaData',
@@ -158,19 +158,19 @@ Ext.define('Bancha', {
     uidPropertyName: '_UID',
     /**
      * @property {Null|String}
-     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API 
-     * configuration on {@link Bancha#init}.  
-     * 
-     * null means no namespace, this is not recommanded. The namespace can be 
-     * set in CakePHP:  
-     *     Configure:write('Bancha.namespace','Bancha.RemoteStubs'); 
+     * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API
+     * configuration on {@link Bancha#init}.
+     *
+     * null means no namespace, this is not recommanded. The namespace can be
+     * set in CakePHP:
+     *     Configure:write('Bancha.namespace','Bancha.RemoteStubs');
      */
     namespace: null,
     /**
      * @private
      * @property
      * The namespace in which all Bancha models are initialized to. Please only
-     * change BEFORE for creation of any Bancha model.  
+     * change BEFORE for creation of any Bancha model.
      * There's normally no need to change this. (Default: 'Bancha.model')
      */
     modelNamespace: 'Bancha.model',
@@ -182,12 +182,12 @@ Ext.define('Bancha', {
     initialized: false,
     /**
      * @private
-     * Safely finds an object, used internally for getStubsNamespace and 
-     * getRemoteApi.  
-     * 
-     * (This function is tested in RS.util, not part of the package testing, 
+     * Safely finds an object, used internally for getStubsNamespace and
+     * getRemoteApi.
+     *
+     * (This function is tested in RS.util, not part of the package testing,
      * but it is tested)
-     * 
+     *
      * @param {String} path A period ('.') separated path to the desired object (String).
      * @param {String} lookIn (optional) The object on which to perform the lookup.
      * @param {String} prototypes (optional) False to not look in prototypes (to be tested)
@@ -294,7 +294,7 @@ Ext.define('Bancha', {
     },
     /**
      * @deprecated Bancha internally calls this function, you don't need to explicitly use it anymore
-     * Inits Bancha with the RemotingProvider, always init before using Bancha.  
+     * Inits Bancha with the RemotingProvider, always init before using Bancha.
      * ({@link Bancha#onModelReady} will init automatically)
      */
     /* jshint maxstatements: 50, maxcomplexity: 20 */ /* don't optimize this anymore, it's already deprecated */
@@ -315,7 +315,7 @@ Ext.define('Bancha', {
             } catch(e) {
                 // this migh have been triggered before domready
                 // so it's possible that Ext.Msg fail, in these
-                // cases show an simply alert and let the 
+                // cases show an simply alert and let the
                 // exception bubble up
                 Ext.global.alert(err.msg);
             }
@@ -323,7 +323,7 @@ Ext.define('Bancha', {
 
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
 
-            // the remote api is not available, check if this is because of 
+            // the remote api is not available, check if this is because of
             // an error on the bancha-api.js or because it is not included
             Ext.syncRequire('Bancha.REMOTE_API');
 
@@ -514,12 +514,12 @@ Ext.define('Bancha', {
     },
     /* jshint maxstatements: 25, maxcomplexity: 10 */
     /**
-     * If you are using Bancha when CakePHP is in debug mode this 
-     * function will be set up during initializiation to setup 
-     * debugging error handlers.  
-     * 
-     * In production mode this function will be empty. This 
-     * function is only triggered when cakes debug level is 
+     * If you are using Bancha when CakePHP is in debug mode this
+     * function will be set up during initializiation to setup
+     * debugging error handlers.
+     *
+     * In production mode this function will be empty. This
+     * function is only triggered when cakes debug level is
      * greater then zero.
      */
     setupDebugErrorHandler: function() {
@@ -628,20 +628,20 @@ Ext.define('Bancha', {
 
     /**
      * @deprecated Instead of preloading dependencies imperatively, use the uses
-     * property on classes to load optional classes. Description below is from 
+     * property on classes to load optional classes. Description below is from
      * Bancha 1.3
-     * 
-     * Preloads the models metadata from the server to create a new model.  
-     *  
-     * __When to use it:__ You should use this function if you don't want to load 
-     * the metadata at startup, but want to load it before it is (eventually) 
-     * used to have a more reactive interface.  
-     * 
+     *
+     * Preloads the models metadata from the server to create a new model.
+     *
+     * __When to use it:__ You should use this function if you don't want to load
+     * the metadata at startup, but want to load it before it is (eventually)
+     * used to have a more reactive interface.
+     *
      * __Attention:__ In most cases it's best to load all model metadata on startup
-     * when the api is loaded, please see the Bancha CakePHP install guide for more 
-     * information. This is mostly usefull if you can guess that a user will need a 
+     * when the api is loaded, please see the Bancha CakePHP install guide for more
+     * information. This is mostly usefull if you can guess that a user will need a
      * model soon which wasn't loaded at startup or if you want to load all needed
-     * models right after startup with something like: 
+     * models right after startup with something like:
      *     Ext.onReady(
      *         Ext.Function.createDelayed(
      *             function() { Bancha.preloadModelMetaData(['User','Article','Post']); },
@@ -658,7 +658,7 @@ Ext.define('Bancha', {
     },
     /**
      * @private
-     * Returns the url to load the metadata. Simple separation of concerns for 
+     * Returns the url to load the metadata. Simple separation of concerns for
      * better debugging and testing.
      *
      * @since Bancha v 2.0.0
@@ -682,11 +682,11 @@ Ext.define('Bancha', {
     },
     /**
      * @private
-     * This function loads model metadata from the server to create a new model definition.  
+     * This function loads model metadata from the server to create a new model definition.
      *
      * This function should not be directly used, instead require model classed in your class
      * definitions.
-     * 
+     *
      * @since Bancha v 2.0.0
      * @param {Array|String}  models            An array of the models to preload or a string with one model name
      * @param {Function}      callback          (optional) A callback function
@@ -778,7 +778,7 @@ Ext.define('Bancha', {
     /**
      * @private
      * This function is triggered when the server returned the metadata, loaded via #loadModelMetaData.
-     * 
+     *
      * @since Bancha v 2.0.0
      * @param {Array|String}  models            An array of the models to preload or a string with one model name
      * @param {Function}      callback          (optional) A callback function
@@ -866,16 +866,16 @@ Ext.define('Bancha', {
 
     /**
      * Loads and instanciates a model if not already done and then
-     * calls the callback function.  
-     * 
-     * If Bancha is not already initialized it will wait for 
+     * calls the callback function.
+     *
+     * If Bancha is not already initialized it will wait for
      * {@link http://docs.sencha.com/ext-js/4-1/#!/api/Ext-property-isReady Ext.isReady}
-     * and calls {@link Bancha#init} before model creation.  
-     * 
+     * and calls {@link Bancha#init} before model creation.
+     *
      * See {@link Bancha Bancha class explaination} for an example.
      * @param {String|Array} modelNames A name of the model or an array of model names
-     * @param {Function} callback (optional) A callback function, the first argument is:  
-     *  - a model class if input modelNames was an string  
+     * @param {Function} callback (optional) A callback function, the first argument is:
+     *  - a model class if input modelNames was an string
      *  - an object with model names as keys and models as arguments if an array was given
      * @param {Object} scope (optional) The scope of the callback function
      */
@@ -1054,7 +1054,7 @@ Ext.define('Bancha', {
     },
     /**
      * Returns the current CakePHP debug level
-     * 
+     *
      * @param {Number} defaultValue (optional) The number to return if the Remote API is not yet initialized (Default: undefined)
      * @return the current debug level, or if not available the default
      */
@@ -1068,7 +1068,7 @@ Ext.define('Bancha', {
     },
     /**
      * This is a synonym for {Bancha.Logger.log}
-     * 
+     *
      * @param  {String}  message        The error message
      * @param  {String}  type           (optional) Either 'error', 'warn' or 'missing_translation' (default is 'error')
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
@@ -1090,7 +1090,7 @@ Ext.define('Bancha', {
         return Bancha.Logger.log.apply(Bancha.Logger,arguments);
     },
     /**
-     * In production mode (or if errors occur when Bancha is not initialized) this function will be called. 
+     * In production mode (or if errors occur when Bancha is not initialized) this function will be called.
      * This function will log the error to the server and then throw it.
      * You can overwrite this function with your own implementation at any time.
      *
@@ -1100,7 +1100,7 @@ Ext.define('Bancha', {
     onError: function(stackInfo) {
 
         // just log the error
-        // depending on debug level this is logged 
+        // depending on debug level this is logged
         // to the console or to the server
         Bancha.log(Ext.encode(stackInfo), 'error');
     },
@@ -1108,7 +1108,7 @@ Ext.define('Bancha', {
     /**
      * @property {Function|False} onRemoteException
      * This function will be added to each model to handle remote errors.
-     * (modelConfig.listeners.exception).  
+     * (modelConfig.listeners.exception).
      * Use false to don't have exception handling on models.
      */
     onRemoteException: function(proxy, response, operation){
@@ -1122,8 +1122,8 @@ Ext.define('Bancha', {
 
     /**
      * @property {Function|False} onAuthException
-     * You can define your custom authetification error handler. This function 
-     * is triggered every time the CakePHP AuthComponent prevented the 
+     * You can define your custom authetification error handler. This function
+     * is triggered every time the CakePHP AuthComponent prevented the
      * execution of a Bancha request.
      * @param {String} exceptionType This is either 'BanchaAuthLoginException' or 'BanchaAuthAccessRightsException'
      * @param {String} message       The exception message from the server-side.
@@ -1133,7 +1133,7 @@ Ext.define('Bancha', {
 
     /**
      * Checks if a Bancha model is already created (convinience function)
-     * 
+     *
      * @param {String} modelName The model name (without any namespace)
      * @return {Boolean} True if the model exists
      */
@@ -1142,15 +1142,15 @@ Ext.define('Bancha', {
     },
 
     /**
-     * @deprecated Please only define your model on the backend to have a clean separation of concerns. 
+     * @deprecated Please only define your model on the backend to have a clean separation of concerns.
      * This function will be removed soon.
-     * 
+     *
      * This method creates a {@link Bancha.data.Model} with your additional model configs,
-     * if you don't have any additional configs just use the convienience method {@link #getModel}.  
-     * 
-     * In the debug version it will raise an Ext.Error if the model can't be 
+     * if you don't have any additional configs just use the convienience method {@link #getModel}.
+     *
+     * In the debug version it will raise an Ext.Error if the model can't be
      * or is already created, in production it will only return false.
-     * 
+     *
      * @param {String} modelName The name of the model
      * @param {Object} modelConfig A standard Ext.data.Model config object
                                    In ExtJS this will be directly applied.
@@ -1181,8 +1181,8 @@ Ext.define('Bancha', {
     },
     /**
      * @private
-     * This function simply defines a Bancha model.  
-     * 
+     * This function simply defines a Bancha model.
+     *
      * Internal usage, because from getLoadedModel should not trigger deprecated warnings.
      *
      * @inheritdoc #createModel
@@ -1195,18 +1195,18 @@ Ext.define('Bancha', {
     },
     /**
      * @deprecated Bancha allows to load dependencies through the normal Ext.Loader,
-     * therefore please use the require property in your class definitions, or 
-     * Ext.syncRequire('Bancha.model.SomeModel') to synchronously require a model.  
-     * 
-     * Get a Bancha model by name.  
-     * If it isn't already defined this function will define the model.  
-     * 
-     * In the debug version it will raise an Ext.Error if the model can't 
-     * be created, in production it will just return null.  
+     * therefore please use the require property in your class definitions, or
+     * Ext.syncRequire('Bancha.model.SomeModel') to synchronously require a model.
      *
-     * If the model definition is not yet loaded, it will synchronously 
-     * load the definition before returning.  
-     * 
+     * Get a Bancha model by name.
+     * If it isn't already defined this function will define the model.
+     *
+     * In the debug version it will raise an Ext.Error if the model can't
+     * be created, in production it will just return null.
+     *
+     * If the model definition is not yet loaded, it will synchronously
+     * load the definition before returning.
+     *
      * @param {String} modelName The name of the model
      * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist
      * @member Bancha
@@ -1222,14 +1222,14 @@ Ext.define('Bancha', {
     },
     /**
      * @private
-     * Get a Bancha model by name.  
-     * If it isn't already defined this function will define the model.  
-     * 
-     * In the debug version it will raise an Ext.Error if the model can't 
-     * be created, in production it will just return null.  
+     * Get a Bancha model by name.
+     * If it isn't already defined this function will define the model.
+     *
+     * In the debug version it will raise an Ext.Error if the model can't
+     * be created, in production it will just return null.
      *
      * This function will not try to load metadata, instead it will fail!
-     * 
+     *
      * @param {String} modelName The name of the model
      * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist
      * @member Bancha
@@ -1248,8 +1248,8 @@ Ext.define('Bancha', {
     Localizer: {
         /**
          * @property
-         * The default language code for translations.   
-         * Use the getter and setter methods!   
+         * The default language code for translations.
+         * Use the getter and setter methods!
          * (Default: 'eng')
          */
         currentLang: 'eng',
@@ -1333,9 +1333,9 @@ Ext.define('Bancha', {
         },
         /**
          * Translates an given string to the given language.
-         * 
+         *
          * If no locale is defined the language is taken from {@link #currentLang}.
-         * 
+         *
          * @param {String} key The string to translate
          * @param {String} langCode A three letter language code, same as in cakephp (Default from {@link #currentLang})
          * @return {String} The translated string
@@ -1369,8 +1369,8 @@ Ext.define('Bancha', {
          * Additional arguments are used to replace %s (for string) and %d (for number).
          *
          * @param {String}    key          The string to translate
-         * @param {String...} replacements An arbitrary number of additional strings 
-         *                                 used to replace %s (for string) and 
+         * @param {String...} replacements An arbitrary number of additional strings
+         *                                 used to replace %s (for string) and
          *                                 %d (for number) in the key string.
          * @return {String}                The translated string
          */
@@ -1426,10 +1426,10 @@ Ext.define('Bancha', {
      * Additional arguments are used to replace %s (for string) and %d (for number).
      *
      * This is a convenience function for {@link Bancha.Localizer#getLocalizedStringWithReplacements}.
-     * 
+     *
      * @param {String}    key          The string to translate
-     * @param {String...} replacements An arbitrary number of additional strings 
-     *                                 used to replace %s (for string) and 
+     * @param {String...} replacements An arbitrary number of additional strings
+     *                                 used to replace %s (for string) and
      *                                 %d (for number) in the key string.
      * @return {String}                The translated string
      * @member Bancha
