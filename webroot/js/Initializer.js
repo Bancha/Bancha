@@ -39,6 +39,10 @@ if(Ext.Loader) {
     if(!Ext.Loader.getConfig('paths')['Bancha.REMOTE_API']) {
         Ext.Loader.setPath('Bancha.REMOTE_API', Ext.Loader.getPath('Bancha')+'/../../bancha-api-class/models/all.js');
     }
+    if(!Ext.Loader.getConfig('paths')['Bancha.scaffold']) {
+        // Since CakePHP does not follow symlinks we need to setup a second path for Bancha Scaffold
+        Ext.Loader.setPath('Bancha.scaffold', Ext.Loader.getPath('Bancha')+'/../BanchaScaffold/src/');
+    }
 }
 
 Ext.define('Bancha.Initializer', {

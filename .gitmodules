@@ -1,4 +1,8 @@
 [submodule "webroot/js/tracekit"]
 	path = webroot/js/tracekit
 	url = git://github.com/Bancha/TraceKit.git
-    update = checkout
+	update = checkout
+[submodule "webroot/BanchaScaffold"]
+	path = webroot/BanchaScaffold
+	url = git://github.com/Bancha/BanchaScaffold.git
+	update = checkout
