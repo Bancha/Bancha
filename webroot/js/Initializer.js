@@ -41,7 +41,7 @@ if(Ext.Loader) {
     }
     if(!Ext.Loader.getConfig('paths')['Bancha.scaffold']) {
         // Since CakePHP does not follow symlinks we need to setup a second path for Bancha Scaffold
-        Ext.Loader.setPath('Bancha.scaffold', Ext.Loader.getPath('Bancha')+'/../BanchaScaffold/src/');
+        Ext.Loader.setPath('Bancha.scaffold', Ext.Loader.getPath('Bancha')+'/scaffold/src');
     }
 }
 
