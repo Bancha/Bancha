@@ -2,7 +2,7 @@
 	path = webroot/js/tracekit
 	url = git://github.com/Bancha/TraceKit.git
 	update = checkout
-[submodule "webroot/BanchaScaffold"]
-	path = webroot/BanchaScaffold
+[submodule "webroot/js/scaffold"]
+	path = webroot/js/scaffold
 	url = git://github.com/Bancha/BanchaScaffold.git
 	update = checkout
