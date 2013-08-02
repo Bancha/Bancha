@@ -147,7 +147,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		// Cake has some special params like paginate, pass and named. Assure that these are there.
 		$this->assertTrue(isset($requests[0]['pass']));
 		$this->assertTrue(isset($requests[0]['named']));
-		
+
 		// ID needs to be added to the 'pass' array.
 		$this->assertEquals(42, $requests[0]['pass']['id']);
 
@@ -179,7 +179,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 	}
 
 /**
- * Transforms one Ext JS request for Bancha into a CakePHP request. 
+ * Transforms one Ext JS request for Bancha into a CakePHP request.
  * Need to set the plugin value.
  */
 	function testGetRequestsBancha() {

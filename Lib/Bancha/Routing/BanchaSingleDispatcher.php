@@ -19,7 +19,7 @@ App::uses('Dispatcher', 'Routing');
 if(substr(Configure::version(), 2, 3) < 2) {
 	/**
 	 * See BanchaSingleDispatcher class.
-	 * 
+	 *
 	 * @package       Bancha.Lib.Bancha.Routing
 	 * @since         Bancha v 2.0.0
 	 * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -28,7 +28,7 @@ if(substr(Configure::version(), 2, 3) < 2) {
 		/**
 		 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
 		 * applies the routes.
-		 * 
+		 *
 		 * This function will be used for CakePHP 2.0.0 till 2.1.5
 		 *
 		 * @param CakeRequest $request CakeRequest object to mine for parameter information.
@@ -46,7 +46,7 @@ if(substr(Configure::version(), 2, 3) < 2) {
 } else {
 	/**
 	 * See BanchaSingleDispatcher class.
-	 * 
+	 *
 	 * @package       Bancha.Lib.Bancha.Routing
 	 * @since         Bancha v 2.0.0
 	 * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -55,7 +55,7 @@ if(substr(Configure::version(), 2, 3) < 2) {
 		/**
 		 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
 		 * applies the routes.
-		 * 
+		 *
 		 * This function will be used for CakePHP 2.2.0+
 		 *
 		 * @param CakeEvent $event containing the request, response and additional params

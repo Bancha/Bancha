@@ -25,8 +25,8 @@ if ( false === function_exists('lcfirst') ) {
 
 /**
  * BanchaBahavior
- * 
- * The behaviour extends remotly available models with the 
+ *
+ * The behaviour extends remotly available models with the
  * necessary functions to use Bancha.
  *
  * @package       Bancha.Model.Behavior
@@ -63,12 +63,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	);
 
 	/**
-	 * since cakephp deletes $Model->data after a save action 
+	 * since cakephp deletes $Model->data after a save action
 	 * we keep the necessary return values here, access through
 	 * $Model->getLastSaveResult();
 	 */
 	private $result = array();
-	
+
 	/**
 	 * the default behavor configuration
 	 */
@@ -96,7 +96,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		'excludedFields' => array()
 	);
 	/**
-	 * Sets up the BanchaRemotable behavior. For config options see 
+	 * Sets up the BanchaRemotable behavior. For config options see
 	 * http://docs.banchaproject.org/resources/Advanced-Configurations.html#bancharemotablebehavior-configurations
 	 *
 	 * @param Model $Model instance of model
@@ -176,7 +176,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$fields = array_merge(
 			array_keys($Model->schema()), // first get all model fields
 			array_keys($Model->virtualFields)); // and add all virtual fields
-		
+
 
 		// if exposedFields is an array, match
 		if(isset($settings['exposedFields']) && is_array($settings['exposedFields'])) {
@@ -266,12 +266,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * Filters all non-exposed fields from an indivudal record.
 	 *
 	 * This function expects only the record data in the following
-	 * form:  
+	 * form:
 	 *     array(
 	 *         'fieldName'  => 'fieldValue',
 	 *         'fieldName2' => 'fieldValue2',
 	 *     )
-	 * 
+	 *
 	 * @param  array $recData The record data to filter
 	 * @return array          Returns data in the same structure as input, but filtered.
 	 */
@@ -297,12 +297,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 *	    {type: 'belongsTo', model: 'Bancha.model.User',    foreignKey: 'user_id',    name: 'user',     getterName: 'getUser',  setterName: 'setUser'}
 	 *   ]
 	 * </code>
-	 *   
+	 *
 	 *   (source http://docs.sencha.com/ext-js/4-0/#/api/Ext.data.Model)
-	 *   
+	 *
 	 *   in cakephp all association types are a property on the model containing a full configuration, like
-	 *   <code> Array ( [Article] => Array ( [className] => Article [foreignKey] => user_id [dependent] => 
-	 *          [conditions] => [fields] => [order] => [limit] => [offset] => [exclusive] => [finderQuery] => 
+	 *   <code> Array ( [Article] => Array ( [className] => Article [foreignKey] => user_id [dependent] =>
+	 *          [conditions] => [fields] => [order] => [limit] => [offset] => [exclusive] => [finderQuery] =>
 	 *          [counterQuery] => ) )</code>
 	 *
 	 * @param Model $Model instance of model
@@ -327,8 +327,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				}
 
 				$assocs[] = array(
-					'type' => $type, 
-					'model' => 'Bancha.model.'.$config['className'], 
+					'type' => $type,
+					'model' => 'Bancha.model.'.$config['className'],
 					'foreignKey' => $config['foreignKey'],
 					'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
 					'setterName' => 'set'.$name,
@@ -405,9 +405,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			array(
 				'name' => $field,
 				'allowNull' => $fieldSchema['null'],
-				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default']===null) ? 
+				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default']===null) ?
 									'' : $fieldSchema['default'] // if null is not allowed fall back to ''
-				), 
+				),
 			isset($this->types[$type]) ? $this->types[$type] : array('type'=>'auto'));
 	}
 
@@ -477,7 +477,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// Transform one rule per field with an string rule into our normalized structure
 		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
-		if(isset($fieldRule['rule']) && is_string($fieldRule['rule'])) { 
+		if(isset($fieldRule['rule']) && is_string($fieldRule['rule'])) {
 			$fieldRule['rule'] = array($fieldRule['rule']);
 		}
 
@@ -507,7 +507,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		// isUnique can only be tested on the server, 
+		// isUnique can only be tested on the server,
 		// so we would need some business logic for that
 		// as well, maybe integrate in Bancha Scaffold
 
@@ -540,7 +540,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				'type' => 'length',
 				'field' => $fieldName,
 			);
-			
+
 			if(isset($rules['minLength'])) {
 				$col['min'] = $rules['minLength']['rule'][1];
 			}
@@ -631,23 +631,23 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 			$setNumberRule = true;
 		}
-		
+
 		if(isset($rules['range'])) {
-			// this rule is a bit ambiguous in cake, it tests like this: 
+			// this rule is a bit ambiguous in cake, it tests like this:
 			// return ($check > $lower && $check < $upper);
 			// since ext understands it like this:
 			// return ($check >= $lower && $check <= $upper);
 			// we have to change the value
 			$min = $rules['range']['rule'][1];
 			$max = $rules['range']['rule'][2];
-			
+
 			if(isset($rules['numeric']['precision'])) {
 				// increment/decrease by the smallest possible value
 				$amount = 1*pow(10,-$rules['numeric']['precision']);
 				$min += $amount;
 				$max -= $amount;
 			} else {
-				
+
 				// if debug tell dev about problem
 				if(Configure::read('debug')>0) {
 					throw new CakeException(
@@ -657,7 +657,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 						"This error is only displayed in debug mode."
 					);
 				}
-				
+
 				// best guess
 				$min += 1;
 				$max += 1;
@@ -701,14 +701,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// Finally, use PHP's own file validation method.
 		return is_uploaded_file($upload_info['tmp_name']);
 	}
-		
+
 	// TODO remove workarround for 'file' validation
 	public function file($check) {
 		return true;
 	}
 
 	/**
-	 * After saving load the full record from the database to 
+	 * After saving load the full record from the database to
 	 * return to the frontend
 	 *
 	 * @param model $Model Model using this behavior
@@ -730,7 +730,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$this->result[$Model->alias] = $Model->read();
 			// $Model->recursive = $currentRecursive;
 		}
-		
+
 		return true;
 	}
 
@@ -762,7 +762,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		return $this->result[$Model->alias];
 	}
-	
+
 	/**
 	 * Builds a field list with all defined fields
 	 *
@@ -815,7 +815,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 	/**
 	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
-	 * 
+	 *
 	 * @param Model $Model the model using this behavior
 	 * @param Array $options Options passed from model::save(), see $options of model::save().
 	 * @return Boolean True if validate operation should continue, false to abort
@@ -825,13 +825,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// if not yet defined, create a field list to validate only the changes (empty records will still invalidate)
 			$Model->whitelist = empty($options['fieldList']) ? $this->buildFieldList($Model) : $options['fieldList']; // TODO how to not overwrite the whitelist?
 		}
-		
+
 		// start validating data
 		return true;
 	}
 	/**
 	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
-	 * 
+	 *
 	 * @param Model $Model the model using this behavior
 	 * @param Array $options
 	 * @return Boolean True if the operation should continue, false if it should abort
@@ -846,9 +846,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return true;
 	}
 	/**
-	 * Saves a records, either add or edit. 
+	 * Saves a records, either add or edit.
 	 * See $this->_defaults['useOnlyDefinedFields'] for an explanation
-	 * 
+	 *
 	 * @param Model $Model the model using this behavior
 	 * @param Array $data the data to save (first user argument)
 	 * @param Array $options the save options
@@ -858,7 +858,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// overwrite config for this commit
 		$config = $this->settings[$Model->alias]['useOnlyDefinedFields'];
 		$this->settings[$Model->alias]['useOnlyDefinedFields'] = true;
-		
+
 		// this should never be the case, cause Bancha cannot handle validation errors currently
 		// We expect to automatically send validation errors to the client in the right format in version 1.1
 		if($data) {
@@ -872,30 +872,30 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 			throw new BadRequestException($msg);
 		}
-		
+
 		$result[$Model->alias] = $Model->save($Model->data,$options);
-		
+
 		// set back
 		$this->settings[$Model->alias]['useOnlyDefinedFields'] = $config;
 		return $result[$Model->alias];
 	}
-	
+
 	/**
-	 * Commits a save operation for all changed data and 
+	 * Commits a save operation for all changed data and
 	 * returns the result in an extjs format
 	 * for return value see also getLastSaveResult()
-	 * 
+	 *
 	 * @param Model $Model the model is always the first param (cake does this automatically)
 	 * @param $data the data to save, first function argument
 	 */
 	public function saveFieldsAndReturn(Model $Model, $data=null) {
 		// save
 		$this->saveFields($Model,$data);
-		
+
 		// return ext-formated result
 		return $this->getLastSaveResult($Model);
 	}
-	
+
 	/**
 	 * convenience methods, just delete and then return $Model->getLastSaveResult();
 	 *
@@ -909,12 +909,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$Model->delete();
 		return $this->getLastSaveResult($Model);
 	}
-	
+
 	public function afterDelete(Model $Model) {
 		// if no exception was thrown so far the request was successfull
 		$this->result[$Model->alias] = true;
 	}
-	
+
 	/**
 	 * Returns an ExtJS formated array describing sortable fields
 	 * this is '$order' in cakephp

@@ -27,10 +27,10 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 /**
  * Test how the BanchaResponseTransformer handles primitive and non-primitive
  * results which are not tied to a model.
- * 
+ *
  * @param $cakeResponse cake response to transform
  * @param $expectedResponse the expected sencha response
- * 
+ *
  * @dataProvider transformNonModelRecordCasesDataProvider
  */
 	public function testTransformNonModelRecordCases($cakeResponse, $expectedResponse) {
@@ -309,7 +309,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		$this->assertEquals($expectedResponse, $result);
 	}
 
-	
+
 /**
  * Bancha understands cake responses with pagination data
  * @param $paginatedRecords cake response to transform
@@ -328,7 +328,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
 		$this->assertEquals($expectedResponse, $result);
 	}
-	
+
 	// data provider
 	public function getCakeRecords() {
 		return array(
@@ -380,7 +380,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 				)
 			)
 		);
-		
+
 		$expectedResponse = array(
 			'success' => true,
 			'total'   => 9,
@@ -412,7 +412,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array(
 			'excludedFields' => array('date', 'user_id')
 		));
-		
+
 		$result = BanchaResponseTransformer::transform($paginatedRecords, $request);
 		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
 		$this->assertEquals($expectedResponse, $result);

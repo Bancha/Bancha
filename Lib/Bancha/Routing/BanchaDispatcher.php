@@ -43,10 +43,10 @@ class BanchaDispatcher {
 
 		// CakePHP should think that every Bancha request is a POST request.
 		$_SERVER['REQUEST_METHOD'] = 'POST';
-		
+
 		// setup a handler for redirects
 		CakeEventManager::instance()->attach(array($this, 'redirectHandler'), 'Controller.beforeRedirect');
-		
+
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
 			$skip_request = false;
@@ -61,7 +61,7 @@ class BanchaDispatcher {
 					// dispatch the request
 					$response = new CakeResponse(array('charset' => Configure::read('App.encoding')));
 					$dispatcher->dispatch($request, $response, array('return' => true));
-					
+
 					// add result to response colection
 					$collection->addResponse(
 						$request['tid'],
@@ -93,9 +93,9 @@ class BanchaDispatcher {
 	/**
 	 * This handler will be called every time a redirect is triggered.
 	 * Instead of doing a redirect this handler with throw an exception,
-	 * createswhich will be catched by the BanchaDispatcher::dispatch  
+	 * createswhich will be catched by the BanchaDispatcher::dispatch
 	 * and a ExtJS/Sencha Touch exception.
-	 * 
+	 *
 	 * @since  Bancha v 2.0.0
 	 * @throws BanchaAuthLoginException If the user is not logged in and tried to access a denied method
 	 * @throws BanchaAuthAccessRightsException If the user is not authorized to access this method
@@ -122,9 +122,9 @@ class BanchaDispatcher {
 	/**
 	 * When a Controller throws a exception we will write it to the error log,
 	 * since this is in normal cases a unwanted behavior. In most cases you
-	 * want to return an array with success=>false to indicate to 
+	 * want to return an array with success=>false to indicate to
 	 * ExtJS/Sencha Touch that the request was not successfull.
-	 * 
+	 *
 	 * @since  Bancha v 2.0.0
 	 * @param  CakeRequest $request   The request which caused the error
 	 * @param  Exception   $exception The caugth exception

@@ -22,10 +22,10 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
 /**
  * BanchaCrudTest
  *
- * All these tests are using the full stack of CakePHP components, not only testing 
+ * All these tests are using the full stack of CakePHP components, not only testing
  * the functionallity of Bancha, but also that it is compatible to the current
  * CakePHP library (since bancha is using some internal methods)
- * 
+ *
  * @package       Bancha.Test.Case.System
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -45,11 +45,11 @@ class BanchaCrudTest extends CakeTestCase {
 
 
 	public function testAdd() {
-		
+
 		$config = ConnectionManager::enumConnectionObjects();
 		$this->skipIf(
 			$config['default']['datasource'] ===  'Database/Sqlite',
-			'Default database needs to be persistent for this test' 
+			'Default database needs to be persistent for this test'
 		);
 
 		// Build a request like it looks in Ext JS.
@@ -69,13 +69,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertNotNull($responses[0]->result->data->id);
 		$this->assertEquals('Hello World', $responses[0]->result->data->title);
 		$this->assertEquals(false, $responses[0]->result->data->published);
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('create', $responses[0]->method);
@@ -92,7 +92,7 @@ class BanchaCrudTest extends CakeTestCase {
 	public function testEdit() {
 		// used fixture:
 		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
-		
+
 		// Buld a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -109,11 +109,11 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-	
+
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('foobar', $responses[0]->result->data->title);
 		$this->assertEquals(1, $responses[0]->result->data->published); // check that all fields are added
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('update', $responses[0]->method);
@@ -121,7 +121,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, $responses[0]->tid);
 		$this->assertEquals(1, count($responses));
 	}
-	
+
 	/**
 	 * test form submission including the different request form of ext.direct
 	 */
@@ -134,25 +134,25 @@ class BanchaCrudTest extends CakeTestCase {
 			// articles data
 			'id'			=> 988,
 			'body'			=> 'changed',
-			
+
 			// ext stuff
 			'extTID'		=> 1,
 			'extAction'		=> 'Article',
 			'extMethod'		=> 'submit',
 			'extType'		=> 'rpc',
 		);
-		
+
 		// it's no upload, so use the default way to decode the response
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection('',$postData), array('return' => true)
 		));
-		
+
 		// test data (expected in default ext structure)
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('submit', $responses[0]->method);
@@ -165,8 +165,8 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->read(null,988);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
-	
-	
+
+
 	public function testSubmit_WithUpload() {
 		// used fixture:
 		// array('id' => 988, 'title' => 'Title 1', 'body' => 'Text 3, ...)
@@ -176,7 +176,7 @@ class BanchaCrudTest extends CakeTestCase {
 			// articles data
 			'id'			=> 988,
 			'body'			=> 'changed',
-			
+
 			// ext stuff
 			'extTID'		=> 1,
 			'extAction'		=> 'Article',
@@ -194,12 +194,12 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// decode by excluding the html part
 		$responses = json_decode(substr($result,22,-25));
-		
+
 		// test data (expected in default ext structure)
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('submit', $responses[0]->method);
@@ -212,8 +212,8 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->read(null,988);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
-	
-	
+
+
 	public function testDelete() {
 		// Preparation: create article
 		// used fixture:
@@ -234,14 +234,14 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test result
 		$this->assertEquals(true, $responses[0]->result->success);
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('destroy', $responses[0]->method);
 		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
 		$this->assertEquals(1, count($responses));
-		
+
 		// test if the record really got deleted
 		$article = ClassRegistry::init('Article');
 		$article->id = 988;
@@ -254,8 +254,8 @@ class BanchaCrudTest extends CakeTestCase {
 		// array('id' => 988, 'title' => 'Title 1', ...)
 		// array('id' => 989, 'title' => 'Title 2', ...)
 		// array('id' => 990, 'title' => 'Title 3', ...)
-	
-	
+
+
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -273,12 +273,12 @@ class BanchaCrudTest extends CakeTestCase {
 		));
 
 		// test data
-		
+
 		// only first and second element should be loaded
 		$this->assertEquals(2, count($responses[0]->result->data));
 		$this->assertEquals(988, $responses[0]->result->data[0]->id);
 		$this->assertEquals(989, $responses[0]->result->data[1]->id);
-		
+
 		// the counter should be 3
 		$this->assertEquals(3, $responses[0]->result->total);
 
@@ -346,11 +346,11 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// test empty data result
 		$this->assertTrue(is_array($responses[0]->result->data));
 		$this->assertEquals(0, count($responses[0]->result->data));
-		
+
 		// test success
 		$this->assertTrue($responses[0]->result->success);
 
@@ -385,21 +385,21 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// test data
 		$this->assertEquals(1, count($responses[0]->result->data));
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title);
-		
-		
+
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('read', $responses[0]->method);
 		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
 		$this->assertEquals(1, count($responses));
-		
-		
+
+
 		// now look for a second one
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -410,12 +410,12 @@ class BanchaCrudTest extends CakeTestCase {
 				'data'	=>array('id' => 989)
 			))
 		)));
-		
+
 		$dispatcher = new BanchaDispatcher();
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// test
 		$this->assertEquals(1, count($responses[0]->result->data));
 		$this->assertEquals(989, $responses[0]->result->data->id);
@@ -428,13 +428,13 @@ class BanchaCrudTest extends CakeTestCase {
 
 
 /**
- * Test the bancha stack, especially the dispatching with a multi-request 
+ * Test the bancha stack, especially the dispatching with a multi-request
  *
  */
 	public function testMultiRequest() {
 		// used fixture:
 		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
-		
+
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -469,21 +469,21 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('create', $responses[0]->method);
 		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
-		
+
 		$this->assertEquals('Article', $responses[1]->action);
 		$this->assertEquals('update', $responses[1]->method);
 		$this->assertEquals('rpc', $responses[1]->type);
 		$this->assertEquals(2, $responses[1]->tid);
-		
+
 		$this->assertEquals(2, count($responses));
-		
+
 
 		// test data for first request
 		$this->assertNotNull($responses[0]->result->data->id);
 		$this->assertEquals('Hello World', $responses[0]->result->data->title);
 		$this->assertEquals(false, $responses[0]->result->data->published);
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
-		
+
 		// test data for second request
 		$this->assertEquals(988, $responses[1]->result->data->id);
 		$this->assertEquals('foobar', $responses[1]->result->data->title);

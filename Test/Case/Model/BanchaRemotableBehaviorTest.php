@@ -57,19 +57,19 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	function tearDown() {
 		ClassRegistry::flush();
 	}
-	
+
 
 
 	/**
 	 * Test if the internally used _getExposedFields method always
 	 * calculates the correct set of fields to expose.
-	 * 
+	 *
 	 * @dataProvider getExposedFieldsDataProvider
 	 */
 	public function testGetExposedFields($behaviorConfig, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
 		$this->assertEquals($result, $expecedResult);
 	}
@@ -109,9 +109,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		);
 	}
 	/**
-	 * Test if the internally used _getExposedFields method 
+	 * Test if the internally used _getExposedFields method
 	 * throws exceptions if misconfigured in debug mode
-	 * 
+	 *
 	 * @dataProvider getExposedFieldsDataProvider_Exceptions
 	 * @expectedException CakeException
 	 */
@@ -157,15 +157,15 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test if that isExposedField already returns the corret value 
+	 * Test if that isExposedField already returns the corret value
 	 * from given behvor config.
-	 * 
+	 *
 	 * @dataProvider isExposedFieldDataProvider
 	 */
 	public function testIsExposedField($behaviorConfig, $fieldName, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->isExposedField($TestModel, $fieldName);
 		$this->assertEquals($result, $expecedResult);
 	}
@@ -200,13 +200,13 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Test if that filterRecord filters all non-exposed fields
 	 * from an indivudal record
-	 * 
+	 *
 	 * @dataProvider filterRecordDataProvider
 	 */
 	public function testFilterRecord($behaviorConfig, $input, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->filterRecord($TestModel, $input);
 		$this->assertEquals($result, $expecedResult);
 	}
@@ -272,13 +272,13 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Test if that filterRecords filters all non-exposed fields
 	 * from all possible inputs (see test provider)
-	 * 
+	 *
 	 * @dataProvider filterRecordsDataProvider
 	 */
 	public function testFilterRecords($behaviorConfig, $input, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->filterRecords($TestModel, $input);
 		$this->assertEquals($result, $expecedResult);
 	}
@@ -577,7 +577,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->getAssociated($TestModel);
 		$this->assertEqual(count($result), 3, "Expected three associations, instead got ".count($result));
 		$this->assertEqual($result, $expecedResult);
@@ -590,7 +590,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 */
 	public function testGetAssociated_Filtered() {
 
-		// the belongsTo association should be hidden 
+		// the belongsTo association should be hidden
 		// because the field user_id is hidden
 		$expecedResult = array(
 			array(
@@ -613,7 +613,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array('excludedFields'=>array('user_id')));
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->getAssociated($TestModel);
 		$this->assertEqual(count($result), 2, "Expected three associations, instead got ".count($result));
 		$this->assertEqual($result, $expecedResult);
@@ -622,7 +622,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 	/**
 	 * Get all sorters in ExtJS/Sencha Touch format.
-	 * 
+	 *
 	 * @dataProvider getSorterDataProvider
 	 */
 	public function testGetSorter($rules, $expecedResult) {
@@ -631,7 +631,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 		// prepare sort rule
 		$TestModel->order = $rules;
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->getSorters($TestModel);
 		$this->assertEqual($result, $expecedResult);
 	}
@@ -642,37 +642,37 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	public function getSorterDataProvider() {
 		return array(
 			array(
-				"title", 
+				"title",
 				array(
 					array('property' => 'title', 'direction' => 'ASC')
 				)
 			),
 			array(
-				"TestArticle.title", 
+				"TestArticle.title",
 				array(
 					array('property' => 'title', 'direction' => 'ASC')
 				)
 			),
 			array(
-				"TestArticle.title asc", 
+				"TestArticle.title asc",
 				array(
 					array('property' => 'title', 'direction' => 'ASC')
 				)
 			),
 			array(
-				"TestArticle.title ASC", 
+				"TestArticle.title ASC",
 				array(
 					array('property' => 'title', 'direction' => 'ASC')
 				)
 			),
 			array(
-				"TestArticle.title DESC", 
+				"TestArticle.title DESC",
 				array(
 					array('property' => 'title', 'direction' => 'DESC')
 				)
 			),
 			array(
-				array('TestArticle.title' => 'DESC'), 
+				array('TestArticle.title' => 'DESC'),
 				array(
 					array('property' => 'title', 'direction' => 'DESC')
 				)
@@ -688,15 +688,15 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test that getColumnTypes returns all column definitions in 
+	 * Test that getColumnTypes returns all column definitions in
 	 * ExtJS/Sencha Touch format
-	 * 
+	 *
 	 * @dataProvider getColumnTypesDataProvider
 	 */
 	public function testGetColumnTypes($behaviorConfig, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->getColumnTypes($TestModel);
 		$this->assertEqual($result, $expecedResult);
 	}
@@ -749,7 +749,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'name' => 'headline',
 						'type' => 'auto',
 						'persist' => false,
-					), 
+					),
 				)
 			),
 			array(
@@ -790,7 +790,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'name' => 'headline',
 						'type' => 'auto',
 						'persist' => false,
-					), 
+					),
 				)
 			),
 			array(
@@ -858,13 +858,13 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	/**
 	 * Test that normalizeValidationRules returns a normalized
 	 * array to process validation rules
-	 * 
+	 *
 	 * @dataProvider normalizeValidationRulesDataProvider
 	 */
 	public function testNormalizeValidationRules($input, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->normalizeValidationRules($input);
 		$this->assertEqual($result, $expecedResult);
 	}
@@ -1097,15 +1097,15 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test that getValidationRulesForField returns all validation definitions 
+	 * Test that getValidationRulesForField returns all validation definitions
 	 * for one model field in ExtJS/Sencha Touch format
-	 * 
+	 *
 	 * @dataProvider getValidationRulesForFieldDataProvider
 	 */
 	public function testGetValidationRulesForField($fieldName, $rules, $expecedResult) {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->getValidationRulesForField($fieldName, $rules);
 		//pr($result); exit();
 		$this->assertEqual($result, $expecedResult);
@@ -1563,9 +1563,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 
 	/**
-	 * Test that getValidationRulesForField returns all validation definitions 
+	 * Test that getValidationRulesForField returns all validation definitions
 	 * for one model field in ExtJS/Sencha Touch format
-	 * 
+	 *
 	 * @dataProvider getValidationRulesForFieldDataProvider_Exceptions
 	 */
 	public function testGetValidationRulesForField_Exceptions($fieldName, $rules) {
@@ -1604,17 +1604,17 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 
 	/**
-	 * Test that getValidations returns all validation definitions in 
+	 * Test that getValidations returns all validation definitions in
 	 * ExtJS/Sencha Touch format.
 	 *
 	 * This is only an integration test, the individual rules are tested above
-	 * 
+	 *
 	 * @dataProvider getValidationsDataProvider
 	 */
 	public function testGetValidations($TestModelName, $behaviorConfig, $expecedResult) {
 		$TestModel = new $TestModelName();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-		
+
 		$result = $TestModel->Behaviors->BanchaRemotable->getValidations($TestModel);
 		//pr($result); exit();
 		$this->assertEqual($result, $expecedResult);
@@ -1745,7 +1745,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	public function testGetValidations_NoValidationRules() {
 		$TestModel = new TestArticleNoValidationRules();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
-		
+
 		$expecedResult = array(); // simply return an empty array
 
 		$result = $TestModel->Behaviors->BanchaRemotable->getValidations($TestModel);
@@ -1780,7 +1780,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 */
 	public function testModelSave() {
 		$article = ClassRegistry::init('ArticleForTestingSaveBehavior');
-		
+
 		// save article
 		$article->create();
 		$this->assertTrue(!!$article->saveFieldsAndReturn(array(
@@ -1790,7 +1790,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'user_id' => 95
 			)
 		)));
-		
+
 		// second article with same title
 		$article->create();
 		$this->assertTrue(!!$article->saveFieldsAndReturn(array(
@@ -1800,7 +1800,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'user_id' => 95
 			)
 		)));
-		
+
 		// validation should fail here
 		// check that the validation rule is actually working
 		$article->create();
@@ -1812,7 +1812,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 			)
 		));
 		$this->assertFalse($article->validates());
-		
+
 	}
 
 }

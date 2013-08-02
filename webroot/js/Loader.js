@@ -17,16 +17,16 @@
  * @private
  * @class Bancha.Loader
  *
- * The Sencha class loading is a beautiful concept and brings an enormous power to 
+ * The Sencha class loading is a beautiful concept and brings an enormous power to
  * javascript. But the Sencha class loader does not allow any custom behavior.
  *
- * Since Bancha creates models and stores dynamically from server models the 
+ * Since Bancha creates models and stores dynamically from server models the
  * Sencha conventions does not apply for loading these classes. We will utilize
  * Bancha.loader.Models to load these elements.
  *
- * This loader incorporates the Java class loader principles of Delegation and 
+ * This loader incorporates the Java class loader principles of Delegation and
  * Uniqueness, while still keeping all Visibility in the main Ext.Loader.
- * 
+ *
  * This class now simply extends {@class Ext.Loader} to allow the usage of custom
  * loaders, while the actual Bancha loading logic lies in {@Bancha.loader.Models}.
  *
@@ -54,13 +54,13 @@ Ext.define('Bancha.Loader', {
         /**
          * @private
          * @member Ext.Loader
-         * 
+         *
          * Registers a new Loader as the default loader inside
-         * the whole application.  
+         * the whole application.
          *
          * To create your own loader extend {class Bancha.loader.Interface}
          * and add your own logic. You might chain loaders.
-         * 
+         *
          * @param  {Bancha.loader.Interface} loader The loader to use
          * @return {void}
          */
@@ -71,9 +71,9 @@ Ext.define('Bancha.Loader', {
         /**
          * @private
          * @member Ext.Loader
-         * 
+         *
          * Returns the currently set up loader.
-         * 
+         *
          * @return {Bancha.loader.Interface|null} application class loader
          */
         getDefaultLoader: function() {
@@ -84,13 +84,13 @@ Ext.define('Bancha.Loader', {
         /**
          * @private // the override is private
          * @member Ext.Loader
-         * 
-         * The highjacked #loadScriptFile doesn't get the className as 
-         * argument, only the filePath. Inside #require #getPath is 
-         * called.  
+         *
+         * The highjacked #loadScriptFile doesn't get the className as
+         * argument, only the filePath. Inside #require #getPath is
+         * called.
          * Therefore we keep track of the last used className for
-         * #getPath to use it in our #loadScriptFile interceptor.  
-         * Yes, this is a dirty hack. But it prevents a lot of 
+         * #getPath to use it in our #loadScriptFile interceptor.
+         * Yes, this is a dirty hack. But it prevents a lot of
          * code duplication and update issues.
          *
          * @inheritdoc Ext.Loader#getPath
@@ -102,12 +102,12 @@ Ext.define('Bancha.Loader', {
         /**
          * @private
          * @member Ext.Loader
-         * 
-         * The original method Loads a script file, supports both asynchronous and 
-         * synchronous approaches.  
          *
-         * Bancha.Loader adds the logic to also use other loaders, which are set 
-         * using #setDefaultLoader.  
+         * The original method Loads a script file, supports both asynchronous and
+         * synchronous approaches.
+         *
+         * Bancha.Loader adds the logic to also use other loaders, which are set
+         * using #setDefaultLoader.
          *
          * @member Ext.Loader
          * @param  {String}   url         The url to load data from, see also #getPath

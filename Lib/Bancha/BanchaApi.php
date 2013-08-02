@@ -67,11 +67,11 @@ class BanchaApi {
 	}
 
 	/**
-	 * Returns the $models array if the filter is "all" or "[all]" (without quotes), else splits up the comma separated 
+	 * Returns the $models array if the filter is "all" or "[all]" (without quotes), else splits up the comma separated
 	 * list of models given in $filter. If $filter is NULL or an empty string an empty array is returned.
 	 *
 	 * @param  array  $models List of remotable models
-	 * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without 
+	 * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without
 	 *                        quotes). Or an array of models.
 	 * @return array          Filtered list of remotable models.
 	 */
@@ -89,13 +89,13 @@ class BanchaApi {
 		{
 			$filter = substr($filter, 1, -1);
 		}
-		
+
 		// transform string to array
 		$filteredModels = is_string($filter) ? explode(',', $filter) : $filter;
-		
+
 		// trim to prevent errors from unclean developer code
 		$filteredModels = array_map('trim', $filteredModels);
-		
+
 		// check if they really exist
 		foreach ($filteredModels as $filteredModel)
 		{
@@ -192,7 +192,7 @@ class BanchaApi {
 						'name'	=> $method->name,
 						'len'	=> $method->getNumberOfParameters(),
 					);
-				}		 
+				}
 			} // foreach methods
 		} // foreach controllers
 
@@ -234,7 +234,7 @@ class BanchaApi {
 		if (!class_exists($modelClass)) {
 			throw new MissingModelException(array('class' => $modelClass));
 		}
-		
+
 		return ClassRegistry::init($plugin . $modelClass);
 	}
 

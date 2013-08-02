@@ -16,9 +16,9 @@
 /**
  * @private
  * @class Bancha.loader.Models
- * 
- * Since Bancha creates models and stores dynamically from server models the 
- * Sencha conventions does not apply for loading these classes. 
+ *
+ * Since Bancha creates models and stores dynamically from server models the
+ * Sencha conventions does not apply for loading these classes.
  *
  * This loader handles all via Bancha loaded models.
  *

@@ -17,10 +17,10 @@
  * @private
  * @class Bancha.data.Model
  * @extends Ext.data.Model
- * 
- * This should only be used by Bancha internally, 
+ *
+ * This should only be used by Bancha internally,
  * since it just has an additional flag to force consistency in Bancha.
- * 
+ *
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
@@ -46,14 +46,14 @@ Ext.define('Bancha.data.Model', {
     /**
      * For Ext JS:
      * Every time a new subclass is created, this function will apply all Bancha model configurations.
-     * 
-     * In the debug version it will raise an Ext.Error if the model can't be 
+     *
+     * In the debug version it will raise an Ext.Error if the model can't be
      * or is already created, in production it will only return false.
      *
      * Reasons why it can't work like Sencha Touch:
      *  - Since Ext JS does not have setters for associations we need to set it as data before.
-     *  - Since Ext JS's onBeforeClassCreated retrieved the proxy data BEFORE the postprocessor 
-     *    is executed, but applied AFTER it the proxy can't be set there. So we need to set the 
+     *  - Since Ext JS's onBeforeClassCreated retrieved the proxy data BEFORE the postprocessor
+     *    is executed, but applied AFTER it the proxy can't be set there. So we need to set the
      *    proxy this way.
      */
     onClassExtended: function(cls, data, hooks) {
@@ -74,7 +74,7 @@ Ext.define('Bancha.data.Model', {
 
         // Legacy Support for Ext JS 4.0
         // Ext JS 4.1+ applies onClassExtended methods of superclasses and super-superclasses and so on,
-        // the whole inheritance chain up. 
+        // the whole inheritance chain up.
         // Ext JS 4.0 applies the method only to the immediate subclasses, but not child-child classes.
         // Normalize to the new behavior
         if(Ext.versions.extjs && Ext.versions.extjs.shortVersion < 410) {
@@ -89,12 +89,12 @@ Ext.define('Bancha.data.Model', {
          * @private
          * This function applies all the Bancha model configurations from the
          * cakephp models.
-         * 
-         * In the debug version it will raise an Ext.Error if the model can't be 
+         *
+         * In the debug version it will raise an Ext.Error if the model can't be
          * or is already created, in production it will only return false.
-         * 
+         *
          * @param {String} modelCls The model to augment
-         * @param {Object} extJsOnClassExtendedData If this is executed from an Ext JS context 
+         * @param {Object} extJsOnClassExtendedData If this is executed from an Ext JS context
          *                                          this is the data argument from onClassExtended
          * @return void
          */
@@ -233,7 +233,7 @@ Ext.define('Bancha.data.Model', {
                 configWithRootPropertySet;
 
             // Sencha Touch uses the new rootProperty property for configuring the reader and writer
-            // ExtJS still uses root. 
+            // ExtJS still uses root.
             // This all would be fine, but now Sencha Touch throws deprecated warning for using the old
             // ExtJS syntax, so we can't just assign both anymore, instead we need to create a config
             // prototype here
@@ -251,7 +251,7 @@ Ext.define('Bancha.data.Model', {
             stub = Bancha.getStubsNamespace()[modelName];
             return { // the proxy configuration
                 type: 'direct', // TODO batch requests: http://www.sencha.com/forum/showthread.php?156917
-                // don't batch requests on the store level, they will be batched 
+                // don't batch requests on the store level, they will be batched
                 // by Ext.Direct on the application level
                 batchActions: false,
                 api: {
@@ -269,7 +269,7 @@ Ext.define('Bancha.data.Model', {
                     destroy : this.createSafeDirectFn(stub,'destroy',modelName)
                     // ENDIF
                 },
-                // because of an error in ext the following directFn def. has to be 
+                // because of an error in ext the following directFn def. has to be
                 // defined, which should be read from api.read instead...
                 // see http://www.sencha.com/forum/showthread.php?134505&p=606283&viewfull=1#post606283
                 /* IFPRODUCTION
@@ -305,8 +305,8 @@ Ext.define('Bancha.data.Model', {
     /*
      * For Sencha Touch:
      * Every time a new subclass is created, this function will apply all Bancha model configurations.
-     * 
-     * In the debug version it will raise an Ext.Error if the model can't be 
+     *
+     * In the debug version it will raise an Ext.Error if the model can't be
      * or is already created, in production it will only return false.
      */
     Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {

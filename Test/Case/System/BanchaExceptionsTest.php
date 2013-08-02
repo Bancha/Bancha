@@ -30,12 +30,12 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  */
 class BanchaExceptionsTest extends CakeTestCase {
 	private $standardDebugLevel;
-	
-	
+
+
 	public function setUp() {
 		 $this->standardDebugLevel = Configure::read('debug');
 	}
-	
+
 /**
  * Tests exception handling with debug mode 2.
  *
@@ -63,7 +63,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 
 		// set debug level back to normal
 		Configure::write('debug', $this->standardDebugLevel);
-		
+
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertEquals('Exception', $responses[0]->exceptionType); // this is the class name, see bottom
@@ -95,10 +95,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// set debug level back to normal
 		Configure::write('debug', $this->standardDebugLevel);
-		
+
 		// show that there was an exception, but with no information!
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(isset($responses[0]->exceptionType)); // don't send exception info
@@ -110,7 +110,7 @@ class BanchaExceptionsTest extends CakeTestCase {
  * also the response contains the correct exceptions.
  */
 	public function testExceptionDebugMode_Exceptions() {
-		
+
 		Configure::write('debug', 2);
 
 		// Create some requests.
@@ -143,11 +143,11 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-	
-	
+
+
 		// set debug level back to normal
 		Configure::write('debug', $this->standardDebugLevel);
-	
+
 		$this->assertEquals(3, count($responses), 'Three requests result in three responses.');
 
 		// controller class not found
@@ -155,7 +155,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$this->assertEquals('MissingControllerException', $responses[0]->exceptionType);
 		$this->assertEquals('Controller class ThisControllerDoesNotExistsController could not be found.', $responses[0]->message);
 		$this->assertTrue(!empty($responses[0]->where), 'message');
-		
+
 		// application controller method exception catched
 		$this->assertEquals('exception', $responses[1]->type);
 		$this->assertEquals('NotFoundException', $responses[1]->exceptionType);
@@ -175,7 +175,7 @@ class BanchaExceptionsTest extends CakeTestCase {
  *
  */
 	public function testExceptionLogging() {
-		
+
 		// this should log exceptions
 		Configure::write('debug', 0);
 		Configure::write('Bancha.logExceptions', true);
@@ -220,13 +220,13 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// Expect a missing conroller exception in the result
 		// In Production mode the exact type is not send, only the Ext.Direct type
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(file_exists(LOGS . 'error.log'));
-		
-		
+
+
 		// In Debug Mode we want to see no error log
 		Configure::write('Bancha.logExceptions', true);
 		Configure::write('debug', 2);
@@ -238,7 +238,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// In Production mode the exact type is not send, only the Ext.Direct type
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(file_exists(LOGS . 'error.log'));
-		
+
 
 		// set debug level back to normal
 		Configure::write('debug', $this->standardDebugLevel);
@@ -252,7 +252,7 @@ class BanchaExceptionsTest extends CakeTestCase {
  * @category      TestFixtures
  */
 class ArticlesExceptionsController extends ArticlesController {
-	
+
 /**
  * throwExceptionMethod method
  *

@@ -15,7 +15,7 @@
 
 /**
  * @private
- * This should only be used by Bancha internally, 
+ * This should only be used by Bancha internally,
  * it adds the consistent uid to all requests.
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
@@ -32,7 +32,7 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
 
     /**
      * @config {Bancha.data.Model} model
-     * the model to write for, needed to determine the value of 
+     * the model to write for, needed to determine the value of
      * {@link Bancha.data.Model#forceConsistency model.forceConsistency}
      */
     model: undefined,

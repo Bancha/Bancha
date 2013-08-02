@@ -1,4 +1,4 @@
-<html> 
+<html>
 <!--
 /*!
  *
@@ -12,20 +12,20 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
- * For more information go to http://banchaproject.org 
+ * For more information go to http://banchaproject.org
  */
 -->
 <head>
-<title>Bancha - Seamless Integration</title> 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
-<meta http-equiv="Content-Style-Type" content="text/css" /> 
+<title>Bancha - Seamless Integration</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
 <meta http-equiv="Content-Script-Type" content="text/javascript" />
-<meta name="description" content="Bancha - Seamlessly integrate CakePHP with Sencha Touch and ExtJS" /> 
-<meta name="keywords" content="" /> 
+<meta name="description" content="Bancha - Seamlessly integrate CakePHP with Sencha Touch and ExtJS" />
+<meta name="keywords" content="" />
 <meta name="robots" content="index,follow" />
-<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:regular,bold|Raleway:400,500' rel='stylesheet' type='text/css' /> 
-<link rel="stylesheet" href="http://assets.banchaproject.org/tl_files/Bancha/layout.css" type="text/css" media="screen" /> 
-<link rel="stylesheet" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/ext-theme-classic/ext-theme-classic-all.css" type="text/css" media="screen" /> 
+<link href='http://fonts.googleapis.com/css?family=Roboto+Condensed:regular,bold|Raleway:400,500' rel='stylesheet' type='text/css' />
+<link rel="stylesheet" href="http://assets.banchaproject.org/tl_files/Bancha/layout.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="http://cdn.sencha.io/ext-4.2.0-gpl/resources/ext-theme-classic/ext-theme-classic-all.css" type="text/css" media="screen" />
 
 <style type="text/css">
 	#log {
@@ -34,7 +34,7 @@
 		margin: auto;
 		padding:10px;
 		border:1px solid black;
-	
+
 		text-align:left;
 		font-size:13px;
 		color: black;
@@ -48,7 +48,7 @@
 	}
 </style>
 </head>
-<body id="top" style="text-align:center;"> 
+<body id="top" style="text-align:center;">
 <div class="wrapper">
     <br />
     <a href="http://banchaproject.org/"><img src="http://banchaproject.org/tl_files/Bancha/images/logo.png" alt="Bancha" /></a>
@@ -58,13 +58,13 @@
        Setup check for Bancha PRECOMPILER_ADD_RELEASE_VERSION:
     </h3>
     <div id="log"></div>
-    
+
     <br />
-	
+
     <!-- for footer alignment -->
-	<div class="push"></div> 
+	<div class="push"></div>
 </div>
-<div class="footer"> 
+<div class="footer">
 	<small>&copy; 2011-2013 codeQ e.U. <a href="http://banchaproject.org/impressum.html">Impressum</a>. Icons by <a href="http://www.famfamfam.com/lab/icons/silk/" target="_blank">FamFamFam</a>.</small>
 </div>
 
@@ -84,7 +84,7 @@ if(typeof Ext !== 'object') {
 }
 
 var BanchaSetup = {
-	
+
 	// helper functions
 	log: Ext.get('log'),
 	writeLog: function(result,name,/*optional*/ explanation) {
@@ -135,30 +135,30 @@ var BanchaSetup = {
 		var script_tag = document.createElement('script'),
 			isLoaded = false,
 			executedCallback = false;
-		
+
 		// load
 		script_tag.setAttribute('type', 'text/javascript');
 		script_tag.setAttribute('src', location);
 		document.getElementsByTagName('head')[0].appendChild(script_tag);
-		
+
 		script_tag.onload = script_tag.onerror = script_tag.onreadystatechange = function() {
 			if(!this.readyState ||
 					this.readyState === "loaded" || this.readyState === "complete") {
 				// script successfully loaded
 				isLoaded = true;
 			}
-			
+
 			// no first state change
 			if(!executedCallback) {
 				callback(isLoaded);
 			}
 		};
 	},
-	
-	
+
+
 	// setup checks
 	checkSetup: function() {
-		
+
 		// check if it is opened from right location
 		if(typeof document==='undefined' || !document.location || !document.location.href) {
 			throw "Please run this setup-script only in browsers, expected a document.loaction.href to be present.";
@@ -166,7 +166,7 @@ var BanchaSetup = {
 			alert('Please only open this page with the bancha-prefix:\n /bancha/setup-check.html');
 			return;
 		}
-		
+
 		// check if Bancha library files exist
 		BanchaSetup.fileExists('js/Initializer.js', BanchaSetup.checkSetup_onBanchaIsLoaded);
 	},
@@ -189,7 +189,7 @@ var BanchaSetup = {
 		if(isFound===false) {
 			return;
 		}
-		
+
 		try {
 			// try to load Bancha
 			Ext.Loader.setConfig('enabled', true);
@@ -230,7 +230,7 @@ var BanchaSetup = {
 		if(executed===false) {
 			return;
 		}
-		
+
 		// check if the Remote API is available
 		var response = BanchaSetup.fileExists('../bancha-api.js'),
 			isFound = (response.status >= 200 && response.status < 300),
@@ -250,13 +250,13 @@ var BanchaSetup = {
 			response3 = BanchaSetup.fileExists('../bancha/index'),
 			isFound3 = (response.status >= 200 && response.status < 300);
 		}
-		
+
 		var instructions = [
 				'You most likely did not correctly installed Bancha, please check ',
 				'<a href="http://banchaproject.org/documentation-installation.html" target="_blank">Installation</a> ',
 				'and make sure there are no cake errors in the <a href="../bancha-api.js" target="_blank">Remote API</a>.'
 			].join('');
-		
+
 		// check if Bancha remote api is found
 		if(isFound) {
 			BanchaSetup.writeLog(true,'Load Bancha Remote API', '');
@@ -317,9 +317,9 @@ var BanchaSetup = {
 		if(executed===false) {
 			return;
 		}
-		
+
 		var serversideError = Bancha.REMOTE_API.metadata._ServerError;
-		BanchaSetup.writeLog(!serversideError,'Bancha Remote API ready', 
+		BanchaSetup.writeLog(!serversideError,'Bancha Remote API ready',
 			'<b>Could not use Bancha Remote API.</b><br/>The Server returned following problem:<br/><i>'+serversideError+'</i>'+BanchaSetup.possibleBugText);
 		if(serversideError!==false) {
 			return;
@@ -329,12 +329,12 @@ var BanchaSetup = {
 		// check remote stubs include Bancha API
 		Bancha.init();
 		var banchaApiAvailable = (Bancha.RemoteStubs && Bancha.RemoteStubs.Bancha && typeof Bancha.RemoteStubs.Bancha.loadMetaData === 'function');
-		BanchaSetup.writeLog(banchaApiAvailable,'Init Bancha, Bancha API available', 
+		BanchaSetup.writeLog(banchaApiAvailable,'Init Bancha, Bancha API available',
 			'<b>Could not find Bancha API for loading model meta data.</b>'+BanchaSetup.possibleBugText);
 		if(banchaApiAvailable===false) {
 			return;
 		}
-		
+
 		var dispatcherErrorText = [
 				'Please copy the Bancha Dispatcher from <i>plugins/Bancha/_app/webroot/bancha-dispatcher.php</i> ',
 				'into <i>app/webroot/</i>.<br/><br/>',
@@ -348,7 +348,7 @@ var BanchaSetup = {
 		// check if Bancha Dispatcher is copied to webroot
 		response = BanchaSetup.fileExists('../bancha-dispatcher.php?setup-check=true');
 		isFound = (response.status >= 200 && response.status < 300);
-		BanchaSetup.writeLog(isFound,'Ping Bancha Dispatcher', 
+		BanchaSetup.writeLog(isFound,'Ping Bancha Dispatcher',
 			'<b>'+ajaxResponse.status+': Could not find Bancha Dispatcher</b><br/><br/>'+dispatcherErrorText);
 		if(isFound===false) {
 			return;
@@ -368,7 +368,7 @@ var BanchaSetup = {
 		if(valid===false) {
 			return;
 		}
-		
+
 		var exposedRemoteStubs = Ext.Object.getSize(Bancha.REMOTE_API.actions)>1;
 		if(exposedRemoteStubs) {
 			BanchaSetup.writeLog(true,'Exposed CakePHP models and/or methods');

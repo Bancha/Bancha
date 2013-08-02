@@ -19,15 +19,15 @@
  *
  * This class encalpsulates some logging features.
  * For more see {@link Bancha.Logger.log}
- * 
+ *
  * example usage:
  *     Bancha.log('My error message');
  *     Bancha.log('My info message','info');
- *     
+ *
  *     Bancha.Logger.info('My info message');
  *     Bancha.Logger.warn('My warning message');
  *     Bancha.Logger.error('My error message');
- * 
+ *
  */
 Ext.define('Bancha.Logger', {
     singleton: true,
@@ -38,15 +38,15 @@ Ext.define('Bancha.Logger', {
      * This function logs a message.
      *
      * If the CakePHP debug level is 0 (production mode) or forceServerlog is
-     * true, and the type is not 'info', then the error will be send to 
-     * the server and logged to app/tmp/logs/js_error.log (for types 
-     * 'error' and 'warn') and app/tmp/logs/missing_translation.log 
+     * true, and the type is not 'info', then the error will be send to
+     * the server and logged to app/tmp/logs/js_error.log (for types
+     * 'error' and 'warn') and app/tmp/logs/missing_translation.log
      * (for type 'missing_translation').
      *
      * If the debug level is bigger then zero and a console is availabe
      * it is written to the console. If no console is available it is
      * instead displayed as a Ext.Msg.alert.
-     * 
+     *
      * @param  {String}  message        The error message
      * @param  {String}  type           (optional) Either 'error', 'warn' or 'missing_translation' (default is 'error')
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
@@ -87,7 +87,7 @@ Ext.define('Bancha.Logger', {
     },
     /**
      * Convenience function for logging with type 'info', see {@link Bancha.Logger.log}
-     * 
+     *
      * @param  {String}  message        The info message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
      * @return void
@@ -97,7 +97,7 @@ Ext.define('Bancha.Logger', {
     },
     /**
      * Convenience function for logging with type 'warn', see {@link Bancha.Logger.log}
-     * 
+     *
      * @param  {String}  message        The warn message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
      * @return void
@@ -107,7 +107,7 @@ Ext.define('Bancha.Logger', {
     },
     /**
      * Convenience function for logging with type 'error', see {@link Bancha.Logger.log}
-     * 
+     *
      * @param  {String}  message        The error message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
      * @return void
@@ -118,10 +118,10 @@ Ext.define('Bancha.Logger', {
     /**
      * @private
      * This function writes logging information to the console or browser window.
-     * 
-     * If the console is availabe writes it there. If no console is available 
+     *
+     * If the console is availabe writes it there. If no console is available
      * it is instead displayed as a Ext.Msg.alert.
-     * 
+     *
      * @param  String message The logging message
      * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
      * @return void
@@ -141,7 +141,7 @@ Ext.define('Bancha.Logger', {
     /**
      * @private
      * A wrapper for the window.console method
-     * 
+     *
      * @param  String message The logging message
      * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
      * @return void

@@ -1,7 +1,7 @@
 <?php
 /**
  * Application model for test app.
- * 
+ *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *

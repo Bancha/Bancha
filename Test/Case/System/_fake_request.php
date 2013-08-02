@@ -5,7 +5,7 @@
  * this script can be called using
  * php _fake_request.php client_id article_id tid title sleep_time
  *
- * 
+ *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *

@@ -120,19 +120,19 @@ class BanchaRequestTransformer {
 		}
 		return $this->controller;
 	}
-	
+
 	/**
 	 * Returns true if this is a ExtJS formHandler request
 	 */
 	public function isFormRequest() {
 		// let getController() do the work
 		$this->getController();
-		
+
 		return $this->isFormRequest;
 	}
-	
+
 	/**
-	 * Returns the name of the expected model. Thus returns the value of 'action' from the Ext JS request. 
+	 * Returns the name of the expected model. Thus returns the value of 'action' from the Ext JS request.
 	 *
 	 * @return string Name of the model.
 	 */
@@ -140,7 +140,7 @@ class BanchaRequestTransformer {
 		if($this->model != null) {
 			return $this->model;
 		}
-		
+
 		$this->model = Inflector::singularize($this->getController());
 		return $this->model;
 	}
@@ -296,7 +296,7 @@ class BanchaRequestTransformer {
 		if (null != $this->paginate) {
 			return $this->paginate;
 		}
-		
+
 		// find the page and limit
 		$page = 1;
 		$limit = 500;
@@ -361,19 +361,19 @@ class BanchaRequestTransformer {
 
 		return $this->paginate;
 	}
-	
+
 	/**
 	 * Ext.Direct writes the list of parameters to $data['data'].
 	 * Transform a Bancha request with model elements to cake structure,
 	 * otherwise just return the original response.
 	 * This function has no side-effects.
-	 * 
+	 *
 	 *
 	 * @param $modelName The model name of the current request
 	 * @param $data The input request data from Bancha-ExtJS
 	 */
 	public function transformDataStructureToCake($modelName, $data) {
-		
+
 		// form uploads save all fields directly in the data array
 		if($this->isFormRequest()) {
 			if(isset($data['extType'])) {
@@ -383,7 +383,7 @@ class BanchaRequestTransformer {
 				$modelName => $data
 			);
 		}
-		
+
 		// for non-form requests
 
 		if($this->isArray($data, '[data][0][data][0]')) {
@@ -439,7 +439,7 @@ class BanchaRequestTransformer {
 		$this->getExtUpload();
 		$this->getPassParams();
 		$this->getPaging();
-		
+
 		// prepare and return data
 		return $this->transformDataStructureToCake($this->getModel(), $this->data);
 	}

@@ -55,7 +55,7 @@ class BanchaRequestCollection {
 	public function getRequests() {
 
 		if(isset($this->postData) && isset($this->postData['extTID'])) {
-			// this is a form request, form request data is directly avialable 
+			// this is a form request, form request data is directly avialable
 			// in the $postData and only contains one request.
 			$data = array($this->postData); // make an array of requests data
 
@@ -87,12 +87,12 @@ class BanchaRequestCollection {
 
 				// Create CakeRequest and fill it with values from the transformer.
 				$requests[$i] = new CakeRequest($transformer->getUrl());
-				
+
 				// the CakeRequest uses the envirement variable $_POST in his
-				// during the startup called _processPost() (currently line 153). 
+				// during the startup called _processPost() (currently line 153).
 				// This is unclean and adds false data in our case. So delete this data.
 				$requests[$i]->data = array();
-				
+
 				// now set params for the request
 				$requests[$i]['controller'] 	= $transformer->getController();
 				$requests[$i]['action']			= $transformer->getAction();
@@ -106,7 +106,7 @@ class BanchaRequestCollection {
 				$requests[$i]['pass']			= $transformer->getPassParams();
 				// additional property for cleaner controller syntax
 				$requests[$i]['isBancha']		= true;
-				
+
 				// Handle all other parameters as POST parameters.
 				foreach ($transformer->getCleanedDataArray() as $key => $value) {
 					$requests[$i]->data($key, $value);

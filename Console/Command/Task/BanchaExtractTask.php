@@ -99,7 +99,7 @@ class Bancha_JavaScriptToken {
  * Language string extractor for Bancha.t translations
  *
  * It would be very nice here if we could use a real JavaScript tokenizer to collect all translatable strings,
- * but there doesn't exist any performant and correct working JavaScript tokenizer implementation in PHP. 
+ * but there doesn't exist any performant and correct working JavaScript tokenizer implementation in PHP.
  * Besides that we still would need another implementation to handle PHP files where the might not have cleanly
  * separated the javascript.
  *
@@ -124,7 +124,7 @@ class BanchaExtractTask extends ExtractTask {
  * @access private
  * Merge all domains string into the default.pot file
  * (from core ExtractTask)
- * 
+ *
  * @var boolean
  */
 	protected $_merge = false;
@@ -149,7 +149,7 @@ class BanchaExtractTask extends ExtractTask {
 			$this->params['exclude'] = dirname(dirname(dirname(dirname(__FILE__))));
 		}
 		$this->_exclude = explode(',', $this->params['exclude']);
-		
+
 
 		if (isset($this->params['files']) && !is_array($this->params['files'])) {
 			$this->_files = explode(',', $this->params['files']);
@@ -279,7 +279,7 @@ class BanchaExtractTask extends ExtractTask {
  * @return void
  */
 	protected function _extractTokensFromHtmlFile($file) {
-		$html = new DOMDocument();   
+		$html = new DOMDocument();
 		if(!@$html->loadHTMLFile($file)) {
 			exit('The PHP DOMDocument class could not read file '.$file);
 		}
@@ -313,7 +313,7 @@ class BanchaExtractTask extends ExtractTask {
 
 /**
  * Finds a string inside a code and returns the string and the remaining string part
- * 
+ *
  */
 	public function _findString($code) {
 		$originalCode = $code;
@@ -335,7 +335,7 @@ class BanchaExtractTask extends ExtractTask {
 		$foundEnd = false;
 
 		while (!$foundEnd) {
-			
+
 			// find the possible string end
 			$endPosition = strpos($code, $start_quote);
 
@@ -365,7 +365,7 @@ class BanchaExtractTask extends ExtractTask {
 		$string = $this->_formatString($string);
 
 		// check if there maybe now is a concatination
-		$code = ltrim($code); 
+		$code = ltrim($code);
 		if(substr($code,0,1) == '+') {
 			// there is another token, collect this (recursive)
 			$code = ltrim(substr($code,1));
@@ -383,7 +383,7 @@ class BanchaExtractTask extends ExtractTask {
 
 /**
  * Finds a string inside a code and returns the string and the remaining string part
- * 
+ *
  */
 	public function _findVariable($code) {
 		// just find the next whitespace or , or ) or ;
@@ -407,7 +407,7 @@ class BanchaExtractTask extends ExtractTask {
 	public function _collectJsToken($code) {
 		$code = ltrim($code);
 		$character = substr($code,0,1);
-		
+
 		if($character=='"' || $character=="'") { // string
 			return $this->_findString($code);
 		}
@@ -492,16 +492,16 @@ class BanchaExtractTask extends ExtractTask {
 				__d('cake_console', 'Expected a ternary, but instead saw '.substr($first->getRemainingCode(), 0, 5)), $code);
 			return new Bancha_JavaScriptToken('error',false,$code);
 		}
-		
+
 		$second = $this->_collectJsToken(substr($first->getRemainingCode(),1));
 
 		// build the new ternary array
 		return new Bancha_JavaScriptToken(
-			'ternary', 
+			'ternary',
 			array(
 				$first->isString() ? $first->getStringValue() : false,
 				$second->isString() ? $second->getStringValue() : false,
-				), 
+				),
 			$second->getRemainingCode());
 	}
 
@@ -513,9 +513,9 @@ class BanchaExtractTask extends ExtractTask {
  * @return void
  */
 	protected function _parse($functionName, $map) {
-		
+
 		foreach ($this->_tokens as $key => $token) {
-			
+
 			// find all occurrences of $functionName
 			list($type, $string, $line) = $token;
 			$occurrences = explode($functionName, $string);
@@ -560,7 +560,7 @@ class BanchaExtractTask extends ExtractTask {
 				// now expect a string or a variable
 				$arguments = array(
 					$this->_collectJsArgument($code));
-				
+
 				// collect additional arguments
 				while(!end($arguments)->isError() && substr(end($arguments)->getRemainingCode(),0,1) == ',') {
 					// there is another argument
@@ -576,7 +576,7 @@ class BanchaExtractTask extends ExtractTask {
 						array_pop($arguments); // remove latest element
 						...
 				 */
-				
+
 
 				// error collecting the arguments
 				if(end($arguments)->isError()) {
@@ -588,19 +588,19 @@ class BanchaExtractTask extends ExtractTask {
 
 				// just after the arguments
 				$code = end($arguments)->getRemainingCode();
-				
+
 				// expect a closing brace
 				if(substr($code, 0, 1) !== ')') {
 					$this->_markerError($this->_file, $line,
 						__d('cake_console', 'Expected an closing braces after %s, instead saw "%s"', $functionName, substr($code,0,10)), $wholeCode);
 					continue;
 				}
-				
+
 				// check if the arguments make sense
-				
+
 				// if there is a variable we can't collect it
 				if($arguments[0]->isVariable()) {
-					$this->out(__d('cake_console', 
+					$this->out(__d('cake_console',
 						'<warning>'.$functionName." is called with a variable/statement, we can't collect this.\n".
 						'Error happend near: '.substr($wholeCode,0,100).'</warning>'));
 					continue;
@@ -618,9 +618,9 @@ class BanchaExtractTask extends ExtractTask {
 				// check strings if possible %s match given arguments
 				// if($arguments[0])
 				// TODO $replacements = preg_match_all("%s", $singular, $matches);
-				
+
 				// add the translation
-				
+
 				// collect the domain later
 				$domain = 'bancha';
 

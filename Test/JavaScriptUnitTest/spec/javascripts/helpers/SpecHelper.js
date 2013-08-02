@@ -82,7 +82,7 @@ beforeEach(function() {
         }, lookIn);
     };
     /*
-     * Test if this property exists and if so return an 
+     * Test if this property exists and if so return an
      * expect-object to make additional tests on
      */
     jasmine.Matchers.prototype.property = function(path) {

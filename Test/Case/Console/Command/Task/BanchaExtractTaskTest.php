@@ -186,7 +186,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
 	public function testCollectJsArgument() {
 
 		// test same as above
-		
+
 		$result = $this->Task->_collectJsArgument('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('This is a simple string', $result->getStringValue());
@@ -353,7 +353,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->assertRegExp($pattern, $result);
 
 		// line number is in html currently not supported
-		
+
 		// check for correct line numbers in js
 		$pattern = '/\#: (\\\\|\/)extraction_tests\.js:2\nmsgid "Bancha supports simple strings./';
 		$this->assertRegExp($pattern, $result);
@@ -375,7 +375,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->markTestSkipped('Add support for nested calls');
 		// js code for nested calls
 		// Bancha.t('This is the first part, with %', Bancha.t('a second sub-part in a nested call'));
-		
+
 
 		$this->Task->interactive = false;
 		$this->Task->params['paths'] = dirname(__FILE__) . DS . 'extraction_test_files';
@@ -398,7 +398,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		// check nested call
 		$pattern = '/msgid "This is the first part, with %"\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
-		
+
 		$pattern = '/msgid "a second sub-part in a nested call"\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
 

@@ -16,19 +16,19 @@
 /**
  * @private
  * @class Bancha.loader.Interface
- * 
- * A base class for implementing alternative loaders for 
- * {@link Ext.Loader}. These can be chained.  
  *
- * Defining your own loader requires you to implement 
- * {@link #handles} and {@link #loadClass}. Also set the 
- * singleton property to true.  
+ * A base class for implementing alternative loaders for
+ * {@link Ext.Loader}. These can be chained.
  *
- * Then call 
- *     Ext.Loader.setDefaultLoader(loader);  
+ * Defining your own loader requires you to implement
+ * {@link #handles} and {@link #loadClass}. Also set the
+ * singleton property to true.
+ *
+ * Then call
+ *     Ext.Loader.setDefaultLoader(loader);
  *
  * For more information see {@link Bancha.Loader}.
- * 
+ *
  * @since Bancha v 2.0.0
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
@@ -44,11 +44,11 @@ Ext.define('Bancha.loader.Interface', {
         parentLoader: null
     },
     /**
-     * This function will be called to find the correct loader 
-     * for handling the class loading. Return true to handle 
+     * This function will be called to find the correct loader
+     * for handling the class loading. Return true to handle
      * loading of this class. Otherwise is will be delegated
      * to the parent loader.
-     * 
+     *
      * @param  {String} className
      * @return {Boolean} true to handle the loading
      */
@@ -57,10 +57,10 @@ Ext.define('Bancha.loader.Interface', {
     },
     /**
      * This function will be called every time a class needs to be loaded
-     * and the #handles(classname) returned true.  
-     * 
+     * and the #handles(classname) returned true.
+     *
      * Make sure that your implementation supports both asynchronous and
-     * synchronous approaches.  
+     * synchronous approaches.
 	 *
 	 * @param  {String}   className   The class name to load
 	 * @param  {Function} onLoad      To be executed when the class was successfully loaded.

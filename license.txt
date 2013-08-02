@@ -7,7 +7,7 @@ http://banchaproject.org/licensing.html
 
 Open Source License
 ------------------------------------------------------------------------------------------
-This version of Bancha is licensed under the terms of the Open Source GPL 3.0 license. 
+This version of Bancha is licensed under the terms of the Open Source GPL 3.0 license.
 
 http://www.gnu.org/licenses/gpl.html
 
@@ -15,12 +15,12 @@ http://www.gnu.org/licenses/gpl.html
 Alternate Licensing
 ------------------------------------------------------------------------------------------
 Commercial and OEM Licenses are available too.
-This is the appropriate option if you are creating proprietary applications and you are 
-not prepared to distribute and share the source code of your application under the 
+This is the appropriate option if you are creating proprietary applications and you are
+not prepared to distribute and share the source code of your application under the
 GPL v3 license. Please visit http://banchaproject.org/licensing.html for more details.
 
 --
 
 This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
+without even the implied warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
 AND NON-INFRINGEMENT OF THIRD-PARTY INTELLECTUAL PROPERTY RIGHTS.

@@ -1,8 +1,8 @@
 <?php
 /**
- * 
+ *
  * This tempalte is modified to add Bancha support.
- * 
+ *
  * Bake Template for Controller action generation.
  *
  * PHP 5

@@ -25,8 +25,8 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  * @since         Bancha v 0.9.0
  */
 class BanchaDebugExceptionsTest extends CakeTestCase {
-	
-	
+
+
 	// helper method
 	private function getResultForMethod($method,$data=array()) {
 		$rawPostData = json_encode(array(
@@ -42,7 +42,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		));
 		return $responses;
 	}
-	
+
 /**
  * When a controller method doesn't return anything, throw an exception.
  * This is implemented in BanchaResponseTransformer::transform()
@@ -50,12 +50,12 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 	public function testNoMethodResultException() {
 
 		$responses = $this->getResultForMethod('getNoResult');
-		
+
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertEquals('BanchaException', $responses[0]->exceptionType);
 	}
-	
+
 /**
  * Currently is is not expected that cakes gets multiple records from ext in one request.
  * If this is happening tell the developer that he probably did an error.
@@ -78,16 +78,16 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		)));
 	}
 
-	
+
 /**
  * See testMultipleRecordInputException()
  * See also BanchaRequestTransformerTest::testTransformDataStructureToCake_MultipleRecords
  */
 	public function testDeactivatedMultipleRecordInputException() {
-		
+
 		// the developer can deactivate this by setting this config
 		Configure::write('Bancha.allowMultiRecordRequests',true);
-		
+
 		// we expect no exception
 		$this->getResultForMethod('returnTrue', array(array(
 			'data' => array(
@@ -121,7 +121,7 @@ class DebugExceptionsController extends ArticlesController {
  */
 	public function getNoResult() {
 	}
-	
+
 /**
  * simple test function
  */

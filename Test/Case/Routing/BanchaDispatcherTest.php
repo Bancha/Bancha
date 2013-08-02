@@ -71,7 +71,7 @@ class BanchaDispatcherTest extends CakeTestCase {
  */
 	public function testDispatchWithoutReturn() {
 		$this->markTestSkipped("When executing the AllTests TestSuite the PHPUnit output buffers break this test.");
-		
+
 		$rawPostData = json_encode(array(
 			array(
 				'action'	=> 'Test',
@@ -92,25 +92,25 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$collection = new BanchaRequestCollection($rawPostData);
 
 		$dispatcher = new BanchaDispatcher();
-		
+
 		// if there is already a buffer, save the current result
 		$cakeTestBuffer = ob_get_clean();
-		
+
 		ob_start(); // capture output, because we want to test without return
 		$dispatcher->dispatch($collection);
 		$responses = json_decode(ob_get_clean());
-		
+
 		// ob_end_clean() does not restore the Content-Type, but we do not want to send the header in CLI mode.
 		if (isset($_SERVER['HTTP_HOST'])) {
 			header("Content-Type: text/html; charset=utf-8");
 		}
-		
+
 		// if there was a buffer, refill it as before
 		if($cakeTestBuffer!=FALSE) {
 			ob_start();
 			echo $cakeTestBuffer;
 		}
-		
+
 		$this->assertEquals('Hello World!', $responses[0]->result->text);
 		$this->assertEquals('foobar', $responses[1]->result->text);
 	}

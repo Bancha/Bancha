@@ -57,9 +57,9 @@ class ArticlesController extends AppController {
 	public function add() {
 		if ($this->request->is('post')) {
 			$this->Article->create();
-			
+
 			if(isset($this->request->params['isBancha']) && $this->request->params['isBancha']) return $this->Article->saveFieldsAndReturn($this->request->data);	 // added
-			
+
 			if ($this->Article->save($this->request->data)) {
 				$this->Session->setFlash(__('The article has been saved'));
 				$this->redirect(array('action' => 'index'));
@@ -96,12 +96,12 @@ class ArticlesController extends AppController {
 		$users = $this->Article->User->find('list');
 		$tags = $this->Article->Tag->find('list');
 		$this->set(compact('users', 'tags'));
-		
+
 		if (defined('SLEEP_TIME')) {
 			echo "\n\nSLEEP for " . SLEEP_TIME . " SECONDS\n\n";
 			sleep(SLEEP_TIME);
 		}
-		
+
 		return $this->Article->getLastSaveResult();
 	}
 
@@ -119,9 +119,9 @@ class ArticlesController extends AppController {
 		if (!$this->Article->exists()) {
 			throw new NotFoundException(__('Invalid article'));
 		}
-		
+
 		if(isset($this->request->params['isBancha']) && $this->request->params['isBancha']) return $this->Article->deleteAndReturn();	 // added
-		
+
 		if ($this->Article->delete()) {
 			$this->Session->setFlash(__('Article deleted'));
 			$this->redirect(array('action'=>'index'));

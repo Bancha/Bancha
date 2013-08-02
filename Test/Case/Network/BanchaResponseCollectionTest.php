@@ -92,7 +92,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
  *
  */
 	public function testGetResponses_extUpload() {
-		
+
 		$response1 = array(
 			'body'	=> array(
 				'success' => true,
@@ -100,13 +100,13 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		);
 		$request = new CakeRequest();
 		$request->addParams(array('controller' => 'foo', 'action' => 'bar', 'extUpload' => true));
-		
+
 		$collection = new BanchaResponseCollection();
 		$collection->addResponse(2, new CakeResponse($response1), $request);
 
 		$expected = '<html><body><textarea>[{"type":"rpc","tid":2,"action":"foo","method":"bar",'.
 					'"result":'.json_encode($response1['body']).',"extUpload":true}]</textarea></body></html>';
-		
+
 		$this->assertEquals($expected, $collection->getResponses()->body());
 	}
 

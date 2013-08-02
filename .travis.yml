@@ -12,7 +12,7 @@ env:
   - DB=mysql CAKEPHP_VERSION=2.3.0  EXTJS_VERSION=4.1.1a  TOUCH_VERSION=2.2.0
   - DB=mysql CAKEPHP_VERSION=2.2.8  EXTJS_VERSION=4.1.0   TOUCH_VERSION=2.1.1
   - DB=mysql CAKEPHP_VERSION=2.2.0  EXTJS_VERSION=4.0.7   TOUCH_VERSION=2.1.0
-  - DB=mysql CAKEPHP_VERSION=2.1.5                        TOUCH_VERSION=2.0.1.1 
+  - DB=mysql CAKEPHP_VERSION=2.1.5                        TOUCH_VERSION=2.0.1.1
   - DB=mysql CAKEPHP_VERSION=2.1.0
 
   - DB=pgsql CAKEPHP_VERSION=master
@@ -27,22 +27,22 @@ before_script:
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE bancha_test;'; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE bancha_test;' -U postgres; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE SCHEMA bancha_test;' -U postgres -d bancha_test; fi"
-  
+
   # Prepare the Bancha plugin
   - mkdir .Bancha # create hidden subdirectory (which is not moved by the mv command)
   - mv ./* .Bancha/ # copy everything (except the hidden directories) into the directory
   - mv .Bancha Bancha # unhide it for later use
-  
+
   # Download cakephp
   - if [ $CAKEPHP_VERSION ]; then wget https://github.com/cakephp/cakephp/tarball/$CAKEPHP_VERSION -O cake.tar.gz ; fi # get cakephp
   - if [ $CAKEPHP_VERSION ]; then tar xf cake.tar.gz ; fi # extract cakephp
   - if [ $CAKEPHP_VERSION ]; then mv cakephp-cakephp-* ./cakephp ; fi # move cakephp to its folder
   - if [ $CAKEPHP_VERSION ]; then chmod -R 777 ./cakephp/app/tmp ; fi # make tmp executable
-  
+
   # Setup the TestProject for Bancha
   - if [ $CAKEPHP_VERSION ]; then rm -r ./cakephp/app ; fi #remove the default app
   - if [ $CAKEPHP_VERSION ]; then git clone --recursive https://github.com/Bancha/BanchaTestProject.git cakephp/app ; fi # clone Testproject as base
-  
+
   # If we don't need to test CakePHP code, simply mimik file structure
   - if [ -z "$CAKEPHP_VERSION" ]; then mkdir ./cakephp ; fi
   - if [ -z "$CAKEPHP_VERSION" ]; then mkdir ./cakephp/app ; fi
@@ -55,7 +55,7 @@ before_script:
   #  server.listen(80, 'localhost');
   #  console.log('TCP server listening on port 80 at localhost.');" > app/tmp/socket.js
   #- sudo node ./app/tmp/socket.js &
-  
+
   # Setup the database config
   - if [ $CAKEPHP_VERSION ]; then touch ./cakephp/app/Config/database.php
   - set +H # needed for pasting the following config file
@@ -123,7 +123,7 @@ before_script:
   - rm -r ./cakephp/app/Plugin/Bancha
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
   - cd ./cakephp # move into the directory for execution
-  
+
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
   - if [ $EXTJS_VERSION ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION-gpl/ext-all-debug-w-comments.js ; fi

@@ -79,14 +79,14 @@ class BanchaResponseCollection {
 				'message'		=> __("Unknown error."),
 			);
 		}
-		
+
 		// extUpload request exceptions also has to be returns in the html tag, see getResponses()
 		if ($request['extUpload'])
 		{
 			$response['extUpload'] = true;
 		}
 		$this->responses[] = $response;
-		
+
 		return $this;
 	 }
 

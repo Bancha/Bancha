@@ -16,7 +16,7 @@
  * Bancha Test Model
  *
  * This model doesn not have an associated controller, but it is configured
- * as BanchaRemotable. This should result in an error when loading the 
+ * as BanchaRemotable. This should result in an error when loading the
  * bancha-api.js
  *
  * @package       Bancha.Test.test_app.Model_BanchaApi_MissingController
@@ -27,7 +27,7 @@ class ModelWithoutControllerBanchaApiTest extends AppModel {
 
 /**
  * Behaviors
- * 
+ *
  * @var array
  */
 	public $actsAs = array('Bancha.BanchaRemotable');

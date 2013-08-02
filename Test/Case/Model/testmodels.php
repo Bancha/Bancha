@@ -14,9 +14,9 @@
  */
 
 /**
- * This model is used inside multiple 
+ * This model is used inside multiple
  * BanchaRemotableBehaviorTest tests
- * 
+ *
  * @package       Bancha.Test.Case.Model
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
@@ -79,9 +79,9 @@ class TestArticle extends CakeTestModel {
 
 
 /**
- * This model is used inside  
+ * This model is used inside
  * BanchaRemotableBehaviorTest::testGetValidations_NoValidationRules
- * 
+ *
  * @package       Bancha.Test.Case.Model
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @since         Bancha v 2.0.0
@@ -105,9 +105,9 @@ class TestArticleNoValidationRules extends CakeTestModel {
 
 
 /**
- * This model is used inside 
+ * This model is used inside
  * BanchaRemotableBehaviorTest::testGetValidations_BasicStructure
- * 
+ *
  * @package       Bancha.Test.Case.Model
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @since         Bancha v 2.0.0
@@ -116,7 +116,7 @@ class TestUser extends CakeTestModel {
 	public $name = 'User';
 	public $useTable = false;
 	public $order = array('TestUser.name' => 'ASC');
-	
+
 	protected $_schema = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
 		'login' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
@@ -131,7 +131,7 @@ class TestUser extends CakeTestModel {
 	//	'indexes' => array('PRIMARY' => array('column' => 'id', 'unique' => 1)),
 	//	'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);
-	
+
 	public $validate = array(
 		// Simple Rules
 		// See http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
@@ -156,9 +156,9 @@ class TestUser extends CakeTestModel {
 
 
 /**
- * This model is used inside 
+ * This model is used inside
  * BanchaRemotableBehaviorTest::testGetValidations
- * 
+ *
  * @package       Bancha.Test.Case.Model
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @since         Bancha v 2.0.0
@@ -166,7 +166,7 @@ class TestUser extends CakeTestModel {
 class TestUserCoreValidationRules extends TestUser {
 	public $name = 'UserCoreValidationRules';
 
-	
+
 	public $validate = array(
 		// Check all Core Validation rules
 		'id' => array(
@@ -260,7 +260,7 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		'published' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length'=>1),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length'=>8),
 	);
-	
+
 
 /**
  * we are testing the bancha remotable behavior
@@ -274,7 +274,7 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
  * @var array
  */
 	public $belongsTo = array('User');
-			
+
 /**
  * Validation rules
  *
@@ -290,12 +290,12 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 			// we just need a custom function, so it is not allowed
 			// to have more then two entries with the same name
 			'limitDuplicates' => array(
-				'rule'	=> array('customFunctionLimitDuplicates', 2), 
+				'rule'	=> array('customFunctionLimitDuplicates', 2),
 				'message' => 'This name has been used too many times.'
 			)
 		),
 	);
-	
+
 	/**
 	 * custom function to test bancha remotable behavior
 	 */

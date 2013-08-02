@@ -15,7 +15,7 @@ App::uses('BanchaException', 'Bancha.Bancha/Exception');
 
 /**
  * BanchaPaginatorComponent
- * 
+ *
  * This class extends the default Paginator component to also support
  * remote filtering from inside any ExtJS/Sencha Touch store with
  * remoteFiltering:true and a Bancha model.
@@ -27,22 +27,22 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 /**
  * Define here on which fields it's allowed to filter data.
- * In cakephp debugging mode with the Bancha dev version, Bancha will 
+ * In cakephp debugging mode with the Bancha dev version, Bancha will
  * display an error if you are filtering for unallowed filter
- * 
- * 
- * Possible options: 
- *  - 'all'  
+ *
+ *
+ * Possible options:
+ *  - 'all'
  *     Please choose wisely, defining 'all' could lead to potenzial
- *     security issues since hackers could expose more data then 
+ *     security issues since hackers could expose more data then
  *     expected with standard MySQL-like attacks. E.g. filtering
  *     by password with regex or filtering other hidden information.
- * 
+ *
  *  - 'associations'
  *    This exposes only fields where there is an association defined
  *    in the model, so for article belongsTo user filtering by user_id
  *    is allowed.
- * 
+ *
  *  - array('field1', 'field2') -> This will be internally transformed to below one
  *    array('User.field1', 'User.field2')
  *    You can specifically define which fields you want to allow filtering upon.
@@ -54,7 +54,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 	protected $allowedFilters = 'associations';
 
 /**
- * A reference to the instantiating controller object. 
+ * A reference to the instantiating controller object.
  * This is setup by the PaginatorComponent itself.
  *
  * @access private
@@ -70,7 +70,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  *
  * So every time the request is made by Bancha we will disable the RequestHandler,
  * if available.
- * 
+ *
  * @param  Controller $controller Controller with components to initialize
  * @return void
  */
@@ -94,7 +94,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * Main execution method. Handles validating of allowed filter constraints.
  *
  * @param Controller $controller A reference to the instantiating controller object
- * @throws BanchaException 
+ * @throws BanchaException
  * @return void
  */
 	public function startup(Controller $controller) {
@@ -108,10 +108,10 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 	}
 
 /**
- * Handles automatic pagination of model records. 
- * 
+ * Handles automatic pagination of model records.
+ *
  * The BanchaPaginatorComponents extends the default
- * behavior by supporting remote filtering on Bancha 
+ * behavior by supporting remote filtering on Bancha
  * requests if the $allowedFilters property allows it.
  *
  * @param mixed $object Model to paginate (e.g: model instance, or 'Model', or 'Model.InnerModel')

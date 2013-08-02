@@ -52,7 +52,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$article = new Article();
 		$article->create();
 		$article->save(array('title' => 'foo'));
-	
+
 		$dispatcher = new BanchaDispatcher();
 		$client_id = uniqid();
 		$article_id = $article->id;
@@ -87,17 +87,17 @@ class ConsistentModelTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// check that both requests got executed successfully
 		$this->assertEquals('barfoo',$responses[0]->result->data->title);
 		$this->assertEquals('foobar',$responses[1]->result->data->title);
-		
+
 		// check that record was changed correctly
 		$article = ClassRegistry::init('Article');
 		$data = $article->read(null, $article_id);
 		$this->assertEquals('foobar', $data['Article']['title']);
 		ClassRegistry::flush();
-		
+
 		// clean data
 		$article->delete($article_id);
 	}
@@ -109,7 +109,7 @@ class ConsistentModelTest extends CakeTestCase {
  */
 	public function testEditEditMultipleRequests() {
 		$this->markTestSkipped("Consistancy is not yet implemented.");
-		
+
 		// Preparation: create article
 		$article = new Article();
 		$article->create();

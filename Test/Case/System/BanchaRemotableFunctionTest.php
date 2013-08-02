@@ -20,7 +20,7 @@ App::uses('Controller', 'Controller');
 
 /**
  * Provides some controller functions to use for system tests.
- * 
+ *
  * @package       Bancha.Test.Case.System
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -82,10 +82,10 @@ class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsCo
 /**
  * BanchaRemotableFunctionTest
  *
- * All these tests are using the full stack of CakePHP components, not only testing 
+ * All these tests are using the full stack of CakePHP components, not only testing
  * the functionallity of Bancha, but also that it is compatible to the current
  * CakePHP library (since Bancha is using some internal methods)
- * 
+ *
  * @package       Bancha
  * @category      Tests
  */
@@ -100,7 +100,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	}
 
 	public function testInputParametersAndReturnTransformation() {
-		
+
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'RemotableFunction',
@@ -113,11 +113,11 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('RemotableFunction', $responses[0]->action);
 		$this->assertEquals('returnInputParameters', $responses[0]->method);
@@ -127,7 +127,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	}
 
 	public function testRequestDataAndReturnTransformation() {
-		
+
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'RemotableFunction',
@@ -140,13 +140,13 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
 		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got '.print_r($responses,true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('RemotableFunction', $responses[0]->action);
 		$this->assertEquals('returnInputRequestData', $responses[0]->method);
@@ -162,13 +162,13 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	 * Without any adoption the RequestHandler would break Bancha's definition
 	 * of the $request->data.
 	 *
-	 * This is fixed in the BanchaPaginatorComponent::initialize. 
+	 * This is fixed in the BanchaPaginatorComponent::initialize.
 	 *
-	 * Since it makes no sense to test this in a unit test, this provides an 
+	 * Since it makes no sense to test this in a unit test, this provides an
 	 * integration test where we go though the Dispatcher to check if everything
-	 * works as expected. 
-	 * 
-	 * This test is exactly the same as the one above except that they are running 
+	 * works as expected.
+	 *
+	 * This test is exactly the same as the one above except that they are running
 	 * against a Controller with an activated RequestHandler.
 	 */
 	public function testRequestDataAndReturnTransformation_WithRequestHandler() {
@@ -192,14 +192,14 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
 		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
 		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got '.print_r($responses,true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
-		
+
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('RemotableFunctionWithRequestHandler', $responses[0]->action);
 		$this->assertEquals('returnInputRequestData', $responses[0]->method);
@@ -243,7 +243,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('BanchaRedirectException', $responses[0]->exceptionType);
 	}
@@ -252,9 +252,9 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	 * Without any adoption the AuthComponent would render an element if the config
 	 * ajaxLogin is set and the user is not logged in.
 	 *
-	 * This is fixed in the BanchaPaginatorComponent::initialize. 
+	 * This is fixed in the BanchaPaginatorComponent::initialize.
 	 *
-	 * Since it makes no sense to test this in a unit test, this provides an 
+	 * Since it makes no sense to test this in a unit test, this provides an
 	 * integration test where we go though the Dispatcher to check if everything
 	 * works as expected.
 	 */
@@ -274,7 +274,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('BanchaAuthLoginException', $responses[0]->exceptionType);
 	}
@@ -283,9 +283,9 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	 * Without any adoption the AuthComponent would trigger a redirect if the user
 	 * is not authorized to use this method.
 	 *
-	 * Since it makes no sense to test this in a unit test, this provides an 
+	 * Since it makes no sense to test this in a unit test, this provides an
 	 * integration test where we go though the Dispatcher to check if everything
-	 * works as expected. 
+	 * works as expected.
 	 */
 	public function testAuthComponent_NotAuthorized() {
 		// log in
@@ -307,7 +307,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
 		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
@@ -331,7 +331,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('BanchaAuthAccessRightsException', $responses[0]->exceptionType);
 

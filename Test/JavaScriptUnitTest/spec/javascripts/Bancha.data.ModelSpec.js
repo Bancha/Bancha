@@ -74,16 +74,16 @@ describe("Bancha.data.Model tests", function() {
         /**
          * #getFields behaves very differently on different versions, see below.
          * getFieldNames provides a way to get all field names in a normalized manner.
-         * 
+         *
          * Support for Ext JS 4.0
          * #getFields does not exist.
-         * 
+         *
          * Support for Ext JS 4.1+
          * In Ext JS this method is only available as static method, and returns an array
-         * 
+         *
          * Support for Sench Touch
          * Returns a collection of fields, where getName() must be executed to get the name.
-         * 
+         *
          * @return {String[]} The defined field names for this Model.
          */
         getFieldNames: function() {
@@ -196,11 +196,11 @@ describe("Bancha.data.Model tests", function() {
         rec.set('login', 'mickymouse');
         expect(rec.validate().getCount()).toEqual(0);
 
-        // the associations are invisible till the associated models are 
+        // the associations are invisible till the associated models are
         // loaded as well
         h.initAssociatedModels();
 
-        // expect the associations to be set on the model prototype 
+        // expect the associations to be set on the model prototype
         // and the value as a mixed collection
         expect(rec.associations.getCount()).toEqual(2);
 
@@ -288,7 +288,7 @@ describe("Bancha.data.Model tests", function() {
             name: 'Micky Mouse'
         });
 
-        // the associations are invisible till the associated models are 
+        // the associations are invisible till the associated models are
         // loaded as well
         h.initAssociatedModels();
 

@@ -65,19 +65,19 @@ describe('ExtSpecHelpers toThrowExtError matcher', function() {
         //console.info(match(exceptionFn));
         expect(match(exceptionFn).toThrowExtErrorMsg('this is a ext error')).toPass();
     });
-    
+
     it("should be able to recognize when no error was thrown", function() {
         var emptyFn = function() {};
         expect(match(emptyFn).toThrowExtErrorMsg('ext error')).toFail();
     });
-     
+
     it("should be able to recognize when the wrong error is trown", function() {
         // error wrong exception
         var exceptionFn = function() {
             Ext.Error.raise('this is a ext error');
         };
         expect(match(exceptionFn).toThrowExtErrorMsg('this is a wrong ext error')).toFail();
-        
+
     });
     */
     // TODO test toBeModelClass

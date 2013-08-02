@@ -38,11 +38,11 @@ class BanchaResponseTransformer {
 		if ($request->controller) {
 			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
 		}
-        
+
 		if ($response === null) { // use the triple operator to not catch empty arrays
 			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
-		
+
 		// get the model
 		$Model = false;
 		try {
@@ -54,7 +54,7 @@ class BanchaResponseTransformer {
 
 		return BanchaResponseTransformer::transformDataStructureToSencha($response, $modelName, $Model);
 	}
-    
+
 	/**
 	 * Transform a CakePHP response to ExtJS/Sencha Touch structure,
 	 * otherwise just return the original response.
@@ -66,12 +66,12 @@ class BanchaResponseTransformer {
 	 * @return array                   ExtJS/Sencha Touch formated data
 	 */
 	private static function transformDataStructureToSencha($response, $modelName, $Model) {
-		
-		// if we only got an array with a success property we expect 
-		// that this data is already in the correct format, so only 
+
+		// if we only got an array with a success property we expect
+		// that this data is already in the correct format, so only
 		// enforce that the success value is a boolean and we're done
 		if(is_array($response) && isset($response['success'])) {
-			
+
 			// enforce that the success value is of type boolean
 			$response['success'] = $response['success']==='false' ? false : !!$response['success'];
 
@@ -104,7 +104,7 @@ class BanchaResponseTransformer {
 				'data' => $response,
 			);
 		}
-		
+
 		// we got some data array here, wrap it in the sencha response
 		// and try to transform it
 		$senchaResponse = array(
@@ -129,7 +129,7 @@ class BanchaResponseTransformer {
 		if($mapper->isSingleRecord()) {
 			// this is standard cake single element structure
 			$senchaResponse['data'] = $response[$modelName];
-			
+
 		} else if($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
 
@@ -150,7 +150,7 @@ class BanchaResponseTransformer {
 				$senchaResponse['message'] = 'Expected the response to be multiple ' . $modelName . ' records, '.
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
-			
+
 		} else if($mapper->isPaginatedSet()) {
 			// this is a paging response
 
@@ -165,10 +165,10 @@ class BanchaResponseTransformer {
 
 		return $senchaResponse;
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * translates CakePHP CRUD to ExtJS CRUD method names
 	 * @param string $method
 	 */

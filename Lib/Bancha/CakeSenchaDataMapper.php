@@ -12,7 +12,7 @@
 
 /**
  * CakeSenchaDataMapper
- * A Helper class for building the ExtJS/Sencha Touch data structures from 
+ * A Helper class for building the ExtJS/Sencha Touch data structures from
  * CakePHP ones.
  *
  * @package       Bancha.Lib.Bancha
@@ -60,12 +60,12 @@ class CakeSenchaDataMapper {
 	/**
 	 * Returns true if the current set is in Bancha's pagination data structure
 	 *
-	 * Example: 
+	 * Example:
 	 *     array(
 	 *         'count' => 100,
 	 *         'records' => array( ... find('all') structure... )
 	 *     )
-	 * 
+	 *
 	 * @return boolean True if this is a pagination set
 	 */
 	public function isPaginatedSet() {

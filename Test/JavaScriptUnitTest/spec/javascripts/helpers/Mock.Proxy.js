@@ -22,7 +22,7 @@ Ext.define('Ext.data.proxy.override.Direct', {
 });
 
 /**
- * Mock.Proxy extends the Mock object and provides 
+ * Mock.Proxy extends the Mock object and provides
  * an easier interface for ExtJS testing
  */
 Mock.Proxy = (function() {
@@ -34,7 +34,7 @@ Mock.Proxy = (function() {
     // See http://www.sencha.com/forum/showthread.php?188764-How-to-mock-a-proxy
     proxyPrototype.isInstance = true;
 
-    // setModel is always called when creating 
+    // setModel is always called when creating
     // an Proxy from model/store, totally unimportant for us
     proxyPrototype.setModel = function(model) {
         // make sure that Sencha Touch does not use Caching

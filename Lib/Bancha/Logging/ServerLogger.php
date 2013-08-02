@@ -21,15 +21,15 @@ App::uses('PiwikTracker', 'Bancha.Bancha/Logging');
 class ServerLogger {
 	/**
 	 * Log an error to the Bancha developers.
-	 * 
+	 *
 	 * To find bugs more easily and fix them fast, if this feature is activated,
-	 * Bancha provides exceptions to the Bancha developers, including environment 
+	 * Bancha provides exceptions to the Bancha developers, including environment
 	 * informations like the PHP and CakePHP version, but without any data.
-	 * 
-	 * To disable it, please add to your core.php  
-	 * 
-	 *     Configure::write('Bancha.ServerLogger.logIssues', false);  
-	 * 
+	 *
+	 * To disable it, please add to your core.php
+	 *
+	 *     Configure::write('Bancha.ServerLogger.logIssues', false);
+	 *
 	 * @since  Bancha v 2.0.0
 	 * @param  String    $signature The controller invokation signature
 	 * @param  Exception $exception The caugth exception
@@ -43,7 +43,7 @@ class ServerLogger {
 		$type = get_class($exception);
 		if( $type=='CacheException' ||
 			$type=='ConfigureException' ||
-			$type=='MethodNotAllowedException' || 
+			$type=='MethodNotAllowedException' ||
 			$type=='NotFoundException' ||
 			$type=='BanchaAuthAccessRightsException' ||
 			$type=='BanchaAuthLoginException' ||
@@ -56,7 +56,7 @@ class ServerLogger {
 		// we are not interested in any data!
 		$signature = substr($signature, 0, strpos($signature, '('));
 		$msg       = $signature.' has caused '.$type.
-					$exception->getMessage(). ' in file ' . $exception->getFile() . 
+					$exception->getMessage(). ' in file ' . $exception->getFile() .
 					' on line ' . $exception->getLine();
 
 		self::log('exception', $msg);
@@ -64,16 +64,16 @@ class ServerLogger {
 
 	/**
 	 * Log environment information to the Bancha developers.
-	 * 
+	 *
 	 * To get a better idea what server environments are the most important
 	 * to test and when features we should implement next, if this feature
 	 * is activated, Bancha will provide usage information, including environment informations
 	 * informations like the PHP and CakePHP version, but without any data.
-	 * 
-	 * To disable it, please add to your core.php  
-	 * 
-	 *     Configure::write('Bancha.ServerLogger.logEnvironment', false);  
-	 * 
+	 *
+	 * To disable it, please add to your core.php
+	 *
+	 *     Configure::write('Bancha.ServerLogger.logEnvironment', false);
+	 *
 	 * @since  Bancha v 2.0.0
 	 * @return void
 	 */
@@ -87,7 +87,7 @@ class ServerLogger {
 
 	/**
 	 * The underlying log function.
-	 * 
+	 *
 	 * @since  Bancha v 2.0.0
 	 * @param  String $type  The type of message to log
 	 * @param  String $msg   The message to send
@@ -117,7 +117,7 @@ class ServerLogger {
 			$t->setCustomVariable(2, 'APP', $host.$path);
 			$t->setCustomVariable(3, 'PHP_VERSION', phpversion());
 			$t->setCustomVariable(4, 'BANCHA_VERSION', Configure::read('Bancha.version'));
-			$t->setCustomVariable(5, 'CAKE_VERSION', 
+			$t->setCustomVariable(5, 'CAKE_VERSION',
 				Configure::version().
 				', mode: '.Configure::read('debug').
 				' with '.$datasource);

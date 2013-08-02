@@ -18,7 +18,7 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
  * BanchaControllerTest
- * 
+ *
  * @package       Bancha.Test.Case.Controller
  * @author        Florian Eckerstorfer <florian@theroadtojoy.at>
  * @author        Roland Schuetz <mail@rolandschuetz.at>
@@ -305,7 +305,7 @@ class BanchaControllerTest extends ControllerTestCase {
 	}
 
 	/**
-	 * AJAX requests to invalid models should throw an exception, 
+	 * AJAX requests to invalid models should throw an exception,
 	 * so that Ext.Ajax triggers the failure routine.
 	 *
 	 * @expectedException MissingModelException
@@ -348,9 +348,9 @@ class BanchaControllerTest extends ControllerTestCase {
 	}
 
 	/**
-	 * Bancha via Ext.Direct requests to invalid models should return 
-	 * a result with success false, but should not throw a client-side 
-	 * exception, because Ext.loader.Models should be able to handle 
+	 * Bancha via Ext.Direct requests to invalid models should return
+	 * a result with success false, but should not throw a client-side
+	 * exception, because Ext.loader.Models should be able to handle
 	 * the error.
 	 */
 	public function testLoadModelMetaData_ExtDirect_Error() {
@@ -369,7 +369,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$responses = json_decode($dispatcher->dispatch(
 			new BanchaRequestCollection($rawPostData), array('return' => true)
 		));
-		
+
 		// check the basic response, the result property and message
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertEquals(false, $responses[0]->result->success);
@@ -410,7 +410,7 @@ class BanchaControllerTest extends ControllerTestCase {
 	 * This should result into an error flag in the Bancha-Api.
 	 *
 	 * We will not need a separate test_app model folder here anymore
-	 * after we have refactored the static App::objects out of the 
+	 * after we have refactored the static App::objects out of the
 	 * BanchaApi library class.
 	 */
 	public function testBanchaApiServerErrorProperty_MissingControllerError() {
@@ -420,7 +420,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		App::build(array(
 			'Model' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Model_BanchaApi_MissingController' . DS,
 		), App::RESET);
-		
+
 		// in production mode only expect a flag
 		Configure::write('debug', 0);
 		$response = $this->testAction('/bancha-api.js');
@@ -443,4 +443,4 @@ class BanchaControllerTest extends ControllerTestCase {
 	}
 }
 
-    
+
