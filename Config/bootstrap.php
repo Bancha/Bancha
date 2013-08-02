@@ -23,6 +23,18 @@ Inflector::rules('plural', array('/^Bancha$/i' => 'Bancha'));
 Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
 
 /**
+ * By default the Ext JS or Sencha Touch web app is on the same domain
+ * as CakePHP. This is enforced in browsers by the Same-Origin-Policy.
+ *
+ * If you are packaging your application for mobile devices, you will
+ * need to set the full path to the CakePHP application. So if you are
+ * building a mobile app please set this config in your core.php.
+ *
+ * Normally there is no reason to do this.
+ */
+//Configure::write('Bancha.Api.domain', 'http://example.org');
+
+/**
  * If you want to use exposed controller methods to a different namespace
  * then 'Bancha.RemoteStubs', you can override this in your core.php.  
  * 

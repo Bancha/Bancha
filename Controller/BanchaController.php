@@ -96,8 +96,9 @@ class BanchaController extends BanchaAppController {
 			Cache::write('actions_'.Configure::read('debug'), $actions, '_bancha_api_');
 		}
 		
+		$url = (Configure::read('Bancha.Api.domain')==null) ? '' : Configure::read('Bancha.Api.domain');
 		$api = array(
-			'url'		=> $this->request->webroot.'bancha-dispatcher.php',
+			'url'		=> $url.$this->request->webroot.'bancha-dispatcher.php',
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
