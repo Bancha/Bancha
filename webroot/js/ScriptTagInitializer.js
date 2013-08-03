@@ -13,8 +13,8 @@
  * For more information go to http://banchaproject.org
  */
 
-/**
- * @class Bancha.Initializer
+/*
+ * Bancha.ScriptTagInitializer
  *
  * Initializes all core features of Bancha. This script can
  * be included as script tag and is currently used for
