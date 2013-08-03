@@ -130,15 +130,44 @@ Ext.define('Bancha.Initializer', {
     }
 );
 
-// now that we are initialized, we want to hook into Ext.data.Model
-// to allow the usage of the 'bancha' property on Models in Sencha
-// Architect
-Ext.define('Bancha.data.override.Model', {
-    override: 'Ext.data.Model'
-}, function() {
+// now that we are initialized, we want to inject Bancha schema in
+// all models with a config 'bancha' set to true
+if(Ext.versions.touch) {
 
-    // we can't use the #onExtended method, since we need to be the
-    // first preprocessor
+    /*
+     * For Sencha Touch:
+     *
+     * Every time a new subclass is created, this function will apply all Bancha
+     * model configurations.
+     *
+     * In the debug version it will raise an Ext.Error if the model can't be
+     * or is already created, in production it will only return false.
+     */
+    Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
+        var prototype = cls.prototype;
+        if(!prototype.isModel) {
+            return; // this is not a model instance
+        }
+        if(!prototype.getBancha || (prototype.getBancha()!==true && prototype.getBancha()!=='true')) {
+            return; // there is no bancha config set to true
+        }
+
+        // inject schema
+        Bancha.data.Model.applyCakeSchema(cls);
+    }, true);
+
+} else {
+
+    /*
+     * For Ext JS:
+     *
+     * Hook into Ext.data.Model.
+     * We can't use the #onExtended method, since we need to be the first
+     * preprocessor.
+     *
+     * In the debug version it will raise an Ext.Error if the model can't be
+     * or is already created, in production it will only return false.
+     */
     Ext.data.Model.$onExtended.unshift({
         fn: function(cls, data, hooks) {
             if(data.bancha !== true && data.bancha !== 'true') {
@@ -149,4 +178,4 @@ Ext.define('Bancha.data.override.Model', {
         },
         scope: this
     });
-});
+}
