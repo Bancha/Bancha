@@ -306,7 +306,9 @@ Ext.define('Bancha.data.Model', {
 
     /*
      * For Sencha Touch:
-     * Every time a new subclass is created, this function will apply all Bancha model configurations.
+     *
+     * Every time a new subclass is created, this function will apply all
+     * Bancha model configurations.
      *
      * In the debug version it will raise an Ext.Error if the model can't be
      * or is already created, in production it will only return false.
