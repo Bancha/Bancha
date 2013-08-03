@@ -146,12 +146,14 @@ Ext.define('Bancha.data.Model', {
             // configure the new model
             config = Bancha.getModelMetaData(modelName);
 
-            // Support for ExtJS 4.0.7
-            if(typeof modelCls.setFields !== 'function') {
-                // setFields only exists in ExtJS 4.1+
+            if(!Ext.versions.touch) {
+                // this is used for two cases:
+                // - Support for ExtJS 4.0.7
+                // - Ext JS Support for ScriptTagInitializer, where we hook into Ext.data.Model extend
                 extJsOnClassExtendedData.fields = config.fields;
-            } else {
-                // default case for ExtJS and Sencha Touch
+            }
+            // default case for ExtJS and Sencha Touch
+            if(typeof modelCls.setFields === 'function') {
                 modelCls.setFields(config.fields);
             }
 
