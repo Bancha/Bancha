@@ -56,10 +56,15 @@ class BanchaExceptionsTest extends CakeTestCase {
 				'user_id'		=> 1,
 			),
 		));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// set debug level back to normal
 		Configure::write('debug', $this->standardDebugLevel);
@@ -91,10 +96,15 @@ class BanchaExceptionsTest extends CakeTestCase {
 				'user_id'		=> 1,
 			),
 		));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// set debug level back to normal
 		Configure::write('debug', $this->standardDebugLevel);
@@ -138,11 +148,14 @@ class BanchaExceptionsTest extends CakeTestCase {
 			),
 		));
 
-		// Create dispatcher and dispatch requests.
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 
 		// set debug level back to normal
@@ -196,11 +209,14 @@ class BanchaExceptionsTest extends CakeTestCase {
 			)
 		));
 
-		// Create dispatcher and dispatch requests.
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// Expect a missing conroller exception in the result
 		// In Production mode the exact type is not send, only the Ext.Direct type
@@ -217,9 +233,9 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// this should not log
 		Configure::write('Bancha.logExceptions', false);
 		Configure::write('debug', 2);
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// Expect a missing conroller exception in the result
 		// In Production mode the exact type is not send, only the Ext.Direct type
@@ -230,9 +246,9 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// In Debug Mode we want to see no error log
 		Configure::write('Bancha.logExceptions', true);
 		Configure::write('debug', 2);
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// Expect a missing conroller exception in the result
 		// In Production mode the exact type is not send, only the Ext.Direct type

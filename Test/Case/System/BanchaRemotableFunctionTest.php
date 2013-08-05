@@ -109,10 +109,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array('my param1', 'my param2'),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
@@ -136,10 +141,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array('my param1', 'my param2'),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
@@ -188,10 +198,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array('my param1', 'my param2'),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
@@ -239,10 +254,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array(),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('BanchaRedirectException', $responses[0]->exceptionType);
@@ -270,10 +290,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array('my param1', 'my param2'),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('BanchaAuthLoginException', $responses[0]->exceptionType);
@@ -303,10 +328,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array('my param1', 'my param2'),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
@@ -327,10 +357,15 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array('my param1', 'my param2'),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('BanchaAuthAccessRightsException', $responses[0]->exceptionType);

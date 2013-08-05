@@ -38,8 +38,15 @@ class BanchaDispatcher {
 	 * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
 	 * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
 	 */
-	public function dispatch(BanchaRequestCollection $requests, $additionalParams = array()) {
-		$collection = new BanchaResponseCollection();
+	public function dispatch(BanchaRequestCollection $requests, CakeResponse $response = null, $additionalParams = array()) {
+		if($response === null) {
+			// Legacy support for Bancha 1.x
+			$response = new CakeResponse();
+			if(Configure::read('debug') == 2) {
+				echo 'Bancha Error: Please update your webroot/bancha-dispatcher.php file the Bancha 2 version!';
+			}
+		}
+		$collection = new BanchaResponseCollection($response);
 
 		// CakePHP should think that every Bancha request is a POST request.
 		$_SERVER['REQUEST_METHOD'] = 'POST';
@@ -59,13 +66,13 @@ class BanchaDispatcher {
 
 				try {
 					// dispatch the request
-					$response = new CakeResponse(array('charset' => Configure::read('App.encoding')));
-					$dispatcher->dispatch($request, $response, array('return' => true));
+					$subResponse = new CakeResponse(array('charset' => Configure::read('App.encoding')));
+					$dispatcher->dispatch($request, $subResponse, array('return' => true));
 
 					// add result to response colection
 					$collection->addResponse(
 						$request['tid'],
-						$response,
+						$subResponse,
 						$request
 					);
 				} catch (Exception $e) {
@@ -76,18 +83,20 @@ class BanchaDispatcher {
 			} // if (!$skip_request)
 		} // foreach
 
-		// Combine the responses and return or output them.
-		$responses = $collection->getResponses();
-		if (isset($additionalParams['return']) && $additionalParams['return']) {
-			return $responses->body();
-		}
+		// Combine the responses
+		$collection->getResponses();
 
 		// about every tenth usage send a small ping
 		if(rand(1, 10)==1) {
 			ServerLogger::logEnvironment();
 		}
 
-		$responses->send();
+		// Return or send response
+		if (isset($additionalParams['return']) && $additionalParams['return']) {
+			return $response->body();
+		}
+
+		$response->send();
 	}
 
 	/**
@@ -142,6 +151,7 @@ class BanchaDispatcher {
 			'A Bancha request to '.$this->getSignature($request).' resulted in the following '.get_class($exception).':'.
 			"\n".$exception."\n\n");
 	}
+
 	/**
 	 * Build a string representation of the invocaton signature, used for error logs.
 	 *

@@ -36,10 +36,16 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> $data,
 		));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
 		return $responses;
 	}
 

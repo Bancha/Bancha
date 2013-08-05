@@ -25,9 +25,24 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  */
 class BanchaResponseCollection {
 
-/** @var array List of responses. */
+	/**
+	 * Response to use as result
+	 * @var CakeResponse
+	 */
+	private $reponse = null;
+
+	/**
+	 * List of sub-responses
+	 * @var CakeResponse[]
+	 */
 	protected $responses = array();
 
+	/**
+	 * Constructor
+	 */
+	public function __construct(CakeResponse $response) {
+		$this->response = $response;
+	}
 
 /**
  * Adds a new CakeResponse object to the response collection.
@@ -46,8 +61,7 @@ class BanchaResponseCollection {
 			'method'	=> BanchaResponseTransformer::getMethod($request), // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
 		);
-		if ($request['extUpload'])
-		{
+		if ($request['extUpload']) {
 			$response['extUpload'] = true;
 		}
 		$this->responses[] = $response;
@@ -81,8 +95,7 @@ class BanchaResponseCollection {
 		}
 
 		// extUpload request exceptions also has to be returns in the html tag, see getResponses()
-		if ($request['extUpload'])
-		{
+		if ($request['extUpload']) {
 			$response['extUpload'] = true;
 		}
 		$this->responses[] = $response;
@@ -129,22 +142,22 @@ class BanchaResponseCollection {
 			} catch(Exception $e) {}
 		}
 
+
+		// request was successfull
+		$this->response->statusCode(200);
+		$this->response->charset('utf-8');
+
 		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
 		if (isset($this->responses['0']['extUpload']) && $this->responses['0']['extUpload']) {
-			return new CakeResponse(array(
-				// TODO Is this right implemented? http://www.sencha.com/forum/showthread.php?156689
-				'body'		=>	'<html><body><textarea>' . json_encode($this->responses) . '</textarea></body></html>',
-				'status'	=> 200,
-				'type'		=> 'text/html',
-				'charset'	=> 'utf-8',
-			));
+			$this->response->type('text/html');
+			// TODO Is this right implemented? http://www.sencha.com/forum/showthread.php?156689
+			$this->response->body('<html><body><textarea>' . json_encode($this->responses) . '</textarea></body></html>');
+		} else {
+			$this->response->type('json');
+			$this->response->body(json_encode($this->responses));
 		}
-		return new CakeResponse(array(
-			'body'			=> json_encode($this->responses),
-			'status'		=> 200,
-			'type'			=> 'json',
-			'charset'		=> 'utf-8',
-		));
+
+		return $this->response;
 	}
 
 }

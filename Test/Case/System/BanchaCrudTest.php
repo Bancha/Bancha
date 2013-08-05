@@ -65,10 +65,15 @@ class BanchaCrudTest extends CakeTestCase {
 				'user_id'		=> 1,
 			))),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
 		$this->assertNotNull($responses[0]->result->data->id);
@@ -105,10 +110,15 @@ class BanchaCrudTest extends CakeTestCase {
 				'published'		=> 1,
 			))),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('foobar', $responses[0]->result->data->title);
@@ -142,13 +152,17 @@ class BanchaCrudTest extends CakeTestCase {
 			'extType'		=> 'rpc',
 		);
 
-		// it's no upload, so use the default way to decode the response
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection('',$postData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection('', $postData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
-		// test data (expected in default ext structure)
+		// test
+		// it's not an upload, so use the default way to decode the response
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// verify data (expected in default ext structure)
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
@@ -184,10 +198,15 @@ class BanchaCrudTest extends CakeTestCase {
 			'extType'		=> 'rpc',
 			'extUpload'		=> true,  // <----------------- this time it's an upload
 		);
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$result = $dispatcher->dispatch(
-			new BanchaRequestCollection('',$postData), array('return' => true)
-		);
+		$collection = new BanchaRequestCollection('', $postData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$result = $dispatcher->dispatch($collection, $response, array('return' => true));
 
 		// the response should be surounded by some html (because of the upload)
 		$this->assertEquals(1,preg_match("/\<html\>\<body\>\<textarea\>(.*)\<\/textarea\>\<\/body\>\<\/html\>/",$result));
@@ -195,7 +214,7 @@ class BanchaCrudTest extends CakeTestCase {
 		// decode by excluding the html part
 		$responses = json_decode(substr($result,22,-25));
 
-		// test data (expected in default ext structure)
+		// verify data (expected in default ext structure)
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
@@ -227,10 +246,15 @@ class BanchaCrudTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array('id' => 988)))
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// test result
 		$this->assertEquals(true, $responses[0]->result->success);
@@ -267,12 +291,17 @@ class BanchaCrudTest extends CakeTestCase {
 				'limit'			=> 2,
 			)),
 		)));
-		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
 
-		// test data
+		// setup
+		$dispatcher = new BanchaDispatcher();
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// check data
 
 		// only first and second element should be loaded
 		$this->assertEquals(2, count($responses[0]->result->data));
@@ -302,12 +331,17 @@ class BanchaCrudTest extends CakeTestCase {
 				'limit'			=> 2,
 			)),
 		)));
-		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
 
-		// test data
+		// setup
+		$dispatcher = new BanchaDispatcher();
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// check data
 
 		// only third element should be loaded
 		$this->assertEquals(1, count($responses[0]->result->data));
@@ -342,10 +376,15 @@ class BanchaCrudTest extends CakeTestCase {
 				'limit'			=> 10,
 			)),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// test empty data result
 		$this->assertTrue(is_array($responses[0]->result->data));
@@ -381,12 +420,17 @@ class BanchaCrudTest extends CakeTestCase {
 				'data'	=> array('id' => 988)
 			))
 		)));
-		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
 
-		// test data
+		// setup
+		$dispatcher = new BanchaDispatcher();
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// verify data
 		$this->assertEquals(1, count($responses[0]->result->data));
 		$this->assertEquals(988, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title);
@@ -411,12 +455,16 @@ class BanchaCrudTest extends CakeTestCase {
 			))
 		)));
 
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// verify
 		$this->assertEquals(1, count($responses[0]->result->data));
 		$this->assertEquals(989, $responses[0]->result->data->id);
 		$this->assertEquals('Title 2', $responses[0]->result->data->title);
@@ -458,10 +506,15 @@ class BanchaCrudTest extends CakeTestCase {
 				'published'		=> false,
 			))),
 		)));
+
+		// setup
 		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch(
-			new BanchaRequestCollection($rawPostData), array('return' => true)
-		));
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertTrue(isset($responses[0]->result), 'Expected an action proptery on first response, instead $responses is '.print_r($responses,true));
@@ -478,13 +531,13 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(2, count($responses));
 
 
-		// test data for first request
+		// verify data for first request
 		$this->assertNotNull($responses[0]->result->data->id);
 		$this->assertEquals('Hello World', $responses[0]->result->data->title);
 		$this->assertEquals(false, $responses[0]->result->data->published);
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
 
-		// test data for second request
+		// verify data for second request
 		$this->assertEquals(988, $responses[1]->result->data->id);
 		$this->assertEquals('foobar', $responses[1]->result->data->title);
 		$this->assertEquals(0, $responses[1]->result->data->published);

@@ -57,8 +57,11 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$request3 = new CakeRequest();
 		$request3->addParams(array('controller' => 'foo', 'action' => 'error'));
 
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
 		// The heart of the test: create BanchaResponseCollection, add responses and get combined response.
-		$collection = new BanchaResponseCollection();
+		$collection = new BanchaResponseCollection($response);
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
 				   ->addResponse(2, new CakeResponse($response2), $request2)
 				   ->addException(3, $response3, $request3);
@@ -101,7 +104,10 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$request = new CakeRequest();
 		$request->addParams(array('controller' => 'foo', 'action' => 'bar', 'extUpload' => true));
 
-		$collection = new BanchaResponseCollection();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		$collection = new BanchaResponseCollection($response);
 		$collection->addResponse(2, new CakeResponse($response1), $request);
 
 		$expected = '<html><body><textarea>[{"type":"rpc","tid":2,"action":"foo","method":"bar",'.

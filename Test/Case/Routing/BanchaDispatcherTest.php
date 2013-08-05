@@ -18,6 +18,26 @@ App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
 
 /**
+ * TestsController class
+ *
+ * @package       Bancha.Test.Case.Routing
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
+ * @since         Bancha v 0.9.0
+ */
+class TestsController extends AppController {
+
+	public function testaction1() {
+		return array('text' => 'Hello World!');
+	}
+
+	public function testaction2() {
+		return array('text' => 'foobar');
+	}
+
+}
+
+/**
  * BanchaDispatcherTest
  *
  * @package       Bancha.Test.Case.Routing
@@ -37,6 +57,8 @@ class BanchaDispatcherTest extends CakeTestCase {
  *
  */
 	public function testDispatchWithReturn() {
+
+		// input
 		$rawPostData = json_encode(array(
 			array(
 				'action'	=> 'Test', // will be pluralized
@@ -54,11 +76,16 @@ class BanchaDispatcherTest extends CakeTestCase {
 			)
 		));
 
+		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
-		$dispatcher = new BanchaDispatcher();
-		$responses = json_decode($dispatcher->dispatch($collection, array('return' => true)));
+		// test
+		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
 
+		// verify
 		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is '.print_r($responses,true));
 		$this->assertEquals('Hello World!', $responses[0]->result->data->text);
 		$this->assertEquals('foobar', $responses[1]->result->data->text);
@@ -69,9 +96,9 @@ class BanchaDispatcherTest extends CakeTestCase {
  * directly to the browser. We need to capture the output to test it.
  *
  */
-	public function testDispatchWithoutReturn() {
-		$this->markTestSkipped("When executing the AllTests TestSuite the PHPUnit output buffers break this test.");
+	public function testDispatchWithResponseSend() {
 
+		// input
 		$rawPostData = json_encode(array(
 			array(
 				'action'	=> 'Test',
@@ -89,50 +116,57 @@ class BanchaDispatcherTest extends CakeTestCase {
 			)
 		));
 
+		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
-		$dispatcher = new BanchaDispatcher();
-
-		// if there is already a buffer, save the current result
-		$cakeTestBuffer = ob_get_clean();
-
-		ob_start(); // capture output, because we want to test without return
-		$dispatcher->dispatch($collection);
+		// capture output, because we want to test that the content is send
+		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
+		ob_start();
+		$Dispatcher->dispatch($collection, $response);
 		$responses = json_decode(ob_get_clean());
 
-		// ob_end_clean() does not restore the Content-Type, but we do not want to send the header in CLI mode.
-		if (isset($_SERVER['HTTP_HOST'])) {
-			header("Content-Type: text/html; charset=utf-8");
-		}
-
-		// if there was a buffer, refill it as before
-		if($cakeTestBuffer!=FALSE) {
-			ob_start();
-			echo $cakeTestBuffer;
-		}
-
-		$this->assertEquals('Hello World!', $responses[0]->result->text);
-		$this->assertEquals('foobar', $responses[1]->result->text);
+		// verify
+		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('Hello World!', $responses[0]->result->data->text);
+		$this->assertEquals('foobar', $responses[1]->result->data->text);
 	}
-
-}
 
 /**
- * TestsController class
+ * Bancha should not throw PHP Exceptions, because Sencha can't handle this,
+ * instead it should send Ext.Direct exceptions
  *
- * @package       Bancha.Test.Case.Routing
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @since         Bancha v 0.9.0
+ * @return void
  */
-class TestsController extends AppController {
+	public function testMissingController() {
 
-	public function testaction1() {
-		return array('text' => 'Hello World!');
-	}
+		// input
+		$rawPostData = json_encode(array(
+			array(
+				'action'	=> 'SomeController',
+				'method'	=> 'testaction1',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 1,
+			)
+		));
 
-	public function testaction2() {
-		return array('text' => 'foobar');
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// this should "throw" a Sencha exception
+		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// verify
+		$this->assertTrue(isset($responses[0]->type), 'Expected $responses[0]->type to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('exception', $responses[0]->type);
+		$this->assertEquals('MissingControllerException', $responses[0]->exceptionType);
+		$this->assertEquals('Controller class SomeControllersController could not be found.', $responses[0]->message);
 	}
 
 }
