@@ -29,20 +29,22 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  * @since         Bancha v 0.9.0
  */
 class BanchaExceptionsTest extends CakeTestCase {
-	private $standardDebugLevel;
 
 
 	private $originalOrigin;
+	private $originalDebugLevel;
+
 	public function setUp() {
-		 $this->standardDebugLevel = Configure::read('debug');
 		parent::setUp();
 
 		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+		$this->originalDebugLevel = Configure::read('debug');
 
 		// Bancha will check that this is set, so for all tests which are not
 		// about the feature, this should be set.
 		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
 	}
+
 	public function tearDown() {
 		parent::tearDown();
 
@@ -52,6 +54,9 @@ class BanchaExceptionsTest extends CakeTestCase {
 		} else {
 			unset($_SERVER['HTTP_ORIGIN']);
 		}
+
+		// reset the debug level
+		Configure::write('debug', $this->originalDebugLevel);
 	}
 
 /**
@@ -83,9 +88,6 @@ class BanchaExceptionsTest extends CakeTestCase {
 
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
-
-		// set debug level back to normal
-		Configure::write('debug', $this->standardDebugLevel);
 
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
@@ -123,9 +125,6 @@ class BanchaExceptionsTest extends CakeTestCase {
 
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
-
-		// set debug level back to normal
-		Configure::write('debug', $this->standardDebugLevel);
 
 		// show that there was an exception, but with no information!
 		$this->assertEquals('exception', $responses[0]->type);
@@ -175,10 +174,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-
-		// set debug level back to normal
-		Configure::write('debug', $this->standardDebugLevel);
-
+		// verity
 		$this->assertEquals(3, count($responses), 'Three requests result in three responses.');
 
 		// controller class not found
@@ -206,6 +202,7 @@ class BanchaExceptionsTest extends CakeTestCase {
  *
  */
 	public function testExceptionLogging() {
+		$originalLogExceptions = Configure::read('Bancha.logExceptions');
 
 		// this should log exceptions
 		Configure::write('debug', 0);
@@ -273,9 +270,8 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(file_exists(LOGS . 'error.log'));
 
-
-		// set debug level back to normal
-		Configure::write('debug', $this->standardDebugLevel);
+		// tear down
+		Configure::write('Bancha.logExceptions', $originalLogExceptions);
 	}
 }
 

@@ -14,6 +14,8 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+App::uses('CakeRequest', 'Network');
+App::uses('CakeResponse', 'Network');
 App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
 
 /**
@@ -65,7 +67,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
 				   ->addResponse(2, new CakeResponse($response2), $request2)
 				   ->addException(3, $response3, $request3);
-		// getResponses() is an CakeResponse with JSON as body.
+		// getResponses() is a CakeResponse with JSON as body.
 		$actualResponse = json_decode($collection->getResponses()->body());
 
 		// Successfull response
