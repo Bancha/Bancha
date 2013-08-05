@@ -30,28 +30,49 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	/**
 	 * Keeps a reference to the default paths, since
-	 * we need to change them in some tests here
+	 * we need to change them in teh setUp method
 	 * @var Array
 	 */
-	private $_defaultPaths = null;
+	private $originalPaths = null;
+	private $originalOrigin;
+	private $originalDebugLevel;
 
 	public function setUp() {
+		parent::setUp();
+
+		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+		$this->originalDebugLevel = Configure::read('debug');
+		$this->originalPaths = App::paths();
+
 		// make sure there's no old cache
 		Cache::clear(false,'_bancha_api_');
-
-		// we will reset the default paths for controllers and model
-		// the defaults get applied again in the tearDown
-		$this->_defaultPaths = App::paths();
 
 		// build up the test paths
 		App::build(array(
 			'Controller' => APP . DS . 'Controller' . DS,
 			'Model' => APP . DS . 'Model' . DS
 		), App::RESET);
+
+		// Bancha will check that this is set, so for all tests which are not
+		// about the feature, this should be set.
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
 	}
 
 	public function tearDown() {
-		App::build($this->_defaultPaths, App::RESET);
+		parent::tearDown();
+
+		// reset the origin
+		if($this->originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		} else {
+			unset($_SERVER['HTTP_ORIGIN']);
+		}
+
+		// reset the debug level
+		Configure::write('debug', $this->originalDebugLevel);
+
+		// reset the paths
+		App::build($this->originalPaths, App::RESET);
 
 		// make sure to flush after tests, so that real app is not influenced
 		Cache::clear(false,'_bancha_api_');

@@ -32,8 +32,26 @@ class BanchaExceptionsTest extends CakeTestCase {
 	private $standardDebugLevel;
 
 
+	private $originalOrigin;
 	public function setUp() {
 		 $this->standardDebugLevel = Configure::read('debug');
+		parent::setUp();
+
+		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+
+		// Bancha will check that this is set, so for all tests which are not
+		// about the feature, this should be set.
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+	}
+	public function tearDown() {
+		parent::tearDown();
+
+		// reset the origin
+		if($this->originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		} else {
+			unset($_SERVER['HTTP_ORIGIN']);
+		}
 	}
 
 /**

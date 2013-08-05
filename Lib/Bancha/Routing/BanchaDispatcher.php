@@ -34,9 +34,10 @@ class BanchaDispatcher {
 	 * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
 	 * response is returned instead of directly sent to the browser.
 	 *
-	 * @param BanchaRequestCollection $requests A BanchaRequestCollection can contain multiple CakeRequest objects.
-	 * @param array $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
-	 * @return string|void If 'return' is TRUE, the body is returned otherwise void is returned.
+	 * @param BanchaRequestCollection $requests A BanchaRequestCollection can contains multiple CakeRequest objects.
+	 * @param CakeResponse            $response The CakePHP response object to send the content or return the body.
+	 * @param array                   $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
+	 * @return string|void            If 'return' is TRUE, the body is returned otherwise void is returned.
 	 */
 	public function dispatch(BanchaRequestCollection $requests, CakeResponse $response = null, $additionalParams = array()) {
 		if($response === null) {
@@ -47,6 +48,40 @@ class BanchaDispatcher {
 			}
 		}
 		$collection = new BanchaResponseCollection($response);
+
+		if (!isset($_SERVER['HTTP_ORIGIN'])) {
+			// we expect from each request a origin, otherwise this looks
+			// a little suspicious and is probably not a real browser
+			if(Configure::read('debug') == 2) {
+				echo 'Bancha Error: Bancha expects that any request has a '.
+					 'HTTP_ORIGIN header.';
+			}
+			return; // abort
+		}
+
+		$allowedDomains = Configure::read('Bancha.allowedDomains');
+		if ($allowedDomains && $allowedDomains!=='*' &&
+			!in_array($_SERVER['HTTP_ORIGIN'], $allowedDomains)) {
+			// this domain is prohibited according to the access control list
+			// block it
+			if(Configure::read('debug') == 2) {
+				echo 'Bancha Error: According to the '.
+					 'Configure::read("Bancha.allowedDomains") '.
+					 'this request is not allowed!';
+			}
+			return; // abort
+		}
+
+		// If Bancha is used from a different domain, the browser will send a "preflight"
+		// request (request type OPTIONS) before sending the actual POST request.
+		// Simply set the correct COR headers and exit
+		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+
+			// return only the headers and not the content
+			$this->send($response);
+			return;
+		}
+
 
 		// CakePHP should think that every Bancha request is a POST request.
 		$_SERVER['REQUEST_METHOD'] = 'POST';
@@ -94,6 +129,31 @@ class BanchaDispatcher {
 		// Return or send response
 		if (isset($additionalParams['return']) && $additionalParams['return']) {
 			return $response->body();
+		}
+
+		return $this->send($response);
+	}
+
+	/**
+	 * Set the appropriate CORS headers, if the *Bancha.allowedDomains* config
+	 * is set. Then send the response.
+	 *
+	 * @param  CakeResponse $response The CakeResponse to send
+	 * @return void
+	 */
+	private function send($response) {
+
+		// Bancha might be available from multiple locations
+		// See in bootstrap.php for the Bancha.allowedDomains config
+		if(Configure::read('Bancha.allowedDomains') !== false) {
+			// configure the access controll headers
+			$response->header(array(
+				'Access-Control-Allow-Methods' => 'POST, OPTIONS',
+				'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type',
+													// we are only able to set one domain, see https://cakephp.lighthouseapp.com/projects/42648-cakephp/tickets/3960
+				'Access-Control-Allow-Origin'  => $_SERVER['HTTP_ORIGIN'],
+				'Access-Control-Max-Age'       => '3600' // require preflight request only once
+			));
 		}
 
 		$response->send();

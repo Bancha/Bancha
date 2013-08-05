@@ -90,12 +90,30 @@ class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsCo
  * @category      Tests
  */
 class BanchaRemotableFunctionTest extends CakeTestCase {
+
+	private $originalOrigin;
+
 	public function setUp() {
 		parent::setUp();
+
+		$this->originalDebugLevel = Configure::read('debug');
+
+		// Bancha will check that this is set, so for all tests which are not
+		// about the feature, this should be set.
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
 	}
 
-	function tearDown() {
+	public function tearDown() {
 		parent::tearDown();
+
+		// reset the origin
+		if($this->originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		} else {
+			unset($_SERVER['HTTP_ORIGIN']);
+		}
+
+		// clean the registry
 		ClassRegistry::flush();
 	}
 

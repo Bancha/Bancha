@@ -34,12 +34,34 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
 class BanchaCrudTest extends CakeTestCase {
 	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
 
+	private $originalOrigin;
+	private $originalDebugLevel;
+
 	public function setUp() {
 		parent::setUp();
+
+		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+		$this->originalDebugLevel = Configure::read('debug');
+
+		// Bancha will check that this is set, so for all tests which are not
+		// about the feature, this should be set.
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
 	}
 
-	function tearDown() {
+	public function tearDown() {
 		parent::tearDown();
+
+		// reset the origin
+		if($this->originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		} else {
+			unset($_SERVER['HTTP_ORIGIN']);
+		}
+
+		// reset the debug level
+		Configure::write('debug', $this->originalDebugLevel);
+
+		// clear the registry
 		ClassRegistry::flush();
 	}
 

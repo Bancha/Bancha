@@ -35,6 +35,9 @@ class TestsController extends AppController {
 		return array('text' => 'foobar');
 	}
 
+	public function returnTrue() {
+		return true;
+	}
 }
 
 /**
@@ -46,6 +49,34 @@ class TestsController extends AppController {
  * @since         Bancha v 0.9.0
  */
 class BanchaDispatcherTest extends CakeTestCase {
+
+	private $originalOrigin;
+	private $originalDebugLevel;
+
+	public function setUp() {
+		parent::setUp();
+
+		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+		$this->originalDebugLevel = Configure::read('debug');
+
+		// Bancha will check that this is set, so for all tests which are not
+		// about the feature, this should be set.
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+	}
+
+	public function tearDown() {
+		parent::tearDown();
+
+		// reset the origin
+		if($this->originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		} else {
+			unset($_SERVER['HTTP_ORIGIN']);
+		}
+
+		// reset the debug level
+		Configure::write('debug', $this->originalDebugLevel);
+	}
 
 /**
  * Tests the dispatch() method of BanchaDispatcher with the 'return'-option. Thus dispatch() doesn't send the response
@@ -140,7 +171,7 @@ class BanchaDispatcherTest extends CakeTestCase {
  *
  * @return void
  */
-	public function testMissingController() {
+	public function testMissingController_Debug() {
 
 		// input
 		$rawPostData = json_encode(array(
@@ -159,6 +190,9 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// mock a response to net set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
+		// should display the error type and message
+		Configure::write('debug', 2);
+
 		// this should "throw" a Sencha exception
 		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
 
@@ -169,4 +203,337 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertEquals('Controller class SomeControllersController could not be found.', $responses[0]->message);
 	}
 
+
+/**
+ * Bancha should not throw PHP Exceptions, because Sencha can't handle this,
+ * instead it should send Ext.Direct exceptions
+ *
+ * @return void
+ */
+	public function testMissingController_Production() {
+
+		// input
+		$rawPostData = json_encode(array(
+			array(
+				'action'	=> 'SomeController',
+				'method'	=> 'testaction1',
+				'data'		=> null,
+				'type'		=> 'rpc',
+				'tid'		=> 1,
+			)
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// should display the error type and message
+		Configure::write('debug', 0);
+
+		// this should "throw" a Sencha exception
+		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// verify
+		$this->assertTrue(isset($responses[0]->type), 'Expected $responses[0]->type to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('exception', $responses[0]->type);
+
+		// this data should be protected
+		$this->assertFalse(isset($responses[0]->exceptionType));
+		$this->assertEquals('Unknown error.', $responses[0]->message);
+	}
+
+
+
+/**
+ * Tests that Bancha requires an HTTP_ORIGIN header
+ * (Mainly for CORS support)
+ */
+	public function testRequireHttpOriginHeader_Pass() {
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// the origin is set in the setup, check that we pass
+		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// check success
+		$this->assertTrue($responses[0]->result->success);
+	}
+
+/**
+ * Tests that Bancha requires an HTTP_ORIGIN header
+ * (Mainly for CORS support)
+ */
+	public function testRequireHttpOriginHeader_Rejected_Debug() {
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// now expect it to be rejected
+		unset($_SERVER['HTTP_ORIGIN']);
+
+		// expect a debug message
+		Configure::write('debug', 2);
+
+		// capture output, because we want to test that the content is send
+		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
+		ob_start();
+		$Dispatcher->dispatch($collection, $response);
+		$rawResponse = ob_get_clean();
+
+		// check error message
+		$this->assertEqual('Bancha Error: Bancha expects that any request has a HTTP_ORIGIN header.', $rawResponse);
+
+	}
+
+/**
+ * Tests that Bancha requires an HTTP_ORIGIN header
+ * (Mainly for CORS support)
+ */
+	public function testRequireHttpOriginHeader_Rejected_Production() {
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// now expect it to be rejected
+		unset($_SERVER['HTTP_ORIGIN']);
+
+		// expect no debug message
+		Configure::write('debug', 0);
+
+		// capture output, because we want to test that the content is send
+		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
+		ob_start();
+		$Dispatcher->dispatch($collection, $response);
+		$rawResponse = ob_get_clean();
+
+		// check error message
+		$this->assertEqual('', $rawResponse);
+	}
+
+/**
+ * Tests that Bancha checks Bancha.allowedDomains
+ * (CORS support)
+ */
+	public function testAllowedDomainsRestriction_Accepted() {
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// set the test domain
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+
+		// test wildcard
+		Configure::write('Bancha.allowedDomains', '*');
+		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
+		$this->assertTrue($responses[0]->result->success);
+
+		// test domain match
+		Configure::write('Bancha.allowedDomains', array(
+			'http://example.org',
+			'http://another-example.org'
+		));
+		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
+		$this->assertTrue($responses[0]->result->success);
+	}
+
+/**
+ * Tests that Bancha checks Bancha.allowedDomains
+ */
+	public function testAllowedDomainsRestriction_Rejected_Debug() {
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// set the test domain
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+
+		// domain is not supported
+		Configure::write('Bancha.allowedDomains', array(
+			'http://another-example.org'
+		));
+
+		// Show debug message
+		Configure::write('debug', 2);
+
+		// capture output, because we want to test that the content is send
+		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
+		ob_start();
+		$Dispatcher->dispatch($collection, $response);
+		$rawResponse = ob_get_clean();
+
+		// check error message
+		$this->assertEqual('Bancha Error: According to the Configure::read("Bancha.allowedDomains") this request is not allowed!', $rawResponse);
+	}
+
+/**
+ * Tests that Bancha handles preflight requests (request type OPTIONS)
+ */
+	public function testOptionResponses_Rejected_Debug() {
+		$originalRequestMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : false;
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// set the test domain
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+
+		// Show debug message
+		Configure::write('debug', 2);
+
+		// domain is not supported
+		Configure::write('Bancha.allowedDomains', array(
+			'http://another-example.org'
+		));
+
+		// fake preflight request
+		$_SERVER['REQUEST_METHOD'] = 'OPTIONS';
+
+		// capture output, because we want to test that the content is send
+		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
+		ob_start();
+		$Dispatcher->dispatch($collection, $response);
+		$rawResponse = ob_get_clean();
+
+		// check error message
+		$this->assertEqual('Bancha Error: According to the Configure::read("Bancha.allowedDomains") this request is not allowed!', $rawResponse);
+
+		// tear down
+		if($originalRequestMethod !== false ) {
+			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
+		} else {
+			unset($_SERVER['REQUEST_METHOD']);
+		}
+	}
+
+/**
+ * Tests that Bancha handles preflight requests (request type OPTIONS)
+ */
+	public function testOptionResponses_Pass() {
+		$originalRequestMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : false;
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to net set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// set the test domain
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+
+		// Show debug message
+		Configure::write('debug', 2);
+
+		// domain is allowed
+		Configure::write('Bancha.allowedDomains', array(
+			'http://example.org'
+		));
+
+		// fake preflight request
+		$_SERVER['REQUEST_METHOD'] = 'OPTIONS';
+
+		// test
+		$rawResponse = $Dispatcher->dispatch($collection, $response, array('return' => true));
+
+		// expect no content
+		$this->assertTrue(empty($rawResponse));
+
+		// expect the CORS headers to be set
+		$headers = $response->header();
+		$this->assertEqual('POST, OPTIONS', $headers['Access-Control-Allow-Methods']);
+		$this->assertEqual('Origin, X-Requested-With, Content-Type', $headers['Access-Control-Allow-Headers']);
+		$this->assertEqual('http://example.org', $headers['Access-Control-Allow-Origin']);
+		$this->assertEqual('3600', $headers['Access-Control-Max-Age']);
+
+
+		// tear down
+		if($originalRequestMethod !== false) {
+			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
+		} else {
+			unset($_SERVER['REQUEST_METHOD']);
+		}
+	}
 }

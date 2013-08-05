@@ -1,6 +1,7 @@
 <?php
 /**
- * This file is loaded automatically by the cake for both Bancha and standard cake requests
+ * This file is loaded automatically by CakePHP for both Bancha and standard
+ * CakePHP requests.
  *
  * This file should load/create any application wide configuration settings.
  *
@@ -30,9 +31,28 @@ Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
  * need to set the full path to the CakePHP application. So if you are
  * building a mobile app please set this config in your core.php.
  *
- * Normally there is no reason to do this.
+ * Please also set the Bancha.allowedDomains config from below.
+ *
+ * See also http://banchaproject.org/documentation-cross-domain-requests.html
  */
 //Configure::write('Bancha.Api.domain', 'http://example.org');
+
+/**
+ * If this should be available from different domains, please define
+ * either the string '*' or an array of domains including the protocol.
+ *
+ * You can set this by adding the following to your core.php:
+ *
+ *       Configure::write('Bancha.allowedDomains', array(
+ *           'http://trusted-domain-one.org',
+ *           'http://trusted-domain-two.org',
+ *       ));
+ *
+ * See also http://banchaproject.org/documentation-cross-domain-requests.html
+ */
+if(Configure::read('Bancha.allowedDomains') === null) { // conditionals are needed because of loading order
+	Configure::write('Bancha.allowedDomains', false);
+}
 
 /**
  * If you want to use exposed controller methods to a different namespace
