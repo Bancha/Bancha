@@ -12,6 +12,7 @@
  * @author        Kung Wong <kung.wong@gmail.com>
  */
 
+App::uses('CakeRequest', 'Network');
 App::uses('CakeResponse', 'Network');
 App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
 
@@ -50,10 +51,9 @@ class BanchaResponseCollection {
  * @param integer $tid Transaction ID
  * @param CakeResponse $response Cake response object
  * @param CakeRequest $request CakeRequest object
- * @param boolean $exception TRUE if the response is an exception.
- * @return BanchaResponseCollection
+ * @return BanchaResponseCollection $this
  */
-	public function addResponse($tid, CakeResponse $response, CakeRequest $request, $exception = false) {
+	public function addResponse($tid, CakeResponse $response, CakeRequest $request) {
 		$response = array(
 			'type'		=> 'rpc',
 			'tid'		=> $tid,
