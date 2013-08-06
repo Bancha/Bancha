@@ -75,7 +75,7 @@ class BanchaDispatcher {
 		// If Bancha is used from a different domain, the browser will send a "preflight"
 		// request (request type OPTIONS) before sending the actual POST request.
 		// Simply set the correct COR headers and exit
-		if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 			// return only the headers and not the content
 			$this->send($response);
