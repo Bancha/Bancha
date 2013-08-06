@@ -8,6 +8,8 @@ The whole API stayed the same, only the javascript functions Bancha.getModel()
 and Bancha.onModelReady() got deprecated in favor of Ext.require or the
 require property in class definitions.
 
+Please update your webroot/bancha-dispatcher.php file.
+
 Upgrading from 1.2 to 2.0
 -------------------------
 
@@ -20,3 +22,4 @@ is the data portion of the response or the whole response:
  - Otherwise it will be transformed, folowed by the rules which can be found at:
  [Controller Method Results Documentation](http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html)
 
+Please update your webroot/bancha-dispatcher.php file.
