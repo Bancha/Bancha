@@ -102,6 +102,15 @@ Ext.define('Bancha', {
     alternateClassName: [
         'Bancha.Main'
     ],
+
+    // hacky solution to keep references in all possible loading orders
+    // this should be removed after the Bancha singleton is refactored into
+    // multiple, independent classes
+    data       : window.Bancha ? Bancha.data : undefined,
+    loader     : window.Bancha ? Bancha.loader : undefined,
+    Loader     : window.Bancha ? Bancha.Loader : undefined,
+    Logger     : window.Bancha ? Bancha.Logger : undefined,
+    Initializer: window.Bancha ? Bancha.Initializer : undefined,
     /* End Definitions */
 
     // IFDEBUG
