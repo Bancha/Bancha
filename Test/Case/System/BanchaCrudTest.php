@@ -118,7 +118,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 	public function testEdit() {
 		// used fixture:
-		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
+		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...)
 
 		// Buld a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -127,7 +127,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array(
-				'id'			=> 988,
+				'id'			=> 1001,
 				'title'			=> 'foobar',
 				'published'		=> 1,
 			))),
@@ -142,7 +142,7 @@ class BanchaCrudTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals(1001, $responses[0]->result->data->id);
 		$this->assertEquals('foobar', $responses[0]->result->data->title);
 		$this->assertEquals(1, $responses[0]->result->data->published); // check that all fields are added
 
@@ -159,12 +159,12 @@ class BanchaCrudTest extends CakeTestCase {
 	 */
 	public function testSubmit() {
 		// used fixture:
-		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
+		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...)
 
 		// Buld a request like it looks in Ext JS for a form submit
 		$postData = array(
 			// articles data
-			'id'			=> 988,
+			'id'			=> 1001,
 			'body'			=> 'changed',
 
 			// ext stuff
@@ -185,7 +185,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// verify data (expected in default ext structure)
-		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals(1001, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
 
@@ -198,19 +198,19 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test if the data really got changed
 		$article = ClassRegistry::init('Article');
-		$article->read(null,988);
+		$article->read(null,1001);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
 
 
 	public function testSubmit_WithUpload() {
 		// used fixture:
-		// array('id' => 988, 'title' => 'Title 1', 'body' => 'Text 3, ...)
+		// array('id' => 1001, 'title' => 'Title 1', 'body' => 'Text 3, ...)
 
 		// Buld a request like it looks in Ext JS for a form submit
 		$postData = array(
 			// articles data
-			'id'			=> 988,
+			'id'			=> 1001,
 			'body'			=> 'changed',
 
 			// ext stuff
@@ -237,7 +237,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode(substr($result,22,-25));
 
 		// verify data (expected in default ext structure)
-		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals(1001, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title); // expect the full record in the answer
 		$this->assertEquals('changed', $responses[0]->result->data->body); // expect body to be changed
 
@@ -250,7 +250,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test if the data really got changed
 		$article = ClassRegistry::init('Article');
-		$article->read(null,988);
+		$article->read(null,1001);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
 
@@ -258,7 +258,7 @@ class BanchaCrudTest extends CakeTestCase {
 	public function testDelete() {
 		// Preparation: create article
 		// used fixture:
-		// array('id' => 988, 'title' => 'Title 1', ...)
+		// array('id' => 1001, 'title' => 'Title 1', ...)
 
 		// deletion as ext.direct request
 		$rawPostData = json_encode(array(array(
@@ -266,7 +266,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array('id' => 988)))
+			'data'			=> array(array('data'=>array('id' => 1001)))
 		)));
 
 		// setup
@@ -290,17 +290,12 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test if the record really got deleted
 		$article = ClassRegistry::init('Article');
-		$article->id = 988;
+		$article->id = 1001;
 		$this->assertEquals(false, $article->exists());
 	}
 
 
 	public function testIndex() {
-		// used fixtures:
-		// array('id' => 988, 'title' => 'Title 1', ...)
-		// array('id' => 989, 'title' => 'Title 2', ...)
-		// array('id' => 990, 'title' => 'Title 3', ...)
-
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -327,11 +322,11 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// only first and second element should be loaded
 		$this->assertEquals(2, count($responses[0]->result->data));
-		$this->assertEquals(988, $responses[0]->result->data[0]->id);
-		$this->assertEquals(989, $responses[0]->result->data[1]->id);
+		$this->assertEquals(1001, $responses[0]->result->data[0]->id);
+		$this->assertEquals(1002, $responses[0]->result->data[1]->id);
 
-		// the counter should be 3
-		$this->assertEquals(3, $responses[0]->result->total);
+		// the counter should be 103 (see article fixture)
+		$this->assertEquals(103, $responses[0]->result->total);
 
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
@@ -350,7 +345,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'type'			=> 'rpc',
 			'data'			=> array(array(
 				'page'			=> 2,
-				'limit'			=> 2,
+				'limit'			=> 100,
 			)),
 		)));
 
@@ -365,13 +360,17 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// check data
 
-		// only third element should be loaded
-		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals(990, $responses[0]->result->data[0]->id);
-		$this->assertEquals('Title 3', $responses[0]->result->data[0]->title);
+		// only three elements should be loaded
+		$this->assertEquals(3, count($responses[0]->result->data));
+		$this->assertEquals(1101, $responses[0]->result->data[0]->id);
+		$this->assertEquals('Title 101', $responses[0]->result->data[0]->title);
+		$this->assertEquals(1102, $responses[0]->result->data[1]->id);
+		$this->assertEquals('Title 102', $responses[0]->result->data[1]->title);
+		$this->assertEquals(1103, $responses[0]->result->data[2]->id);
+		$this->assertEquals('Title 103', $responses[0]->result->data[2]->title);
 
-		// the counter should be 3
-		$this->assertEquals(3, $responses[0]->result->total);
+		// the counter should still be 103
+		$this->assertEquals(103, $responses[0]->result->total);
 
 		// tid should be passed through
 		$this->assertEquals(2, $responses[0]->tid);
@@ -381,11 +380,9 @@ class BanchaCrudTest extends CakeTestCase {
  * Test if the whole stack also works if no results for index exist
  */
 	public function testIndex_Empty() {
-		// delete fixtures
+		// delete fixture entries
 		$article = ClassRegistry::init('Article');
-		$article->delete(988);
-		$article->delete(989);
-		$article->delete(990);
+		$article->deleteAll(array('1'=>'1'));
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -429,8 +426,8 @@ class BanchaCrudTest extends CakeTestCase {
 
 	public function testView() {
 		// used fixtures:
-		// array('id' => 988, 'title' => 'Title 1', ...)
-		// array('id' => 989, 'title' => 'Title 2', ...)
+		// array('id' => 1001, 'title' => 'Title 1', ...)
+		// array('id' => 1002, 'title' => 'Title 2', ...)
 
 		// load one record, in ExtJS syntax
 		$rawPostData = json_encode(array(array(
@@ -439,7 +436,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 1,
 			'type'			=> 'rpc',
 			'data'			=> array(array(
-				'data'	=> array('id' => 988)
+				'data'	=> array('id' => 1001)
 			))
 		)));
 
@@ -454,7 +451,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// verify data
 		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals(988, $responses[0]->result->data->id);
+		$this->assertEquals(1001, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title);
 
 
@@ -473,7 +470,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 2,
 			'type'			=> 'rpc',
 			'data'			=> array(array(
-				'data'	=>array('id' => 989)
+				'data'	=>array('id' => 1002)
 			))
 		)));
 
@@ -488,7 +485,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// verify
 		$this->assertEquals(1, count($responses[0]->result->data));
-		$this->assertEquals(989, $responses[0]->result->data->id);
+		$this->assertEquals(1002, $responses[0]->result->data->id);
 		$this->assertEquals('Title 2', $responses[0]->result->data->title);
 		$this->assertEquals(2, $responses[0]->tid);
 	}
@@ -503,7 +500,7 @@ class BanchaCrudTest extends CakeTestCase {
  */
 	public function testMultiRequest() {
 		// used fixture:
-		// array('id' => 988, 'title' => 'Title 1', 'published' => true, ...)
+		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...)
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -523,7 +520,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 2,
 			'type'			=> 'rpc',
 			'data'			=> array(array('data'=>array(
-				'id'			=> 988,
+				'id'			=> 1001,
 				'title'			=> 'foobar',
 				'published'		=> false,
 			))),
@@ -560,7 +557,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, $responses[0]->result->data->user_id);
 
 		// verify data for second request
-		$this->assertEquals(988, $responses[1]->result->data->id);
+		$this->assertEquals(1001, $responses[1]->result->data->id);
 		$this->assertEquals('foobar', $responses[1]->result->data->title);
 		$this->assertEquals(0, $responses[1]->result->data->published);
 		$this->assertEquals('Text 1', $responses[1]->result->data->body); // should be a full record
