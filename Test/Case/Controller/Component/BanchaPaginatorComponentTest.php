@@ -64,13 +64,19 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
         $this->BanchaPaginatorComponent->startup($this->Controller);
 	}
 
-/**
- * tearDown method
- *
- * @return void
- */
+	public function setUp() {
+		parent::setUp();
+
+		// keep debug level
+		$this->originalDebugLevel = Configure::read('debug');
+	}
+
 	public function tearDown() {
 		parent::tearDown();
+
+		// reset the debug level
+		Configure::write('debug', $this->originalDebugLevel);
+
         // Clean up after we're done
 		unset($this->BanchaPaginatorComponent);
 		unset($this->Controller);
@@ -247,6 +253,43 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.published']));
 		$this->assertEquals('Titel 01', $this->Controller->request['named']['conditions']['Article.title']);
 		$this->assertEquals(true, $this->Controller->request['named']['conditions']['Article.published']);
+	}
+/**
+ * testBanchaSettings
+ *
+ * In Bancha requests the $banchaSetting should override the default $settings
+ *
+ * @return void
+ */
+	public function testBanchaSettings() {
+		// set up
+		$this->setUpComponent(array());
+		$this->Controller->Article->recursive = -1;
+
+		// this would be for normal requests
+		$this->BanchaPaginatorComponent->settings = array(
+			'maxLimit' => 10
+		);
+		// we want to see using this from Bancha
+		$this->BanchaPaginatorComponent->banchaSettings = array(
+			'maxLimit' => 100
+		);
+
+		// test with a limit of 20
+		$this->Controller->request->params['named']['limit'] = 20;
+		$result = $this->BanchaPaginatorComponent->paginate('Article');
+		$this->assertEquals(20, count($result));
+
+		// test with a limit of 100 (fits bancha settings maxLimit)
+		$this->Controller->request->params['named']['limit'] = 100;
+		$result = $this->BanchaPaginatorComponent->paginate('Article');
+		$this->assertEquals(100, count($result));
+
+		// test with a limit of 150 (should throw an exception in debug level)
+		Configure::write('debug', 2);
+		$this->Controller->request->params['named']['limit'] = 150;
+		$this->setExpectedException('BanchaException', 'The pageSize you set is bigger then the maxLimit set in CakePHP.');
+		$result = $this->BanchaPaginatorComponent->paginate('Article');
 	}
 }
 

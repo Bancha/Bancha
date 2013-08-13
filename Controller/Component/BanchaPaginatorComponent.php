@@ -63,6 +63,20 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 	protected $Controller;
 
 /**
+ * Pagination settings for Bancha requests. These settings control pagination at a general level.
+ *
+ * These will override the default PaginatorComponent::$setting settings for Bancha requests.
+ *
+ * Default changes:
+ *
+ * - `maxLimit` The maximum limit is in normal requests set to 100, for Bancha requests we set a maximum of 1000
+ *
+ * @var array
+ */
+	public $banchaSettings = array(
+		'maxLimit' => 1000
+	);
+/**
  * The initialize method fixes a conflict with the RequestHandler.
  *
  * The RequestHandler would overwrite the by Bancha set $request->data property
@@ -129,10 +143,20 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			// this is a Bancha request, apply the allowed filters
 			$this->whitelist[] = 'conditions';
 
+			// apply the Bancha default settings
+			$this->settings = array_merge($this->settings, $this->banchaSettings);
+
+			// debug warning
+			if(Configure::read('debug')==2 && isset($this->Controller->request->params['named']['limit']) &&
+				$this->settings['maxLimit']<$this->Controller->request->params['named']['limit']) {
+				throw new BanchaException('The pageSize you set is bigger then the maxLimit set in CakePHP.');
+			}
+
 			// filter given conditions-array and apply it to our pagination
 			$remoteConditions = $this->sanitizeFilterConditions($this->allowedFilters, $this->Controller->request->named['conditions']);
 			$scope = array_merge($remoteConditions, $scope);
 		}
+
 
 		return parent::paginate($object, $scope, $whitelist);
 	}
