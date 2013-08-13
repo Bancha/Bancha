@@ -663,6 +663,17 @@ Ext.define('Bancha', {
      * @param {Object}       scope     (optional) The scope of the callback function
      */
     preloadModelMetaData: function(modelNames,callback,scope) {
+        // IFDEBUG
+        if(Ext.Logger && Ext.Logger.deprecate) {
+            Ext.Logger.deprecate([
+                'Bancha.preloadModelMetaData is deprecated and will be removed soon. ',
+                'Please simply define your dependencies in Sencha requires configs. ',
+                'For performance in production mode please use Sencha Cmd, so you ',
+                'won\'t need this function anymore.'
+            ].join(''), 1);
+        }
+        // ENDIF
+
         this.loadModelMetaData(modelNames,callback,scope,false);
     },
     /**
@@ -874,6 +885,10 @@ Ext.define('Bancha', {
     },
 
     /**
+     * @deprecated Bancha 2 allows to load dependencies through the normal Ext.Loader,
+     * therefore please simply define your required models in your Ext.application
+     * config instead of using this function. This function will be removed soon.
+     *
      * Loads and instanciates a model if not already done and then
      * calls the callback function.
      *
@@ -889,6 +904,17 @@ Ext.define('Bancha', {
      * @param {Object} scope (optional) The scope of the callback function
      */
     onModelReady: function(modelNames, callback, scope) {
+        // IFDEBUG
+        if(Ext.Logger && Ext.Logger.deprecate) {
+            Ext.Logger.deprecate([
+                'Bancha.onModelReady is deprecated and will be removed soon. ',
+                'Bancha 2 allows to load dependencies through the normal Ext.Loader, ',
+                'therefore please simply define your required models in your Ext.application ',
+                'config instead of using this function. '
+            ].join(''), 1);
+        }
+        // ENDIF
+
         if(this.initialized) {
             this.onInitializedOnModelReady(modelNames, null, null, callback, scope);
         } else {
