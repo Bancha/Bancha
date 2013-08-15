@@ -15,6 +15,8 @@
 
 /**
  * @private
+ * @class Bancha.data.writer.JsonWithDateTime
+ *
  * This should only be used by Bancha internally.
  *
  * For Sencha Touch it fixes a bug inside writeDate.

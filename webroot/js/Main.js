@@ -58,6 +58,7 @@ if (!Array.prototype.reduce) {
  * banchaproject.org
  *
  * Usage:
+ *
  *     // load Bancha
  *     Ext.Loader.setPath('Bancha','/Bancha/js');
  *     Ext.syncRequire('Bancha.Initializer');
@@ -166,7 +167,7 @@ Ext.define('Bancha', {
      */
     uidPropertyName: '_UID',
     /**
-     * @property {Null|String}
+     * @property {null|String}
      * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API
      * configuration on {@link Bancha#init}.
      *
@@ -301,12 +302,14 @@ Ext.define('Bancha', {
         // ENDIF
         return this.objectFromPath(this.remoteApi);
     },
+    /* jshint maxstatements: 50, maxcomplexity: 20 */ /* don't optimize this anymore, it's already deprecated */
     /**
-     * @deprecated Bancha internally calls this function, you don't need to explicitly use it anymore
      * Inits Bancha with the RemotingProvider, always init before using Bancha.
      * ({@link Bancha#onModelReady} will init automatically)
+     *
+     * @deprecated Bancha internally calls this function, you don't need to explicitly use it anymore
+     * @return {undefined}
      */
-    /* jshint maxstatements: 50, maxcomplexity: 20 */ /* don't optimize this anymore, it's already deprecated */
     init: function() {
         var remoteApi,
             defaultErrorHandle,
@@ -636,10 +639,6 @@ Ext.define('Bancha', {
     }()), //eo decodeMetadata
 
     /**
-     * @deprecated Instead of preloading dependencies imperatively, use the uses
-     * property on classes to load optional classes. Description below is from
-     * Bancha 1.3
-     *
      * Preloads the models metadata from the server to create a new model.
      *
      * __When to use it:__ You should use this function if you don't want to load
@@ -658,6 +657,9 @@ Ext.define('Bancha', {
      *         )
      *     );
      *
+     * @deprecated Instead of preloading dependencies imperatively, use the uses
+     * property on classes to load optional classes. Description below is from
+     * Bancha 1.3
      * @param {Array|String} models    An array of the models to preload or a string with one model name
      * @param {Function}     callback  (optional) A callback function
      * @param {Object}       scope     (optional) The scope of the callback function
@@ -801,16 +803,16 @@ Ext.define('Bancha', {
      *
      * @since Bancha v 2.0.0
      * @param {Array|String}  models            An array of the models to preload or a string with one model name
-     * @param {Function}      callback          (optional) A callback function
+     * @param {Function|null} callback          A callback function
      * @param {Boolean}       callback.success  True is successful, otherwise false.
      * @param {String}        callback.errorMsg If an error occured, this is the reeason.
-     * @param {Object}        scope             (optional) The scope of the callback function
+     * @param {Object|null}   scope             The scope of the callback function
      * @param {Object|null}   result            A result object, containing a success and data property
      * @return {void}
      */
     onModelMetaDataLoaded: function(callback, scope, modelNames, result) {
         // IFDEBUG
-        if(result===null) {
+        if(result===null || result===undefined) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 result: result,
@@ -836,14 +838,14 @@ Ext.define('Bancha', {
         this.decodeMetadata(Bancha.getRemoteApi());
 
         // IFDEBUG
-        if(!Ext.isFunction(callback) && Ext.isDefined(callback)) {
+        if(!Ext.isFunction(callback) && !Ext.isNull(callback)) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 callback: callback,
                 msg: 'Bancha: The for Bancha.loadModelMetaData supplied callback is not a function.'
             });
         }
-        if(!Ext.isObject(scope) && Ext.isDefined(scope)) {
+        if(!Ext.isObject(scope) && !Ext.isNull(scope)) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 scope: scope,
@@ -885,18 +887,18 @@ Ext.define('Bancha', {
     },
 
     /**
-     * @deprecated Bancha 2 allows to load dependencies through the normal Ext.Loader,
-     * therefore please simply define your required models in your Ext.application
-     * config instead of using this function. This function will be removed soon.
-     *
      * Loads and instanciates a model if not already done and then
      * calls the callback function.
      *
      * If Bancha is not already initialized it will wait for
-     * {@link http://docs.sencha.com/ext-js/4-1/#!/api/Ext-property-isReady Ext.isReady}
+     * [Ext.isReady](http://docs.sencha.com/ext-js/4-1/#!/api/Ext-property-isReady)
      * and calls {@link Bancha#init} before model creation.
      *
      * See {@link Bancha Bancha class explaination} for an example.
+     *
+     * @deprecated Bancha 2 allows to load dependencies through the normal Ext.Loader,
+     * therefore please simply define your required models in your Ext.application
+     * config instead of using this function. This function will be removed soon.
      * @param {String|Array} modelNames A name of the model or an array of model names
      * @param {Function} callback (optional) A callback function, the first argument is:
      *  - a model class if input modelNames was an string
@@ -1129,7 +1131,7 @@ Ext.define('Bancha', {
      * This function will log the error to the server and then throw it.
      * You can overwrite this function with your own implementation at any time.
      *
-     * @param {Object} stackInfo an TraceKit error object, see also {@link https://github.com/Bancha/TraceKit TraceKit}
+     * @param {Object} stackInfo an TraceKit error object, see [TraceKit](https://github.com/Bancha/TraceKit)
      * @return void
      */
     onError: function(stackInfo) {
@@ -1177,15 +1179,14 @@ Ext.define('Bancha', {
     },
 
     /**
-     * @deprecated Please only define your model on the backend to have a clean separation of concerns.
-     * This function will be removed soon.
-     *
      * This method creates a {@link Bancha.data.Model} with your additional model configs,
      * if you don't have any additional configs just use the convienience method {@link #getModel}.
      *
      * In the debug version it will raise an Ext.Error if the model can't be
      * or is already created, in production it will only return false.
      *
+     * @deprecated Please only define your model on the backend to have a clean separation of concerns.
+     * This function will be removed soon.
      * @param {String} modelName The name of the model
      * @param {Object} modelConfig A standard Ext.data.Model config object
                                    In ExtJS this will be directly applied.
@@ -1229,10 +1230,6 @@ Ext.define('Bancha', {
         }));
     },
     /**
-     * @deprecated Bancha allows to load dependencies through the normal Ext.Loader,
-     * therefore please use the require property in your class definitions, or
-     * Ext.syncRequire('Bancha.model.SomeModel') to synchronously require a model.
-     *
      * Get a Bancha model by name.
      * If it isn't already defined this function will define the model.
      *
@@ -1242,6 +1239,9 @@ Ext.define('Bancha', {
      * If the model definition is not yet loaded, it will synchronously
      * load the definition before returning.
      *
+     * @deprecated Bancha allows to load dependencies through the normal Ext.Loader,
+     * therefore please use the require property in your class definitions, or
+     * Ext.syncRequire('Bancha.model.SomeModel') to synchronously require a model.
      * @param {String} modelName The name of the model
      * @return {Ext.data.Model|null} Returns the model or null if this model doesn't exist
      * @member Bancha
@@ -1403,10 +1403,9 @@ Ext.define('Bancha', {
          *
          * Additional arguments are used to replace %s (for string) and %d (for number).
          *
-         * @param {String}    key          The string to translate
+         * @param {String}    key          The string to translate
          * @param {String...} replacements An arbitrary number of additional strings
-         *                                 used to replace %s (for string) and
-         *                                 %d (for number) in the key string.
+         * used to replace %s (for string) and %d (for number) in the key string.
          * @return {String}                The translated string
          */
         getLocalizedStringWithReplacements: function(key, replacement1, replacement2, replacement3) {
@@ -1462,12 +1461,11 @@ Ext.define('Bancha', {
      *
      * This is a convenience function for {@link Bancha.Localizer#getLocalizedStringWithReplacements}.
      *
-     * @param {String}    key          The string to translate
-     * @param {String...} replacements An arbitrary number of additional strings
-     *                                 used to replace %s (for string) and
-     *                                 %d (for number) in the key string.
-     * @return {String}                The translated string
      * @member Bancha
+     * @param {String}    key          The string to translate
+     * @param {String...} replacements An arbitrary number of additional strings
+     * used to replace %s (for string) and %d (for number) in the key string.
+     * @return {String}                The translated string
      */
     t: function(key,  replacement1, replacement2, replacement3) {
         return Bancha.Localizer.getLocalizedStringWithReplacements.apply(Bancha.Localizer, arguments);
@@ -1490,6 +1488,19 @@ Ext.define('Bancha', {
     };
 
     // now initialize all deprecated log functions
+
+    /**
+     * @class  Bancha.log
+     * Deprecated class in favor of {@link Bancha.Logger}
+     *
+     * @deprecated This will be removed in Bancha 2.1, use Bancha.Logger instead.
+     */
+    /**
+     * {@link Bancha.log#info} is an alias for {@link Bancha.Logger#info}
+     *
+     * @deprecated This will be removed in Bancha 2.1, use Bancha.Logger instead.
+     * @inheritdoc Bancha.Logger#info
+     */
     Bancha.log.info = function(msg) {
         markDeprecated('Bancha.log.info is deprecated in favor of Bancha.Logger.info', 1);
         if(Bancha.Logger) {
@@ -1498,6 +1509,12 @@ Ext.define('Bancha', {
             Ext.Logger.info(msg);
         }
     };
+    /**
+     * {@link Bancha.log#warn} is an alias for {@link Bancha.Logger#warn}
+     *
+     * @deprecated This will be removed in Bancha 2.1, use Bancha.Logger instead.
+     * @inheritdoc Bancha.Logger#warn
+     */
     Bancha.log.warn = function(msg) {
         markDeprecated('Bancha.log.warn is deprecated in favor of Bancha.Logger.warn', 1);
         if(Bancha.Logger) {
@@ -1506,6 +1523,12 @@ Ext.define('Bancha', {
             Ext.Logger.warn(msg);
         }
     };
+    /**
+     * {@link Bancha.log#error} is an alias for {@link Bancha.Logger#error}
+     *
+     * @deprecated This will be removed in Bancha 2.1, use Bancha.Logger instead.
+     * @inheritdoc Bancha.Logger#error
+     */
     Bancha.log.error = function(msg) {
         markDeprecated('Bancha.log.error is deprecated in favor of Bancha.Logger.error', 1);
         if(Bancha.Logger) {

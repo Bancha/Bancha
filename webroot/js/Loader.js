@@ -47,13 +47,13 @@ Ext.define('Bancha.Loader', {
         /**
          * @private
          * @member Bancha.Loader
-         * @config {Bancha.loader.Interface} current default class loader
+         * @cfg {Bancha.loader.Interface} current default class loader
          */
         defaultLoader: null,
 
         /**
          * @private
-         * @member Ext.Loader
+         * @member Bancha.Loader
          *
          * Registers a new Loader as the default loader inside
          * the whole application.
@@ -70,7 +70,7 @@ Ext.define('Bancha.Loader', {
 
         /**
          * @private
-         * @member Ext.Loader
+         * @member Bancha.Loader
          *
          * Returns the currently set up loader.
          *
@@ -83,7 +83,7 @@ Ext.define('Bancha.Loader', {
 
         /**
          * @private // the override is private
-         * @member Ext.Loader
+         * @member Bancha.Loader
          *
          * The highjacked #loadScriptFile doesn't get the className as
          * argument, only the filePath. Inside #require #getPath is
@@ -93,7 +93,6 @@ Ext.define('Bancha.Loader', {
          * Yes, this is a dirty hack. But it prevents a lot of
          * code duplication and update issues.
          *
-         * @inheritdoc Ext.Loader#getPath
          */
         getPath: Ext.Function.createInterceptor(Ext.Loader.getPath, function(className) {
             this.getPathLastClassName = className;
@@ -101,7 +100,7 @@ Ext.define('Bancha.Loader', {
 
         /**
          * @private
-         * @member Ext.Loader
+         * @member Bancha.Loader
          *
          * The original method Loads a script file, supports both asynchronous and
          * synchronous approaches.
@@ -109,7 +108,6 @@ Ext.define('Bancha.Loader', {
          * Bancha.Loader adds the logic to also use other loaders, which are set
          * using #setDefaultLoader.
          *
-         * @member Ext.Loader
          * @param  {String}   url         The url to load data from, see also #getPath
          * @param  {Function} onLoad      To be executed when the class was successfully loaded.
          * @param  {Function} onError     To be executed is something went wrong.

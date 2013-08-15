@@ -18,12 +18,13 @@
  * @class Bancha.Logger
  *
  * This class encalpsulates some logging features.
- * For more see {@link Bancha.Logger.log}
+ *
+ * For more see {@link Bancha.Logger#log}
  *
  * example usage:
+ *
  *     Bancha.log('My error message');
  *     Bancha.log('My info message','info');
- *
  *     Bancha.Logger.info('My info message');
  *     Bancha.Logger.warn('My warning message');
  *     Bancha.Logger.error('My error message');
@@ -86,7 +87,7 @@ Ext.define('Bancha.Logger', {
 
     },
     /**
-     * Convenience function for logging with type 'info', see {@link Bancha.Logger.log}
+     * Convenience function for logging with type 'info', see {@link Bancha.Logger#log}
      *
      * @param  {String}  message        The info message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
@@ -96,7 +97,7 @@ Ext.define('Bancha.Logger', {
         Bancha.Logger.log(message, 'info', forceServerlog || false);
     },
     /**
-     * Convenience function for logging with type 'warn', see {@link Bancha.Logger.log}
+     * Convenience function for logging with type 'warn', see {@link Bancha.Logger#log}
      *
      * @param  {String}  message        The warn message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
@@ -106,7 +107,7 @@ Ext.define('Bancha.Logger', {
         Bancha.Logger.log(message, 'warn', forceServerlog || false);
     },
     /**
-     * Convenience function for logging with type 'error', see {@link Bancha.Logger.log}
+     * Convenience function for logging with type 'error', see {@link Bancha.Logger#log}
      *
      * @param  {String}  message        The error message
      * @param  {Boolean} forceServerlog (optional) True to write the error to the server, even in debug mode (default to false)
@@ -122,8 +123,8 @@ Ext.define('Bancha.Logger', {
      * If the console is availabe writes it there. If no console is available
      * it is instead displayed as a Ext.Msg.alert.
      *
-     * @param  String message The logging message
-     * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
+     * @param  {String} message The logging message
+     * @param  {String} type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
      * @return void
      */
     logToBrowser: function(message, type) {
@@ -142,8 +143,8 @@ Ext.define('Bancha.Logger', {
      * @private
      * A wrapper for the window.console method
      *
-     * @param  String message The logging message
-     * @param  String type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
+     * @param  {String} message The logging message
+     * @param  {String} type    Either 'error', 'warn', 'info' or 'missing_translation' (default is 'error')
      * @return void
      */
     logToConsole: function(message, type) {

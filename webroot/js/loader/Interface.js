@@ -18,7 +18,7 @@
  * @class Bancha.loader.Interface
  *
  * A base class for implementing alternative loaders for
- * {@link Ext.Loader}. These can be chained.
+ * Ext.Loader. These can be chained.
  *
  * Defining your own loader requires you to implement
  * {@link #handles} and {@link #loadClass}. Also set the

@@ -36,9 +36,10 @@ Ext.define('Bancha.loader.Models', {
     ],
 
     /**
-     * Handle loading of stores and models in the Bancha namespace
+     * Return true to handle loading of stores and models in the Bancha namespace
      *
-     * @inheritdoc Ext.Loader#require
+     * @param  {String} className
+     * @return {Boolean} true to handle the loading
      */
     handles: function(className) {
         return className.substr(0,13) === 'Bancha.model.';

@@ -15,6 +15,8 @@
 
 /**
  * @private
+ * @class Bancha.data.writer.ConsistentJson
+ *
  * This should only be used by Bancha internally,
  * it adds the consistent uid to all requests.
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -25,13 +27,13 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
     alias: 'writer.consistent',
 
     /**
-     * @config
+     * @cfg
      * the name of the field to send the consistent uid in
      */
     uidProperty: '__bcid',
 
     /**
-     * @config {Bancha.data.Model} model
+     * @cfg {Bancha.data.Model} model
      * the model to write for, needed to determine the value of
      * {@link Bancha.data.Model#forceConsistency model.forceConsistency}
      */
