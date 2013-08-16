@@ -75,8 +75,7 @@ if (!Array.prototype.reduce) {
  *
  *     }); //eo define
  *
- * To handle remote exceptions, please override
- * {@link Bancha#onRemoteException Bancha.onRemoteException(proxy, response, operation)}
+ * To handling all kind of exceptions, please see {@link Bancha.Remoting}.
  *
  * @singleton
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -112,6 +111,7 @@ Ext.define('Bancha', {
     Loader     : window.Bancha ? Bancha.Loader : undefined,
     Logger     : window.Bancha ? Bancha.Logger : undefined,
     Initializer: window.Bancha ? Bancha.Initializer : undefined,
+    Remoting   : window.Bancha ? Bancha.Remoting : undefined,
     /* End Definitions */
 
     // IFDEBUG
@@ -430,10 +430,7 @@ Ext.define('Bancha', {
         // init error logging in production mode
         if(Bancha.getDebugLevel()===0 && (typeof TraceKit !== 'undefined') &&
             TraceKit.report && Ext.isFunction(TraceKit.report.subscribe)) {
-            TraceKit.report.subscribe(function(stackInfo) {
-                // make sure to not bind the function, but the locaton (for later overriding)
-                Bancha.onError(stackInfo);
-            });
+            TraceKit.report.subscribe(Bancha.Remoting.getFacade('onError'));
         }
 
         // if the server didn't send an metadata object in the api, create it
@@ -526,6 +523,7 @@ Ext.define('Bancha', {
     },
     /* jshint maxstatements: 25, maxcomplexity: 10 */
     /**
+     * @private
      * If you are using Bancha when CakePHP is in debug mode this
      * function will be set up during initializiation to setup
      * debugging error handlers.
@@ -572,17 +570,8 @@ Ext.define('Bancha', {
             } else if(data.exceptionType === 'BanchaAuthLoginException' ||
                     data.exceptionType === 'BanchaAuthAccessRightsException') {
                 // CakePHP AuthComponent prevented loading
-                if(Ext.isFunction(Bancha.onAuthException)) {
-                    Bancha.onAuthException(data.exceptionType,data.message);
-                    return;
-                }
-                title = 'Bancha: AuthComponent prevented execution';
-                msg = [
-                    '<b>'+data.message+'</b><br />',
-                    'This is triggerd by your AuthComponent configuration. ',
-                    'You can add your custom authentification error handler ',
-                    'by setting <i>Bancha.onAuthException(exceptionType,message)</i>.<br />'
-                ].join('');
+                Bancha.Remoting.onAuthException(data.exceptionType,data.message);
+                return;
             } else {
                 // exception from server
                 title = 'Bancha: Exception from Server';
@@ -1126,47 +1115,6 @@ Ext.define('Bancha', {
         }
         return Bancha.Logger.log.apply(Bancha.Logger,arguments);
     },
-    /**
-     * In production mode (or if errors occur when Bancha is not initialized) this function will be called.
-     * This function will log the error to the server and then throw it.
-     * You can overwrite this function with your own implementation at any time.
-     *
-     * @param {Object} stackInfo an TraceKit error object, see [TraceKit](https://github.com/Bancha/TraceKit)
-     * @return void
-     */
-    onError: function(stackInfo) {
-
-        // just log the error
-        // depending on debug level this is logged
-        // to the console or to the server
-        Bancha.log(Ext.encode(stackInfo), 'error');
-    },
-
-    /**
-     * @property {Function|False} onRemoteException
-     * This function will be added to each model to handle remote errors.
-     * (modelConfig.listeners.exception).
-     * Use false to don't have exception handling on models.
-     */
-    onRemoteException: function(proxy, response, operation){
-        Ext.Msg.show({
-            title: 'REMOTE EXCEPTION',
-            message: operation.getError(),
-            icon: Ext.MessageBox.ERROR,
-            buttons: Ext.Msg.OK
-        });
-    },
-
-    /**
-     * @property {Function|False} onAuthException
-     * You can define your custom authetification error handler. This function
-     * is triggered every time the CakePHP AuthComponent prevented the
-     * execution of a Bancha request.
-     * @param {String} exceptionType This is either 'BanchaAuthLoginException' or 'BanchaAuthAccessRightsException'
-     * @param {String} message       The exception message from the server-side.
-     * @since Bancha v 2.0.0
-     */
-    onAuthException: false,
 
     /**
      * Checks if a Bancha model is already created (convinience function)

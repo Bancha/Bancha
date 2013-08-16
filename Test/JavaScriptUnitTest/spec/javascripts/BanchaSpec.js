@@ -686,7 +686,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
                 h.init();
 
                 // setup environment
-                spyOn(Bancha, 'onError');
+                spyOn(Bancha.Remoting, 'onError');
                 Bancha.getRemoteApi().metadata._ServerDebugLevel = 0;
 
                 // load an external js file with an error (via script tag, not ajax)
@@ -702,8 +702,8 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         runs(function() {
             // verify that the error was catched
-            expect(Bancha.onError).toHaveBeenCalled();
-            expect(Bancha.onError.mostRecentCall.args[0]).property('message').toEqual('Script error.');
+            expect(Bancha.Remoting.onError).toHaveBeenCalled();
+            expect(Bancha.Remoting.onError.mostRecentCall.args[0]).property('message').toEqual('Script error.');
 
             // on, now that the test is over remove TraceKit
             window.onerror = onError;

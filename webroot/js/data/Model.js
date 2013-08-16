@@ -30,7 +30,8 @@ Ext.define('Bancha.data.Model', {
     requires: [
         'Ext.direct.Manager',
         'Bancha.data.writer.JsonWithDateTime',
-        'Bancha.data.writer.ConsistentJson'
+        'Bancha.data.writer.ConsistentJson',
+        'Bancha.Remoting'
     ],
     uses: [
         'Bancha.Main'
@@ -292,7 +293,7 @@ Ext.define('Bancha.data.Model', {
                     writeAllFields: false
                 }, configWithRootPropertySet),
                 listeners: {
-                    exception: Bancha.onRemoteException || Ext.emptyFn
+                    exception: Bancha.Remoting.getFacade('onRemoteException')
                 }
             };
         } //eo getBanchaProxy
