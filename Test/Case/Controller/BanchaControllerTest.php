@@ -353,7 +353,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		$dispatcher = new BanchaDispatcher();
 		$collection = new BanchaRequestCollection($rawPostData);
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// test
@@ -391,7 +391,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		$dispatcher = new BanchaDispatcher();
 		$collection = new BanchaRequestCollection($rawPostData);
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// test

@@ -110,7 +110,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// test
@@ -150,7 +150,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// capture output, because we want to test that the content is send
@@ -187,7 +187,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// should display the error type and message
@@ -226,7 +226,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// should display the error type and message
@@ -264,7 +264,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// the origin is set in the setup, check that we pass
@@ -292,7 +292,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// now expect it to be rejected
@@ -330,7 +330,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// now expect it to be rejected
@@ -367,7 +367,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// set the test domain
@@ -404,7 +404,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// set the test domain
@@ -446,7 +446,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// set the test domain
@@ -498,7 +498,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// setup
 		$collection = new BanchaRequestCollection($rawPostData);
 		$Dispatcher = new BanchaDispatcher();
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// set the test domain

@@ -67,7 +67,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		// setup
 		$dispatcher = new BanchaDispatcher();
 		$collection = new BanchaRequestCollection($rawPostData);
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// test

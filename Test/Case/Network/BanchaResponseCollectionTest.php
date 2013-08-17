@@ -59,7 +59,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$request3 = new CakeRequest();
 		$request3->addParams(array('controller' => 'foo', 'action' => 'error'));
 
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		// The heart of the test: create BanchaResponseCollection, add responses and get combined response.
@@ -106,7 +106,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$request = new CakeRequest();
 		$request->addParams(array('controller' => 'foo', 'action' => 'bar', 'extUpload' => true));
 
-		// mock a response to net set any headers for real
+		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
 		$collection = new BanchaResponseCollection($response);
