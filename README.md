@@ -13,16 +13,16 @@ Features
 
 Supports
 --------
-*   CakePHP 2
-*   ExtJS 4
-*   Sencha Touch 2
+*   CakePHP 2.1.0 till latest
+*   ExtJS 4.0.7 till latest
+*   Sencha Touch 2.0.1.1 till latest
 
 Licensing
 --------
 
-Bancha is dual-licensed both commercially and under the open source GPL v3, just like Ext JS. For complete details see the [Bancha Licensing Overview](http://banchaproject.com/licensing.html). To purchase a commercial license or premium support please visit the [Bancha Store](http://banchaproject.com/store.html).
+Bancha comes in two flavors. We have an open source version of Bancha Basic and commercial version Bancha Pro. For complete details see the [Bancha Licensing Overview](http://banchaproject.com/licensing.html). To purchase a commercial license or premium support please visit the [Bancha Store](http://banchaproject.com/store.html).
 
-**Please note that if you use Extensible under the free GPL license, then your project must also be open source and must adhere to the rules of the [GPL](gpl-v3.txt). If your project is commercial and/or closed source, a [commercial license](http://banchaproject.com/store.html) is required.**
+**Please note that if you use Bancha Basic under the free GPL license, then your project must also be open source and must adhere to the rules of the [GPL](gpl-v3.txt). If your project is commercial and/or closed source, a [commercial license](http://banchaproject.com/store.html) is required.**
 
 [View GPL v3 license terms](gpl-v3.txt)
 
@@ -36,4 +36,4 @@ More information
 
 
 ------------------------------
-For any further questions just ask us: mail@banchaproject.com
+For any further questions just ask us: support@banchaproject.org

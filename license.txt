@@ -1,26 +1,23 @@
 Bancha Project
 Copyright 2011-2013 codeQ e.U.
 All rights reserved.
-mail@banchaproject.org
+licensing@banchaproject.org
 
 http://banchaproject.org/licensing.html
 
-Open Source License
+Commercial License
 ------------------------------------------------------------------------------------------
-This version of Bancha is licensed under the terms of the Open Source GPL 3.0 license.
+Bancha Pro is licensed commercially and requires you to get a license.
+Please visit http://banchaproject.org/licensing.html for more details.
 
-http://www.gnu.org/licenses/gpl.html
 
-
-Alternate Licensing
+Open Source Licensing
 ------------------------------------------------------------------------------------------
-Commercial and OEM Licenses are available too.
-This is the appropriate option if you are creating proprietary applications and you are
-not prepared to distribute and share the source code of your application under the
-GPL v3 license. Please visit http://banchaproject.org/licensing.html for more details.
+Open Source Licensing is available for Bancha Basic.
+For more details, please visit: http://banchaproject.org/download.html.
 
 --
 
 This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+without even the implied warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
 AND NON-INFRINGEMENT OF THIRD-PARTY INTELLECTUAL PROPERTY RIGHTS.
