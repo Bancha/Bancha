@@ -4,9 +4,12 @@ Bancha Update Info
 Upgrading from 1.3 to 2.0
 -------------------------
 
-The whole API stayed the same, only the javascript functions Bancha.getModel()
-and Bancha.onModelReady() got deprecated in favor of Ext.require or the
-require property in class definitions.
+Almost the whole API stayed the same, only
+ - the javascript functions Bancha.getModel() and Bancha.onModelReady()
+   got deprecated in favor of Ext.require or the require property in
+   class definitions.
+ - the properties Bancha.onError and Bancha.onRemoteException are moved
+   to Bancha.Remoting.onError and Bancha.Remoting.onRemoteException.
 
 Please update your webroot/bancha-dispatcher.php file.
 
