@@ -58,10 +58,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
 		$this->originalDebugLevel = Configure::read('debug');
-
-		// Bancha will check that this is set, so for all tests which are not
-		// about the feature, this should be set.
-		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+		$this->allowedDomains = Configure::read('Bancha.allowedDomains');
 	}
 
 	public function tearDown() {
@@ -74,8 +71,9 @@ class BanchaDispatcherTest extends CakeTestCase {
 			unset($_SERVER['HTTP_ORIGIN']);
 		}
 
-		// reset the debug level
+		// reset the debug level and allowed domains
 		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('Bancha.allowedDomains', $this->allowedDomains);
 	}
 
 /**
@@ -247,7 +245,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 
 /**
- * Tests that Bancha requires an HTTP_ORIGIN header
+ * Tests that Bancha only requires an HTTP_ORIGIN header when Bancha.allowedDomains is set
  * (Mainly for CORS support)
  */
 	public function testRequireHttpOriginHeader_Pass() {
@@ -267,6 +265,9 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
 
+		// expect it to still work
+		unset($_SERVER['HTTP_ORIGIN']);
+
 		// the origin is set in the setup, check that we pass
 		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
 
@@ -275,7 +276,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 	}
 
 /**
- * Tests that Bancha requires an HTTP_ORIGIN header
+ * Tests that Bancha only requires an HTTP_ORIGIN header, if Bancha.allowedDomains is set
  * (Mainly for CORS support)
  */
 	public function testRequireHttpOriginHeader_Rejected_Debug() {
@@ -300,6 +301,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 		// expect a debug message
 		Configure::write('debug', 2);
+		Configure::write('Bancha.allowedDomains', array('http://example.org'));
 
 		// capture output, because we want to test that the content is send
 		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
@@ -309,11 +311,10 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 		// check error message
 		$this->assertEqual('Bancha Error: Bancha expects that any request has a HTTP_ORIGIN header.', $rawResponse);
-
 	}
 
 /**
- * Tests that Bancha requires an HTTP_ORIGIN header
+ * Tests that Bancha only requires an HTTP_ORIGIN header, if Bancha.allowedDomains is set
  * (Mainly for CORS support)
  */
 	public function testRequireHttpOriginHeader_Rejected_Production() {
@@ -338,6 +339,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 		// expect no debug message
 		Configure::write('debug', 0);
+		Configure::write('Bancha.allowedDomains', array('http://example.org'));
 
 		// capture output, because we want to test that the content is send
 		// see also CakePHP DispatcherTest::testDispatchActionReturnsResponse
@@ -526,6 +528,66 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertEqual('POST, OPTIONS', $headers['Access-Control-Allow-Methods']);
 		$this->assertEqual('Origin, X-Requested-With, Content-Type', $headers['Access-Control-Allow-Headers']);
 		$this->assertEqual('http://example.org', $headers['Access-Control-Allow-Origin']);
+		$this->assertEqual('3600', $headers['Access-Control-Max-Age']);
+
+
+		// tear down
+		if($originalRequestMethod !== false) {
+			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
+		} else {
+			unset($_SERVER['REQUEST_METHOD']);
+		}
+	}
+
+/**
+ * Tests that Bancha sets the Access-Control-Allow-Origin to star, if Bancha.allowedDomains is set to star
+ * This is currently important, because the CORS doesn't allow Access-Control-Allow-Origin to be a list of
+ * entries and legacy CakePHP versions don't allow multiple Access-Control-Allow-Origin to be set.
+ *
+ * See also:
+ * https://cakephp.lighthouseapp.com/projects/42648-cakephp/tickets/3960-cakeresponseheader-and
+ */
+	public function testOptionResponses_Pass_AllDomains() {
+		$originalRequestMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : false;
+
+		// input
+		$rawPostData = json_encode(array(
+			'action'		=> 'Test',
+			'method'		=> 'returnTrue',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(),
+		));
+
+		// setup
+		$collection = new BanchaRequestCollection($rawPostData);
+		$Dispatcher = new BanchaDispatcher();
+		// mock a response to not set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// set the test domain
+		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
+
+		// Show debug message
+		Configure::write('debug', 2);
+
+		// all domains are allowed
+		Configure::write('Bancha.allowedDomains', '*');
+
+		// fake preflight request
+		$_SERVER['REQUEST_METHOD'] = 'OPTIONS';
+
+		// test
+		$rawResponse = $Dispatcher->dispatch($collection, $response, array('return' => true));
+
+		// expect no content
+		$this->assertTrue(empty($rawResponse));
+
+		// expect the CORS headers to be set
+		$headers = $response->header();
+		$this->assertEqual('POST, OPTIONS', $headers['Access-Control-Allow-Methods']);
+		$this->assertEqual('Origin, X-Requested-With, Content-Type', $headers['Access-Control-Allow-Headers']);
+		$this->assertEqual('*', $headers['Access-Control-Allow-Origin']);
 		$this->assertEqual('3600', $headers['Access-Control-Max-Age']);
 
 

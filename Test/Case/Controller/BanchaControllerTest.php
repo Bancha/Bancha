@@ -40,7 +40,6 @@ class BanchaControllerTest extends ControllerTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
 		$this->originalDebugLevel = Configure::read('debug');
 		$this->originalPaths = App::paths();
 
@@ -52,21 +51,10 @@ class BanchaControllerTest extends ControllerTestCase {
 			'Controller' => APP . DS . 'Controller' . DS,
 			'Model' => APP . DS . 'Model' . DS
 		), App::RESET);
-
-		// Bancha will check that this is set, so for all tests which are not
-		// about the feature, this should be set.
-		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
 	}
 
 	public function tearDown() {
 		parent::tearDown();
-
-		// reset the origin
-		if($this->originalOrigin !== false) {
-			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
-		} else {
-			unset($_SERVER['HTTP_ORIGIN']);
-		}
 
 		// reset the debug level
 		Configure::write('debug', $this->originalDebugLevel);

@@ -49,9 +49,9 @@ class BanchaDispatcher {
 		}
 		$collection = new BanchaResponseCollection($response);
 
-		if (!isset($_SERVER['HTTP_ORIGIN'])) {
-			// we expect from each request a origin, otherwise this looks
-			// a little suspicious and is probably not a real browser
+		$allowedDomains = Configure::read('Bancha.allowedDomains');
+		if ($allowedDomains && $allowedDomains!=='*' && !isset($_SERVER['HTTP_ORIGIN'])) {
+			// we need to have a origin to validate the domain!
 			if(Configure::read('debug') == 2) {
 				echo 'Bancha Error: Bancha expects that any request has a '.
 					 'HTTP_ORIGIN header.';
@@ -59,7 +59,6 @@ class BanchaDispatcher {
 			return; // abort
 		}
 
-		$allowedDomains = Configure::read('Bancha.allowedDomains');
 		if ($allowedDomains && $allowedDomains!=='*' &&
 			!in_array($_SERVER['HTTP_ORIGIN'], $allowedDomains)) {
 			// this domain is prohibited according to the access control list
@@ -151,7 +150,7 @@ class BanchaDispatcher {
 				'Access-Control-Allow-Methods' => 'POST, OPTIONS',
 				'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type',
 													// we are only able to set one domain, see https://cakephp.lighthouseapp.com/projects/42648-cakephp/tickets/3960
-				'Access-Control-Allow-Origin'  => $_SERVER['HTTP_ORIGIN'],
+				'Access-Control-Allow-Origin'  => (Configure::read('Bancha.allowedDomains')=='*' ? '*' : $_SERVER['HTTP_ORIGIN']),
 				'Access-Control-Max-Age'       => '3600' // require preflight request only once
 			));
 		}
