@@ -370,6 +370,7 @@ class BanchaCrudTest extends CakeTestCase {
 	public function testIndex_Empty() {
 		// delete all fixture entries
 		$article = ClassRegistry::init('Article');
+		$config = ConnectionManager::enumConnectionObjects();
 		if($config['default']['datasource'] ===  'Database/Postgres') {
 			// postgres requires this, because it doesn't support implizit conversion
 			$article->deleteAll(array("1"=>"true"));
