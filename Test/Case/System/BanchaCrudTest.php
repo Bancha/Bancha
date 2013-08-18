@@ -370,7 +370,7 @@ class BanchaCrudTest extends CakeTestCase {
 	public function testIndex_Empty() {
 		// delete fixture entries
 		$article = ClassRegistry::init('Article');
-		$article->deleteAll(array(true=>true));
+		$article->deleteAll(array("true"=>"true"));
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
