@@ -368,9 +368,16 @@ class BanchaCrudTest extends CakeTestCase {
  * Test if the whole stack also works if no results for index exist
  */
 	public function testIndex_Empty() {
-		// delete fixture entries
+		// delete all fixture entries
 		$article = ClassRegistry::init('Article');
-		$article->deleteAll(array("1"=>"true"));
+		if($config['default']['datasource'] ===  'Database/Postgres') {
+			// postgres requires this, because it doesn't support implizit conversion
+			$article->deleteAll(array("1"=>"true"));
+		} else {
+			// while mysql understands both versions,
+			// sqlilite requires this version
+			$article->deleteAll(array("1"=>"1")); 
+		}
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
