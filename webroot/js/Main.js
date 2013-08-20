@@ -93,7 +93,9 @@ Ext.define('Bancha', {
     requires: [
         'Ext.data.*',
         'Ext.direct.*',
-        'Ext.MessageBox',
+        // For Ext.Loader to properly work, we need to require MessageBox
+        // from a different path Ext JS and Sencha Touch
+        (Ext.versions.touch ? 'Ext.MessageBox' : 'Ext.window.MessageBox'),
         'Bancha.data.override.Validations'
     ],
 
