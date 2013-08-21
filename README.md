@@ -2,6 +2,14 @@
 
 [![Build Status](https://travis-ci.org/Bancha/Bancha.png)](https://travis-ci.org/Bancha/Bancha)
 
+This is the development version of Bancha Pro. You can download stable production builds from the [Bancha download page](http://banchaproject.org/download.html).
+==================================================================
+
+This version of Bancha is commercially licensed and requires you to purchase a license. You can download a free version [here](http://banchaproject.org/download.html)
+
+About Bancha:
+=============
+
 Features
 --------
 
@@ -21,11 +29,6 @@ Licensing
 --------
 
 Bancha comes in two flavors. We have an open source version of Bancha Basic and commercial version Bancha Pro. For complete details see the [Bancha Licensing Overview](http://banchaproject.com/licensing.html). To purchase a commercial license or premium support please visit the [Bancha Store](http://banchaproject.com/store.html).
-
-**Please note that if you use Bancha Basic under the free GPL license, then your project must also be open source and must adhere to the rules of the [GPL](gpl-v3.txt). If your project is commercial and/or closed source, a [commercial license](http://banchaproject.com/store.html) is required.**
-
-[View GPL v3 license terms](gpl-v3.txt)
-
 
 More information
 ----------------

@@ -5,19 +5,26 @@ licensing@banchaproject.org
 
 http://banchaproject.org/licensing.html
 
-Commercial License
+Commercial License (this version)
 ------------------------------------------------------------------------------------------
-Bancha Pro is licensed commercially and requires you to get a license.
+This version of Bancha is licensed commercially. It requires you to get a license.
+Bancha Pro provides additional features and has a commercial-friendly license
+allowing private forks and modifications of Bancha Pro.
 Please visit http://banchaproject.org/licensing.html for more details.
 
-
-Open Source Licensing
+Free Version
 ------------------------------------------------------------------------------------------
-Open Source Licensing is available for Bancha Basic.
-For more details, please visit: http://banchaproject.org/download.html.
+An alternative release of Bancha Basic is free to use for commercial and
+non-commercial projects. Bancha Basic is an Open Source project licensed
+under the terms of the LGPLv3 license.
+You are allowed to use Bancha Basic without sharing your code. You can not
+re-distribute it as part of your own commercially licensed SDK, framework
+or web application builder.
+Please see <http://www.gnu.org/licenses/lgpl-3.0.html> for license text.
+To download Bancha Basic, please visit: http://banchaproject.org/download.html.
 
 --
 
 This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, 
+without even the implied warranty of MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
 AND NON-INFRINGEMENT OF THIRD-PARTY INTELLECTUAL PROPERTY RIGHTS.
