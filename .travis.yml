@@ -8,11 +8,11 @@ php:
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
-  - DB=mysql CAKEPHP_VERSION=master EXTJS_VERSION=4.2.0   TOUCH_VERSION=2.2.1
-  - DB=mysql CAKEPHP_VERSION=2.3.0  EXTJS_VERSION=4.1.1a  TOUCH_VERSION=2.2.0
-  - DB=mysql CAKEPHP_VERSION=2.2.8  EXTJS_VERSION=4.1.0   TOUCH_VERSION=2.1.1
-  - DB=mysql CAKEPHP_VERSION=2.2.0  EXTJS_VERSION=4.0.7   TOUCH_VERSION=2.1.0
-  - DB=mysql CAKEPHP_VERSION=2.1.5                        TOUCH_VERSION=2.0.1.1
+  - DB=mysql CAKEPHP_VERSION=master TOUCH_VERSION=2.2.1    EXTJS_VERSION=4.2.1
+  - DB=mysql CAKEPHP_VERSION=2.3.0  TOUCH_VERSION=2.2.0    EXTJS_VERSION=4.2.0
+  - DB=mysql CAKEPHP_VERSION=2.2.8  TOUCH_VERSION=2.1.1    EXTJS_VERSION_LEGACY=4.1.1a
+  - DB=mysql CAKEPHP_VERSION=2.2.0  TOUCH_VERSION=2.1.0    EXTJS_VERSION_LEGACY=4.1.0
+  - DB=mysql CAKEPHP_VERSION=2.1.5  TOUCH_VERSION=2.0.1.1  EXTJS_VERSION_LEGACY=4.0.7
   - DB=mysql CAKEPHP_VERSION=2.1.0
 
   - DB=pgsql CAKEPHP_VERSION=master
@@ -126,8 +126,9 @@ before_script:
 
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
-  - if [ $EXTJS_VERSION ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION-gpl/ext-all-debug-w-comments.js ; fi
   - if [ $TOUCH_VERSION ]; then wget http://cdn.sencha.io/touch/sencha-touch-$TOUCH_VERSION/sencha-touch-all-debug.js ; fi
+  - if [ $EXTJS_VERSION ]; then wget http://cdn.sencha.io/ext/gpl/$EXTJS_VERSION/ext-all-debug-w-comments.js ; fi
+  - if [ $EXTJS_VERSION_LEGACY ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION-gpl/ext-all-debug-w-comments.js ; fi
   - cd ../../../../../../
 
   # get pahntomjs for jasmine
@@ -138,8 +139,9 @@ script:
   - if [ $CAKEPHP_VERSION ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
 
   # execute the jasmine tests
-  - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
+  - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
+  - if [ $EXTJS_VERSION_LEGACY ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
 
 notifications:
   email:
