@@ -74,30 +74,41 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	private $_defaults = array(
 		/**
-		 * If true the model also saves and validates records with missing
-		 * fields, like ExtJS is providing for edit operations.
-		 * If you set this to false please use $Model->saveFields($data,$options)
-		 * to save edit-data from extjs.
+		 * If true, the model also saves and validates records with missing
+		 * fields, like Ext JS/Sencha Touch is providing for edit operations.
+		 * If you set this to false, please use $Model->saveFields($data,$options)
+		 * to save edit-data from Ext JS/Sencha Touch.
+		 *
+		 * See also:
+		 * http://banchaproject.org/documentation-pro-models-validation-rules.html#useOnlyDefinedFields
+		 *
 		 * @var boolean
 		 */
 		'useOnlyDefinedFields' => true,
 		/**
-		 * Defined which field should be exposed. If defined these fields will
-		 * be taken as a base of field to expose, the excludeFields config will
-		 * still be applied.
+		 * Defined which field should be exposed. If defined, these fields
+		 * will be taken as a base of fields to expose, the excludeFields
+		 * config will still be applied.
+		 *
+		 * See also:
+		 * http://banchaproject.org/documentation-pro-models-exposed-and-hidden-fields.htmls
+		 *
 		 * @var string[]|null
 		 */
 		'exposedFields' => null,
 		/**
-		 * Defined which field should never be exposed. This config overrules
+		 * Defined which fields should never be exposed. This config overrules
 		 * exposedFields.
+		 *
+		 * See also:
+		 * http://banchaproject.org/documentation-pro-models-exposed-and-hidden-fields.htmls
+		 *
 		 * @var string[]
 		 */
 		'excludedFields' => array()
 	);
 	/**
-	 * Sets up the BanchaRemotable behavior. For config options see
-	 * http://docs.banchaproject.org/resources/Advanced-Configurations.html#bancharemotablebehavior-configurations
+	 * Sets up the BanchaRemotable behavior. For config options see above.
 	 *
 	 * @param Model $Model instance of model
 	 * @param array $config array of configuration settings.
