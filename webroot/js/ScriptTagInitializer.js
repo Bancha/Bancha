@@ -34,8 +34,20 @@
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
 
-// If the Ext.Loader is enabled, configure it
-if(Ext.Loader && Ext.Loader.getConfig('enabled')) {
+//<debug> For production builds the Initializer.js will be used
+(function() { //closure over variables
+
+    if(!Ext.Loader) {
+        throw 'Bancha expects the Ext.Loaded to be loaded when starting the ScriptTagInitializer.js';
+    }
+
+    if(Ext.versions.extjs && Ext.versions.extjs.shortVersion<410) {
+        throw 'Bancha Support for Sencha Architect requires at least Ext JS 4.1.0';
+    }
+
+    // Ext JS 4.1.0 has the loader disabled by default
+    // newer versions already have it enabled
+    Ext.Loader.setConfig('enabled', true);
 
     // This script was included via a script tag. So define the path to Bancha
     // for Ext.Loader.
@@ -43,7 +55,6 @@ if(Ext.Loader && Ext.Loader.getConfig('enabled')) {
     // should be shipped in a packaged version. See our integration in
     // Sencha CMD for this feature.
 
-    //<debug>
     var logWarning = function(msg) {
         if(Ext.global.console && Ext.global.console.warn) {
             Ext.global.console.warn(msg);
@@ -66,8 +77,6 @@ if(Ext.Loader && Ext.Loader.getConfig('enabled')) {
             'for Integration with Sencha Architect 2.'
         ].join(''));
     }
-    //</debug>
-
 
     // find the path to Bancha
     var path = false;
@@ -91,7 +100,6 @@ if(Ext.Loader && Ext.Loader.getConfig('enabled')) {
         }
     });
 
-    //<debug>
     if(path === false) {
         Ext.Error.raise({
             plugin: 'Bancha',
@@ -104,78 +112,79 @@ if(Ext.Loader && Ext.Loader.getConfig('enabled')) {
             ].join('')
         });
     }
-    //</debug>
 
     Ext.Loader.setPath('Bancha', path);
     Ext.Loader.setPath('Bancha.REMOTE_API', path+'/../../bancha-api-class/models/all.js');
     // Since CakePHP does not follow symlinks we need to setup a second path for Bancha Scaffold
     Ext.Loader.setPath('Bancha.scaffold', Ext.Loader.getPath('Bancha')+'/scaffold/src');
-}
 
-// to make sure that everything is loaded in the right order we force
-// that Bancha.Initializer can be loaded right away
-Ext.syncRequire([
-    'Bancha.Loader',
-    'Bancha.loader.Models',
-    'Bancha.data.Model'
-]);
-Ext.define('Bancha.Initializer', {
-    requires: [
+    // to make sure that everything is loaded in the right order we force
+    // that Bancha.Initializer can be loaded right away
+    Ext.syncRequire([
         'Bancha.Loader',
-        'Bancha.loader.Models'
-    ]
-}, function() {
-        // initialize the Bancha model loader.
-        Ext.Loader.setDefaultLoader(Bancha.loader.Models);
-    }
-);
-
-// now that we are initialized, we want to inject Bancha schema in
-// all models with a config 'bancha' set to true
-if(Ext.versions.touch) {
-
-    /*
-     * For Sencha Touch:
-     *
-     * Every time a new subclass is created, this function will apply all Bancha
-     * model configurations.
-     *
-     * In the debug version it will raise an Ext.Error if the model can't be
-     * or is already created, in production it will only return false.
-     */
-    Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
-        var prototype = cls.prototype;
-        if(!prototype.isModel) {
-            return; // this is not a model instance
+        'Bancha.loader.Models',
+        'Bancha.data.Model'
+    ]);
+    Ext.define('Bancha.Initializer', {
+        requires: [
+            'Bancha.Loader',
+            'Bancha.loader.Models'
+        ]
+    }, function() {
+            // initialize the Bancha model loader.
+            Ext.Loader.setDefaultLoader(Bancha.loader.Models);
         }
-        if(!prototype.getBancha || (prototype.getBancha()!==true && prototype.getBancha()!=='true')) {
-            return; // there is no bancha config set to true
-        }
+    );
 
-        // inject schema
-        Bancha.data.Model.applyCakeSchema(cls);
-    }, true);
+    // now that we are initialized, we want to inject Bancha schema in
+    // all models with a config 'bancha' set to true
+    if(Ext.versions.touch) {
 
-} else {
-
-    /*
-     * For Ext JS:
-     *
-     * Hook into Ext.data.Model.
-     * We can't use the #onExtended method, since we need to be the first
-     * preprocessor.
-     *
-     * In the debug version it will raise an Ext.Error if the model can't be
-     * or is already created, in production it will only return false.
-     */
-    Ext.data.Model.$onExtended.unshift({
-        fn: function(cls, data, hooks) {
-            if(data.bancha !== true && data.bancha !== 'true') {
-                return; // not a Bancha model
+        /*
+         * For Sencha Touch:
+         *
+         * Every time a new subclass is created, this function will apply all Bancha
+         * model configurations.
+         *
+         * In the debug version it will raise an Ext.Error if the model can't be
+         * or is already created, in production it will only return false.
+         */
+        Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
+            var prototype = cls.prototype;
+            if(!prototype.isModel) {
+                return; // this is not a model instance
+            }
+            if(!prototype.getBancha || (prototype.getBancha()!==true && prototype.getBancha()!=='true')) {
+                return; // there is no bancha config set to true
             }
 
-            Bancha.data.Model.applyCakeSchema(cls, data);
-        },
-        scope: this
-    });
-}
+            // inject schema
+            Bancha.data.Model.applyCakeSchema(cls);
+        }, true);
+
+    } else {
+
+        /*
+         * For Ext JS:
+         *
+         * Hook into Ext.data.Model.
+         * We can't use the #onExtended method, since we need to be the first
+         * preprocessor.
+         *
+         * In the debug version it will raise an Ext.Error if the model can't be
+         * or is already created, in production it will only return false.
+         */
+        Ext.data.Model.$onExtended.unshift({
+            fn: function(cls, data, hooks) {
+                if(data.bancha !== true && data.bancha !== 'true') {
+                    return; // not a Bancha model
+                }
+
+                Bancha.data.Model.applyCakeSchema(cls, data);
+            },
+            scope: this
+        });
+    }
+
+}()); //eo closure
+//</debug>
