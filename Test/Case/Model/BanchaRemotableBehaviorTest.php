@@ -814,11 +814,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					'name' => 'title',
 				),
 			),
-			array( // test type timestamp
+			array( // test type timestamp (incl. MySQL CURRENT_TIMESTAMP)
 				array(
 					'type' => 'timestamp',
-					'null' => true,
-					'default' => ''
+					'null' => false,
+					'default' => 'CURRENT_TIMESTAMP'
 				),
 				array(
 					'type' => 'date',

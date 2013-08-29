@@ -414,6 +414,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$type = 'enum';
 		}
 
+		// handle mysql timestamp default value
+		if($type=='timestamp' && $fieldSchema['default']=='CURRENT_TIMESTAMP') {
+			$fieldSchema['null'] = true;
+			$fieldSchema['default'] = '';
+		}
+
 		// handle normal fields
 		return array_merge(
 			array(
