@@ -688,6 +688,183 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
+	 * Test that getColumnType returns the correct column definitions in
+	 * ExtJS/Sencha Touch format for each CakePHP format
+	 *
+	 * @dataProvider getColumnTypeDataProvider
+	 */
+	public function testGetColumnType($cakeFieldConfig, $expecedSenchaConfig) {
+
+		// prepare
+		$banchaRemotable = new BanchaRemotableBehavior();
+
+		// test
+		$result = $banchaRemotable->getColumnType($this->getMock('Model'), 'title', $cakeFieldConfig);
+		$this->assertEqual($result, $expecedSenchaConfig);
+	}
+	/**
+	 * Data Provider for testGetColumnTypes
+	 */
+	public function getColumnTypeDataProvider() {
+		return array(
+			array( // test default value and allowNull, as well as type string
+				array(
+					'type' => 'string',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'string',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test default value and allowNull, and type text
+				array(
+					'type' => 'text',
+					'null' => false,
+					'default' => 'abc'
+				),
+				array(
+					'type' => 'string',
+					'allowNull' => false,
+					'defaultValue' => 'abc',
+					'name' => 'title',
+				),
+			),
+			array( // test type integer, and different null value
+				array(
+					'type' => 'integer',
+					'null' => '1',
+					'default' => ''
+				),
+				array(
+					'type' => 'int',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test type float
+				array(
+					'type' => 'float',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'float',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test type boolean
+				array(
+					'type' => 'boolean',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'boolean',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test type datetime
+				array(
+					'type' => 'datetime',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'date',
+					'dateFormat' =>'Y-m-d H:i:s',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test type date
+				array(
+					'type' => 'date',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'date',
+					'dateFormat' =>'Y-m-d',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test type time
+				array(
+					'type' => 'time',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'date',
+					'dateFormat' =>'H:i:s',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+			array( // test type timestamp
+				array(
+					'type' => 'timestamp',
+					'null' => true,
+					'default' => ''
+				),
+				array(
+					'type' => 'date',
+					'dateFormat' =>'timestamp',
+					'allowNull' => true,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Test MySQL enum format
+	 */
+	public function testGetColumnType_Enum() {
+
+		// prepare
+		$model = $this->getMock('Model');
+		$banchaRemotable = new BanchaRemotableBehavior();
+		$cakeFieldConfig = array(
+			'type' => "enum('one', 'two', 'three')",
+			'null' => true,
+			'default' => ''
+		);
+		$expecedSenchaConfig = array(
+			'type' => 'string',
+			'allowNull' => true,
+			'defaultValue' => '',
+			'name' => 'title',
+		);
+
+		// test
+		$result = $banchaRemotable->getColumnType($model, 'title', $cakeFieldConfig);
+		$this->assertEqual($result, $expecedSenchaConfig);
+
+		// also expect a new validation rule to be set
+		$expected = array(
+			'inList' => array(
+				'rule' => array('inList', array('one', 'two', 'three'))
+			)
+		);
+		$this->assertEqual($expected, $model->validate['title']);
+	}
+
+	/**
 	 * Test that getColumnTypes returns all column definitions in
 	 * ExtJS/Sencha Touch format
 	 *

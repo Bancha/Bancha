@@ -45,6 +45,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		'string'    => array('type'=>'string'),
 		'datetime'  => array('type'=>'date', 'dateFormat' =>'Y-m-d H:i:s'),
 		'date'      => array('type'=>'date', 'dateFormat' =>'Y-m-d'),
+		'time'      => array('type'=>'date', 'dateFormat' =>'H:i:s'),
 		'float'     => array('type'=>'float'),
 		'text'      => array('type'=>'string'),
 		'boolean'   => array('type'=>'boolean'),
@@ -389,8 +390,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 	/**
 	 * @see #getColumnTypes
+	 *
+	 * The model is only used for MySQL enum support
 	 */
-	private function getColumnType(Model $Model, $field, $fieldSchema) {
+	public function getColumnType(Model $Model, $fieldName, $fieldSchema) {
 
 		// handle mysql enum field
 		$type = $fieldSchema['type'];
@@ -400,10 +403,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 			// add a new validation rule (only during api call)
 			// in a 2.0 and 2.1 compatible way
-			if(!isset($Model->validate[$field])) {
-				$Model->validate[$field] = array();
+			if(!isset($Model->validate[$fieldName])) {
+				$Model->validate[$fieldName] = array();
 			}
-			$Model->validate[$field]['inList'] = array(
+			$Model->validate[$fieldName]['inList'] = array(
 				'rule' => array('inList', $enums[1])
 			);
 
@@ -414,7 +417,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// handle normal fields
 		return array_merge(
 			array(
-				'name' => $field,
+				'name' => $fieldName,
 				'allowNull' => $fieldSchema['null'],
 				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default']===null) ?
 									'' : $fieldSchema['default'] // if null is not allowed fall back to ''
