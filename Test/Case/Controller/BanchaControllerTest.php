@@ -226,6 +226,21 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+	public function testBanchaApiClassBeautifiedCode() {
+
+		// in debug mode expect the output to be indented
+		Configure::write('debug', 2);
+		$response = $this->testAction('/bancha-api-class.js');
+		// there should be some indent code
+		$this->assertContains('   ', $response, 'Remote API output should be readable code, instead find minified code.');
+
+		// in production mode expect the output to be minified
+		Configure::write('debug', 0);
+		$response = $this->testAction('/bancha-api-class.js');
+		// there should be no indent in code
+		$this->assertEquals(0, preg_match('/  /', $response), 'Remote API output should be minified code, instead find beautified code.');
+	}
+
 	public function testBanchaApiPackaged() {
 		// get response with models, packaged
 		$response = $this->testAction('/bancha-api-packaged/models/all.js');

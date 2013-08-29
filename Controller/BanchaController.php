@@ -120,10 +120,14 @@ class BanchaController extends BanchaAppController {
 		// For a detailed description see https://developers.google.com/closure/compiler/docs/limitations
 		// under "Using string names to refer to object properties"
 		if($schema == false) {
-			$result = sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api));
+			$api = json_encode($api);
+			$api = Configure::read('debug')==2 ? $this->beautifyJson($api) : $api;
+			$result = sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), $api);
 		} else {
 			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
-			$result = sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), json_encode($api));
+			$api = json_encode($api);
+			$api = Configure::read('debug')==2 ? $this->beautifyJson($api) : $api;
+			$result = sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), $api);
 		}
 
 		if($schema === 'packaged') {
@@ -158,7 +162,7 @@ class BanchaController extends BanchaAppController {
 	public function loadMetaData() {
 		$models = null;
 		if(isset($this->params['data'][0])) { $models = $this->params['data'][0]; } //for Ext.Direct
-		if(isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync
+		if(isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync request
 		if ($models == null) {
 			return false;
 		}
@@ -172,7 +176,9 @@ class BanchaController extends BanchaAppController {
 			if($this->params['isBancha']) {
 				return $result;
 			} else {
-				$this->response->body(json_encode($result));
+				$result = json_encode($result);
+				$result = Configure::read('debug')==2 ? $this->beautifyJson($result) : $result;
+				$this->response->body($result);
 			}
 		} catch(MissingModelException $e) {
 			// in the case of an error return with false, but don't throw an exception
@@ -233,6 +239,65 @@ class BanchaController extends BanchaAppController {
 
 		return $metadata;
 	}
+	/**
+	 * Indents a flat JSON string to make it more human-readable.
+	 *
+	 * http://www.daveperrett.com/articles/2008/03/11/format-json-with-php/
+	 *
+	 * @param string $json The original JSON string to process.
+	 *
+	 * @return string Indented version of the original JSON string.
+	 */
+	function beautifyJson($json) {
+
+	    $result      = '';
+	    $pos         = 0;
+	    $strLen      = strlen($json);
+	    $indentStr   = '  ';
+	    $newLine     = "\n";
+	    $prevChar    = '';
+	    $outOfQuotes = true;
+
+	    for ($i=0; $i<=$strLen; $i++) {
+
+	        // Grab the next character in the string.
+	        $char = substr($json, $i, 1);
+
+	        // Are we inside a quoted string?
+	        if ($char == '"' && $prevChar != '\\') {
+	            $outOfQuotes = !$outOfQuotes;
+
+	        // If this character is the end of an element,
+	        // output a new line and indent the next line.
+	        } else if(($char == '}' || $char == ']') && $outOfQuotes) {
+	            $result .= $newLine;
+	            $pos --;
+	            for ($j=0; $j<$pos; $j++) {
+	                $result .= $indentStr;
+	            }
+	        }
+
+	        // Add the character to the result string.
+	        $result .= $char;
+
+	        // If the last character was the beginning of an element,
+	        // output a new line and indent the next line.
+	        if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
+	            $result .= $newLine;
+	            if ($char == '{' || $char == '[') {
+	                $pos ++;
+	            }
+
+	            for ($j = 0; $j < $pos; $j++) {
+	                $result .= $indentStr;
+	            }
+	        }
+
+	        $prevChar = $char;
+	    }
+
+	    return $result;
+	}
 
 	/**
 	 * This function returns all translations in the given domain, which are known to cakephp for
@@ -264,7 +329,9 @@ class BanchaController extends BanchaAppController {
 		}
 
 		// no extra view file needed, simply output
-		$this->response->body(json_encode($jsTranslations));
+		$output = json_encode($jsTranslations);
+		$output = Configure::read('debug')==2 ? $this->beautifyJson($output) : $output;
+		$this->response->body($output);
     }
 
     /**
