@@ -590,7 +590,8 @@ Ext.define('Bancha', {
             // (don't use Ext.Error.raise to not trigger the handler above)
             Ext.Msg.show({
                 title: title,
-                message: msg,
+                message: msg, //touch
+                msg: msg, //extjs
                 icon: Ext.MessageBox.ERROR,
                 buttons: Ext.Msg.OK
             });

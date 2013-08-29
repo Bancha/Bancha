@@ -105,7 +105,8 @@ Ext.define('Bancha.Remoting', {
         // (don't use Ext.Error.raise, that would trigger cyclic error handling)
         Ext.Msg.show({
             title: 'Bancha: AuthComponent prevented execution',
-            message: msg,
+            message: msg, //touch
+            msg: msg, //extjs
             icon: Ext.MessageBox.ERROR,
             buttons: Ext.Msg.OK
         });
@@ -150,7 +151,8 @@ Ext.define('Bancha.Remoting', {
     onRemoteException: function(proxy, response, operation){
         Ext.Msg.show({
             title: 'REMOTE EXCEPTION',
-            message: operation.getError(),
+            message: operation.getError(), //touch
+            msg: operation.getError(), //extjs
             icon: Ext.MessageBox.ERROR,
             buttons: Ext.Msg.OK
         });
