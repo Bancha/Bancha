@@ -157,7 +157,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test if that isExposedField already returns the corret value
+	 * Test that isExposedField already returns the corret value
 	 * from given behvor config.
 	 *
 	 * @dataProvider isExposedFieldDataProvider
@@ -198,8 +198,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test if that filterRecord filters all non-exposed fields
-	 * from an indivudal record
+	 * Test that filterRecord filters all non-exposed fields
+	 * from an indivudal record.
 	 *
 	 * @dataProvider filterRecordDataProvider
 	 */
@@ -270,7 +270,46 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test if that filterRecords filters all non-exposed fields
+	 * Test that integer values are transformed correctly.
+	 *
+	 * This is needed if form panels load data which is not
+	 * build up as a record and therefore association keys
+	 * are not converted to integers.
+	 *
+	 * Simple Ext JS usage for this:
+	 *
+	 *     Ext.create('Ext.form.Panel', {
+	 *         scaffold: {
+	 *             target: 'Bancha.model.Article',
+	 *             loadRecord: 11
+	 *         },
+	 *         renderTo: 'content'
+	 *     });
+	 */
+	public function testFilterRecord_IntegerIdFields() {
+
+		// setup
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
+
+		$input = array(
+			'id' => '4', //int
+			'user_id' => '2', //int
+			'title' => '43.5', //double
+			'body' => 'Text 1', //string
+		);
+		$expecedResult = array(
+			'id' => 4,
+			'user_id' => 2,
+			'title' => '43.5',
+			'body' => 'Text 1',
+		);
+		$result = $TestModel->Behaviors->BanchaRemotable->filterRecord($TestModel, $input);
+		$this->assertEquals($result, $expecedResult);
+	}
+
+	/**
+	 * Test that filterRecords filters all non-exposed fields
 	 * from all possible inputs (see test provider)
 	 *
 	 * @dataProvider filterRecordsDataProvider

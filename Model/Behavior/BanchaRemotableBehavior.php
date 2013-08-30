@@ -292,6 +292,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$result = array();
 		foreach ($this->_getExposedFields($Model) as $fieldName) {
 			if(isset($recData[$fieldName])) {
+				// transforms integers to type int
+				// This is necessary when a form loads fields like user_id,
+				// which need to be a integer
+				if(ctype_digit($recData[$fieldName])) { // is integer string
+					// this looks a bit hacky, but speed is more important then
+					// doing his by checking over the models schema type
+					$recData[$fieldName] = (int) $recData[$fieldName];
+				}
 				$result[$fieldName] = $recData[$fieldName];
 			}
 		}
