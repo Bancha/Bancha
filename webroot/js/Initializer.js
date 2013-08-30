@@ -45,6 +45,10 @@ if(Ext.Loader) {
     }
 }
 
+if(Ext.versions.extjs && Ext.versions.extjs.shortVersion<410) {
+    Ext.syncRequire('Bancha.REMOTE_API'); // ext js: loader sees undefined as already loaded
+}
+
 Ext.define('Bancha.Initializer', {
     requires: [
         'Bancha.Loader',
