@@ -50,6 +50,16 @@ if (!Array.prototype.reduce) {
 /*jshint bitwise:true, curly:true, maxcomplexity:6 */
 /*jsl:end*/
 
+
+//<debug>
+if(Ext.versions.touch) {
+    Ext.ClassManager.setAlias('Ext.MessageBox', 'Ext.window.MessageBox');
+}
+if(Ext.versions.extjs) {
+    Ext.ClassManager.setAlias('Ext.window.MessageBox', 'Ext.MessageBox');
+}
+//</debug>
+
 /**
  * @class Bancha
  *
@@ -93,9 +103,15 @@ Ext.define('Bancha', {
     requires: [
         'Ext.data.*',
         'Ext.direct.*',
-        // For Ext.Loader to properly work, we need to require MessageBox
-        // from a different path Ext JS and Sencha Touch
-        (Ext.versions.touch ? 'Ext.MessageBox' : 'Ext.window.MessageBox'),
+        // The Ext JS and Sencha Touch namespace for MessageBox differs
+        // Compability for the development version is done above
+        // Here we make sure it compiles correctly with Sencha Cmd
+        //<if touch>
+        'Ext.MessageBox',
+        //</if>
+        //<if ext>
+        'Ext.window.MessageBox',
+        //</if>
         'Bancha.data.override.Validations'
     ],
 

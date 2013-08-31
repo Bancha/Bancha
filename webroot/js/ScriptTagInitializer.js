@@ -34,7 +34,7 @@
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
 
-//<debug> For production builds the Initializer.js will be used
+//<debug>
 (function() { //closure over variables
 
     if(!Ext.Loader) {
@@ -84,7 +84,6 @@
         var src = scriptTag.src;
         if(src.substr(src.length-24) === '/ScriptTagInitializer.js') {
             // this seems to be the current script
-            //<debug>
             if(path!==false) {
                 logWarning([
                     'Bancha: You seem to have included to different files with ',
@@ -95,7 +94,6 @@
                     'contact the Bancha support via support@banchaproject.org!'
                 ].join(''));
             }
-            //</debug>
             path = src.substr(0, src.length-24);
         }
     });
@@ -114,77 +112,8 @@
     }
 
     Ext.Loader.setPath('Bancha', path);
-    Ext.Loader.setPath('Bancha.REMOTE_API', path+'/../../bancha-api-class/models/all.js');
-    // Since CakePHP does not follow symlinks we need to setup a second path for Bancha Scaffold
-    Ext.Loader.setPath('Bancha.scaffold', Ext.Loader.getPath('Bancha')+'/scaffold/src');
 
-    // to make sure that everything is loaded in the right order we force
-    // that Bancha.Initializer can be loaded right away
-    Ext.syncRequire([
-        'Bancha.Loader',
-        'Bancha.loader.Models',
-        'Bancha.data.Model'
-    ]);
-    Ext.define('Bancha.Initializer', {
-        requires: [
-            'Bancha.Loader',
-            'Bancha.loader.Models'
-        ]
-    }, function() {
-            // initialize the Bancha model loader.
-            Ext.Loader.setDefaultLoader(Bancha.loader.Models);
-        }
-    );
-
-    // now that we are initialized, we want to inject Bancha schema in
-    // all models with a config 'bancha' set to true
-    if(Ext.versions.touch) {
-
-        /*
-         * For Sencha Touch:
-         *
-         * Every time a new subclass is created, this function will apply all Bancha
-         * model configurations.
-         *
-         * In the debug version it will raise an Ext.Error if the model can't be
-         * or is already created, in production it will only return false.
-         */
-        Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
-            var prototype = cls.prototype;
-            if(!prototype.isModel) {
-                return; // this is not a model instance
-            }
-            if(!prototype.getBancha || (prototype.getBancha()!==true && prototype.getBancha()!=='true')) {
-                return; // there is no bancha config set to true
-            }
-
-            // inject schema
-            Bancha.data.Model.applyCakeSchema(cls);
-        }, true);
-
-    } else {
-
-        /*
-         * For Ext JS:
-         *
-         * Hook into Ext.data.Model.
-         * We can't use the #onExtended method, since we need to be the first
-         * preprocessor.
-         *
-         * In the debug version it will raise an Ext.Error if the model can't be
-         * or is already created, in production it will only return false.
-         */
-        Ext.data.Model.$onExtended.unshift({
-            fn: function(cls, data, hooks) {
-                if(data.bancha !== true && data.bancha !== 'true') {
-                    return; // not a Bancha model
-                }
-
-                Bancha.data.Model.applyCakeSchema(cls, data);
-            },
-            scope: this
-        });
-    }
+    Ext.syncRequire('Bancha.Initializer');
 
 }()); //eo closure
 //</debug>
