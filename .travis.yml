@@ -18,7 +18,14 @@ env:
   - DB=mysql CAKEPHP_VERSION=2.1.0
 
   - DB=pgsql CAKEPHP_VERSION=master
+  - DB=pgsql CAKEPHP_VERSION=2.3.8
+  - DB=pgsql CAKEPHP_VERSION=2.2.8
+  - DB=pgsql CAKEPHP_VERSION=2.1.5
+
   - DB=sqlite CAKEPHP_VERSION=master
+  - DB=sqlite CAKEPHP_VERSION=2.3.8
+  - DB=sqlite CAKEPHP_VERSION=2.2.8
+  - DB=sqlite CAKEPHP_VERSION=2.1.5
 
 branches:
   only:
