@@ -630,11 +630,25 @@ class BanchaExtractTask extends ExtractTask {
 					'line' => $line,
 				);
 				//$details['msgid_plural'] = $plural;
-				if($arguments[0]->isString()) {
-					$this->_addTranslation($domain, $arguments[0]->getStringValue(), $details);
-				} else if($arguments[0]->isTernary()) {
-					$this->_addTranslation($domain, $arguments[0]->getTernaryFirstValue(), $details);
-					$this->_addTranslation($domain, $arguments[0]->getTernarySecondValue(), $details);
+
+				// the _addTranslation signature changed between CakePHP 2.3.8 to 2.4.0
+				// we want to support both
+				if(substr(Configure::version(), 2, 3) < 4) {
+					// CakePHP 2.0 - 2.3
+					if($arguments[0]->isString()) {
+						$this->_addTranslation($domain, $arguments[0]->getStringValue(), $details);
+					} else if($arguments[0]->isTernary()) {
+						$this->_addTranslation($domain, $arguments[0]->getTernaryFirstValue(), $details);
+						$this->_addTranslation($domain, $arguments[0]->getTernarySecondValue(), $details);
+					}
+				} else {
+					// CakePHP 2.4+
+					if($arguments[0]->isString()) {
+						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getStringValue(), $details);
+					} else if($arguments[0]->isTernary()) {
+						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getTernaryFirstValue(), $details);
+						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getTernarySecondValue(), $details);
+					}
 				}
 			}
 		}
