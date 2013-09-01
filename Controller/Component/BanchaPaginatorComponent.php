@@ -280,7 +280,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 				if(!$valid) {
 					if(Configure::read('debug') == 2) {
-						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaPaginatorComponent::allowedFilters configuration.');
+						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaPaginatorComponent::allowedFilters configuration.');
 					} else {
 						// we are not in debug mode where we want to throw an exception, so just ignore this filtering
 						unset($conditions[$field]);
@@ -295,7 +295,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		foreach($conditions as $field=>$value) {
 			if(!in_array($field, $allowedFilters)) {
 				if(Configure::read('debug') == 2) {
-					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter the by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaPaginatorComponent::allowedFilters configuration.');
+					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->Controller->name.' BanchaPaginatorComponent::allowedFilters configuration.');
 				} else {
 					// we are not in debug mode where we want to throw an exception, so just ignore this filtering
 					unset($conditions[$field]);

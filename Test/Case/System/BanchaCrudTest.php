@@ -34,7 +34,6 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
 class BanchaCrudTest extends CakeTestCase {
 	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
 
-	private $originalOrigin;
 	private $originalDebugLevel;
 
 	public function setUp() {
@@ -377,7 +376,7 @@ class BanchaCrudTest extends CakeTestCase {
 		} else {
 			// while mysql understands both versions,
 			// sqlilite requires this version
-			$article->deleteAll(array("1"=>"1")); 
+			$article->deleteAll(array("1"=>"1"));
 		}
 
 		// Build a request like it looks in Ext JS.
