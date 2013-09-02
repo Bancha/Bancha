@@ -132,6 +132,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	public function extractBanchaMetaData(Model $Model) {
 
+		//<bancha-basic>
+		if(Configure::read('Bancha.isPro')==false) {
+			return array();
+		}
+		//</bancha-basic>
+		//<bancha-pro>
 		//TODO persist: persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
 		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
@@ -169,6 +175,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		);
 
 		return $ExtMetaData;
+		//</bancha-pro>
 	}
 
 	/**

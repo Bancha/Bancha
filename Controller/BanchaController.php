@@ -61,8 +61,15 @@ class BanchaController extends BanchaAppController {
 		// send an _ServerError property to the frontend
 		$error = false;
 
+		//<bancha-pro>
 		// get all possible remotable models
 		$remotableModels = $this->getRemotableModels($banchaApi);
+		//</bancha-pro>
+		//<bancha-basic>
+		if(Configure::read('Bancha.isPro')==false) {
+			$remotableModels = array();
+		}
+		//</bancha-basic>
 
 		//get all the remotable model actions, this can throw an error on missconfiguration
 		$remotableModelsActions = array();

@@ -140,8 +140,6 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
     	// bancha-specific access-restriction logic
 		if(isset($this->Controller->request->params['isBancha']) && $this->Controller->request->params['isBancha']) {
-			// this is a Bancha request, apply the allowed filters
-			$this->whitelist[] = 'conditions';
 
 			// apply the Bancha default settings
 			$this->settings = array_merge($this->settings, $this->banchaSettings);
@@ -152,9 +150,42 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 				throw new BanchaException('The pageSize you set is bigger then the maxLimit set in CakePHP.');
 			}
 
+			//<bancha-basic>
+			/**
+			 * Bancha Basic does not allow pagination.
+			 *
+			 * Yes, if you want to hack this software, it is pretty simply. We want
+			 * to spend our time making Bancha even better, not adding piracy
+			 * protection.
+			 *
+			 * Please consider buying a license if you like Bancha, we are a
+			 * small company and if we don't earn money to life from this project
+			 * we are not able to further develop Bancha.
+			 */
+			// We place this here instead of in the RequestTransformer to make
+			// sure the other requests ares till handled correctly and that we
+			// return an Ext.Direct response.
+			if(Configure::read('Bancha.isPro')==false && $this->Controller->request->named['page']>1) {
+				throw new BanchaException(
+					'Bancha Basic does not support pagiantion. <br>'.
+					'If you need advanced features, please consider buying Bancha Pro.'
+				);
+			}
+			if(Configure::read('Bancha.isPro')==false && !empty($this->Controller->request->named['conditions'])) {
+				throw new BanchaException(
+					'Bancha Basic does not support remote filtering of data. <br>'.
+					'If you need advanced features, please consider buying Bancha Pro.'
+				);
+			}
+			//</bancha-basic>
+			//<bancha-pro>
+			// this is a Bancha request, apply the allowed filters
+			$this->whitelist[] = 'conditions';
+
 			// filter given conditions-array and apply it to our pagination
 			$remoteConditions = $this->sanitizeFilterConditions($this->allowedFilters, $this->Controller->request->named['conditions']);
 			$scope = array_merge($remoteConditions, $scope);
+			//</bancha-pro>
 		}
 
 
@@ -177,8 +208,12 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			}
 		}
 
-		// allowedFilters is already set, now verify correctness
-		$this->setAllowedFilters($this->allowedFilters);
+		//<bancha-pro>
+		if(Configure::read('Bancha.isPro')==true) {
+			// allowedFilters is already set, now verify correctness
+			$this->setAllowedFilters($this->allowedFilters);
+		}
+		//</bancha-pro>
 	}
 
 /**
@@ -190,6 +225,27 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  */
 	public function setAllowedFilters($allowedFilters) {
 
+		//<bancha-basic>
+		/**
+		 * Bancha Basic does not allow filtering.
+		 *
+		 * Yes, if you want to hack this software, it is pretty simply. We want
+		 * to spend our time making Bancha even better, not adding piracy
+		 * protection.
+		 *
+		 * Please consider buying a license if you like Bancha, we are a
+		 * small company and if we don't earn money to life from this project
+		 * we are not able to further develop Bancha.
+		 */
+		if(Configure::read('Bancha.isPro')==false) {
+			throw new BanchaException(
+				'Bancha Basic does not support remote filtering of data, therefore using $this->Paginator->setAllowedFilters is not possible. <br>'.
+				'If you need advanced features, please consider buying Bancha Pro.'
+			);
+		}
+		//</bancha-basic>
+
+		//<bancha-pro>
 		// check if the allowedFilters is configured correctly
 		if(!isset($allowedFilters)) {
 			throw new BanchaException('The BanchaPaginatorComponent::allowedFilters configuration needs to be set.');
@@ -245,8 +301,10 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		}
 
 		$this->allowedFilters = $allowedFilters;
+		//</bancha-pro>
 	}
 
+//<bancha-pro>
 /**
  * This functions loops through all filter conditions and check if the are valid
  * according to the {@link allowedFilter} property.
@@ -305,4 +363,5 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		return $conditions;
 	}
+//</bancha-pro>
 }

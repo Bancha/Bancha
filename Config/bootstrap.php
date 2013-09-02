@@ -128,3 +128,19 @@ if(Configure::read('Bancha.ServerLogger.logIssues') === null) {
 if(Configure::read('Bancha.ServerLogger.logEnvironment') === null) {
 	Configure::write('Bancha.ServerLogger.logEnvironment', true);
 }
+
+/**
+ * This flag is true on pro versions, for feature detection.
+ * Setting this to true in non-Pro versions, will result in errors,
+ * since some files and js is missing. Do not change this manually.
+ */
+//<bancha-pro>
+if(Configure::read('Bancha.isPro') === null) {
+	Configure::write('Bancha.isPro', true);
+}
+//</bancha-pro>
+//<bancha-basic>
+if(Configure::read('Bancha.isPro') === null) {
+	Configure::write('Bancha.isPro', false);
+}
+//</bancha-basic>

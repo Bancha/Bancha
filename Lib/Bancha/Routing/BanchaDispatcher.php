@@ -49,6 +49,23 @@ class BanchaDispatcher {
 		}
 		$collection = new BanchaResponseCollection($response);
 
+		//<bancha-basic>
+		/**
+		 * Yes, if you want to hack this software, it is pretty simply. We want
+		 * to spend our time making Bancha even better, not adding piracy
+		 * protection.
+		 *
+		 * Please consider buying a license if you like Bancha, we are a
+		 * small company and if we don't earn money to life from this project
+		 * we are not able to further develop Bancha.
+		 */
+		//</bancha-basic>
+		/*<bancha-basic>
+		if(Configure::read('Bancha.isPro') != false) {
+			echo 'Bancha Error: You are using Bancha Basic, please don\'t change the Bancha.isPro config!';
+		}
+		</bancha-basic>*/
+
 		$allowedDomains = Configure::read('Bancha.allowedDomains');
 		if ($allowedDomains && $allowedDomains!=='*' && !isset($_SERVER['HTTP_ORIGIN'])) {
 			// we need to have a origin to validate the domain!

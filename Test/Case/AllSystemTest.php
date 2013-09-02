@@ -35,6 +35,7 @@ class AllSystemTest extends PHPUnit_Framework_TestSuite {
 
 		$path = dirname(__FILE__) . DS . 'System';
 		$suite->addTestFile($path . DS . 'BanchaRemotableFunctionTest.php');
+		$suite->addTestFile($path . DS . 'BanchaBasicTest.php');
 		$suite->addTestFile($path . DS . 'BanchaCrudTest.php');
 		$suite->addTestFile($path . DS . 'BanchaDebugExceptionsTest.php');
 		$suite->addTestFile($path . DS . 'BanchaExceptionsTest.php');
