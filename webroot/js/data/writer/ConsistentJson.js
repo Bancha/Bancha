@@ -41,14 +41,14 @@ Ext.define('Bancha.data.writer.ConsistentJson', {
     //inherit docs
     writeRecords: function(request, data) {
 
-        // IFDEBUG
+        //<debug>
         if(!this.model) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: 'Bancha: Bancha.data.writer.ConsistentJson needs a reference to the model.'
             });
         }
-        // ENDIF
+        //</debug>
 
         // set consistent uid if expected
         if(this.model && this.model.forceConsistency) {

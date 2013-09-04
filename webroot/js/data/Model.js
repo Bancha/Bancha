@@ -108,7 +108,7 @@ Ext.define('Bancha.data.Model', {
             }
 
             if(!Bancha.isRemoteModel(modelName)) {
-                // IFDEBUG
+                //<debug>
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
@@ -118,22 +118,22 @@ Ext.define('Bancha.data.Model', {
                         '(no remote model).'
                     ].join('')
                 });
-                // ENDIF
+                //</debug>
                 return false;
             }
 
             if(!Bancha.modelMetaDataIsLoaded(modelName)) {
-                // IFDEBUG
+                //<debug>
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
                     msg: 'Bancha: Couldn\'t create the model cause the metadata is not loaded yet, please use onModelReady instead.'
                 });
-                // ENDIF
+                //</debug>
                 return false;
             }
 
-            // IFDEBUG
+            //<debug>
             if(!Ext.isDefined(Bancha.getModelMetaData(modelName).idProperty)) {
                 if(Ext.global.console && Ext.isFunction(Ext.global.console.warn)) {
                     Ext.global.console.warn(
@@ -142,7 +142,7 @@ Ext.define('Bancha.data.Model', {
                         'that this warning is only created in debug mode.');
                 }
             }
-            // ENDIF
+            //</debug>
 
             // configure the new model
             config = Bancha.getModelMetaData(modelName);
@@ -236,7 +236,6 @@ Ext.define('Bancha.data.Model', {
 
             return fakeFn;
         },
-        // ENDIF
         createBanchaProxy: function(model) {
             var modelName = model.getName().split('.').pop(), // CakePHP model name, e.g. "User"
                 stub,
@@ -265,29 +264,15 @@ Ext.define('Bancha.data.Model', {
                 // by Ext.Direct on the application level
                 batchActions: false,
                 api: {
-                    /* IFPRODUCTION
-                    // if method is not supported by remote it get's set to undefined
-                    read    : stub.read,
-                    create  : stub.create,
-                    update  : stub.update,
-                    destroy : stub.destroy
-                    ENDIF */
-                    // IFDEBUG
-                    read    : this.createSafeDirectFn(stub,'read',modelName),
-                    create  : this.createSafeDirectFn(stub,'create',modelName),
-                    update  : this.createSafeDirectFn(stub,'update',modelName),
-                    destroy : this.createSafeDirectFn(stub,'destroy',modelName)
-                    // ENDIF
+                    read    : this.getStubMethod(stub,'read',modelName),
+                    create  : this.getStubMethod(stub,'create',modelName),
+                    update  : this.getStubMethod(stub,'update',modelName),
+                    destroy : this.getStubMethod(stub,'destroy',modelName)
                 },
                 // because of an error in ext the following directFn def. has to be
                 // defined, which should be read from api.read instead...
                 // see http://www.sencha.com/forum/showthread.php?134505&p=606283&viewfull=1#post606283
-                /* IFPRODUCTION
-                directFn: stub.read,
-                ENDIF */
-                // IFDEBUG
-                directFn: this.createSafeDirectFn(stub,'read',modelName),
-                // ENDIF
+                directFn: this.getStubMethod(stub,'read',modelName),
                 reader: Ext.apply({
                     type: 'json',
                     messageProperty: 'message'

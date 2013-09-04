@@ -71,7 +71,7 @@ Ext.define('Bancha.loader.Models', {
                 onLoad.call(scope);
             } else {
                 // error handling
-                // IFDEBUG
+                //<debug>
                 // signature: errorMessage, isSynchronous
                 var mode = syncEnabled ? 'synchronously via XHR' : 'asynchronously via Ext.Direct';
                 onError.call(this, [
@@ -79,7 +79,7 @@ Ext.define('Bancha.loader.Models', {
                     'verify that the CakePHP model '+unqualifiedName+' exists. ',
                     errorMsg
                 ].join(''), syncEnabled);
-                // ENDIF
+                //</debug>
             }
         }, this, syncEnabled);
     }
