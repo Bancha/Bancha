@@ -124,12 +124,16 @@ Ext.define('Bancha', {
     // hacky solution to keep references in all possible loading orders
     // this should be removed after the Bancha singleton is refactored into
     // multiple, independent classes
-    data       : window.Bancha ? Bancha.data : undefined,
-    loader     : window.Bancha ? Bancha.loader : undefined,
-    Loader     : window.Bancha ? Bancha.Loader : undefined,
-    Logger     : window.Bancha ? Bancha.Logger : undefined,
-    Initializer: window.Bancha ? Bancha.Initializer : undefined,
-    Remoting   : window.Bancha ? Bancha.Remoting : undefined,
+    // To hinder Sencha Cmd from detecting dpendencies we son't use the dot
+    // notation here
+    /* jshint sub:true */
+    data       : window.Bancha ? Bancha['data'] : undefined,
+    loader     : window.Bancha ? Bancha['loader'] : undefined,
+    Loader     : window.Bancha ? Bancha['Loader'] : undefined,
+    Logger     : window.Bancha ? Bancha['Logger'] : undefined,
+    Initializer: window.Bancha ? Bancha['Initializer'] : undefined,
+    Remoting   : window.Bancha ? Bancha['Remoting'] : undefined,
+    /* jshint sub:false */
     /* End Definitions */
 
     // IFDEBUG
