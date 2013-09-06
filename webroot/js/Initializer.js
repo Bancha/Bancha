@@ -53,7 +53,8 @@ if(Ext.versions.extjs && Ext.versions.extjs.shortVersion<410) {
 Ext.define('Bancha.Initializer', {
     requires: [
         'Bancha.Loader',
-        'Bancha.loader.Models'
+        'Bancha.loader.Models',
+        'Bancha.data.Model'
     ]
 }, function() {
         // initialize the Bancha model loader.

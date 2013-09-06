@@ -306,7 +306,7 @@ Ext.define('Bancha.data.Model', {
      * In the debug version it will raise an Ext.Error if the model can't be
      * or is already created, in production it will only return false.
      */
-    Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
+    Ext.ClassManager.registerPostprocessor('banchamodelfromnamespace', function(name, cls, data) {
         var ns = (Bancha.modelNamespace+'.' || 'Bancha.model.');
         if(name.substr(0, ns.length) !== ns) {
             return true; // not a Bancha model
