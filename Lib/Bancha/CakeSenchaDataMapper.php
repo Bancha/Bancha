@@ -76,21 +76,23 @@ class CakeSenchaDataMapper {
 
 	/**
 	 * This function walks through the input $data and calls the given callback 
-	 * for each record found. The callback has to have two parameters. The first
-	 * parameter is the name of the model (e.g. 'User') and the second one is 
-	 * the (not nested data of the record) (e.g. array('id', 'name')). If there 
-	 * is a hasMany or hasManyAndBelongsToMany association and there is no record,
-	 * the callable function will be called once with the model name (to may 
-	 * transform) and null as $data.
+	 * for each record found. The callback has to have two parameters:
+	 * 
+	 *  - string $modelName: The name of the model (e.g. 'User')
+	 *  - array  $data: The model data, not nested data (e.g. array('id', 'name')). 
+	 *                  If there is a hasMany or hasManyAndBelongsToMany association 
+	 *                  and there is no record, the callable function will be called 
+	 *                  once with the model name (to may transform) and null as $data.
+	 *                  Note that the record may have nested records inside the data,
+	 *                  deleting or modifing those results in the walker not 
+	 *                  visiting them.
+	 *
+	 * The callable should return a numeric array, first param is the new record
+	 * key, second the data. Setting the record key to false results in removeing
+	 * the entry.
 	 *
 	 * The walker currently does not support threaded records.
-	 *
-	 * Note that the record may have nested records inside the given second param,
-	 * deleting or modifing those might result in the walker not visiting them.
-	 *
-	 * The callback should return a numeric array, first param is the new record
-	 * key (by default the model name), second the data.
-	 *
+	 * 
 	 * The walker has a depth first approach for walking the data. It has no 
 	 * side effects.
 	 * 
@@ -120,9 +122,9 @@ class CakeSenchaDataMapper {
 			if(empty($value)) {
 				// this is an empty array of nested data,
 				// transform the model name.
-				list($newKey, $newData) = call_user_func($callable, $key, $value, $key);
+				list($newKey, $newData) = call_user_func($callable, $key, null, true);
 				unset($data[$key]);
-				$data[$newKey] = array();
+				if($newKey!==false) $data[$newKey] = array();
 				continue; 
 			}
 
@@ -142,11 +144,11 @@ class CakeSenchaDataMapper {
 
 			// found new record
 			// key is the model name, value is the data
-			list($newKey, $newData) = call_user_func($callable, $key, $value, $key);
+			list($newKey, $newData) = call_user_func($callable, $key, $value, true);
 			unset($data[$key]);
 
 			// now walk the child data
-			$data[$newKey] = $this->_walk($callable, $newData);
+			if($newKey!==false) $data[$newKey] = $this->_walk($callable, $newData);
 		}
 
 		return $data;
@@ -160,14 +162,15 @@ class CakeSenchaDataMapper {
 
 		// walk through all entries
 		$newKey = '';
+		$newNestedData = array(); // we need a new array to not break the foreach when removing an entry
 		foreach($nestedData as $key => $value) {
 			// key is the index, value is the data
-			list($newKey, $newData) = call_user_func($callable, $modelName, $value);
+			list($newKey, $newData) = call_user_func($callable, $modelName, $value, false);
 
 			// now walk in nested record
-			$nestedData[$key] = $this->_walk($callable, $newData);
+			if($newKey!==false) array_push($newNestedData, $this->_walk($callable, $newData));
 		}
-		$data[$newKey] = $nestedData;
+		$data[$newKey] = $newNestedData;
 
 		return $data;
 	}

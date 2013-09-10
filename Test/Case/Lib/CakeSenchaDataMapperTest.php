@@ -629,4 +629,54 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 		$this->assertFalse(isset($result['ser']['rticle'][1]['ser']['id']));
 	}
+
+	/**
+	 * Test that the walk function is able to remove entries from the array
+	 */
+	public function testWalkRemoveEntries() {
+
+		// test removing of all tags
+		$mapper = new CakeSenchaDataMapper($this->singleRecordWithDeeplyNestedData, 'Article');
+		$result = $mapper->walk(array($this, 'walkerRemoveEntriesCallback1'));
+
+		$this->assertTrue(isset($result['Article']));
+		$this->assertTrue(isset($result['User']));
+		$this->assertFalse(isset($result['Tag']));
+
+		$this->assertTrue(isset($result['User']['Article']));
+		$this->assertFalse(isset($result['User']['Article'][0]['Tag']));
+		$this->assertFalse(isset($result['User']['Article'][1]['Tag']));
+
+		// test removing of all users
+		$mapper = new CakeSenchaDataMapper($this->singleRecordWithDeeplyNestedData, 'Article');
+		$result = $mapper->walk(array($this, 'walkerRemoveEntriesCallback2'));
+
+		$this->assertTrue(isset($result['Article']));
+		$this->assertFalse(isset($result['User']));
+		$this->assertTrue(isset($result['Tag']));
+
+		// test removing of article with id 1001
+		$mapper = new CakeSenchaDataMapper($this->singleRecordWithDeeplyNestedData, 'Article');
+		$result = $mapper->walk(array($this, 'walkerRemoveEntriesCallback3'));
+
+		$this->assertFalse(isset($result['Article']));
+		$this->assertTrue(isset($result['User']));
+		$this->assertTrue(isset($result['Tag']));
+
+		$this->assertTrue(isset($result['User']['Article'])); // one article should still exist
+		$this->assertCount(1, $result['User']['Article']);
+
+		$this->assertEquals(1002, $result['User']['Article'][0]['id']);
+		$this->assertTrue(isset($result['User']['Article'][0]['User']));
+		$this->assertFalse(isset($result['ser']['rticle'][0]['Tag']));
+	}
+	public function walkerRemoveEntriesCallback1($modelName, $data) {
+		return array(($modelName=='Tag' ? false : $modelName), $data);
+	}
+	public function walkerRemoveEntriesCallback2($modelName, $data) {
+		return array(($modelName=='User' ? false : $modelName), $data);
+	}
+	public function walkerRemoveEntriesCallback3($modelName, $data) {
+		return array((($modelName=='Article' && $data['id']==1001) ? false : $modelName), $data);
+	}
 }
