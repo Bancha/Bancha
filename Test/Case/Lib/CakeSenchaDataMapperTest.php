@@ -669,6 +669,32 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$this->assertEquals(1002, $result['User']['Article'][0]['id']);
 		$this->assertTrue(isset($result['User']['Article'][0]['User']));
 		$this->assertFalse(isset($result['ser']['rticle'][0]['Tag']));
+
+		// edge case, removing associated data from the current models data should also remove it
+		// each User removes this Article record
+		$mapper = new CakeSenchaDataMapper($this->singleRecordWithDeeplyNestedData, 'Article');
+		$result = $mapper->walk(array($this, 'walkerRemoveEntriesCallback4'));
+
+		$this->assertTrue(isset($result['Article']));
+		$this->assertTrue(isset($result['User']));
+		$this->assertTrue(isset($result['Tag']));
+
+		$this->assertFalse(isset($result['User']['Article']));
+
+
+		// each Article removes this User record (nested ones only)
+		$mapper = new CakeSenchaDataMapper($this->singleRecordWithDeeplyNestedData, 'Article');
+		$result = $mapper->walk(array($this, 'walkerRemoveEntriesCallback5'));
+
+		$this->assertTrue(isset($result['Article']));
+		$this->assertTrue(isset($result['User']));
+		$this->assertTrue(isset($result['Tag']));
+
+		$this->assertTrue(isset($result['User']['Article']));
+		$this->assertCount(2, $result['User']['Article']);
+		$this->assertFalse(isset($result['User']['Article'][0]['User']));
+		$this->assertFalse(isset($result['User']['Article'][1]['User']));
+
 	}
 	public function walkerRemoveEntriesCallback1($modelName, $data) {
 		return array(($modelName=='Tag' ? false : $modelName), $data);
@@ -678,5 +704,17 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 	}
 	public function walkerRemoveEntriesCallback3($modelName, $data) {
 		return array((($modelName=='Article' && $data['id']==1001) ? false : $modelName), $data);
+	}
+	public function walkerRemoveEntriesCallback4($modelName, $data) {
+		if($modelName=='User' && isset($data['Article'])) {
+			unset($data['Article']);
+		}
+		return array($modelName, $data);
+	}
+	public function walkerRemoveEntriesCallback5($modelName, $data) {
+		if($modelName=='Article' && isset($data['User'])) {
+			unset($data['User']);
+		}
+		return array($modelName, $data);
 	}
 }
