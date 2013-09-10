@@ -43,16 +43,7 @@ class BanchaResponseTransformer {
 			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
 		}
 
-		// get the model
-		$Model = false;
-		try {
-			$Model = ClassRegistry::init($modelName, true);
-		} catch(CakeException $e) {
-			// there migth be cases, where the controller
-			// has no similar record, in these cases do nothing
-		}
-
-		return BanchaResponseTransformer::transformDataStructureToSencha($response, $modelName, $Model);
+		return BanchaResponseTransformer::transformDataStructureToSencha($response, $modelName);
 	}
 
 	/**
@@ -62,10 +53,9 @@ class BanchaResponseTransformer {
 	 *
 	 * @param  object      $response   The input request from Bancha
 	 * @param  string      $modelName  The model name of the current request
-	 * @param  Model|false $Model      The primary model or null
 	 * @return array                   ExtJS/Sencha Touch formated data
 	 */
-	private static function transformDataStructureToSencha($response, $modelName, $Model) {
+	private static function transformDataStructureToSencha($response, $modelName) {
 
 		// if we only got an array with a success property we expect
 		// that this data is already in the correct format, so only
@@ -117,14 +107,11 @@ class BanchaResponseTransformer {
 			return $senchaResponse;
 		}
 
-
-		// now filter the data
-		if($Model != false) {
-			$response = $Model->filterRecords($response);
-		}
-
 		// transform model data
 		$mapper = new CakeSenchaDataMapper($response, $modelName);
+
+		// filter the records
+		$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
 
 		if($mapper->isSingleRecord()) {
 			// this is standard cake single element structure
@@ -133,6 +120,7 @@ class BanchaResponseTransformer {
 		} else if($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
 
+			// flatten the result
 			$conversionSuccessfull = true;
 			$data = array();
 			foreach($response as $record) {
@@ -155,7 +143,7 @@ class BanchaResponseTransformer {
 			// this is a paging response
 
 			// the records have standard cake structure, so get them by using this function
-			$data = BanchaResponseTransformer::transformDataStructureToSencha($response['records'], $modelName, $Model);
+			$data = BanchaResponseTransformer::transformDataStructureToSencha($response['records'], $modelName);
 			// now add only the data to the response
 			$senchaResponse['data'] = $data['data'];
 
@@ -166,6 +154,17 @@ class BanchaResponseTransformer {
 		return $senchaResponse;
 	}
 
+	public static function walkerDataTransformer($modelName, $data) {
+		// get the model
+		$Model = false;
+		try {
+			$Model = ClassRegistry::init($modelName, true);
+		} catch(CakeException $e) {
+			// there might be exceptions, in these cases do nothing
+		}
+
+		return array($modelName, $Model->filterRecord($data));
+	}
 
 	/**
 	 *
