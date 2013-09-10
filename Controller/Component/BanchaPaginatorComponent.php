@@ -147,7 +147,10 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			// debug warning
 			if(Configure::read('debug')==2 && isset($this->Controller->request->params['named']['limit']) &&
 				$this->settings['maxLimit']<$this->Controller->request->params['named']['limit']) {
-				throw new BanchaException('The pageSize you set is bigger then the maxLimit set in CakePHP.');
+				throw new BanchaException(sprintf(
+					'The pageSize(%u) you set is bigger then the maxLimit(%u) set in CakePHP.', 
+					$this->Controller->request->params['named']['limit'],
+					$this->settings['maxLimit']));
 			}
 
 			//<bancha-basic>

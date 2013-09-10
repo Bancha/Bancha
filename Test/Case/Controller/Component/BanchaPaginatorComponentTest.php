@@ -288,7 +288,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
 		// test with a limit of 150 (should throw an exception in debug level)
 		Configure::write('debug', 2);
 		$this->Controller->request->params['named']['limit'] = 150;
-		$this->setExpectedException('BanchaException', 'The pageSize you set is bigger then the maxLimit set in CakePHP.');
+		$this->setExpectedException('BanchaException', 'The pageSize(150) you set is bigger then the maxLimit(100) set in CakePHP.');
 		$result = $this->BanchaPaginatorComponent->paginate('Article');
 	}
 }
