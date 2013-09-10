@@ -40,5 +40,8 @@ class TagFixture extends CakeTestFixture {
  * @access public
  */
 	public $records = array(
+		array('id' => 1, 'string' => 'CakePHP'),
+		array('id' => 2, 'string' => 'Bancha'),
+		array('id' => 3, 'string' => 'Sencha'),
 	);
 }

@@ -39,5 +39,7 @@ class ArticlesTagFixture extends CakeTestFixture {
  * @access public
  */
 	public $records = array(
+		array('article_id' => 1001, 'tag_id' => 1),
+		array('article_id' => 1001, 'tag_id' => 2),
 	);
 }

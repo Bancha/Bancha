@@ -43,8 +43,8 @@ class ArticleFixture extends CakeTestFixture {
  * @access public
  */
 	public $records = array(
-		array('id' => 1001, 'title' => 'Title 1', 'date' => '2011-11-24 03:40:04', 'body' => 'Text 1', 'published' => true, 'user_id' => 2),
-		array('id' => 1002, 'title' => 'Title 2', 'date' => '2011-12-24 03:40:04', 'body' => 'Text 2', 'published' => false, 'user_id' => 3),
+		array('id' => 1001, 'title' => 'Title 1', 'date' => '2011-11-24 03:40:04', 'body' => 'Text 1', 'published' => true, 'user_id' => 95),
+		array('id' => 1002, 'title' => 'Title 2', 'date' => '2011-12-24 03:40:04', 'body' => 'Text 2', 'published' => false, 'user_id' => 95),
 		array('id' => 1003, 'title' => 'Title 3', 'date' => '2010-12-24 03:40:04', 'body' => 'Text 3', 'published' => false, 'user_id' => 3),
 		array('id' => 1004, 'title' => 'Title 4', 'date' => '2010-12-24 03:40:04', 'body' => 'Text 4', 'published' => false, 'user_id' => 3),
 		array('id' => 1005, 'title' => 'Title 5', 'date' => '2010-12-24 03:40:04', 'body' => 'Text 5', 'published' => false, 'user_id' => 3),
