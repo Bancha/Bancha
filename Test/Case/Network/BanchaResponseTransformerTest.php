@@ -161,7 +161,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// Configure the model to not expose date and user_id
 		$TestModel = ClassRegistry::init('Article');
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array(
+		$TestModel->Behaviors->load('Bancha.BanchaRemotable', array(
 			'excludedFields' => array('date', 'user_id')
 		));
 
@@ -281,7 +281,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// Configure the model to not expose date and user_id
 		$TestModel = ClassRegistry::init('Article');
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array(
+		$TestModel->Behaviors->load('Bancha.BanchaRemotable', array(
 			'excludedFields' => array('date', 'user_id')
 		));
 
@@ -409,7 +409,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// Configure the model to not expose date and user_id
 		$TestModel = ClassRegistry::init('Article');
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array(
+		$TestModel->Behaviors->load('Bancha.BanchaRemotable', array(
 			'excludedFields' => array('date', 'user_id')
 		));
 
