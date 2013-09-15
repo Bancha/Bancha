@@ -156,5 +156,9 @@ Ext.define('Bancha.Remoting', {
             icon: Ext.MessageBox.ERROR,
             buttons: Ext.Msg.OK
         });
+        Ext.Error.raise({
+            plugin: 'Bancha',
+            msg: 'REMOTE EXCEPTION: '+operation.getError()
+        });
     }
 });
