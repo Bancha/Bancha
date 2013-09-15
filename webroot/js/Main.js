@@ -106,12 +106,12 @@ Ext.define('Bancha', {
         // The Ext JS and Sencha Touch namespace for MessageBox differs
         // Compability for the development version is done above
         // Here we make sure it compiles correctly with Sencha Cmd
-        //<feature touch>
+        //<if touch>
         'Ext.MessageBox',
-        //</feature>
-        //<feature ext>
+        //</if>
+        //<if ext>
         'Ext.window.MessageBox',
-        //</feature>
+        //</if>
         'Bancha.data.override.Validations'
     ],
 
