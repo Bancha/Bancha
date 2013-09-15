@@ -122,7 +122,7 @@ class CakeSenchaDataMapper {
 			if(empty($value)) {
 				// this is an empty array of nested data,
 				// transform the model name.
-				list($newKey, $newData) = call_user_func($callable, $key, null, true);
+				list($newKey, $newData) = call_user_func($callable, $key, null, false);
 				unset($data[$key]);
 				if($newKey!==false) $data[$newKey] = array();
 				continue; 

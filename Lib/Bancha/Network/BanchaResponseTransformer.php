@@ -13,6 +13,11 @@
 
 App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
+// backwards compability with 5.2
+if ( false === function_exists('lcfirst') ) {
+	function lcfirst( $str ) { return (string)(strtolower(substr($str,0,1)).substr($str,1)); }
+}
+
 /**
  * BanchaResponseTransformer. Performs transformations on CakePHP responses in order to match Ext JS responses.
  *
@@ -110,26 +115,41 @@ class BanchaResponseTransformer {
 		// transform model data
 		$mapper = new CakeSenchaDataMapper($response, $modelName);
 
-		// filter the records
-		$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
-
 		if($mapper->isSingleRecord()) {
+			// filter the records
+			$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
+			$senchaModelName = lcfirst($modelName);
+
+			// merge directly associated data into the primary model
+			$primaryModel = $response[$senchaModelName];
+			unset($response[$senchaModelName]);
+
 			// this is standard cake single element structure
-			$senchaResponse['data'] = $response[$modelName];
+			$senchaResponse['data'] = array_merge($primaryModel, $response);
 
 		} else if($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
+
+			// filter the records
+			$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
+			$senchaModelName = lcfirst($modelName);
 
 			// flatten the result
 			$conversionSuccessfull = true;
 			$data = array();
 			foreach($response as $record) {
-				if(!isset($record[$modelName]) || !is_array($record[$modelName])) {
+				if(!isset($record[$senchaModelName]) || !is_array($record[$senchaModelName])) {
 					// there are entries which does not have data, strange
 					$conversionSuccessfull = false;
 					break;
 				}
-				array_push($data, $record[$modelName]);
+
+				// merge directly associated data into the primary model
+				$primaryModel = $record[$senchaModelName];
+				unset($record[$senchaModelName]);
+
+				// add to result set
+				array_push($data, array_merge($primaryModel, $record));
 			}
 
 			if($conversionSuccessfull) {
@@ -154,16 +174,27 @@ class BanchaResponseTransformer {
 		return $senchaResponse;
 	}
 
-	public static function walkerDataTransformer($modelName, $data) {
+	public static function walkerDataTransformer($modelName, $data, $isPrimary) {
 		// get the model
 		$Model = false;
 		try {
 			$Model = ClassRegistry::init($modelName, true);
 		} catch(CakeException $e) {
 			// there might be exceptions, in these cases do nothing
+			return array(false, null);
 		}
 
-		return array($modelName, $Model->filterRecord($data));
+		if(!isset($Model->Behaviors->BanchaRemotable)) {
+			// this model should not be exposed
+			// (need to be tested here, since the filterRecord method might not be available)
+			return array(false, null);
+		}
+
+		if(!$isPrimary) {
+			$modelName = Inflector::pluralize($modelName);
+		}
+
+		return array(lcfirst($modelName), $Model->filterRecord($data));
 	}
 
 	/**

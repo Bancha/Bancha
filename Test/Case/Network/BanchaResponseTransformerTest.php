@@ -22,7 +22,7 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  * @since         Bancha v 0.9.0
  */
 class BanchaResponseTransformerTest extends CakeTestCase {
-	public $fixtures = array('plugin.bancha.article');
+	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
 
 /**
  * Test how the BanchaResponseTransformer handles primitive and non-primitive
@@ -418,4 +418,211 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		$this->assertEquals($expectedResponse, $result);
 	}
 
+/**
+ * Tests the transform() method for associated data
+ */
+	public function testTransformSingleRecord_AssociatedData() {
+
+		// Article 1001 belongsTo User 95
+		// Article has many Tags: CakePHP 1, Bancha 2
+		$articleModel = ClassRegistry::init('Article');
+		$articleModel->recursive = 3;
+		$articleModel->read(null,1001); // get the input
+
+		// define excluded fields to test filtering
+		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array());
+		$userModel = ClassRegistry::init('User');
+		$userModel->Behaviors->load('Bancha.BanchaRemotable', array());
+		$tagModel = ClassRegistry::init('Tag');
+		$tagModel->Behaviors->load('Bancha.BanchaRemotable', array());
+
+		// prepare
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'			=> 'view'
+		));
+
+		// execute
+		$result = BanchaResponseTransformer::transform($articleModel->data, $request);
+		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
+
+		// test that the single record data is present
+		$this->assertEquals(1001, $result['data']['id']);
+		$this->assertEquals('Title 1', $result['data']['title']);
+
+		// test that the belongsTo User record data is present
+		$this->assertEquals(95, $result['data']['user']['id']);
+		$this->assertEquals('mariano', $result['data']['user']['user']);
+
+		// test that the hasMany Tag record data is present
+		$this->assertCount(2, $result['data']['tags']);
+		$this->assertEquals(1, $result['data']['tags'][0]['id']);
+		$this->assertEquals('CakePHP', $result['data']['tags'][0]['string']);
+		$this->assertEquals(2, $result['data']['tags'][1]['id']);
+		$this->assertEquals('Bancha', $result['data']['tags'][1]['string']);
+	}
+/**
+ * Tests the transform() method for associated data, check that filtering is applied
+ */
+	public function testTransformSingleRecord_AssociatedData_Filtered() {
+
+		// Article 1001 belongsTo User 95
+		// Article has many Tags: CakePHP 1, Bancha 2
+		$articleModel = ClassRegistry::init('Article');
+		$articleModel->read(null,1001); // get the input
+
+		// define excluded fields to test filtering
+		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array(
+			'excludedFields' => array('date')
+		));
+		$userModel = ClassRegistry::init('User');
+		$userModel->Behaviors->load('Bancha.BanchaRemotable', array(
+			'excludedFields' => array('password')
+		));
+		$tagModel = ClassRegistry::init('Tag');
+		$tagModel->Behaviors->load('Bancha.BanchaRemotable', array(
+			'excludedFields' => array('string')
+		));
+
+		// prepare
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'			=> 'view'
+		));
+
+		// execute
+		$result = BanchaResponseTransformer::transform($articleModel->data, $request);
+		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
+
+		// test that the single record data is present
+		$this->assertEquals(1001, $result['data']['id']);
+		$this->assertEquals('Title 1', $result['data']['title']);
+		$this->assertFalse(isset($result['data']['date'])); //excluded
+
+		// test that the belongsTo User record data is present
+		$this->assertEquals(95, $result['data']['user']['id']);
+		$this->assertEquals('mariano', $result['data']['user']['user']);
+		$this->assertFalse(isset($result['data']['user']['password'])); //excluded
+
+		// test that the hasMany Tag record data is present
+		$this->assertCount(2, $result['data']['tags']);
+		$this->assertEquals(1, $result['data']['tags'][0]['id']);
+		$this->assertFalse(isset($result['data']['tags'][0]['string']));
+		$this->assertEquals(2, $result['data']['tags'][1]['id']);
+		$this->assertFalse(isset($result['data']['tags'][1]['string']));
+
+		// edge case: associated model is not exposed via Bancha
+		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array());
+		$tagModel->Behaviors->unload('Bancha.BanchaRemotable');
+		$userModel->Behaviors->unload('Bancha.BanchaRemotable');
+
+		// execute
+		$result = BanchaResponseTransformer::transform($articleModel->data, $request);
+		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
+
+		// test that user and tags are hidden
+		$this->assertFalse(isset($result['data']['tags']));
+		$this->assertFalse(isset($result['data']['user']));
+	}
+
+/**
+ * Tests the transform() method for associated data
+ */
+	public function testTransformSingleRecord_AssociatedData_DeepAssociations() {
+
+		// Article 1001 belongsTo User 95
+		// Article has many Tags: CakePHP 1, Bancha 2
+		// Article.User has two articles 1001 and 1002
+		$articleModel = ClassRegistry::init('Article');
+		$articleModel->recursive = 3;
+		$articleModel->read(null,1001); // get the input
+
+		// prepare
+		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array());
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'			=> 'view'
+		));
+
+		// execute
+		$result = BanchaResponseTransformer::transform($articleModel->data, $request);
+		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
+		
+		// test that the single record data is present
+		$this->assertEquals(1001, $result['data']['id']);
+		$this->assertEquals('Title 1', $result['data']['title']);
+
+		// test that the belongsTo User record data is present
+		$this->assertEquals(95, $result['data']['user']['id']);
+		$this->assertEquals('mariano', $result['data']['user']['user']);
+
+		// test that the hasAndBelongsToMany Tag records data are present
+		$this->assertEquals(2, count($result['data']['tags']));
+		$this->assertEquals(1, $result['data']['tags'][0]['id']);
+		$this->assertEquals('CakePHP', $result['data']['tags'][0]['string']);
+		$this->assertEquals(2, $result['data']['tags'][1]['id']);
+		$this->assertEquals('Bancha', $result['data']['tags'][1]['string']);
+
+		// test that the Article.User has two Article records
+		$this->assertEquals(1001, $result['data']['user']['articles'][0]['id']);
+		$this->assertEquals('Title 1', $result['data']['user']['articles'][0]['title']);
+		$this->assertEquals(1002, $result['data']['user']['articles'][1]['id']);
+		$this->assertEquals('Title 2', $result['data']['user']['articles'][1]['title']);
+
+		// test that the Article.User.Article's have one User record each
+		$this->assertEquals(95, $result['data']['user']['articles'][0]['user']['id']);
+		$this->assertEquals('mariano', $result['data']['user']['articles'][0]['user']['user']);
+		$this->assertEquals(95, $result['data']['user']['articles'][1]['user']['id']);
+		$this->assertEquals('mariano', $result['data']['user']['articles'][1]['user']['user']);
+
+		// test that the hasAndBelongsToMany Article.User.Article[0].Tag records data are present
+		$this->assertEquals(2, count($result['data']['user']['articles'][0]['tags']));
+
+		// test that the hasAndBelongsToMany Article.User.Article[1].Tag empty array is present
+		$this->assertTrue(isset($result['data']['user']['articles'][1]['tags']));
+		$this->assertEquals(0, count($result['data']['user']['articles'][1]['tags']));
+	}
+
+/**
+ * Tests the transform() method for associated data for multiple records
+ */
+	public function testTransformMultiRecordSet_AssociatedData() {
+
+		// Article 1001 belongsTo User 95
+		// Article has many Tags: CakePHP 1, Bancha 2
+		$articleModel = ClassRegistry::init('Article');
+		$input = $articleModel->find('all'); // get the input
+
+		// prepare
+		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array());
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller'	=> 'Articles',
+			'action'			=> 'view'
+		));
+
+		$result = BanchaResponseTransformer::transform($input, $request);
+		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
+		
+		// test one level of nesting, rest should be the same as in the test above
+		$this->assertEquals(103, count($result['data']));
+
+		// test that the single record data is present
+		$this->assertEquals(1001, $result['data'][0]['id']);
+		$this->assertEquals('Title 1', $result['data'][0]['title']);
+
+		// test that the belongsTo User record data is present
+		$this->assertEquals(95, $result['data'][0]['user']['id']);
+		$this->assertEquals('mariano', $result['data'][0]['user']['user']);
+
+		// test that the hasAndBelongsToMany Tag records data are present
+		$this->assertEquals(2, count($result['data'][0]['tags']));
+		$this->assertEquals(1, $result['data'][0]['tags'][0]['id']);
+		$this->assertEquals('CakePHP', $result['data'][0]['tags'][0]['string']);
+		$this->assertEquals(2, $result['data'][0]['tags'][1]['id']);
+		$this->assertEquals('Bancha', $result['data'][0]['tags'][1]['string']);
+	}
 }

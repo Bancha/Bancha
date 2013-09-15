@@ -266,7 +266,128 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					'body' => 'Text 1',
 				)
 			),
+			array(
+				array(), // preserve associated models
+				array(
+					'id' => 988,
+					'title' => 'Title 1',
+					'date' => '2011-11-24 03:40:04',
+					'headline' => '2011-11-24 03:40:04 Title 1',
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2,
+					'Article' => array('id'=>1, 'title'=>'Title 1'), // this association doesn't exist, remove it
+					'User' => array('id'=>1, 'name'=>'User 1'),
+					'Tag' => array(
+						array('id'=>1,'string'=>'Tag 1'),
+						array('id'=>2,'string'=>'Tag 2'),
+					)
+				),
+				array(
+					'id' => 988,
+					'title' => 'Title 1',
+					'date' => '2011-11-24 03:40:04',
+					'headline' => '2011-11-24 03:40:04 Title 1',
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2,
+					'User' => array('id'=>1, 'name'=>'User 1'),
+					'Tag' => array(
+						array('id'=>1,'string'=>'Tag 1'),
+						array('id'=>2,'string'=>'Tag 2'),
+					)
+				)
+			),
+			array(
+				array('exposedFields' => array('id', 'date', 'body')), // hide User association
+				array(
+					'id' => 988,
+					'title' => 'Title 1',
+					'date' => '2011-11-24 03:40:04',
+					'headline' => '2011-11-24 03:40:04 Title 1',
+					'body' => 'Text 1',
+					'published' => true,
+					'user_id' => 2,
+					'Article' => array('id'=>1, 'title'=>'Title 1'), // this association doesn't exist, remove it
+					'User' => array('id'=>1, 'name'=>'User 1'),
+					'Tag' => array(
+						array('id'=>1,'string'=>'Tag 1'),
+						array('id'=>2,'string'=>'Tag 2'),
+					)
+				),
+				array(
+					'id' => 988,
+					'date' => '2011-11-24 03:40:04',
+					'body' => 'Text 1',
+					'Tag' => array(
+						array('id'=>1,'string'=>'Tag 1'),
+						array('id'=>2,'string'=>'Tag 2'),
+					)
+				)
+			),
 		);
+	}
+
+	/**
+	 * Test that filterRecord filters all non-associated records
+	 */
+	public function testFilterRecord_AssociatedRecords() {
+
+		// prepare
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
+		$input = array(
+			'id' => 988,
+			'title' => 'Title 1',
+			'date' => '2011-11-24 03:40:04',
+			'headline' => '2011-11-24 03:40:04 Title 1',
+			'body' => 'Text 1',
+			'published' => true,
+			'user_id' => 2,
+			'User' => array('id'=>1, 'name'=>'User 1'),
+			'Tag' => array(
+				array('id'=>1,'string'=>'Tag 1'),
+				array('id'=>2,'string'=>'Tag 2'),
+			)
+		);
+
+
+		// test 1
+		$expecedResult = array(
+			'id' => 988,
+			'title' => 'Title 1',
+			'date' => '2011-11-24 03:40:04',
+			'headline' => '2011-11-24 03:40:04 Title 1',
+			'body' => 'Text 1',
+			'published' => true,
+			'user_id' => 2,
+			'Tag' => array(
+				array('id'=>1,'string'=>'Tag 1'),
+				array('id'=>2,'string'=>'Tag 2'),
+			)
+		);
+		$TestModel->unbindModel(array(
+			'belongsTo' => array('User'),
+		));
+		$result = $TestModel->Behaviors->BanchaRemotable->filterRecord($TestModel, $input);
+		$this->assertEquals($result, $expecedResult);
+
+
+		// test 2
+		$expecedResult = array(
+			'id' => 988,
+			'title' => 'Title 1',
+			'date' => '2011-11-24 03:40:04',
+			'headline' => '2011-11-24 03:40:04 Title 1',
+			'body' => 'Text 1',
+			'published' => true,
+			'user_id' => 2,
+		);
+		$TestModel->unbindModel(
+			array('hasAndBelongsToMany' => array('Tag'))
+		);
+		$result = $TestModel->Behaviors->BanchaRemotable->filterRecord($TestModel, $input);
+		$this->assertEquals($result, $expecedResult);
 	}
 
 	/**
@@ -306,279 +427,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		);
 		$result = $TestModel->Behaviors->BanchaRemotable->filterRecord($TestModel, $input);
 		$this->assertEquals($result, $expecedResult);
-	}
-
-	/**
-	 * Test that filterRecords filters all non-exposed fields
-	 * from all possible inputs (see test provider)
-	 *
-	 * @dataProvider filterRecordsDataProvider
-	 */
-	public function testFilterRecords($behaviorConfig, $input, $expecedResult) {
-		$TestModel = new TestArticle();
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
-
-		$result = $TestModel->Behaviors->BanchaRemotable->filterRecords($TestModel, $input);
-		$this->assertEquals($result, $expecedResult);
-	}
-	/**
-	 * Data Provider for testFilterRecords
-	 */
-	public function filterRecordsDataProvider() {
-		return array(
-			array(
-				// find('first') structure, no filter
-				array(), // input==output
-				array(
-					'Article' => array(
-						'id' => 988,
-						'title' => 'Title 1',
-						'date' => '2011-11-24 03:40:04',
-						'headline' => '2011-11-24 03:40:04 Title 1',
-						'body' => 'Text 1',
-						'published' => true,
-						'user_id' => 2
-					)
-				),
-				array(
-					'Article' => array(
-						'id' => 988,
-						'title' => 'Title 1',
-						'date' => '2011-11-24 03:40:04',
-						'headline' => '2011-11-24 03:40:04 Title 1',
-						'body' => 'Text 1',
-						'published' => true,
-						'user_id' => 2
-					)
-				),
-			),
-			array(
-				// find('first') structure, hide some fields
-				array('exposedFields' => array('id', 'date', 'body')),
-				array(
-					'Article' => array(
-						'id' => 988,
-						'title' => 'Title 1',
-						'date' => '2011-11-24 03:40:04',
-						'headline' => '2011-11-24 03:40:04 Title 1',
-						'body' => 'Text 1',
-						'published' => true,
-						'user_id' => 2
-					)
-				),
-				array(
-					'Article' => array(
-						'id' => 988,
-						'date' => '2011-11-24 03:40:04',
-						'body' => 'Text 1',
-					)
-				),
-			),
-			array(
-				// find('first') structure, partial data
-				array('exposedFields' => array('id', 'date', 'body')),
-				array(
-					'Article' => array(
-						'body' => 'Text 1',
-						'published' => true,
-						'user_id' => 2
-					)
-				),
-				array(
-					'Article' => array(
-						'body' => 'Text 1',
-					)
-				),
-			),
-			array(
-				// find('all') structure, no filter
-				array(), // input==output
-				array(
-					array(
-						'Article' => array(
-							'id' => 988,
-							'title' => 'Title 1',
-							'date' => '2011-11-24 03:40:04',
-							'headline' => '2011-11-24 03:40:04 Title 1',
-							'body' => 'Text 1',
-							'published' => true,
-							'user_id' => 2
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 989,
-							'title' => 'Title 2',
-							'date' => '2011-12-24 03:40:04',
-							'body' => 'Text 2',
-							'published' => false,
-							'user_id' => 3,
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 990,
-							'title' => 'Title 3',
-							'date' => '2010-12-24 03:40:04',
-							'body' => 'Text 3',
-							'published' => false,
-							'user_id' => 3,
-						),
-					),
-				),
-				array(
-					array(
-						'Article' => array(
-							'id' => 988,
-							'title' => 'Title 1',
-							'date' => '2011-11-24 03:40:04',
-							'headline' => '2011-11-24 03:40:04 Title 1',
-							'body' => 'Text 1',
-							'published' => true,
-							'user_id' => 2
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 989,
-							'title' => 'Title 2',
-							'date' => '2011-12-24 03:40:04',
-							'body' => 'Text 2',
-							'published' => false,
-							'user_id' => 3,
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 990,
-							'title' => 'Title 3',
-							'date' => '2010-12-24 03:40:04',
-							'body' => 'Text 3',
-							'published' => false,
-							'user_id' => 3,
-						),
-					),
-				),
-			),
-			array(
-				// find('all') structure, hide some fields and partial data
-				array('exposedFields' => array('id', 'date', 'body')),
-				array(
-					array(
-						'Article' => array(
-							'title' => 'Title 1',
-							'date' => '2011-11-24 03:40:04',
-							'headline' => '2011-11-24 03:40:04 Title 1',
-							'body' => 'Text 1',
-							'published' => true,
-							'user_id' => 2
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 989,
-							'title' => 'Title 2',
-							'body' => 'Text 2',
-							'published' => false,
-							'user_id' => 3,
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 990,
-							'title' => 'Title 3',
-							'date' => '2010-12-24 03:40:04',
-							'body' => 'Text 3',
-							'published' => false,
-							'user_id' => 3,
-						),
-					),
-				),
-				array(
-					array(
-						'Article' => array(
-							'date' => '2011-11-24 03:40:04',
-							'body' => 'Text 1',
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 989,
-							'body' => 'Text 2',
-						),
-					),
-					array(
-						'Article' => array(
-							'id' => 990,
-							'date' => '2010-12-24 03:40:04',
-							'body' => 'Text 3',
-						),
-					),
-				),
-			),
-			array(
-				// paginated data structure, hide some fields and partial data
-				array('exposedFields' => array('id', 'date', 'body')),
-				array(
-					'count' => 100,
-					'records' => array(
-						array(
-							'Article' => array(
-								'title' => 'Title 1',
-								'date' => '2011-11-24 03:40:04',
-								'headline' => '2011-11-24 03:40:04 Title 1',
-								'body' => 'Text 1',
-								'published' => true,
-								'user_id' => 2
-							),
-						),
-						array(
-							'Article' => array(
-								'id' => 989,
-								'title' => 'Title 2',
-								'body' => 'Text 2',
-								'published' => false,
-								'user_id' => 3,
-							),
-						),
-						array(
-							'Article' => array(
-								'id' => 990,
-								'title' => 'Title 3',
-								'date' => '2010-12-24 03:40:04',
-								'body' => 'Text 3',
-								'published' => false,
-								'user_id' => 3,
-							),
-						),
-					),
-				),
-				array(
-					'count' => 100,
-					'records' => array(
-						array(
-							'Article' => array(
-								'date' => '2011-11-24 03:40:04',
-								'body' => 'Text 1',
-							),
-						),
-						array(
-							'Article' => array(
-								'id' => 989,
-								'body' => 'Text 2',
-							),
-						),
-						array(
-							'Article' => array(
-								'id' => 990,
-								'date' => '2010-12-24 03:40:04',
-								'body' => 'Text 3',
-							),
-						),
-					),
-				),
-			),
-		);
 	}
 
 	/**

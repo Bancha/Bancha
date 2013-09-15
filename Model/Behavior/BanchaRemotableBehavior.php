@@ -252,36 +252,6 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 	/**
-	 * Filters all non-exposed fields from an CakePHP dataset. This
-	 * includes a single record, multiple records and nested data. // TODO
-	 *
-	 * @param  array $records The records to filter
-	 * @return array          Returns data in the same structure as input, but filtered.
-	 */
-	public function filterRecords($Model, $data) {
-
-		$mapper = new CakeSenchaDataMapper($data, $Model->name);
-
-		if($mapper->isSingleRecord()) {
-			// filter the data of the single record
-			$data[$Model->name] = $this->filterRecord($Model, $data[$Model->name]);
-		} else if($mapper->isRecordSet()) {
-			// handle each record
-			foreach ($data as $key => $record) {
-				$data[$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
-			}
-		} else if($mapper->isPaginatedSet()) {
-
-			// the records have standard cake handle each record
-			foreach ($data['records'] as $key => $record) {
-				$data['records'][$key][$Model->name] = $this->filterRecord($Model, $record[$Model->name]);
-			}
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Filters all non-exposed fields from an indivudal record.
 	 *
 	 * This function expects only the record data in the following
@@ -296,6 +266,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 */
 	public function filterRecord($Model, $recData) {
 
+		// only use the exposed fields
 		$result = array();
 		foreach ($this->_getExposedFields($Model) as $fieldName) {
 			if(isset($recData[$fieldName])) {
@@ -311,8 +282,26 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 		}
 
+		// add associated models
+		$assocTypes = $Model->associations();
+		foreach ($assocTypes as $type) { // only 3 types
+			foreach($Model->{$type} as $modelName => $config) {
+				if($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+					// this field is hidden from ExtJS/Sencha Touch, so also hide the associated data
+					continue;
+				}
+
+				// add associated record(s)
+				if(isset($recData[$modelName])) {
+					$result[$modelName] = $recData[$modelName];
+				}
+			}
+		}
+
 		return $result;
 	}
+
+
 
 	/**
 	 * Return the Associations as ExtJS-Assoc Model
