@@ -31,36 +31,36 @@ class BanchaResponseTransformer {
  * Performs various transformations on a request. This is required because CakePHP stores models in a different format
  * than expected from Ext JS.
  *
- * @param  array       $response A single response.
- * @param  CakeRequest $request  Request object.
- * @return array|string          Transformed response. If this is a response to an 'extUpload' request this is a string,
- *                               otherwise this is an array.
+ * @param  array       $response    A single response.
+ * @param  CakeRequest $CakeRequest Request object.
+ * @return array|string             Transformed response. If this is a response to an 'extUpload' request this is a string,
+ *                                  otherwise this is an array.
  */
-	public static function transform($response, CakeRequest $request) {
+	public static function transform($response, CakeRequest $CakeRequest) {
 		$modelName = null;
 
 		// Build the model name based on the name of the controller.
-		if ($request->controller) {
-			$modelName = Inflector::camelize(Inflector::singularize($request->controller));
+		if ($CakeRequest->controller) {
+			$modelName = Inflector::camelize(Inflector::singularize($CakeRequest->controller));
 		}
 
 		if ($response === null) { // use the triple operator to not catch empty arrays
-			throw new BanchaException("Please configure the {$modelName}Controllers {$request->action} function to include a return statement as described in the Bancha documentation");
+			throw new BanchaException("Please configure the {$modelName}Controllers {$CakeRequest->action} function to include a return statement as described in the Bancha documentation");
 		}
 
 		return BanchaResponseTransformer::transformDataStructureToSencha($response, $modelName);
 	}
 
-	/**
-	 * Transform a CakePHP response to ExtJS/Sencha Touch structure,
-	 * otherwise just return the original response.
-	 * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
-	 *
-	 * @param  object      $response   The input request from Bancha
-	 * @param  string      $modelName  The model name of the current request
-	 * @return array                   ExtJS/Sencha Touch formated data
-	 */
-	private static function transformDataStructureToSencha($response, $modelName) {
+/**
+ * Transform a CakePHP response to ExtJS/Sencha Touch structure,
+ * otherwise just return the original response.
+ * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
+ *
+ * @param  object      $response   The input request from Bancha
+ * @param  string      $modelName  The model name of the current request
+ * @return array                   ExtJS/Sencha Touch formated data
+ */
+	public static function transformDataStructureToSencha($response, $modelName) {
 
 		// if we only got an array with a success property we expect
 		// that this data is already in the correct format, so only
@@ -174,6 +174,13 @@ class BanchaResponseTransformer {
 		return $senchaResponse;
 	}
 
+/**
+ * This walker function is used by the transform function to re-format the output.
+ * @param  string     $modelName the model name of the currently invoked model
+ * @param  array|null $data      The data
+ * @param  boolean    $isPrimary True if it is a primary model structure
+ * @return array                 The result
+ */
 	public static function walkerDataTransformer($modelName, $data, $isPrimary) {
 		// get the model
 		$Model = false;
@@ -197,11 +204,11 @@ class BanchaResponseTransformer {
 		return array(lcfirst($modelName), $Model->filterRecord($data));
 	}
 
-	/**
-	 *
-	 * translates CakePHP CRUD to ExtJS CRUD method names
-	 * @param string $method
-	 */
+/**
+ *
+ * translates CakePHP CRUD to ExtJS CRUD method names
+ * @param string $method
+ */
 	public static function getMethod($request) {
 		switch($request->action) {
 			case 'index': // fall through, it's the same as view

@@ -31,11 +31,11 @@ class ServerLogger {
 	 *     Configure::write('Bancha.ServerLogger.logIssues', false);
 	 *
 	 * @since  Bancha v 2.0.0
-	 * @param  String    $signature The controller invokation signature
+	 * @param  string    $signature The controller invokation signature
 	 * @param  Exception $exception The caugth exception
 	 * @return void
 	 */
-	public static function logIssue($signature, $exception) {
+	public static function logIssue($signature, Exception $exception) {
 		if(!Configure::read('Bancha.ServerLogger.logIssues')) {
 			return; // don't log
 		}
@@ -59,7 +59,7 @@ class ServerLogger {
 					$exception->getMessage(). ' in file ' . $exception->getFile() .
 					' on line ' . $exception->getLine();
 
-		self::log('exception', $msg);
+		self::_log('exception', $msg);
 	}
 
 	/**
@@ -82,18 +82,18 @@ class ServerLogger {
 			return; // don't log
 		}
 
-		self::log('usage', 'Bancha Usage');
+		self::_log('usage', 'Bancha Usage');
 	}
 
 	/**
 	 * The underlying log function.
 	 *
 	 * @since  Bancha v 2.0.0
-	 * @param  String $type  The type of message to log
-	 * @param  String $msg   The message to send
+	 * @param  string $type  The type of message to log
+	 * @param  string $msg   The message to send
 	 * @return void
 	 */
-	private static function log($type, $msg) {
+	protected static function _log($type, $msg) {
 		// repress all possible exceptions
 		try {
 			// create the tracker

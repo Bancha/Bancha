@@ -26,45 +26,45 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  */
 class BanchaResponseCollection {
 
-	/**
-	 * Response to use as result
-	 * @var CakeResponse
-	 */
-	private $reponse = null;
+/**
+ * Response to use as result
+ * @var CakeResponse
+ */
+	protected $_CakeResponse = null;
 
-	/**
-	 * List of sub-responses
-	 * @var CakeResponse[]
-	 */
-	protected $responses = array();
+/**
+ * List of sub-responses
+ * @var CakeResponse[]
+ */
+	protected $_responses = array();
 
-	/**
-	 * Constructor
-	 */
-	public function __construct(CakeResponse $response) {
-		$this->response = $response;
+/**
+ * Constructor
+ */
+	public function __construct(CakeResponse $CakeResponse) {
+		$this->_CakeResponse = $CakeResponse;
 	}
 
 /**
  * Adds a new CakeResponse object to the response collection.
  *
  * @param integer $tid Transaction ID
- * @param CakeResponse $response Cake response object
- * @param CakeRequest $request CakeRequest object
+ * @param CakeResponse $CakeResponse Cake response object
+ * @param CakeRequest $CakeRequest CakeRequest object
  * @return BanchaResponseCollection $this
  */
-	public function addResponse($tid, CakeResponse $response, CakeRequest $request) {
+	public function addResponse($tid, CakeResponse $CakeResponse, CakeRequest $CakeRequest) {
 		$response = array(
 			'type'		=> 'rpc',
 			'tid'		=> $tid,
-			'action'	=> Inflector::singularize($request->controller), // controllers are called action in Ext JS
-			'method'	=> BanchaResponseTransformer::getMethod($request), // actions are called methods in Ext JS
-			'result'	=> BanchaResponseTransformer::transform($response->body(), $request),
+			'action'	=> Inflector::singularize($CakeRequest->controller), // controllers are called action in Ext JS
+			'method'	=> BanchaResponseTransformer::getMethod($CakeRequest), // actions are called methods in Ext JS
+			'result'	=> BanchaResponseTransformer::transform($CakeResponse->body(), $CakeRequest),
 		);
-		if ($request['extUpload']) {
+		if ($CakeRequest['extUpload']) {
 			$response['extUpload'] = true;
 		}
-		$this->responses[] = $response;
+		$this->_responses[] = $response;
 
 		return $this;
 	}
@@ -74,10 +74,10 @@ class BanchaResponseCollection {
  *
  * @param integer $tid Transaction ID
  * @param Exception $e Exception
- * @param CakeRequest $request CakeRequest object.
+ * @param CakeRequest $CakeRequest CakeRequest object.
  * @return void
  */
-	public function addException($tid, Exception $e, CakeRequest $request) {
+	public function addException($tid, Exception $e, CakeRequest $CakeRequest) {
 		// only add exception information in debug mode
 		if(Configure::read('debug') > 0) {
 			$response = array(
@@ -95,10 +95,10 @@ class BanchaResponseCollection {
 		}
 
 		// extUpload request exceptions also has to be returns in the html tag, see getResponses()
-		if ($request['extUpload']) {
+		if ($CakeRequest['extUpload']) {
 			$response['extUpload'] = true;
 		}
-		$this->responses[] = $response;
+		$this->_responses[] = $response;
 
 		return $this;
 	 }
@@ -144,20 +144,20 @@ class BanchaResponseCollection {
 
 
 		// request was successfull
-		$this->response->statusCode(200);
-		$this->response->charset('utf-8');
+		$this->_CakeResponse->statusCode(200);
+		$this->_CakeResponse->charset('utf-8');
 
 		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
-		if (isset($this->responses['0']['extUpload']) && $this->responses['0']['extUpload']) {
-			$this->response->type('text/html');
+		if (isset($this->_responses['0']['extUpload']) && $this->_responses['0']['extUpload']) {
+			$this->_CakeResponse->type('text/html');
 			// TODO Is this right implemented? http://www.sencha.com/forum/showthread.php?156689
-			$this->response->body('<html><body><textarea>' . json_encode($this->responses) . '</textarea></body></html>');
+			$this->_CakeResponse->body('<html><body><textarea>' . json_encode($this->_responses) . '</textarea></body></html>');
 		} else {
-			$this->response->type('json');
-			$this->response->body(json_encode($this->responses));
+			$this->_CakeResponse->type('json');
+			$this->_CakeResponse->body(json_encode($this->_responses));
 		}
 
-		return $this->response;
+		return $this->_CakeResponse;
 	}
 
 }

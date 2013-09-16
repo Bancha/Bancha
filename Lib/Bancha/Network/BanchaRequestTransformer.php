@@ -27,34 +27,34 @@ App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
 class BanchaRequestTransformer {
 
 /** @var array */
-	private $data;
+	protected $_data;
 
 /** @var string */
-	protected $controller = null;
+	protected $_Controller = null;
 
 /** @var string */
-	protected $model = null;
+	protected $_modelName = null;
 
 /** @var string */
-	protected $action = null;
+	protected $_action = null;
 
 /** @var string */
-	protected $url = null;
+	protected $_url = null;
 
 /** @var array */
-	protected $paginate = array();
+	protected $_paginate = array();
 
 /** @var boolean TRUE if the given request is a form request. */
-	protected $isFormRequest = false;
+	protected $_isFormRequest = false;
 
 /** @var boolean */
-	protected $tid;
+	protected $_tid;
 
 /** @var boolean TRUE if the given request is an upload request. */
-	protected $extUpload;
+	protected $_extUpload;
 
 /** @var integer Client ID is a unique ID for every client (= Instance of Ext JS) */
-	protected $client_id;
+	protected $_clientId;
 
 /**
  * Constructor. Requires a single Ext JS request in PHP array format.
@@ -62,7 +62,7 @@ class BanchaRequestTransformer {
  * @param array $data Single Ext JS request
  */
 	public function __construct(array $data = array()) {
-		$this->data = $data;
+		$this->_data = $data;
 	}
 
 /**
@@ -72,9 +72,8 @@ class BanchaRequestTransformer {
  *
  * To prohibit that we need a longer check, which we have here.
  *
- * @access private
  * @param  Mixed  $variable The variable to look up
- * @param  String $path     A path in the style: [data][0][data]
+ * @param  string $path     A path in the style: [data][0][data]
  * @return boolean          True if the path is an array
  */
 	public function isArray($variable, $path) {
@@ -96,6 +95,7 @@ class BanchaRequestTransformer {
 
 		return true;
 	}
+
 /**
  * Returns the name of the controller. Thus returns the pluralized value of 'action' from the Ext JS request. Also removes the
  * 'action' property from the Ext JS request.
@@ -103,32 +103,32 @@ class BanchaRequestTransformer {
  * @return string Name of the controller.
  */
 	public function getController() {
-		if (null != $this->controller)
+		if (null != $this->_Controller)
 		{
-			return $this->controller;
+			return $this->_Controller;
 		}
-		if (isset($this->data['action']))
+		if (isset($this->_data['action']))
 		{
-			$this->controller = Inflector::pluralize($this->data['action']);
-			unset($this->data['action']);
+			$this->_Controller = Inflector::pluralize($this->_data['action']);
+			unset($this->_data['action']);
 		}
-		else if (isset($this->data['extAction']))
+		else if (isset($this->_data['extAction']))
 		{
-			$this->controller = Inflector::pluralize($this->data['extAction']);
-			unset($this->data['extAction']);
-			$this->isFormRequest = true;
+			$this->_Controller = Inflector::pluralize($this->_data['extAction']);
+			unset($this->_data['extAction']);
+			$this->_isFormRequest = true;
 		}
-		return $this->controller;
+		return $this->_Controller;
 	}
 
-	/**
-	 * Returns true if this is a ExtJS formHandler request
-	 */
+/**
+ * Returns true if this is a ExtJS formHandler request
+ */
 	public function isFormRequest() {
 		// let getController() do the work
 		$this->getController();
 
-		return $this->isFormRequest;
+		return $this->_isFormRequest;
 	}
 
 	/**
@@ -136,13 +136,13 @@ class BanchaRequestTransformer {
 	 *
 	 * @return string Name of the model.
 	 */
-	public function getModel() {
-		if($this->model != null) {
-			return $this->model;
+	public function getModelName() {
+		if($this->_modelName != null) {
+			return $this->_modelName;
 		}
 
-		$this->model = Inflector::singularize($this->getController());
-		return $this->model;
+		$this->_modelName = Inflector::singularize($this->getController());
+		return $this->_modelName;
 	}
 
 /**
@@ -160,39 +160,39 @@ class BanchaRequestTransformer {
  * @return string Name of the action.
  */
 	public function getAction() {
-		if (null != $this->action) {
-			return $this->action;
+		if (null != $this->_action) {
+			return $this->_action;
 		}
-		if (isset($this->data['method'])) {
-			$this->action = $this->data['method'];
-			unset($this->data['method']);
-		} else if (isset($this->data['extMethod'])) {
-			$this->action = $this->data['extMethod'];
-			unset($this->data['extMethod']);
+		if (isset($this->_data['method'])) {
+			$this->_action = $this->_data['method'];
+			unset($this->_data['method']);
+		} else if (isset($this->_data['extMethod'])) {
+			$this->_action = $this->_data['extMethod'];
+			unset($this->_data['extMethod']);
 			$this->isFormRequest = true;
 		}
 
-		switch ($this->action) {
+		switch ($this->_action) {
 			case 'submit':
-				$this->action = (!empty($this->data['data']['0']['data']['id']) || !empty($this->data['id'])) ? 'edit' : 'add';
+				$this->_action = (!empty($this->_data['data']['0']['data']['id']) || !empty($this->_data['id'])) ? 'edit' : 'add';
 				break;
 			case 'create':
-				$this->action = 'add';
+				$this->_action = 'add';
 				break;
 			case 'update':
-				$this->action = 'edit';
+				$this->_action = 'edit';
 				break;
 			case 'destroy':
-				$this->action = 'delete';
+				$this->_action = 'delete';
 				break;
 			case 'read':
-				$this->action = (
-					($this->isArray($this->data, '[data][0][data]') && !empty($this->data['data'][0]['data']['id'])) ||
-					($this->isArray($this->data, '[data][0]')       && !empty($this->data['data'][0]['id'])) ||
-					($this->isArray($this->data, '')                && !empty($this->data['id']))) ? 'view' : 'index';
+				$this->_action = (
+					($this->isArray($this->_data, '[data][0][data]') && !empty($this->_data['data'][0]['data']['id'])) ||
+					($this->isArray($this->_data, '[data][0]')       && !empty($this->_data['data'][0]['id'])) ||
+					($this->isArray($this->_data, '')                && !empty($this->_data['id']))) ? 'view' : 'index';
 				break;
 		}
-		return $this->action;
+		return $this->_action;
 	}
 
 /**
@@ -200,12 +200,12 @@ class BanchaRequestTransformer {
  *
  */
 	public function getExtUpload() {
-		if (null != $this->extUpload) {
-			return $this->extUpload;
+		if (null != $this->_extUpload) {
+			return $this->_extUpload;
 		}
-		$this->extUpload = isset($this->data['extUpload']) ? ($this->data['extUpload']=="true") : false; // extjs sends an string
-		unset($this->data['extUpload']);
-		return $this->extUpload;
+		$this->_extUpload = isset($this->_data['extUpload']) ? ($this->_data['extUpload']=="true") : false; // extjs sends an string
+		unset($this->_data['extUpload']);
+		return $this->_extUpload;
 	}
 
 /**
@@ -214,11 +214,11 @@ class BanchaRequestTransformer {
  * @return string URL provided in the Ext JS request or NULL if no URL is provided.
  */
 	public function getUrl() {
-		if (null == $this->url && isset($this->data['url'])) {
-			$this->url = $this->data['url'];
-			unset($this->data['url']);
+		if (null == $this->_url && isset($this->_data['url'])) {
+			$this->_url = $this->_data['url'];
+			unset($this->_data['url']);
 		}
-		return $this->url;
+		return $this->_url;
 	}
 
 /**
@@ -227,17 +227,17 @@ class BanchaRequestTransformer {
  * @return integer Transaction ID
  */
 	public function getTid() {
-		if (null != $this->tid) {
-			return $this->tid;
+		if (null != $this->_tid) {
+			return $this->_tid;
 		}
-		if (isset($this->data['tid'])) {
-			$this->tid = $this->data['tid'];
-			unset($this->data['tid']);
-		} else if (isset($this->data['extTID'])) {
-			$this->tid = $this->data['extTID'];
-			unset($this->data['extTID']);
+		if (isset($this->_data['tid'])) {
+			$this->_tid = $this->_data['tid'];
+			unset($this->_data['tid']);
+		} else if (isset($this->_data['extTID'])) {
+			$this->_tid = $this->_data['extTID'];
+			unset($this->_data['extTID']);
 		}
-		return $this->tid;
+		return $this->_tid;
 	}
 
 /**
@@ -246,14 +246,14 @@ class BanchaRequestTransformer {
  * @return string Unique Client ID or NULL if consistent model is not used.
  */
 	public function getClientId() {
-		if (null != $this->client_id) {
-			return $this->client_id;
+		if (null != $this->_clientId) {
+			return $this->_clientId;
 		}
-		if (isset($this->data['data'][0]['data']['__bcid'])) {
-			$this->client_id = $this->data['data'][0]['data']['__bcid'];
-			unset($this->data['data'][0]['data']['__bcid']);
+		if (isset($this->_data['data'][0]['data']['__bcid'])) {
+			$this->_clientId = $this->_data['data'][0]['data']['__bcid'];
+			unset($this->_data['data'][0]['data']['__bcid']);
 		}
-		return $this->client_id;
+		return $this->_clientId;
 	}
 
 /**
@@ -266,20 +266,20 @@ class BanchaRequestTransformer {
 	public function getPassParams() {
 		$pass = array();
 		// normal requests
-		if ($this->isArray($this->data, '[data][0][data]') && isset($this->data['data'][0]['data']['id'])) {
-			$pass['id'] = $this->data['data'][0]['data']['id'];
-			unset($this->data['data'][0]['data']['id']);
+		if ($this->isArray($this->_data, '[data][0][data]') && isset($this->_data['data'][0]['data']['id'])) {
+			$pass['id'] = $this->_data['data'][0]['data']['id'];
+			unset($this->_data['data'][0]['data']['id']);
 		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
-		} else if ($this->isArray($this->data, '[data][0]') && isset($this->data['data'][0]['id'])) {
-			$pass['id'] = $this->data['data'][0]['id'];
-			unset($this->data['data'][0]['id']);
+		} else if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
+			$pass['id'] = $this->_data['data'][0]['id'];
+			unset($this->_data['data'][0]['id']);
 		// form upload requests
-		} else if ($this->isFormRequest() && isset($this->data['id'])) {
-			$pass['id'] = $this->data['id'];
-			unset($this->data['id']);
-			$this->isFormRequest = true;
-		} else if(2 === count($this->data) && isset($this->data['type']) && 'rpc' == $this->data['type'] && isset($this->data['data'])) {
-			$pass = $this->data['data'];
+		} else if ($this->isFormRequest() && isset($this->_data['id'])) {
+			$pass['id'] = $this->_data['id'];
+			unset($this->_data['id']);
+			$this->_isFormRequest = true;
+		} else if(2 === count($this->_data) && isset($this->_data['type']) && 'rpc' == $this->_data['type'] && isset($this->_data['data'])) {
+			$pass = $this->_data['data'];
 		}
 		return $pass;
 	}
@@ -293,17 +293,17 @@ class BanchaRequestTransformer {
  * @return array Array with three elements 'page', 'limit' and 'order'.
  */
 	public function getPaging() {
-		if (null != $this->paginate) {
-			return $this->paginate;
+		if (null != $this->_paginate) {
+			return $this->_paginate;
 		}
 
 		// find the page and limit
 		$page = 1;
 		$limit = 500;
-		if ($this->isArray($this->data, '[data][0]')) {
+		if ($this->isArray($this->_data, '[data][0]')) {
 			// the above check needs to be so long, because php allows strigns to be used as array,
-			// so to make sure that $this->data['data'] is not a string we need all from above
-			$params = $this->data['data'][0];
+			// so to make sure that $this->_data['data'] is not a string we need all from above
+			$params = $this->_data['data'][0];
 
 			// find the correct page
 			if(isset($params['page'])) {
@@ -329,28 +329,28 @@ class BanchaRequestTransformer {
 		$order = array();
 		$sort_field = '';
 		$direction = '';
-		if ($this->isArray($this->data, '[data][0]') && isset($this->data['data'][0]['sort'])) {
-			foreach ($this->data['data'][0]['sort'] as $sort) {
+		if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['sort'])) {
+			foreach ($this->_data['data'][0]['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
-					$order[$this->getModel() . '.' . $sort['property']] = strtolower($sort['direction']);
+					$order[$this->getModelName() . '.' . $sort['property']] = strtolower($sort['direction']);
 					$sort_field = $sort['property'];
 					$direction = $sort['direction'];
 				}
 			}
-			unset($this->data['data'][0]['sort']);
+			unset($this->_data['data'][0]['sort']);
 		}
 
 		// find store filters
 		$conditions = array();
-		if ($this->isArray($this->data, '[data][0][filter]')) {
-			$filters = $this->data['data'][0]['filter'];
+		if ($this->isArray($this->_data, '[data][0][filter]')) {
+			$filters = $this->_data['data'][0]['filter'];
 
 			foreach ($filters as $filter) {
-				$conditions[$this->getModel() . '.' . $filter['property']] = $filter['value'];
+				$conditions[$this->getModelName() . '.' . $filter['property']] = $filter['value'];
 			}
 		}
 
-		$this->paginate = array(
+		$this->_paginate = array(
 			'page'			=> $page,
 			'limit'			=> $limit,
 			'order'			=> $order,
@@ -359,7 +359,7 @@ class BanchaRequestTransformer {
 			'conditions'	=> $conditions
 		);
 
-		return $this->paginate;
+		return $this->_paginate;
 	}
 
 	/**
@@ -372,7 +372,7 @@ class BanchaRequestTransformer {
 	 * @param $modelName The model name of the current request
 	 * @param $data The input request data from Bancha-ExtJS
 	 */
-	public function transformDataStructureToCake($modelName, $data) {
+	public function transformDataStructureToCake($modelName, array $data) {
 
 		// form uploads save all fields directly in the data array
 		if($this->isFormRequest()) {
@@ -441,7 +441,7 @@ class BanchaRequestTransformer {
 		$this->getPaging();
 
 		// prepare and return data
-		return $this->transformDataStructureToCake($this->getModel(), $this->data);
+		return $this->transformDataStructureToCake($this->getModelName(), $this->_data);
 	}
 
 }

@@ -30,10 +30,10 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 class BanchaRequestCollection {
 
 /** @var string */
-	protected $rawPostData;
+	protected $_rawPostData;
 
 /** @var array */
-	protected $postData;
+	protected $_postData;
 
 /**
  * Constructor.
@@ -42,8 +42,8 @@ class BanchaRequestCollection {
  * @param array $postData Content of $_POST.
  */
 	public function __construct($rawPostData = '', $postData = array()) {
-		$this->rawPostData = $rawPostData; // when the enctype is "multipart/form-data", the rawPostData will be empty
-		$this->postData = $postData; // so we need the $_POST data as well for form submits with file uploads
+		$this->_rawPostData = $rawPostData; // when the enctype is "multipart/form-data", the rawPostData will be empty
+		$this->_postData = $postData; // so we need the $_POST data as well for form submits with file uploads
 	}
 
 /**
@@ -54,18 +54,18 @@ class BanchaRequestCollection {
  */
 	public function getRequests() {
 
-		if(isset($this->postData) && isset($this->postData['extTID'])) {
+		if(isset($this->_postData) && isset($this->_postData['extTID'])) {
 			// this is a form request, form request data is directly avialable
 			// in the $postData and only contains one request.
-			$data = array($this->postData); // make an array of requests data
+			$data = array($this->_postData); // make an array of requests data
 
-		} else if(strlen($this->rawPostData)) {
+		} else if(strlen($this->_rawPostData)) {
 			// It is a normal Ext.Direct request, payload is read from php://input (saved in $rawPostData)
-			$data = json_decode($this->rawPostData, true);
+			$data = json_decode($this->_rawPostData, true);
 			if($data === NULL) {
 				// payload could not be converted, probably misformed json
 				throw new BanchaException(
-					'Misformed Input: The Bancha Dispatcher expected a json string, instead got ' . $this->rawPostData);
+					'Misformed Input: The Bancha Dispatcher expected a json string, instead got ' . $this->_rawPostData);
 			}
 			if (isset($data['action']) || isset($data['method']) || isset($data['data'])) {
 				// this is just a single request, so make an array of requests data
