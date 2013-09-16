@@ -26,70 +26,70 @@ class Bancha_JavaScriptToken {
 	public static $TYPE_VARIABLE = 2;
 	public static $TYPE_TERNARY = 3;
 
-	private $type;
-	private $content; // this is the value of the string, the name of the variable or an array of two ternary tokens
-	private $remaining_code;
+	protected $_type;
+	protected $_content; // this is the value of the string, the name of the variable or an array of two ternary tokens
+	protected $_remaining_code;
 
-	function __construct($type, $content, $remainingCode) {
+	public function __construct($type, $content, $remainingCode) {
 		if(gettype($type) == 'string') {
 			$type = $type=='string' ? self::$TYPE_STRING : (
 					$type=='variable' ? self::$TYPE_VARIABLE : (
 					$type=='ternary' ? self::$TYPE_TERNARY : false));
 		}
-		$this->type = $type;
-		$this->content = $content;
-		$this->remainingCode = ltrim($remainingCode);
+		$this->_type = $type;
+		$this->_content = $content;
+		$this->_remainingCode = ltrim($remainingCode);
 	}
 
 	public function getType() {
-		return $this->type;
+		return $this->_type;
 	}
 	public function isString() {
-		return $this->type == self::$TYPE_STRING;
+		return $this->_type == self::$TYPE_STRING;
 	}
 	public function isVariable() {
-		return $this->type == self::$TYPE_VARIABLE;
+		return $this->_type == self::$TYPE_VARIABLE;
 	}
 	public function isTernary() {
-		return $this->type == self::$TYPE_TERNARY;
+		return $this->_type == self::$TYPE_TERNARY;
 	}
 	public function isError() {
-		return $this->type == self::$TYPE_ERROR;
+		return $this->_type == self::$TYPE_ERROR;
 	}
 
 	public function getStringValue() {
 		if(!$this->isString()) {
 			throw new Exception('Bancha_JavaScriptToken::getStringValue should only be called for a token of type string.');
 		}
-		return $this->content;
+		return $this->_content;
 	}
 	public function getVariableName() {
 		if(!$this->isVariable()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
-		return $this->content;
+		return $this->_content;
 	}
 	public function getTernaryFirstValue() {
 		if(!$this->isTernary()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
-		return $this->content[0];
+		return $this->_content[0];
 	}
 	public function getTernarySecondValue() {
 		if(!$this->isTernary()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
-		return $this->content[1];
+		return $this->_content[1];
 	}
 	public function getTernaryValues() {
 		if(!$this->isTernary()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
-		return $this->content;
+		return $this->_content;
 	}
 
 	public function getRemainingCode() {
-		return $this->remainingCode;
+		return $this->_remainingCode;
 	}
 }
 
@@ -315,7 +315,7 @@ class BanchaExtractTask extends ExtractTask {
  * Finds a string inside a code and returns the string and the remaining string part
  *
  */
-	public function _findString($code) {
+	protected function _findString($code) {
 		$originalCode = $code;
 
 		// check if it really looks like a string
@@ -385,7 +385,7 @@ class BanchaExtractTask extends ExtractTask {
  * Finds a string inside a code and returns the string and the remaining string part
  *
  */
-	public function _findVariable($code) {
+	protected function _findVariable($code) {
 		// just find the next whitespace or , or ) or ;
 		$pos = strpos($code, ' ');
 		$pos = ($pos===FALSE || ($pos>strpos($code, ',') && strpos($code, ',')!==FALSE)) ? strpos($code, ',') : $pos;
@@ -404,7 +404,7 @@ class BanchaExtractTask extends ExtractTask {
 /**
  * Collects a string or variable
  */
-	public function _collectJsToken($code) {
+	protected function _collectJsToken($code) {
 		$code = ltrim($code);
 		$character = substr($code,0,1);
 
@@ -475,7 +475,7 @@ class BanchaExtractTask extends ExtractTask {
 		return new Bancha_JavaScriptToken('error', false, $code);
 	}
 
-	public function _collectJsArgument($code) {
+	protected function _collectJsArgument($code) {
 		$result = $this->_collectJsToken($code);
 
 		// check if it might is a ternary
@@ -653,7 +653,6 @@ class BanchaExtractTask extends ExtractTask {
 			}
 		}
 	}
-
 
 /**
  * Indicate an invalid marker on a processed file

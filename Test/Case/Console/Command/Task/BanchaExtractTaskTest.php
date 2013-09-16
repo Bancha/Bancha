@@ -24,6 +24,24 @@ App::uses('ExtractTask', 'Console/Command/Task');
 App::uses('BanchaExtractTask', 'Bancha.Console/Command/Task');
 
 /**
+ * This class simply exposed protected functions for unit testing
+ */
+class BanchaExtractTestTask extends BanchaExtractTask {
+	public function collectJsArgument($code) {
+		return $this->_collectJsArgument($code);
+	}
+	public function collectJsToken($code) {
+		return $this->_collectJsToken($code);
+	}
+	public function findString($code) {
+		return $this->_findString($code);
+	}
+	public function findVariable($code) {
+		return $this->_findVariable($code);
+	}
+}
+
+/**
  * BanchaExtractTaskTest class
  *
  * @package       Bancha.Test.Case.Console.Command.Task
@@ -46,7 +64,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$in = $this->getMock('ConsoleInput', array(), array(), '', false);
 
 		$this->Task = $this->getMock(
-			'BanchaExtractTask',
+			'BanchaExtractTestTask',
 			array('in', 'out', 'err', '_stop'),
 			array($out, $out, $in)
 		);
@@ -72,114 +90,114 @@ class BanchaExtractTaskTest extends CakeTestCase {
 
 	public function testFindString() {
 
-		$result = $this->Task->_findString('"This is a simple string"); Some more code');
+		$result = $this->Task->findString('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('This is a simple string', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
-		$result = $this->Task->_findString("'This is a simple string'); Some more code");
+		$result = $this->Task->findString("'This is a simple string'); Some more code");
 		$this->assertEquals('This is a simple string', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
-		$result = $this->Task->_findString('""); Some more code');
+		$result = $this->Task->findString('""); Some more code');
 		$this->assertEquals('', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with one backslash before the quote
-		$result = $this->Task->_findString("'This is a simple escaped string \''); Some more code");
+		$result = $this->Task->findString("'This is a simple escaped string \''); Some more code");
 		$this->assertEquals('This is a simple escaped string \'', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with two backslashes before the quote
-		$result = $this->Task->_findString("'This is a simple escaped string \\\\'); Some more code");
+		$result = $this->Task->findString("'This is a simple escaped string \\\\'); Some more code");
 		$this->assertEquals('This is a simple escaped string \\\\', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with three backslashes before the quote
-		$result = $this->Task->_findString("'This is a simple escaped string \\\\\\''); Some more code");
+		$result = $this->Task->findString("'This is a simple escaped string \\\\\\''); Some more code");
 		$this->assertEquals('This is a simple escaped string \\\\\'', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
-		$result = $this->Task->_findString("'Test concatinated ' + 'strings'); Some more code");
+		$result = $this->Task->findString("'Test concatinated ' + 'strings'); Some more code");
 		$this->assertEquals('Test concatinated strings', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with error
-		$result = $this->Task->_findString('This one is missing some end quote.');
+		$result = $this->Task->findString('This one is missing some end quote.');
 		$this->assertTrue($result->isError());
 		$this->assertEquals('This one is missing some end quote.', $result->getRemainingCode()); //the original code
 	}
 
 	public function testFindVariable() {
 		// test with parenteses
-		$result = $this->Task->_findVariable("someVar); Some more code");
+		$result = $this->Task->findVariable("someVar); Some more code");
 		$this->assertEquals('someVar', $result->getVariableName());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with whitespace
-		$result = $this->Task->_findVariable("someVar ); Some more code");
+		$result = $this->Task->findVariable("someVar ); Some more code");
 		$this->assertEquals('someVar', $result->getVariableName());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with brace
-		$result = $this->Task->_findVariable("someVar}); Some more code");
+		$result = $this->Task->findVariable("someVar}); Some more code");
 		$this->assertEquals('someVar', $result->getVariableName());
 		$this->assertEquals('}); Some more code', $result->getRemainingCode());
 
 		// test with comma
-		$result = $this->Task->_findVariable("someVar, anotherVar); Some more code");
+		$result = $this->Task->findVariable("someVar, anotherVar); Some more code");
 		$this->assertEquals('someVar', $result->getVariableName());
 		$this->assertEquals(', anotherVar); Some more code', $result->getRemainingCode());
 
 		// test with error
-		$result = $this->Task->_findVariable('someNoneEndingVarToken');
+		$result = $this->Task->findVariable('someNoneEndingVarToken');
 		$this->assertTrue($result->isError());
 		$this->assertEquals('someNoneEndingVarToken', $result->getRemainingCode());
 	}
 
 	public function testCollectJsToken() {
-		$result = $this->Task->_collectJsToken('"This is a simple string"); Some more code');
+		$result = $this->Task->collectJsToken('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('This is a simple string', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
-		$result = $this->Task->_collectJsToken("someVar); Some more code");
+		$result = $this->Task->collectJsToken("someVar); Some more code");
 		$this->assertTrue($result->isVariable());
 		$this->assertEquals('someVar', $result->getVariableName());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with error
-		$result = $this->Task->_collectJsToken('"someNoneEndingVarToken');
+		$result = $this->Task->collectJsToken('"someNoneEndingVarToken');
 		$this->assertTrue($result->isError());
 
-		$result = $this->Task->_collectJsToken('someNoneEndingVarToken');
+		$result = $this->Task->collectJsToken('someNoneEndingVarToken');
 		$this->assertTrue($result->isError());
 
 		// read a concatinated array of strings
-		$result = $this->Task->_collectJsToken('["la","la","la"].join("")); Some more code');
+		$result = $this->Task->collectJsToken('["la","la","la"].join("")); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('lalala', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
-		$result = $this->Task->_collectJsToken("['la',\"la\",'la'].join('')); Some more code");
+		$result = $this->Task->collectJsToken("['la',\"la\",'la'].join('')); Some more code");
 		$this->assertTrue($result->isString());
 		$this->assertEquals('lalala', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// read a concatinated array of strings with spaces
-		$result = $this->Task->_collectJsToken('[ "la" , "la" , "la" ] . join( \'\' ) ); Some more code');
+		$result = $this->Task->collectJsToken('[ "la" , "la" , "la" ] . join( \'\' ) ); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('lalala', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// we currently support only empty-string-concated strings
-		$result = $this->Task->_collectJsToken('["la","la","la"].join()); Some more code');
+		$result = $this->Task->collectJsToken('["la","la","la"].join()); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('la,la,la', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// don't accept read arrays
-		$result = $this->Task->_collectJsToken('["la","la","la"]); Some more code');
+		$result = $this->Task->collectJsToken('["la","la","la"]); Some more code');
 		$this->assertTrue($result->isError());
 	}
 
@@ -187,41 +205,41 @@ class BanchaExtractTaskTest extends CakeTestCase {
 
 		// test same as above
 
-		$result = $this->Task->_collectJsArgument('"This is a simple string"); Some more code');
+		$result = $this->Task->collectJsArgument('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('This is a simple string', $result->getStringValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
-		$result = $this->Task->_collectJsArgument("someVar); Some more code");
+		$result = $this->Task->collectJsArgument("someVar); Some more code");
 		$this->assertTrue($result->isVariable());
 		$this->assertEquals('someVar', $result->getVariableName());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// test with error
-		$result = $this->Task->_collectJsArgument('"someNoneEndingVarToken');
+		$result = $this->Task->collectJsArgument('"someNoneEndingVarToken');
 		$this->assertTrue($result->isError());
 		$this->assertEquals('"someNoneEndingVarToken', $result->getRemainingCode());
 
-		$result = $this->Task->_collectJsArgument('someNoneEndingVarToken');
+		$result = $this->Task->collectJsArgument('someNoneEndingVarToken');
 		$this->assertTrue($result->isError());
 		$this->assertEquals('someNoneEndingVarToken', $result->getRemainingCode());
 
 		// now try ternary with two strings
-		$result = $this->Task->_collectJsArgument('someNoneEndingVarToken ? "lala" : "lala2"); Some more code');
+		$result = $this->Task->collectJsArgument('someNoneEndingVarToken ? "lala" : "lala2"); Some more code');
 		$this->assertTrue($result->isTernary());
 		$this->assertEquals('lala', $result->getTernaryFirstValue());
 		$this->assertEquals('lala2', $result->getTernarySecondValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// now try ternary with one strings
-		$result = $this->Task->_collectJsArgument('someNoneEndingVarToken ? lala : "lala2"); Some more code');
+		$result = $this->Task->collectJsArgument('someNoneEndingVarToken ? lala : "lala2"); Some more code');
 		$this->assertTrue($result->isTernary());
 		$this->assertEquals(false, $result->getTernaryFirstValue());
 		$this->assertEquals('lala2', $result->getTernarySecondValue());
 		$this->assertEquals('); Some more code', $result->getRemainingCode());
 
 		// now try ternary with two variables
-		$result = $this->Task->_collectJsArgument('someNoneEndingVarToken ? lala : lala2); Some more code');
+		$result = $this->Task->collectJsArgument('someNoneEndingVarToken ? lala : lala2); Some more code');
 		$this->assertTrue($result->isTernary());
 		$this->assertEquals(false, $result->getTernaryFirstValue());
 		$this->assertEquals(false, $result->getTernarySecondValue());
