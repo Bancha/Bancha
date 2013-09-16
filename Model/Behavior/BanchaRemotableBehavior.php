@@ -19,7 +19,7 @@ App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 
 // backwards compability with 5.2
-if ( false === function_exists('lcfirst') ) {
+if (function_exists('lcfirst') === false) {
 	function lcfirst( $str ) { return (string)(strtolower(substr($str,0,1)).substr($str,1)); }
 }
 
