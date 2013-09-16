@@ -738,7 +738,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	 * @param model $Model Model using this behavior
 	 * @param boolean $created True if this save created a new record
 	 */
-	public function afterSave(Model $Model, $created) {
+	public function afterSave(Model $Model, $created, $options = array()) {
 		// get all the data bancha needs for the response
 		// and save it in the data property
 		if($created) {
