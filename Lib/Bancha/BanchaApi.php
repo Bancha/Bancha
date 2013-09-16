@@ -21,13 +21,13 @@
  */
 class BanchaApi {
 
-	/**
-	 *  CRUD mapping between cakephp and extjs
-	 * 	TODO check if the right arguments are passed
-	 *
-	 * @var array
-	 */
-	protected $crudMapping = array(
+/**
+ *  CRUD mapping between cakephp and extjs
+ * 	TODO check if the right arguments are passed
+ *
+ * @var array
+ */
+	protected $_crudMapping = array(
 		'index'		=> array('name' => 'getAll',	'len' => 0),
 		'add'		=> array('name' => 'create',	'len' => 1),
 		'view'		=> array('name' => 'read',		'len' => 1),
@@ -35,19 +35,18 @@ class BanchaApi {
 		'delete'	=> array('name' => 'destroy',	'len' => 1),
 	);
 
-	/**
-	 * Returns a list of all models that marked to act as BanchaRemotable.
-	 *
-	 * @return array List of all remotable models.
-	 */
-	public function getRemotableModels()
-	{
+/**
+ * Returns a list of all models that marked to act as BanchaRemotable.
+ *
+ * @return array List of all remotable models.
+ */
+	public function getRemotableModels() {
 		$models = App::objects('Model');
 		$remotableModels = array();
 
 		// load all Models and add those with Banchas BanchaRemotableBehavior into $remotableModels
 		foreach ($models as $modelClass) {
-			$model = $this->loadModel($modelClass);
+			$model = $this->_loadModel($modelClass);
 			if (isset($model->actsAs) && is_array($model->actsAs)) {
 				// check if it is remotable (first when a AppModel behavior is also defined, second when not)
 				if (array_key_exists('Bancha.BanchaRemotable', $model->actsAs) || in_array('Bancha.BanchaRemotable', $model->actsAs)) {
@@ -66,17 +65,16 @@ class BanchaApi {
 		return $remotableModels;
 	}
 
-	/**
-	 * Returns the $models array if the filter is "all" or "[all]" (without quotes), else splits up the comma separated
-	 * list of models given in $filter. If $filter is NULL or an empty string an empty array is returned.
-	 *
-	 * @param  array  $models List of remotable models
-	 * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without
-	 *                        quotes). Or an array of models.
-	 * @return array          Filtered list of remotable models.
-	 */
-	public function filterRemotableModels($models, $filter)
-	{
+/**
+ * Returns the $models array if the filter is "all" or "[all]" (without quotes), else splits up the comma separated
+ * list of models given in $filter. If $filter is NULL or an empty string an empty array is returned.
+ *
+ * @param  array  $models List of remotable models
+ * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without
+ *                        quotes). Or an array of models.
+ * @return array          Filtered list of remotable models.
+ */
+	public function filterRemotableModels(array $models, $filter){
 		if (!$filter) {
 			return array();
 		}
@@ -107,17 +105,16 @@ class BanchaApi {
 		return $filteredModels;
 	}
 
-	/**
-	 * Returns the metadata for the given models.
-	 *
-	 * @param  array $models List of remotable models.
-	 * @return array         Associative array with metadata of the given models.
-	 */
-	public function getMetadata($models)
-	{
+/**
+ * Returns the metadata for the given models.
+ *
+ * @param  array $models List of remotable models.
+ * @return array         Associative array with metadata of the given models.
+ */
+	public function getMetadata(array $models) {
 		$metadata = array();
 		foreach ($models as $modelClass) {
-			$model = $this->loadModel($modelClass);
+			$model = $this->_loadModel($modelClass);
 			$metadata[$modelClass] = $model->extractBanchaMetaData($modelClass);
 		}
 		$metadata['_UID'] = str_replace('.', '', uniqid('', true));
@@ -125,29 +122,29 @@ class BanchaApi {
 		return $metadata;
 	}
 
-	/**
-	 * Returns the name of the controller based on the given name of the model.
-	 *
-	 * @param  string $modelClass Name of the model
-	 * @return string             Name of the controller class.
-	 */
+/**
+ * Returns the name of the controller based on the given name of the model.
+ *
+ * @param  string $modelClass Name of the model
+ * @return string             Name of the controller class.
+ */
 	public function getControllerClassByModelClass($modelClass) {
 		$controllerClass = Inflector::pluralize($modelClass) . 'Controller';
 		// load to check if the controller exists.
-		$this->loadController($controllerClass);
+		$this->_loadController($controllerClass);
 		return $controllerClass;
 	}
 
-	/**
-	 * Returns all CRUD actions of the given controller mapped into the ExtJS format.
-	 *
-	 * @param  string $controllerClass Name of the controller.
-	 * @return array                   Array with mapped CRUD actions. Each action is an array where the first element
-	 *                                 is the name and the second element is the number of arguments. If the method is
-	 *                                 a form handler, the elements are named "name", "len" and "formHandler".
-	 */
+/**
+ * Returns all CRUD actions of the given controller mapped into the ExtJS format.
+ *
+ * @param  string $controllerClass Name of the controller.
+ * @return array                   Array with mapped CRUD actions. Each action is an array where the first element
+ *                                 is the name and the second element is the number of arguments. If the method is
+ *                                 a form handler, the elements are named "name", "len" and "formHandler".
+ */
 	public function getCrudActionsOfController($controllerClass) {
-		$methods = $this->getClassMethods($controllerClass);
+		$methods = $this->_getClassMethods($controllerClass);
 
 		$addFormHandler = false;
 		$crudActions = array();
@@ -155,8 +152,8 @@ class BanchaApi {
 			if ('add' === $method->name || 'edit' == $method->name) {
 				$addFormHandler = true;
 			}
-			if (isset($this->crudMapping[$method->name])) {
-				$crudActions[] = $this->crudMapping[$method->name];
+			if (isset($this->_crudMapping[$method->name])) {
+				$crudActions[] = $this->_crudMapping[$method->name];
 			}
 		}
 
@@ -172,20 +169,20 @@ class BanchaApi {
 		return $crudActions;
 	}
 
-	/**
-	 * Returns all actions marked as @banchaRemotable from all controllers.
-	 *
-	 * @return array Remotable methods in the same format is in getCrudActionsOfController().
-	 */
+/**
+ * Returns all actions marked as @banchaRemotable from all controllers.
+ *
+ * @return array Remotable methods in the same format is in getCrudActionsOfController().
+ */
 	public function getRemotableMethods() {
 		$remotableMethods = array();
 
 		$controllers = App::objects('Controller');
 		foreach ($controllers as $controllerClass) {
-			$this->loadController($controllerClass);
+			$this->_loadController($controllerClass);
 			$modelClass = Inflector::singularize(str_replace('Controller', '', $controllerClass));
 
-			$methods = $this->getClassMethods($controllerClass);
+			$methods = $this->_getClassMethods($controllerClass);
 			foreach ($methods as $method) {
 				if (preg_match('/@banchaRemotable/', $method->getDocComment())) {
 					$remotableMethods[$modelClass][] = array(
@@ -199,8 +196,12 @@ class BanchaApi {
 		return $remotableMethods;
 	}
 
-	public function getRemotableModelActions($remotableModels)
-	{
+/**
+ * Iterate through all remotable models and get all the available crud actions.
+ * @param  array $remotableModels List of remotable models
+ * @return array                  Array of controller actions
+ */
+	public function getRemotableModelActions(array $remotableModels) {
 		$actions = array();
 		foreach ($remotableModels as $remotableModel) {
 			$actions[$remotableModel] = $this->getCrudActionsOfController(
@@ -210,14 +211,14 @@ class BanchaApi {
 		return $actions;
 	}
 
-	/**
-	 * Loads the model with the given name and returns an instance.
-	 *
-	 * @param  string   $modelClass Name of a model
-	 * @return AppModel             Instance of the model with the given class name.
-	 * @throws MissingModelException if the model class does not exist.
-	 */
-	protected function loadModel($modelClass) {
+/**
+ * Loads the model with the given name and returns an instance.
+ *
+ * @param  string   $modelClass Name of a model
+ * @return AppModel             Instance of the model with the given class name.
+ * @throws MissingModelException if the model class does not exist.
+ */
+	protected function _loadModel($modelClass) {
 		list($plugin, $modelClass) = pluginSplit($modelClass, true);
 
 		// make sure the AppModel and plugin AppModel is available
@@ -238,13 +239,13 @@ class BanchaApi {
 		return ClassRegistry::init($plugin . $modelClass);
 	}
 
-	/**
-	 * Loads the controller and throws an exception if it does not exist.
-	 *
-	 * @param  string $controllerClass Name of the controller to load.
-	 * @return void
-	 */
-	protected function loadController($controllerClass) {
+/**
+ * Loads the controller and throws an exception if it does not exist.
+ *
+ * @param  string $controllerClass Name of the controller to load.
+ * @return void
+ */
+	protected function _loadController($controllerClass) {
 		App::uses('AppController', 'Controller');
 		App::uses($controllerClass, 'Controller');
 
@@ -252,8 +253,12 @@ class BanchaApi {
 			throw new MissingControllerException(array('class' => $controllerClass));
 		}
 	}
-
-	protected function getClassMethods($class) {
+/**
+ * Gets all the public methods from the given controller.
+ * @param  string $class The controller class name
+ * @return array         Array of methods
+ */
+	protected function _getClassMethods($class) {
 		$reflection = new ReflectionClass($class);
 		return $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 	}
