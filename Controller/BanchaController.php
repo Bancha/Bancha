@@ -63,7 +63,7 @@ class BanchaController extends BanchaAppController {
 
 		//<bancha-pro>
 		// get all possible remotable models
-		$remotableModels = $this->getRemotableModels($banchaApi);
+		$remotableModels = $this->_getRemotableModels($banchaApi);
 		//</bancha-pro>
 		//<bancha-basic>
 		if(Configure::read('Bancha.isPro')==false) {
@@ -109,7 +109,7 @@ class BanchaController extends BanchaAppController {
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
-								$this->getMetadata($banchaApi, $remotableModels, $metadataFilter),
+								$this->_getMetadata($banchaApi, $remotableModels, $metadataFilter),
 								array('_ServerError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
@@ -128,12 +128,12 @@ class BanchaController extends BanchaAppController {
 		// under "Using string names to refer to object properties"
 		if($schema == false) {
 			$api = json_encode($api);
-			$api = Configure::read('debug')==2 ? $this->beautifyJson($api) : $api;
+			$api = Configure::read('debug')==2 ? $this->_beautifyJson($api) : $api;
 			$result = sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), $api);
 		} else {
 			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
 			$api = json_encode($api);
-			$api = Configure::read('debug')==2 ? $this->beautifyJson($api) : $api;
+			$api = Configure::read('debug')==2 ? $this->_beautifyJson($api) : $api;
 			$result = sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), $api);
 		}
 
@@ -152,7 +152,6 @@ class BanchaController extends BanchaAppController {
 	}
 
 	/**
-	 * @access private
 	 * loadMetaData returns the Metadata of the models passed.
 	 *
 	 * Ext.Direct will pass them in params['data'], Ext.Ajax in params['pass'].
@@ -177,14 +176,14 @@ class BanchaController extends BanchaAppController {
 		try {
 			// get the result
 			$banchaApi = new BanchaApi();
-			$result = $this->getMetaData(new BanchaApi(), $this->getRemotableModels($banchaApi), $models);
+			$result = $this->_getMetaData(new BanchaApi(), $this->_getRemotableModels($banchaApi), $models);
 
 			// support both direct ajax requests and Bancha requests
 			if($this->params['isBancha']) {
 				return $result;
 			} else {
 				$result = json_encode($result);
-				$result = Configure::read('debug')==2 ? $this->beautifyJson($result) : $result;
+				$result = Configure::read('debug')==2 ? $this->_beautifyJson($result) : $result;
 				$this->response->body($result);
 			}
 		} catch(MissingModelException $e) {
@@ -210,7 +209,7 @@ class BanchaController extends BanchaAppController {
 	 * This function decorates the BanchaApi::getRemotableModels() method with caching
 	 * @return see BanchaApi::getRemotableModels
 	 */
-	private function getRemotableModels($banchaApi) {
+	protected function _getRemotableModels(BanchaApi $banchaApi) {
 		if(($remotableModels = Cache::read('remotable_models_'.Configure::read('debug'), '_bancha_api_')) !== false) {
 			return $remotableModels;
 		}
@@ -226,7 +225,7 @@ class BanchaController extends BanchaAppController {
 	 * This function decorates the BanchaApi::getMetadata() method with caching
 	 * @return see BanchaApi::getMetadata
 	 */
-	private function getMetaData($banchaApi, $remotableModels, $metadataFilter) {
+	protected function _getMetaData(BanchaApi $banchaApi, $remotableModels, $metadataFilter) {
 		// filter the models (performant function)
 		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 
@@ -246,6 +245,7 @@ class BanchaController extends BanchaAppController {
 
 		return $metadata;
 	}
+
 	/**
 	 * Indents a flat JSON string to make it more human-readable.
 	 *
@@ -255,7 +255,7 @@ class BanchaController extends BanchaAppController {
 	 *
 	 * @return string Indented version of the original JSON string.
 	 */
-	function beautifyJson($json) {
+	protected function _beautifyJson($json) {
 
 	    $result      = '';
 	    $pos         = 0;
@@ -337,7 +337,7 @@ class BanchaController extends BanchaAppController {
 
 		// no extra view file needed, simply output
 		$output = json_encode($jsTranslations);
-		$output = Configure::read('debug')==2 ? $this->beautifyJson($output) : $output;
+		$output = Configure::read('debug')==2 ? $this->_beautifyJson($output) : $output;
 		$this->response->body($output);
     }
 
