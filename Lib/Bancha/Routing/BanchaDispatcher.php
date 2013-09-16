@@ -35,19 +35,19 @@ class BanchaDispatcher {
 	 * response is returned instead of directly sent to the browser.
 	 *
 	 * @param BanchaRequestCollection $requests A BanchaRequestCollection can contains multiple CakeRequest objects.
-	 * @param CakeResponse            $response The CakePHP response object to send the content or return the body.
+	 * @param CakeResponse            $CakeResponse The CakePHP response object to send the content or return the body.
 	 * @param array                   $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
 	 * @return string|void            If 'return' is TRUE, the body is returned otherwise void is returned.
 	 */
-	public function dispatch(BanchaRequestCollection $requests, CakeResponse $response = null, $additionalParams = array()) {
-		if($response === null) {
+	public function dispatch(BanchaRequestCollection $requests, CakeResponse $CakeResponse = null, $additionalParams = array()) {
+		if($CakeResponse === null) {
 			// Legacy support for Bancha 1.x
-			$response = new CakeResponse();
+			$CakeResponse = new CakeResponse();
 			if(Configure::read('debug') == 2) {
 				echo 'Bancha Error: Please update your webroot/bancha-dispatcher.php file the Bancha 2 version!';
 			}
 		}
-		$collection = new BanchaResponseCollection($response);
+		$Collection = new BanchaResponseCollection($CakeResponse);
 
 		//<bancha-basic>
 		/**
@@ -94,7 +94,7 @@ class BanchaDispatcher {
 		if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 			// return only the headers and not the content
-			$this->send($response);
+			$this->_send($CakeResponse);
 			return;
 		}
 
@@ -121,21 +121,21 @@ class BanchaDispatcher {
 					$dispatcher->dispatch($request, $subResponse, array('return' => true));
 
 					// add result to response colection
-					$collection->addResponse(
+					$Collection->addResponse(
 						$request['tid'],
 						$subResponse,
 						$request
 					);
 				} catch (Exception $e) {
 					$this->logException($request, $e);
-					ServerLogger::logIssue($this->getSignature($request), $e);
-					$collection->addException($request['tid'], $e, $request);
+					ServerLogger::logIssue($this->_getSignature($request), $e);
+					$Collection->addException($request['tid'], $e, $request);
 				} // try catch
 			} // if (!$skip_request)
 		} // foreach
 
 		// Combine the responses
-		$collection->getResponses();
+		$Collection->getResponses();
 
 		// about every tenth usage send a small ping
 		if(rand(1, 10)==1) {
@@ -144,10 +144,10 @@ class BanchaDispatcher {
 
 		// Return or send response
 		if (isset($additionalParams['return']) && $additionalParams['return']) {
-			return $response->body();
+			return $CakeResponse->body();
 		}
 
-		return $this->send($response);
+		return $this->_send($CakeResponse);
 	}
 
 	/**
@@ -157,13 +157,13 @@ class BanchaDispatcher {
 	 * @param  CakeResponse $response The CakeResponse to send
 	 * @return void
 	 */
-	private function send($response) {
+	protected function _send(CakeResponse $CakeResponse) {
 
 		// Bancha might be available from multiple locations
 		// See in bootstrap.php for the Bancha.allowedDomains config
 		if(Configure::read('Bancha.allowedDomains') !== false) {
 			// configure the access controll headers
-			$response->header(array(
+			$CakeResponse->header(array(
 				'Access-Control-Allow-Methods' => 'POST, OPTIONS',
 				'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type',
 													// we are only able to set one domain, see https://cakephp.lighthouseapp.com/projects/42648-cakephp/tickets/3960
@@ -172,7 +172,7 @@ class BanchaDispatcher {
 			));
 		}
 
-		$response->send();
+		$CakeResponse->send();
 	}
 
 	/**
@@ -215,7 +215,7 @@ class BanchaDispatcher {
 	 * @param  Exception   $exception The caugth exception
 	 * @return void
 	 */
-	public function logException($request, $exception) {
+	public function logException(CakeRequest $CakeRequest, Exception $Exception) {
 
 		if(!Configure::read('Bancha.logExceptions') || Configure::read('debug')==2) {
 			return; // don't log
@@ -224,8 +224,8 @@ class BanchaDispatcher {
 		// log the error
 		$obj = new Object(); // just get an element to log the error
 		$obj->log(
-			'A Bancha request to '.$this->getSignature($request).' resulted in the following '.get_class($exception).':'.
-			"\n".$exception."\n\n");
+			'A Bancha request to '.$this->_getSignature($CakeRequest).' resulted in the following '.get_class($Exception).':'.
+			"\n".$Exception."\n\n");
 	}
 
 	/**
@@ -235,13 +235,13 @@ class BanchaDispatcher {
 	 * @param  CakeRequest $request   The request
 	 * @return void
 	 */
-	private function getSignature($request) {
-		$signature = (!empty($request->params['plugin']) ? $request->params['plugin'].'.' : '').
-						$request->params['controller'].'::'.$request->params['action'] . '(';
-		foreach($request->params['pass'] as $pass) {
+	protected function _getSignature(CakeRequest $CakeRequest) {
+		$signature = (!empty($CakeRequest->params['plugin']) ? $CakeRequest->params['plugin'].'.' : '').
+						$CakeRequest->params['controller'].'::'.$CakeRequest->params['action'] . '(';
+		foreach($CakeRequest->params['pass'] as $pass) {
 			$signature .= var_export($pass,true) . ', ';
 		}
-		if(!empty($request->params['pass'])) {
+		if(!empty($CakeRequest->params['pass'])) {
 			// remove the trailing comma
 			$signature = substr($signature, 0, strlen($signature)-2);
 		}
