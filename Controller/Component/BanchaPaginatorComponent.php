@@ -82,7 +82,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @param ComponentCollection $collection A ComponentCollection this component can use to lazy load its components
  * @param array $settings Array of configuration settings.
  */
-	public function __construct(ComponentCollection $collection, $settings = array()) {
+	public function __construct(ComponentCollection $collection, array $settings = array()) {
 		$this->_Controller = $collection->getController();
 		parent::__construct($collection, $settings);
 	}
@@ -213,7 +213,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @throws BanchaException
  * @return void
  */
-	protected function _setSettings($settings) {
+	protected function _setSettings(array $settings) {
 
 		// override defaults by component configs
 		foreach ($settings as $key => $value) {
@@ -233,7 +233,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 /**
  * Change the allowedFilter at run-time. This function will santizise and may throw an
  * error if the configuration is malformed.
- * @param String/String[] $allowedFilters the new value for the allowedFilters property
+ * @param string/string[] $allowedFilters the new value for the allowedFilters property
  * @throws BanchaException
  * @return void
  */
@@ -333,7 +333,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @throws BanchaException
  * @return Array the allowed filter conditions
  */
-	protected function _sanitizeFilterConditions($allowedFilters, $conditions) {
+	protected function _sanitizeFilterConditions($allowedFilters, array $conditions) {
 		if($allowedFilters == 'all') {
 			return $conditions;
 		}
