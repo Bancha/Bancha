@@ -119,7 +119,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
  */
 	public function testSetSettings_DebuggingExceptions_Null() {
 		// test setting an to null
-		$this->setExpectedException('BanchaException', 'The BanchaPaginatorComponent::allowedFilters configuration needs to be set.');
+		$this->setExpectedException('BanchaException', 'The BanchaPaginatorComponents allowedFilters configuration needs to be set.');
 		$this->setUpComponent(array('allowedFilters' => null));
 	}
 
@@ -130,7 +130,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
  */
 	public function testSetSettings_DebuggingExceptions_UnknownString() {
 		// test setting an unknown string value
-		$this->setExpectedException('BanchaException', 'The BanchaPaginatorComponent::allowedFilters configuration is a unknown string value: lala');
+		$this->setExpectedException('BanchaException', 'The BanchaPaginatorComponents allowedFilters configuration is a unknown string value: lala');
 		$this->setUpComponent(array('allowedFilters' => 'lala'));
 	}
 
@@ -141,7 +141,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
  */
 	public function testSetSettings_DebuggingExceptions_UnknownField() {
 		// test setting an array of fields, but imaginary_field doesn't exist
-		$this->setExpectedException('BanchaException', 'The BanchaPaginatorComponent::allowedFilters configuration allows filtering on Article.imaginary_field, but this is field doesn\'t exist in the models schema.');
+		$this->setExpectedException('BanchaException', 'The BanchaPaginatorComponents allowedFilters configuration allows filtering on Article.imaginary_field, but this is field doesn\'t exist in the models schema.');
 		$this->setUpComponent(array('allowedFilters' => array('Article.title', 'Article.imaginary_field', 'Article.published')));
 	}
 
@@ -152,7 +152,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
  */
 	public function testSetSettings_DebuggingExceptions_UnknownModel() {
 		// test setting an array of fields, but ImaginaryModel doesn't exist
-		$this->setExpectedException('BanchaException', 'The TestBanchaPaginatorComponentController is missing the model ImaginaryModel, but has a configuration for this model in BanchaPaginatorComponent::allowedFilters. Please make sure to define the controllers uses property or use the beforeFilter for loading.');
+		$this->setExpectedException('BanchaException', 'The TestBanchaPaginatorComponentController is missing the model ImaginaryModel, but has a configuration for this model in BanchaPaginatorComponents allowedFilters configuration. Please make sure to define the controllers uses property or use the beforeFilter for loading.');
 		$this->setUpComponent(array('allowedFilters' => array('Article.title', 'ImaginaryModel.title', 'Article.published')));
 	}
 
@@ -167,7 +167,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
 		$this->setUpComponent(array('allowedFilters' => 'none'), array('Article.title'=>'Titel 01'));
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponent::allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate();
 	}
 
@@ -182,7 +182,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
 		$this->setUpComponent(array('allowedFilters' => 'none'), array('Article.imaginary_field'=>'Titel 01'));
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.imaginary_field, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponent::allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.imaginary_field, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate();
 	}
 
@@ -197,7 +197,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
 		$this->setUpComponent(array('allowedFilters' => array('Article.title','Article.body','Article.date')), array('Article.title'=>'Titel 01','Article.published'=>true));
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.published, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponent::allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.published, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate();
 	}
 
@@ -226,7 +226,7 @@ class BanchaPaginatorComponentTest extends CakeTestCase {
 		$this->setUpComponent(array('allowedFilters' => 'associations'), array('Article.title'=>'Titel 01'));
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponent::allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponent BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate();
 	}
 
