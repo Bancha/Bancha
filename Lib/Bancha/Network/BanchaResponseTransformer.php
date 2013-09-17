@@ -182,6 +182,16 @@ class BanchaResponseTransformer {
  * @return array                 The result
  */
 	public static function walkerDataTransformer($modelName, $data, $isPrimary) {
+
+		// sencha expects model collections to have plural names
+		$senchaModelName = $isPrimary ? $modelName : Inflector::pluralize($modelName);
+		$senchaModelName = lcfirst($senchaModelName);
+
+		// if the data is null, we just create an empty array
+		if($data === null) {
+			return array($senchaModelName, array());
+		}
+
 		// get the model
 		$Model = false;
 		try {
@@ -197,11 +207,8 @@ class BanchaResponseTransformer {
 			return array(false, null);
 		}
 
-		if(!$isPrimary) {
-			$modelName = Inflector::pluralize($modelName);
-		}
-
-		return array(lcfirst($modelName), $Model->filterRecord($data));
+		// filter data
+		return array($senchaModelName, $Model->filterRecord($data));
 	}
 
 /**
