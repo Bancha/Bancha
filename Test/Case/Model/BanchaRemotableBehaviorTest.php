@@ -20,6 +20,19 @@ if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 App::uses('AppModel', 'Model');
 require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the testModel
 
+App::uses('BanchaRemotableBehavior', 'Bancha.Model/Behavior');
+
+/**
+ * Exposed protected methods from ExposedMethodsBanchaRemotable for unit testing.
+ */
+class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
+	public function getValidationRulesForField($fieldName, $rules) {
+		return $this->_getValidationRulesForField($fieldName, $rules);
+	}
+	public function normalizeValidationRules($rules) {
+		return $this->_normalizeValidationRules($rules);
+	}
+}
 
 /**
  * BanchaRemotableBehaviorTest class
@@ -61,7 +74,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 
 	/**
-	 * Test if the internally used _getExposedFields method always
+	 * Test if the internally used getExposedFields method always
 	 * calculates the correct set of fields to expose.
 	 *
 	 * @dataProvider getExposedFieldsDataProvider
@@ -70,7 +83,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
 
-		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
+		$result = $TestModel->Behaviors->BanchaRemotable->getExposedFields($TestModel);
 		$this->assertEquals($result, $expecedResult);
 	}
 	/**
@@ -109,7 +122,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		);
 	}
 	/**
-	 * Test if the internally used _getExposedFields method
+	 * Test if the internally used getExposedFields method
 	 * throws exceptions if misconfigured in debug mode
 	 *
 	 * @dataProvider getExposedFieldsDataProvider_Exceptions
@@ -125,7 +138,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
 
 		// trigger exception
-		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
+		$result = $TestModel->Behaviors->BanchaRemotable->getExposedFields($TestModel);
 
 		// turn debug mode back to default
 		Configure::write('debug', $this->standardDebugLevel);
@@ -752,16 +765,19 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 	/**
-	 * Test that getColumnTypes returns all column definitions in
+	 * Test that _getColumnTypes returns all column definitions in
 	 * ExtJS/Sencha Touch format
 	 *
 	 * @dataProvider getColumnTypesDataProvider
 	 */
 	public function testGetColumnTypes($behaviorConfig, $expecedResult) {
+		// prepare
 		$TestModel = new TestArticle();
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+		$BanchaRemotable = new ExposedMethodsBanchaRemotable();
+		$BanchaRemotable->setup($TestModel, $behaviorConfig);
 
-		$result = $TestModel->Behaviors->BanchaRemotable->getColumnTypes($TestModel);
+		// test
+		$result = $BanchaRemotable->getColumnTypes($TestModel);
 		$this->assertEqual($result, $expecedResult);
 	}
 	/**
@@ -926,10 +942,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * @dataProvider normalizeValidationRulesDataProvider
 	 */
 	public function testNormalizeValidationRules($input, $expecedResult) {
-		$TestModel = new TestArticle();
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
+		// prepare
+		$BanchaRemotable = new ExposedMethodsBanchaRemotable();
 
-		$result = $TestModel->Behaviors->BanchaRemotable->normalizeValidationRules($input);
+		// test
+		$result = $BanchaRemotable->normalizeValidationRules($input);
 		$this->assertEqual($result, $expecedResult);
 	}
 	/**
@@ -1167,11 +1184,13 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	 * @dataProvider getValidationRulesForFieldDataProvider
 	 */
 	public function testGetValidationRulesForField($fieldName, $rules, $expecedResult) {
+		// prepare
 		$TestModel = new TestArticle();
-		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
+		$BanchaRemotable = new ExposedMethodsBanchaRemotable();
+		$BanchaRemotable->setup($TestModel, array());
 
-		$result = $TestModel->Behaviors->BanchaRemotable->getValidationRulesForField($fieldName, $rules);
-		//pr($result); exit();
+		// test
+		$result = $BanchaRemotable->getValidationRulesForField($fieldName, $rules);
 		$this->assertEqual($result, $expecedResult);
 	}
 	/**
@@ -1642,7 +1661,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
 
 		// trigger exception
-		$result = $TestModel->Behaviors->BanchaRemotable->_getExposedFields($TestModel);
+		$result = $TestModel->Behaviors->BanchaRemotable->getExposedFields($TestModel);
 
 		// turn debug mode back to default
 		Configure::write('debug', $this->standardDebugLevel);
