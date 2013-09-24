@@ -59,6 +59,9 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
 		$this->originalDebugLevel = Configure::read('debug');
 		$this->allowedDomains = Configure::read('Bancha.allowedDomains');
+		
+		// disable stderr stream, to hide test's intentional errors in console and Travis
+		CakeLog::disable('stderr');
 	}
 
 	public function tearDown() {
@@ -74,6 +77,9 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// reset the debug level and allowed domains
 		Configure::write('debug', $this->originalDebugLevel);
 		Configure::write('Bancha.allowedDomains', $this->allowedDomains);
+
+		// enable stderr stream after testing
+		CakeLog::enable('stderr');
 	}
 
 /**

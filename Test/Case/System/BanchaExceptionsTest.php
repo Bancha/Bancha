@@ -38,6 +38,9 @@ class BanchaExceptionsTest extends CakeTestCase {
 		parent::setUp();
 
 		$this->originalDebugLevel = Configure::read('debug');
+		
+		// disable stderr stream, to hide test's intentional errors in console and Travis
+		CakeLog::disable('stderr');
 	}
 
 	public function tearDown() {
@@ -45,6 +48,9 @@ class BanchaExceptionsTest extends CakeTestCase {
 
 		// reset the debug level
 		Configure::write('debug', $this->originalDebugLevel);
+
+		// enable stderr stream after testing
+		CakeLog::enable('stderr');
 	}
 
 /**

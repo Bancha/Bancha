@@ -48,6 +48,9 @@ class BanchaBasicTest extends CakeTestCase {
 
 		$this->originalDebugLevel = Configure::read('debug');
 		$this->originalIsPro = Configure::read('Bancha.isPro');
+		
+		// disable stderr stream, to hide test's intentional errors in console and Travis
+		CakeLog::disable('stderr');
 	}
 
 	public function tearDown() {
@@ -61,6 +64,9 @@ class BanchaBasicTest extends CakeTestCase {
 
 		// clear the registry
 		ClassRegistry::flush();
+
+		// enable stderr stream after testing
+		CakeLog::enable('stderr');
 	}
 
 	public function testPagination_Page1() {
