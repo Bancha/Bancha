@@ -222,8 +222,7 @@ class BanchaDispatcher {
 		}
 
 		// log the error
-		$obj = new Object(); // just get an element to log the error
-		$obj->log(
+		CakeLog::write(LOG_ERR, 
 			'A Bancha request to '.$this->_getSignature($CakeRequest).' resulted in the following '.get_class($Exception).':'.
 			"\n".$Exception."\n\n");
 	}
