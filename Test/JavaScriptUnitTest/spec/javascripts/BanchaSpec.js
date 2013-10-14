@@ -636,7 +636,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
     it("should trigger the onError function if in production mode and there is a script error", function() {
 
         var isPhantomJS = (typeof phantom !== 'undefined' || typeof _phantom !== 'undefined');
-        if(isPhantomJS) {
+        if(isPhantomJS || Ext.isIE6 || Ext.isIE7) { // no support for IE 6 and 7
             return; // This test works in the Browser, but fails using phantomjs test runner
         }
 
@@ -703,7 +703,20 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         runs(function() {
             // verify that the error was catched
             expect(Bancha.Remoting.onError).toHaveBeenCalled();
-            expect(Bancha.Remoting.onError.mostRecentCall.args[0]).property('message').toEqual('Script error.');
+            expect(Bancha.Remoting.onError.mostRecentCall.args[0]).property('message').toBeDefined();
+
+            // depending on execution this can has a different error message
+            // if executed via file:// uri it create a script error.
+            // if executed via http:// uri it creates a type error.
+            var msg = Bancha.Remoting.onError.mostRecentCall.args[0].message;
+            if(msg !== 'Script error.' &&
+                msg !== 'Uncaught TypeError: Cannot read property \'This error should be thrown and will not be catched\' of undefined' && // Chrome
+                msg !== 'undefined has no properties' && // old Firefox
+                msg !== 'TypeError: undefined has no properties' && // current Firefox
+                msg !== 'Uncaught exception: TypeError: Cannot convert \'undefined\' to object' && // Opera
+                msg !== '\'This error should be thrown and will not be catched\' is null or not an object') { // IE 8
+                expect(false).toBeTruthy(); // no error catched
+            }
 
             // on, now that the test is over remove TraceKit
             window.onerror = onError;
