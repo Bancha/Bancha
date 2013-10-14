@@ -124,11 +124,19 @@ Ext.define('Bancha.data.Model', {
 
             if(!Bancha.modelMetaDataIsLoaded(modelName)) {
                 //<debug>
+                //<bancha-pro>
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
                     msg: 'Bancha: Couldn\'t create the model cause the metadata is not loaded yet, please use onModelReady instead.'
                 });
+                //</bancha-pro>
+                //<bancha-basic>
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: 'Bancha Basic does not allow to expose models, please use Bancha Pro.'
+                });
+                //</bancha-basic>
                 //</debug>
                 return false;
             }
