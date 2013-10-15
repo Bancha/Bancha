@@ -40,9 +40,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$this->originalDebugLevel = Configure::read('debug');
 		
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
-		if (version_compare(Configure::version(), '2.2') >= 0) {
+		// stream is checked if used because browsers don#t have strerr
+		if (CakeLog::stream('stderr') && version_compare(Configure::version(), '2.2') >= 0) {
 			CakeLog::disable('stderr');
-		} else {
+		} else if(CakeLog::stream('stderr')) {
 			// just drop stderr for CakePHP 2.1 and older
 			CakeLog::drop('stderr');
 		}
@@ -55,7 +56,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		Configure::write('debug', $this->originalDebugLevel);
 
 		// enable stderr stream after testing (CakePHP 2.2 and up)
-		if (version_compare(Configure::version(), '2.2') >= 0) {
+		if (CakeLog::stream('stderr') && version_compare(Configure::version(), '2.2') >= 0) {
 			CakeLog::enable('stderr');
 		}
 	}
