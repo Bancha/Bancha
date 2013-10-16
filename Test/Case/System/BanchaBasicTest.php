@@ -50,12 +50,14 @@ class BanchaBasicTest extends CakeTestCase {
 		$this->originalIsPro = Configure::read('Bancha.isPro');
 		
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
-		// stream is checked if used because browsers don#t have strerr
-		if (CakeLog::stream('stderr') && version_compare(Configure::version(), '2.2') >= 0) {
-			CakeLog::disable('stderr');
-		} else if(CakeLog::stream('stderr')) {
-			// just drop stderr for CakePHP 2.1 and older
-			CakeLog::drop('stderr');
+		// first check if stream exists, because if run from the browser it doesn't
+		if (in_array('stderr', CakeLog::configured())) {
+			if(version_compare(Configure::version(), '2.2') >= 0) {
+				CakeLog::disable('stderr');
+			} else {
+				// just drop stderr for CakePHP 2.1 and older
+				CakeLog::drop('stderr');
+			}
 		}
 	}
 
@@ -72,7 +74,7 @@ class BanchaBasicTest extends CakeTestCase {
 		ClassRegistry::flush();
 
 		// enable stderr stream after testing (CakePHP 2.2 and up)
-		if (CakeLog::stream('stderr') && version_compare(Configure::version(), '2.2') >= 0) {
+		if (in_array('stderr', CakeLog::configured()) && version_compare(Configure::version(), '2.2') >= 0) {
 			CakeLog::enable('stderr');
 		}
 	}
