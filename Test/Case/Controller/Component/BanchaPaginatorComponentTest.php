@@ -329,18 +329,16 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		$result = $this->BanchaPaginatorComponent->paginate('Article');
 	}
 /**
- * testBanchaSettings
+ * testPaginationConditionApplying
  *
- * In Bancha requests the $banchaSetting should override the default $settings
+ * Test case for GitHub Issue #79
  *
  * @return void
  */
 	public function testPaginationConditionApplying() {
-		// set up
 		$result = $this->testAction('/testbanchapaginatorcomponents/getpaginationconditionsargument');
 		$this->assertEquals(1, count($result));
 		$this->assertEquals('1001', $result[0]['Article']['id']);
-
 
 		$result = $this->testAction('/testbanchapaginatorcomponents/getPaginationConditionsProperty');
 		$this->assertEquals(1, count($result));
