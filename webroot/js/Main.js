@@ -65,7 +65,7 @@ if(Ext.versions.extjs) {
  * Uses in objectFromPath below
  * See http://www.sencha.com/forum/showthread.php?273799
  */
-/* jshint bitwise:false */
+/* jshint bitwise:false, maxcomplexity:20 */
 if ('function' !== typeof Array.prototype.reduce) {
     Array.prototype.reduce = function(callback, optInitialValue){
         'use strict';
@@ -103,7 +103,7 @@ if ('function' !== typeof Array.prototype.reduce) {
         return value;
     };
 }
-/* jshint bitwise:true */
+/* jshint bitwise:true, maxcomplexity:10 */
 /**
  * @class Bancha
  *
