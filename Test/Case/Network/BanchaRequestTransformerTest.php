@@ -86,78 +86,78 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function testTransformDataStructureToCake_SimpleData() {
 
-		// setup
-		$transformer = new BanchaRequestTransformer();
-
-
 		// test a request without argumtens
 		$expected = array();
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 
 		// test 1 input of type boolean
 		$expected = array(false);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 
 		// test input of type string
 		$expected = array('input string');
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 
 		// test input of type number
 		$expected = array(-1);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 		$expected = array(0);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 		$expected = array(1);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 		$expected = array(5);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 
 		// test input of type array
 		$expected = array( // this is the real input data
 			'message' => 'value'
 		);
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article', array(
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
 			'data' => $expected, // ext writes all function arguments inside the data property
-		)));
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 	}
 /**
  * Test input transformation for form data
  */
 	public function testTransformDataStructureToCake_FormInput() {
-
-		// setup
-		$transformer = new BanchaRequestTransformer(array(
-			'extAction' => 'Article', // currently a form action is recognized by the 'extAction' property
-		));
-
-		// in form the data is directly in the $data array
-		$input = array(
-			'id' => 3,
-			'title' => 'foo',
-			'body' => 'bar',
-		);
 
 		// result is a one-element cake record
 		$expected = array(
@@ -168,23 +168,24 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			)
 		);
 
+		// setup
+		$transformer = new BanchaRequestTransformer(array(
+			'extAction' => 'Article', // currently a form action is recognized by the 'extAction' property
+
+			// in form the data is directly in the $data array
+			'id' => 3,
+			'title' => 'foo',
+			'body' => 'bar',
+		));
+
 		// test
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 	}
 
 /**
  * Test input transformation of one record
  */
 	public function testTransformDataStructureToCake_OneRecord() {
-
-		$input = array('data' => array(
-			array(
-				'data' => array(
-					'id' => 1,
-					'name' => 'foo',
-				),
-			)
-		));
 
 		$expected = array(
 			'Article' => array(
@@ -193,23 +194,24 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			),
 		);
 
-		$transformer = new BanchaRequestTransformer();
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
+			'data' => array(
+				array(
+					'data' => array(
+						'id' => 1,
+						'name' => 'foo',
+					),
+				)
+			)
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 	}
 
 /**
  * When is is a create action, delete the ext-generated id, so that cake recognizes that is a new record
  */
 	public function testTransformDataStructureToCake_OneRecord_CreateAction() {
-
-		$input = array('data' => array(
-			array(
-				'data' => array(
-					'id' => 1,
-					'name' => 'foo',
-				),
-			)
-		));
 
 		$expected = array(
 			'Article' => array(
@@ -219,9 +221,18 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		);
 
 		$transformer = new BanchaRequestTransformer(array(
-			'method' => 'create'
+			'action' => 'Test',
+			'method' => 'create',
+			'data' => array(
+				array(
+					'data' => array(
+						'id' => 1,
+						'name' => 'foo',
+					),
+				)
+			)
 		));
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 	}
 
 
@@ -232,21 +243,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		// currently this is only supported when following config is true
 		$currentConfig = Configure::read('Bancha.allowMultiRecordRequests');
 		Configure::write('Bancha.allowMultiRecordRequests',true);
-
-
-		// test
-		$input = array('data' => array(
-			array('data' => array(
-				array( // first
-					'id' => 1,
-					'name' => 'foo',
-				),
-				array( // second
-					'id' => 2,
-					'name' => 'bar',
-				),
-			)
-		)));
 
 		$expected = array(
 			'0' => array(
@@ -262,8 +258,24 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 				),
 			),
 		);
-		$transformer = new BanchaRequestTransformer();
-		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article',$input));
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Test',
+			'data' => array(
+				array(
+					'data' => array(
+						array( // first
+							'id' => 1,
+							'name' => 'foo',
+						),
+						array( // second
+							'id' => 2,
+							'name' => 'bar',
+						),
+					)
+				)
+			)
+		));
+		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
 
 		// tear down
@@ -275,11 +287,27 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  *
  */
 	public function testGetController() {
+
+		// very simply use case, transform the plugin-free controller name
 		$transformer = new BanchaRequestTransformer(array(
-			'action'		=> 'Test',
+			'action' => 'Test',
 		));
-		$this->assertNotNull($transformer->getController());
 		$this->assertEquals('Tests', $transformer->getController());
+		$this->assertNull($transformer->getPlugin());
+
+		// the Bancha controller is always in the Bancha plugin
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'Bancha',
+		));
+		$this->assertEquals('Bancha', $transformer->getController());
+		$this->assertEquals('Bancha', $transformer->getPlugin());
+
+		// test using plugin controller
+		$transformer = new BanchaRequestTransformer(array(
+			'action' => 'TestPlugin.PluginTest',
+		));
+		$this->assertEquals('PluginTests', $transformer->getController());
+		$this->assertEquals('TestPlugin', $transformer->getPlugin());
 	}
 
 /**
@@ -287,11 +315,27 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  *
  */
 	public function testGetControllerForm() {
+		
+		// very simply use case, transform the plugin-free controller name
 		$transformer = new BanchaRequestTransformer(array(
 			'extAction'		=> 'Test',
 		));
-		$this->assertNotNull($transformer->getController());
 		$this->assertEquals('Tests', $transformer->getController());
+		$this->assertNull($transformer->getPlugin());
+
+		// the Bancha controller is always in the Bancha plugin
+		$transformer = new BanchaRequestTransformer(array(
+			'extAction' => 'Bancha',
+		));
+		$this->assertEquals('Bancha', $transformer->getController());
+		$this->assertEquals('Bancha', $transformer->getPlugin());
+
+		// test using plugin controller
+		$transformer = new BanchaRequestTransformer(array(
+			'extAction' => 'TestPlugin.PluginTest',
+		));
+		$this->assertEquals('PluginTests', $transformer->getController());
+		$this->assertEquals('TestPlugin', $transformer->getPlugin());
 	}
 
 /**
@@ -406,6 +450,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function testGetPassParamsRemotable() {
 		$input = array(
+			'action' => 'Test',
 			'data'	=> array('florian'),
 			'type'	=> 'rpc',
 		);
