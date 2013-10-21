@@ -65,8 +65,21 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
     it("should return a stubs on getStub(), if defined", function() {
         h.init();
 
+        // stub User exists
         expect(Bancha.getStub('User')).toEqual(Bancha.getStubsNamespace().User);
 
+        // Ext JS and Sencha Touch create the stubs at a different place, so find it
+        var stub;
+        if(Ext.versions.touch) {
+            stub = Bancha.getStubsNamespace()['TestPlugin.PluginTest'];
+        } else {
+            stub = Bancha.getStubsNamespace().TestPlugin.PluginTest;
+        }
+
+        // stub PluginTest in plugin TestPlugin exists
+        expect(Bancha.getStub('TestPlugin.PluginTest')).toEqual(stub);
+
+        // this stub doesn't exist
         var handle = spyOn(Ext.Error, 'handle');
         try {
             expect(Bancha.getStub('DoesntExist')).toBeUndefined();
@@ -133,6 +146,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         expect(Bancha.modelMetaDataIsLoaded('Phantasy')).toBeFalsy(); // doesn't exist
         expect(Bancha.modelMetaDataIsLoaded('User')).toBeTruthy(); // remote object exists
+        expect(Bancha.isRemoteModel('TestPlugin.PluginTest')).toBeTruthy(); // remote object exists
     });
 
     it("should return is a model is loaded with isRemoteModel after init", function() {
@@ -140,6 +154,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         expect(Bancha.isRemoteModel('Phantasy')).toBeFalsy(); // doesn't exist
         expect(Bancha.isRemoteModel('User')).toBeTruthy(); // remote object exists
+        expect(Bancha.isRemoteModel('TestPlugin.PluginTest')).toBeTruthy(); // remote object exists
     });
 
     it("Check Bancha.getModelMetaData function", function() {
@@ -147,6 +162,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         expect(Bancha.getModelMetaData('Phantasy')).toBeNull(); // doesn't exist
         expect(Bancha.getModelMetaData('User')).property('fields.2.name').toEqual('login'); // it's really the metadata
+        expect(Bancha.getModelMetaData('TestPlugin.PluginTest')).property('fields.0.name').toEqual('id');
     });
 
     it("should initialize Bancha, if loadModelMetaData() is used", function() {
@@ -157,7 +173,7 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         expect(Bancha.initialized).toBeFalsy();
 
         // expect an Ajax request
-        var spy = spyOn(Ext.Ajax, 'request').andCallFake(function(config) {
+        spyOn(Ext.Ajax, 'request').andCallFake(function(config) {
             var dispatcher = BanchaSpecHelper.SampleData.remoteApiDefinition.url;
             if(config.url.indexOf(dispatcher+'?setup-check=true') !== -1) {
                 // this is a check of the bancha dispatcher, everything ok
@@ -300,6 +316,10 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser'])).toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser].js');
         expect(Bancha.getMetaDataAjaxUrl(['LoadTestUser','LoadTestArticle'])).
                 toEqual('/my/subdir/bancha-load-metadata/[LoadTestUser,LoadTestArticle].js');
+
+        // should also support plugin models
+        expect(Bancha.getMetaDataAjaxUrl(['MyPlugin.LoadTestUser','LoadTestArticle'])).
+                toEqual('/my/subdir/bancha-load-metadata/[MyPlugin.LoadTestUser,LoadTestArticle].js');
     });
 
     it("should load model metadata using ajax in syncEnabled mode.", function() {

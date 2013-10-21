@@ -322,7 +322,9 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.namespace);
     },
     /**
-     * Returns remote stubs for a given cake controller name in singular
+     * Returns remote stubs for a given cake controller name in singular. 
+     * You may add a plugin namespace in dot notation, e.g. 'MyPlugin.MyController'
+     * 
      * @param {String} stubName the cakephp controller name in singular
      * @return {Object} The stub if already defined, otherwise undefined
      */
@@ -330,15 +332,25 @@ Ext.define('Bancha', {
         if(!Bancha.initialized) {
             Bancha.init();
         }
+
+        // Another happy place where Ext JS and Sencha Touch implementation differs
+        // Ext JS creates a new namespace, which Sencha Touch keep all as model name
+        // For TestPlugin.PluginTest this would be
+        // in Ext JS      : TestPlugin: {PluginTest: {...}}
+        // in Sencha Touch: 'TestPlugin.PluginTest': {...}
+
         //<debug>
-        if(!Ext.isObject(Bancha.getStubsNamespace()[stubName])) {
+        if(!Ext.isObject(this.getStubsNamespace()[stubName]) && // Sencha Touch
+           !Ext.isObject(this.objectFromPath(stubName, this.getStubsNamespace()))) { // Ext JS
             Ext.Error.raise({
                 plugin: 'Bancha',
                 msg: 'Bancha: The Stub '+stubName+' doesn\'t exist'
             });
         }
         //</debug>
-        return Bancha.getStubsNamespace()[stubName] || undefined;
+        return this.getStubsNamespace()[stubName] || // Sencha Touch
+               this.objectFromPath(stubName, this.getStubsNamespace()) || // Ext JS
+               undefined;
     },
     /**
      * @private
@@ -922,7 +934,10 @@ Ext.define('Bancha', {
     isRemoteModel: function(modelName) { // TODO refactor to isRemotableModel
         return (
                 Ext.isObject(this.getStubsNamespace()) &&
-                Ext.isObject(this.getStubsNamespace()[modelName])
+                (
+                    Ext.isObject(this.getStubsNamespace()[modelName]) || // For Sencha Touch, see getStub
+                    Ext.isObject(this.objectFromPath(modelName, this.getStubsNamespace())) // for Ext JS
+                )
                 ) ? true : false;
     },
 

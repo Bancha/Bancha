@@ -38,6 +38,10 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
         },{
             'name':'destroy',
             'len':1
+        }],
+        'TestPlugin.PluginTest': [{
+            'name':'exposedTestMethod',
+            'len':0
         }]
     },
     metadata: {
@@ -71,7 +75,16 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                 property: 'name',
                 direction: 'ASC'
             }]
-        } //eo User
+        }, //eo User
+        'TestPlugin.PluginTest': {
+            idProperty: 'id',
+            fields: [
+                {name:'id', type:'int'}
+            ],
+            associations: [],
+            validations: [],
+            sorters: []
+        } //eo PluginTest
     }
 };
 
