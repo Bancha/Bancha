@@ -34,8 +34,8 @@ To download either our free or commercial version go to the [Bancha website](htt
 More information
 ----------------
 
-*   [Bancha Overview](http://banchaproject.com/)
-*   [Installation and Usage](http://docs.banchaproject.org)
+*   [Bancha Overview](http://bancha.io/)
+*   [Installation and Usage](http://bancha.io/documentation.html)
 *   [Updates on Twitter](http://twitter.com/#!/banchaproject)
 
 
