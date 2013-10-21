@@ -336,8 +336,8 @@ Ext.define('Bancha', {
         // Another happy place where Ext JS and Sencha Touch implementation differs
         // Ext JS creates a new namespace, which Sencha Touch keep all as model name
         // For TestPlugin.PluginTest this would be
-        // in Ext JS      : TestPlugin: {PluginTest: {...}}
-        // in Sencha Touch: 'TestPlugin.PluginTest': {...}
+        // in Ext JS (since 4.2)         : TestPlugin: {PluginTest: {...}}
+        // in Sencha Touch and Ext JS<4.2: 'TestPlugin.PluginTest': {...}
 
         //<debug>
         if(!Ext.isObject(this.getStubsNamespace()[stubName]) && // Sencha Touch
