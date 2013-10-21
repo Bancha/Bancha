@@ -14,7 +14,6 @@
  */
 
 App::uses('CakeRequest', 'Network');
-App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
 App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 
 /**

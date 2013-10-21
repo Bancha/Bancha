@@ -12,7 +12,7 @@
  */
 
 App::uses('Inflector', 'Utility');
-App::uses('ArrayConverter', 'Bancha.Bancha/Utility');
+App::uses('BanchaException', 'Bancha.Bancha/Exception');
 
 /**
  * BanchaRequestTranformer.
