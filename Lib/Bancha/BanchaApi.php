@@ -41,23 +41,33 @@ class BanchaApi {
  * @return array List of all remotable models.
  */
 	public function getRemotableModels() {
-		$models = App::objects('Model');
 		$remotableModels = array();
 
-		// load all Models and add those with Banchas BanchaRemotableBehavior into $remotableModels
-		foreach ($models as $modelClass) {
-			$model = $this->_loadModel($modelClass);
-			if (isset($model->actsAs) && is_array($model->actsAs)) {
-				// check if it is remotable (first when a AppModel behavior is also defined, second when not)
-				if (array_key_exists('Bancha.BanchaRemotable', $model->actsAs) || in_array('Bancha.BanchaRemotable', $model->actsAs)) {
-					$remotableModels[] = $modelClass;
+		// namespaces include plugins and app
+		$namespaces = App::objects('plugin');
+		$namespaces[] = ''; // app has no namespace
+debug($namespaces);
+		foreach ($namespaces as $namespace) {
+
+			// get all models from current namespace
+			$models = App::objects(($namespace ? $namespace."." : "").'Model');
+
+			// load all Models and add those with Banchas BanchaRemotableBehavior into $remotableModels
+			foreach ($models as $modelClass) {
+				$modelClass = ($namespace ? $namespace."." : "").$modelClass;
+				$model = $this->_loadModel($modelClass);
+				if (isset($model->actsAs) && is_array($model->actsAs)) {
+					// check if it is remotable (first when a AppModel behavior is also defined, second when not)
+					if (array_key_exists('Bancha.BanchaRemotable', $model->actsAs) || in_array('Bancha.BanchaRemotable', $model->actsAs)) {
+						$remotableModels[] = $modelClass;
+					}
 				}
-			}
-			// alternatively (for newer cake releases) check if the BehaviorCollection has the Remotable Behavior
-			else if(isset($model->Behaviors->_enabled) && is_array($model->Behaviors->_enabled)) {
-				// check if the behavior is attached
-				if(array_key_exists('Bancha.BanchaRemotable', $model->Behaviors->_enabled)) {
-					$remotableModels[] = $modelClass;
+				// alternatively (for newer cake releases) check if the BehaviorCollection has the Remotable Behavior
+				else if(isset($model->Behaviors->_enabled) && is_array($model->Behaviors->_enabled)) {
+					// check if the behavior is attached
+					if(array_key_exists('Bancha.BanchaRemotable', $model->Behaviors->_enabled)) {
+						$remotableModels[] = $modelClass;
+					}
 				}
 			}
 		}
@@ -177,21 +187,30 @@ class BanchaApi {
 	public function getRemotableMethods() {
 		$remotableMethods = array();
 
-		$controllers = App::objects('Controller');
-		foreach ($controllers as $controllerClass) {
-			$this->_loadController($controllerClass);
-			$modelClass = Inflector::singularize(str_replace('Controller', '', $controllerClass));
+		// namespaces include plugins and app
+		$namespaces = App::objects('plugin');
+		$namespaces[] = ''; // app has no namespace
 
-			$methods = $this->_getClassMethods($controllerClass);
-			foreach ($methods as $method) {
-				if (preg_match('/@banchaRemotable/', $method->getDocComment())) {
-					$remotableMethods[$modelClass][] = array(
-						'name'	=> $method->name,
-						'len'	=> $method->getNumberOfParameters(),
-					);
-				}
-			} // foreach methods
-		} // foreach controllers
+		foreach ($namespaces as $namespace) {
+
+			// get all models from current namespace
+			$controllers = App::objects(($namespace ? $namespace."." : "").'Controller');
+			foreach ($controllers as $controllerClass) {
+				$controllerClass = ($namespace ? $namespace."." : "").$controllerClass;
+				$this->_loadController($controllerClass);
+				$modelClass = Inflector::singularize(str_replace('Controller', '', $controllerClass));
+
+				$methods = $this->_getClassMethods($controllerClass);
+				foreach ($methods as $method) {
+					if (preg_match('/@banchaRemotable/', $method->getDocComment())) {
+						$remotableMethods[$modelClass][] = array(
+							'name'	=> $method->name,
+							'len'	=> $method->getNumberOfParameters(),
+						);
+					}
+				} // foreach methods
+			} // foreach controllers
+		} // foreach namespace
 
 		return $remotableMethods;
 	}
@@ -221,10 +240,10 @@ class BanchaApi {
 	protected function _loadModel($modelClass) {
 		list($plugin, $modelClass) = pluginSplit($modelClass, true);
 
-		// make sure the AppModel and plugin AppModel is available
-		App::uses(substr($plugin,0,strlen($plugin)-1).'AppModel' , $plugin . 'Model');
+		// make sure the AppModel and plugin AppModel are available
+		App::uses('AppModel' , 'Model');
 		if(strlen($plugin)>0) {
-			App::uses($plugin.'AppModel' , 'Model');
+			App::uses(substr($plugin,0,strlen($plugin)-1).'AppModel' , $plugin . 'Model');
 		}
 
 		// load the model
@@ -246,19 +265,31 @@ class BanchaApi {
  * @return void
  */
 	protected function _loadController($controllerClass) {
-		App::uses('AppController', 'Controller');
-		App::uses($controllerClass, 'Controller');
+		list($plugin, $controllerClass) = pluginSplit($controllerClass, true);
 
+		// make sure the AppController and plugin AppController is available
+		App::uses('AppController', 'Controller');
+		if(strlen($plugin)>0) {
+			App::uses(substr($plugin,0,strlen($plugin)-1).'AppController', $plugin . 'Controller');
+		}
+
+		// load the controller
+		App::uses($controllerClass, $plugin.'Controller');
+
+		// if the ClassRegistry can't find the correct controller it returns
+		// the AppController, so explicitly check for the model here
 		if (!class_exists($controllerClass)) {
 			throw new MissingControllerException(array('class' => $controllerClass));
 		}
 	}
+
 /**
  * Gets all the public methods from the given controller.
  * @param  string $class The controller class name
  * @return array         Array of methods
  */
 	protected function _getClassMethods($class) {
+		list($plugin, $class) = pluginSplit($class, true);
 		$reflection = new ReflectionClass($class);
 		return $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
 	}

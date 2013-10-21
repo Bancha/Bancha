@@ -24,26 +24,73 @@ App::uses('BanchaApi', 'Bancha.Bancha');
 class BanchaApiTest extends CakeTestCase {
     public $fixtures = array('plugin.bancha.article','plugin.bancha.articles_tag','plugin.bancha.user','plugin.bancha.tag');
 
+	/**
+	 * Keeps a reference to the default paths, since
+	 * we need to change them in the setUp method
+	 * @var Array
+	 */
+	private $originalPaths = null;
+
+	public function setUp() {
+		parent::setUp();
+
+		$this->originalPaths = App::paths();
+
+		// build up the test paths
+		App::build(array(
+			'Controller' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Controller' . DS,
+			'Model' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Model' . DS,
+			'Plugin' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS
+		), App::RESET);
+
+		// load plugin from test_app
+		CakePlugin::load('TestPlugin');
+		
+		// force the cache to renew
+		App::objects('plugin', null, false);
+	}
+
+	public function tearDown() {
+		parent::tearDown();
+
+		// tear down
+		CakePlugin::unload('TestPlugin');
+
+		// reset the paths
+		App::build($this->originalPaths, App::RESET);
+
+		// force the cache to renew
+		App::objects('plugin', null, false);
+	}
+
 	public function testGetRemotableModels() {
+		// prepare
 		$api = new BanchaApi();
 		$remotableModels = $api->getRemotableModels();
+
+		// test app models for set
 		$this->assertContains('Article', $remotableModels);
 		$this->assertContains('User', $remotableModels);
 		$this->assertContains('Tag', $remotableModels);
 		$this->assertContains('ArticlesTag', $remotableModels);
+
+		// test plugin models are set
+		$this->assertContains('TestPlugin.Comment', $remotableModels);
 	}
 
-	public function testFilterRemotableModels()
-	{
+	public function testFilterRemotableModels() {
+
 		$api = new BanchaApi();
-		$remotableModels = array('Article', 'User', 'Tag', 'ArticlesTag');
+		$remotableModels = array('Article', 'User', 'Tag', 'ArticlesTag', 'TestPlugin.Comment');
+
 		// expose all remotable models
 		$filteredModels = $api->filterRemotableModels($remotableModels, 'all');
-		$this->assertCount(4, $filteredModels);
+		$this->assertCount(5, $filteredModels);
 		$this->assertContains('Article', $filteredModels);
-		$this->assertContains('User', $filteredModels);
-		$this->assertContains('Tag', $filteredModels);
 		$this->assertContains('ArticlesTag', $filteredModels);
+		$this->assertContains('Tag', $filteredModels);
+		$this->assertContains('User', $filteredModels);
+		$this->assertContains('TestPlugin.Comment', $filteredModels);
 
 		// expose one model
 		$filteredModels = $api->filterRemotableModels($remotableModels, '[User]');
@@ -81,6 +128,12 @@ class BanchaApiTest extends CakeTestCase {
 		// expose no models
 		$filteredModels = $api->filterRemotableModels($remotableModels, '');
 		$this->assertCount(0, $filteredModels);
+
+		// expose two models, one from plugin
+		$filteredModels = $api->filterRemotableModels($remotableModels, '[User,TestPlugin.Comment]');
+		$this->assertCount(2, $filteredModels);
+		$this->assertContains('User', $filteredModels);
+		$this->assertContains('TestPlugin.Comment', $filteredModels);
 	}
 
 	/**
@@ -88,38 +141,39 @@ class BanchaApiTest extends CakeTestCase {
 	 * remotable model.
 	 * @expectedException MissingModelException
 	 */
-	public function testFilterRemotableModels_MissingModel()
-	{
+	public function testFilterRemotableModels_MissingModel() {
 		$api = new BanchaApi();
 		$api->filterRemotableModels(array(), '[InvalidModel]');
 	}
 
 	/**
-	 * Tests if returns meta data returns meta data for all given models.
+	 * Tests if getMetadata returns meta data for all given models.
 	 */
-	public function testGetMetadata()
-	{
+	public function testGetMetadata() {
 		$api = new BanchaApi();
-		$metadata = $api->getMetadata(array('User', 'Article'));
-		$this->assertCount(4, $metadata);
+		$metadata = $api->getMetadata(array('User', 'Article', 'TestPlugin.Comment'));
+		$this->assertCount(5, $metadata); // 3 models + 2 metadata properties
 		$this->assertArrayHasKey('User', $metadata);
 		$this->assertArrayHasKey('Article', $metadata);
+		$this->assertArrayHasKey('TestPlugin.Comment', $metadata);
 		$this->assertArrayHasKey('_UID', $metadata);
 		$this->assertArrayHasKey('_ServerDebugLevel', $metadata);
 		$this->assertTrue(is_array($metadata['User']));
 		$this->assertTrue(is_array($metadata['Article']));
+		$this->assertTrue(is_array($metadata['TestPlugin.Comment']));
 		$this->assertTrue(strlen($metadata['_UID']) > 0);
 	}
 
-	public function testGetControllerClassByModelClass()
-	{
+	public function testGetControllerClassByModelClass() {
 		$api = new BanchaApi();
 		$this->assertEquals('UsersController', $api->getControllerClassByModelClass('User'));
+		$this->assertEquals('TestPlugin.CommentsController', $api->getControllerClassByModelClass('TestPlugin.Comment'));
 	}
 
-	public function testGetCrudActionsOfController()
-	{
+	public function testGetCrudActionsOfController() {
 		$api = new BanchaApi();
+
+		// test app controller with full CRUD
 		$crudActions = $api->getCrudActionsOfController('UsersController');
 		$this->assertCount(6, $crudActions);
 		$this->assertEquals('getAll', $crudActions[0]['name']);
@@ -129,28 +183,57 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertEquals('submit', $crudActions[5]['name']);
 		$this->assertEquals(1, $crudActions[5]['len']);
 		$this->assertEquals(true, $crudActions[5]['formHandler']);
+
+		// test plugin controller with create, read, update
+		$crudActions = $api->getCrudActionsOfController('TestPlugin.CommentsController');
+		$this->assertCount(5, $crudActions);
+		$this->assertEquals('getAll', $crudActions[0]['name']);
+		$this->assertEquals(0, $crudActions[0]['len']);
+		$this->assertEquals('read', $crudActions[1]['name']);
+		$this->assertEquals(1, $crudActions[1]['len']);
+		$this->assertEquals('submit', $crudActions[4]['name']);
+		$this->assertEquals(1, $crudActions[4]['len']);
+		$this->assertEquals(true, $crudActions[4]['formHandler']);
+
+		// test plugin controller with no CRUD method
+		App::uses('PluginTestsController', 'TestPlugin.Controller');
+		$crudActions = $api->getCrudActionsOfController('TestPlugin.PluginTestsController');
+		$this->assertCount(0, $crudActions);
 	}
 
-	public function testGetRemotableMethods()
-	{
+	public function testGetRemotableMethods() {
 		$api = new BanchaApi();
 		$remotableMethods = $api->getRemotableMethods();
+		$this->assertCount(2, $remotableMethods);
+
+		// test app controller
+		$this->assertContains('HelloWorld', array_keys($remotableMethods));
 		$this->assertCount(2, $remotableMethods['HelloWorld']);
 		$this->assertEquals('hello', $remotableMethods['HelloWorld'][0]['name']);
 		$this->assertEquals(0, $remotableMethods['HelloWorld'][0]['len']);
 		$this->assertEquals('helloyou', $remotableMethods['HelloWorld'][1]['name']);
 		$this->assertEquals(2, $remotableMethods['HelloWorld'][1]['len']);
+
+		// test plugin controller
+		$this->assertContains('TestPlugin.PluginTest', array_keys($remotableMethods));
+		$this->assertCount(1, $remotableMethods['TestPlugin.PluginTest']);
+		$this->assertEquals('exposedTestMethod', $remotableMethods['TestPlugin.PluginTest'][0]['name']);
+		$this->assertEquals(0, $remotableMethods['HelloWorld'][0]['len']);
 	}
 
-	/**
-	 * description
-	 */
-	public function testGetRemotableModelActions()
-	{
+	public function testGetRemotableModelActions() {
 		$api = new BanchaApi();
-		$remotableActions = $api->getRemotableModelActions($api->getRemotableModels());
-		$this->assertCount(4, $remotableActions);
+
+		// this is simply a wrapper function, se very simple testing is sufficient
+		$remotableActions = $api->getRemotableModelActions(array('Article', 'TestPlugin.Comment'));
+		$this->assertCount(2, $remotableActions);
+
+		// test app model
 		$this->assertCount(6, $remotableActions['Article']);
 		$this->assertEquals('getAll', $remotableActions['Article'][0]['name']);
+
+		// test plugin model
+		$this->assertCount(5, $remotableActions['TestPlugin.Comment']); // (comments does not support delete)
+		$this->assertEquals('getAll', $remotableActions['TestPlugin.Comment'][0]['name']);
 	}
 }

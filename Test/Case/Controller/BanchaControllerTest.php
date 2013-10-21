@@ -30,7 +30,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	/**
 	 * Keeps a reference to the default paths, since
-	 * we need to change them in teh setUp method
+	 * we need to change them in the setUp method
 	 * @var Array
 	 */
 	private $originalPaths = null;
@@ -86,6 +86,48 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
 		$this->assertTrue(isset($api->actions->Bancha));
+	}
+
+	public function testBanchaApiConfiguration_Plugin() {
+		// set up - add plugin
+		App::build(array(
+			'Plugin' => array(App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+		), App::RESET);
+
+		// load it
+		CakePlugin::load('TestPlugin');
+		
+		// force the cache to renew
+		App::objects('plugin', null, false);
+
+		$response = $this->testAction('/bancha-api.js');
+		$api = json_decode(substr($response, strpos($response, '=')+1));
+
+		// check Ext.Direct configurations
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
+		$this->assertEquals('remoting', $api->type);
+
+		// check primary Bancha configurations
+		$this->assertTrue(isset($api->metadata->_UID));
+		$this->assertEquals(Configure::read('debug'), $api->metadata->_ServerDebugLevel);
+
+		// check exposed methods
+		$this->assertTrue(isset($api->actions->{'TestPlugin.Comment'})); // plugin model
+		$this->assertTrue(isset($api->actions->{'TestPlugin.PluginTest'})); // plugin controller
+		$this->assertTrue(isset($api->actions->Article));
+		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Tag));
+		$this->assertTrue(isset($api->actions->User));
+		$this->assertTrue(isset($api->actions->HelloWorld));
+		$this->assertTrue(isset($api->actions->Bancha));
+
+		// tear down - unload plugin
+		CakePlugin::unload('TestPlugin');
+		App::build(array(
+			'Plugin' => $this->originalPaths['Plugin'],
+		), App::RESET);
+		App::objects('plugin', null, false);
 	}
 
 	public function testBanchaApiWithOneModelMetadata() {
@@ -321,11 +363,57 @@ class BanchaControllerTest extends ControllerTestCase {
 		$response = $this->testAction('/bancha-load-metadata/all.js');
 		$data = json_decode($response);
 
-		// check that only requested metadata is send
-		$this->assertTrue(isset($data->Article)); // <-- this should be available
+		// check that all models metadata is send
+		$this->assertTrue(isset($data->Article));
 		$this->assertTrue(isset($data->ArticlesTag));
 		$this->assertTrue(isset($data->Tag));
-		$this->assertTrue(isset($data->User)); // <-- this should be available
+		$this->assertTrue(isset($data->User));
+	}
+
+	public function testLoadModelMetaData_Ajax_Plugin() {
+
+		// set up - add plugin
+		App::build(array(
+			'Plugin' => array(App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
+		), App::RESET);
+
+		// load it
+		CakePlugin::load('TestPlugin');
+		
+		// force the cache to renew
+		App::objects('plugin', null, false);
+
+		// test if it is part of the all result
+		$response = $this->testAction('/bancha-load-metadata/all.js');
+
+		// test plugin model only
+		$response = $this->testAction('/bancha-load-metadata/[TestPlugin.Comment].js');
+		$data = json_decode($response);
+
+		// check that only requested metadata is send
+		$this->assertTrue(isset($data->{'TestPlugin.Comment'})); // <-- this should be available
+		$this->assertFalse(isset($data->Article));
+		$this->assertFalse(isset($data->ArticlesTag));
+		$this->assertFalse(isset($data->Tag));
+		$this->assertFalse(isset($data->User));
+
+		// test all
+		$response = $this->testAction('/bancha-load-metadata/all.js');
+		$data = json_decode($response);
+
+		// check that all models metadata is send
+		$this->assertTrue(isset($data->Article));
+		$this->assertTrue(isset($data->ArticlesTag));
+		$this->assertTrue(isset($data->Tag));
+		$this->assertTrue(isset($data->User));
+
+
+		// tear down - unload plugin
+		CakePlugin::unload('TestPlugin');
+		App::build(array(
+			'Plugin' => $this->originalPaths['Plugin'],
+		), App::RESET);
+		App::objects('plugin', null, false);
 	}
 
 	/**
