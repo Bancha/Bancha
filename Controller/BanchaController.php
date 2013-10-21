@@ -176,7 +176,7 @@ class BanchaController extends BanchaAppController {
 		try {
 			// get the result
 			$banchaApi = new BanchaApi();
-			$result = $this->_getMetaData(new BanchaApi(), $this->_getRemotableModels($banchaApi), $models);
+			$result = $this->_getMetaData($banchaApi, $this->_getRemotableModels($banchaApi), $models);
 
 			// support both direct ajax requests and Bancha requests
 			if($this->params['isBancha']) {
