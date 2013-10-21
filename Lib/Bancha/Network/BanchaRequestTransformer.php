@@ -33,7 +33,7 @@ class BanchaRequestTransformer {
 	protected $_controller = null;
 
 /** @var string */
-	protected $_modelName = null;
+	protected $_model = null;
 
 /** @var string */
 	protected $_action = null;
@@ -128,18 +128,18 @@ class BanchaRequestTransformer {
 		return $this->_isFormRequest;
 	}
 
-	/**
-	 * Returns the name of the expected model. Thus returns the value of 'action' from the Ext JS request.
-	 *
-	 * @return string Name of the model.
-	 */
-	public function getModelName() {
-		if($this->_modelName != null) {
-			return $this->_modelName;
+/**
+ * Returns the name of the expected model. Thus returns the value of 'action' from the Ext JS request.
+ *
+ * @return string Name of the model.
+ */
+	public function getModel() {
+		if($this->_model != null) {
+			return $this->_model;
 		}
 
-		$this->_modelName = Inflector::singularize($this->getController());
-		return $this->_modelName;
+		$this->_model = Inflector::singularize($this->getController());
+		return $this->_model;
 	}
 
 /**
@@ -329,7 +329,7 @@ class BanchaRequestTransformer {
 		if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['sort'])) {
 			foreach ($this->_data['data'][0]['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
-					$order[$this->getModelName() . '.' . $sort['property']] = strtolower($sort['direction']);
+					$order[$this->getModel() . '.' . $sort['property']] = strtolower($sort['direction']);
 					$sort_field = $sort['property'];
 					$direction = $sort['direction'];
 				}
@@ -343,7 +343,7 @@ class BanchaRequestTransformer {
 			$filters = $this->_data['data'][0]['filter'];
 
 			foreach ($filters as $filter) {
-				$conditions[$this->getModelName() . '.' . $filter['property']] = $filter['value'];
+				$conditions[$this->getModel() . '.' . $filter['property']] = $filter['value'];
 			}
 		}
 
