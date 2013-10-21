@@ -70,8 +70,8 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
 
         // Ext JS and Sencha Touch create the stubs at a different place, so find it
         var stub;
-        if(Ext.versions.touch || Ext.versions.extjs.shortVersion<420) {
-            stub = Bancha.getStubsNamespace()['TestPlugin.PluginTest'];
+        if(Ext.versions.touch || (Ext.versions.extjs.major<5 && Ext.versions.extjs.minor<2)) {
+            stub = Bancha.getStubsNamespace()['TestPlugin.PluginTest']; // For Sencha Touch and Ext JS below 4.2.0
         } else {
             stub = Bancha.getStubsNamespace().TestPlugin.PluginTest;
         }
