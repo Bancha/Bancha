@@ -88,7 +88,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 				'tid'		=> 1,
 			),
 			array(
-				'action'	=> 'Test',
+				'action'	=> 'TestPlugin.Test',
 				'method'	=> 'update',
 				'data'		=> null,
 				'type'		=> 'rpc',
@@ -110,9 +110,9 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		// method -> action AND "create" -> "add" / "update" -> "edit"
 		$this->assertEquals($requests[0]['action'], 'add');
 		$this->assertEquals($requests[1]['action'], 'edit');
-		// not inside a plugin
+		// check plugin values
 		$this->assertEquals($requests[0]['plugin'], null);
-		$this->assertEquals($requests[1]['plugin'], null);
+		$this->assertEquals($requests[1]['plugin'], 'TestPlugin');
 	}
 
 /**
