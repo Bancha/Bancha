@@ -46,7 +46,7 @@ class BanchaApi {
 		// namespaces include plugins and app
 		$namespaces = App::objects('plugin');
 		$namespaces[] = ''; // app has no namespace
-debug($namespaces);
+
 		foreach ($namespaces as $namespace) {
 
 			// get all models from current namespace

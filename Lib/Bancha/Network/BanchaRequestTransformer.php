@@ -30,7 +30,7 @@ class BanchaRequestTransformer {
 	protected $_data;
 
 /** @var string */
-	protected $_Controller = null;
+	protected $_controller = null;
 
 /** @var string */
 	protected $_modelName = null;
@@ -103,22 +103,19 @@ class BanchaRequestTransformer {
  * @return string Name of the controller.
  */
 	public function getController() {
-		if (null != $this->_Controller)
-		{
-			return $this->_Controller;
+		if (null != $this->_controller) {
+			return $this->_controller;
 		}
-		if (isset($this->_data['action']))
-		{
-			$this->_Controller = Inflector::pluralize($this->_data['action']);
+		if (isset($this->_data['action'])) {
+			$this->_controller = Inflector::pluralize($this->_data['action']);
 			unset($this->_data['action']);
 		}
-		else if (isset($this->_data['extAction']))
-		{
-			$this->_Controller = Inflector::pluralize($this->_data['extAction']);
+		else if (isset($this->_data['extAction'])) {
+			$this->_controller = Inflector::pluralize($this->_data['extAction']);
 			unset($this->_data['extAction']);
 			$this->_isFormRequest = true;
 		}
-		return $this->_Controller;
+		return $this->_controller;
 	}
 
 /**
