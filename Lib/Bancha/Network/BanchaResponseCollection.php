@@ -57,7 +57,7 @@ class BanchaResponseCollection {
 		$response = array(
 			'type'		=> 'rpc',
 			'tid'		=> $tid,
-			'action'	=> Inflector::singularize($CakeRequest->controller), // controllers are called action in Ext JS
+			'action'	=> ($CakeRequest->plugin ? $CakeRequest->plugin.'.' : '').Inflector::singularize($CakeRequest->controller), // controllers are called action in Ext JS
 			'method'	=> BanchaResponseTransformer::getMethod($CakeRequest), // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($CakeResponse->body(), $CakeRequest),
 		);

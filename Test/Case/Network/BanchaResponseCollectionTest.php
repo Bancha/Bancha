@@ -49,15 +49,22 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 				'success' => true,
 				'message' => 'Hello Bancha'),
 		);
-		$response3 = new Exception('This is an exception'); $exception_line = __LINE__;
+		$response3 = array(
+			'body'	=> array(
+				'success' => true,
+				'message' => 'Hello Plugin-World'),
+		);
+		$response4 = new Exception('This is an exception'); $exception_line = __LINE__;
 
 		// ResponseCollection needs additional information from the request.
 		$request1 = new CakeRequest();
-		$request1->addParams(array('controller' => 'foo', 'action' => 'bar'));
+		$request1->addParams(array('controller' => 'Foo', 'action' => 'bar'));
 		$request2 = new CakeRequest();
-		$request2->addParams(array('controller' => 'bar', 'action' => 'foo'));
+		$request2->addParams(array('controller' => 'Bar', 'action' => 'foo'));
 		$request3 = new CakeRequest();
-		$request3->addParams(array('controller' => 'foo', 'action' => 'error'));
+		$request3->addParams(array('controller' => 'Foo', 'action' => 'bar', 'plugin' => 'Plafoo'));
+		$request4 = new CakeRequest();
+		$request4->addParams(array('controller' => 'Foo', 'action' => 'error'));
 
 		// mock a response to not set any headers for real
 		$response = $this->getMock('CakeResponse', array('_sendHeader'));
@@ -66,28 +73,36 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$collection = new BanchaResponseCollection($response);
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
 				   ->addResponse(2, new CakeResponse($response2), $request2)
-				   ->addException(3, $response3, $request3);
+				   ->addResponse(3, new CakeResponse($response3), $request3)
+				   ->addException(4, $response4, $request4);
 		// getResponses() is a CakeResponse with JSON as body.
 		$actualResponse = json_decode($collection->getResponses()->body());
 
 		// Successfull response
 		$this->assertEquals('rpc', $actualResponse[0]->type);
 		$this->assertEquals(1, $actualResponse[0]->tid);
-		$this->assertEquals('foo', $actualResponse[0]->action);
+		$this->assertEquals('Foo', $actualResponse[0]->action);
 		$this->assertEquals('bar', $actualResponse[0]->method);
 		$this->assertEquals((object)array('success' => true, 'message' => 'Hello World'), $actualResponse[0]->result);
 
 		// Successfull response
 		$this->assertEquals('rpc', $actualResponse[1]->type);
 		$this->assertEquals(2, $actualResponse[1]->tid);
-		$this->assertEquals('bar', $actualResponse[1]->action);
+		$this->assertEquals('Bar', $actualResponse[1]->action);
 		$this->assertEquals('foo', $actualResponse[1]->method);
 		$this->assertEquals((object)array('success' => true, 'message' => 'Hello Bancha'), $actualResponse[1]->result);
 
+		// Successfull response from plugin
+		$this->assertEquals('rpc', $actualResponse[2]->type);
+		$this->assertEquals(3, $actualResponse[2]->tid);
+		$this->assertEquals('Plafoo.Foo', $actualResponse[2]->action);
+		$this->assertEquals('bar', $actualResponse[2]->method);
+		$this->assertEquals((object)array('success' => true, 'message' => 'Hello Plugin-World'), $actualResponse[2]->result);
+
 		// Exception response
-		$this->assertEquals('exception', $actualResponse[2]->type);
-		$this->assertEquals('This is an exception', $actualResponse[2]->message);
-		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $exception_line . '.', $actualResponse[2]->where);
+		$this->assertEquals('exception', $actualResponse[3]->type);
+		$this->assertEquals('This is an exception', $actualResponse[3]->message);
+		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $exception_line . '.', $actualResponse[3]->where);
 	}
 
 /**
