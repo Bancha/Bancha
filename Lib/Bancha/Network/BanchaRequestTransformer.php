@@ -373,6 +373,11 @@ class BanchaRequestTransformer {
 		if ($this->isArray($this->_data, '[data][0][filter]')) {
 			$filters = $this->_data['data'][0]['filter'];
 
+			if(!empty($filters) && (!isset($filters[0]) || !is_array($filters[0]))) {
+				throw new BanchaException('The supplied filter conditions are not in the default Ext JS/Sencha Touch structure.');
+			}
+
+			// collect filter rules
 			foreach ($filters as $filter) {
 				$conditions[$this->getModel() . '.' . $filter['property']] = $filter['value'];
 			}

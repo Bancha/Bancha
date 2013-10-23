@@ -253,7 +253,8 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		 */
 		if(Configure::read('Bancha.isPro')==false) {
 			throw new BanchaException(
-				'Bancha Basic does not support remote filtering of data, therefore using $this->Paginator->setAllowedFilters is not possible. <br>'.
+				'Bancha Basic does not support remote filtering of data, therefore using '.
+				'$this->Paginator->setAllowedFilters is not possible. <br>'.
 				'If you need advanced features, please consider buying Bancha Pro.'
 			);
 		}
