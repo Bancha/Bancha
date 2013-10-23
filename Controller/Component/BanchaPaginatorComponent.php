@@ -356,6 +356,10 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 					}
 				}
 
+				if($model->primaryKey == $fieldName) {
+					$valid = true; // filtering the id field is also allowed
+				}
+
 				if(!$valid) {
 					if(Configure::read('debug') == 2) {
 						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->_Controller->name.' BanchaPaginatorComponents allowedFilters configuration.');
