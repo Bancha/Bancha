@@ -418,6 +418,39 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 	}
 
+/**
+ * Make sure that filtering id's works strict.
+ */
+	public function testIndex_FilterIds() {
+
+		// Build a request like it looks in Ext JS.
+		$rawPostData = json_encode(array(array(
+			'action'		=> 'Article',
+			'method'		=> 'read',
+			'tid'			=> 1,
+			'type'			=> 'rpc',
+			'data'			=> array(array(
+				'page'			=> 1,
+				'limit'			=> 2,
+				'filter'		=> array(array(
+						'property'=>'id',  // this should not match 1001
+						'value'=>'100'
+				))
+			)),
+		)));
+
+		// setup
+		$dispatcher = new BanchaDispatcher();
+		$collection = new BanchaRequestCollection($rawPostData);
+		// mock a response to not set any headers for real
+		$response = $this->getMock('CakeResponse', array('_sendHeader'));
+
+		// test
+		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+
+		// check data
+		$this->assertEquals(0, count($responses[0]->result->data));
+	}
 
 	public function testView() {
 		// used fixtures:
