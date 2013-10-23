@@ -44,7 +44,7 @@ class BanchaApi {
 		$remotableModels = array();
 
 		// namespaces include plugins and app
-		$namespaces = App::objects('plugin');
+		$namespaces = CakePlugin::loaded();
 		$namespaces[] = ''; // app has no namespace
 
 		foreach ($namespaces as $namespace) {
@@ -188,7 +188,7 @@ class BanchaApi {
 		$remotableMethods = array();
 
 		// namespaces include plugins and app
-		$namespaces = App::objects('plugin');
+		$namespaces = CakePlugin::loaded();
 		$namespaces[] = ''; // app has no namespace
 
 		foreach ($namespaces as $namespace) {
