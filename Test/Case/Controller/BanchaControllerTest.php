@@ -48,8 +48,8 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		// build up the test paths
 		App::build(array(
-			'Controller' => APP . DS . 'Controller' . DS,
-			'Model' => APP . DS . 'Model' . DS
+			'Controller' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Controller' . DS,
+			'Model' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Model' . DS,
 		), App::RESET);
 	}
 
