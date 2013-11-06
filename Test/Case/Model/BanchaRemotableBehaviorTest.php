@@ -1903,26 +1903,33 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 	}
 
+
+	/**
+	 * Tests that proper validation error response is sent
+	 * @return void
+	 */
 	public function testGetLastSaveResult_ValidationFailed() {
 		$user = ClassRegistry::init('UserForTestingLastSaveResult');
 
 		// save user
 		$user->create();
-		$this->assertTrue(!!$user->saveFieldsAndReturn(array(
+		$result = $user->saveFieldsAndReturn(array(
 			'UserForTestingLastSaveResult' => array(
 				'name' => 'Roland',
 				'login' => 'roland',
 				'id' => 1
-		))));
+		)));
+		$this->assertTrue(empty($result['success']));
 
 		// save another user
 		$user->create();
-		$this->assertTrue(!!$user->saveFieldsAndReturn(array(
+		$result = $user->saveFieldsAndReturn(array(
 			'UserForTestingLastSaveResult' => array(
 				'name' => 'Andrejs',
 				'login' => 'andrejs',
 				'id' => 2
-		))));
+		)));
+		$this->assertTrue(empty($result['success']));
 
 		// test unique login validation check
 		$user->create();
@@ -1954,23 +1961,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'name' => 'Name is required.'
 			)
 		));
-
-		// test with three invalid field values
-		$user->create();
-		$result = $user->saveFieldsAndReturn(array(
-			'UserForTestingLastSaveResult' => array(
-				'name' => 'T',
-				'login' => '@test',
-				'id' => 'five'
-		)));
-		$this->assertEqual($result, array(
-			'success' => false,
-			'errors' => array(
-				'login' => 'Login must be alphanumeric.',
-				'name' => 'Name min. length is 3',
-				'id' => 'numeric'
-			)
-		));		
 	}
 }
 

@@ -805,17 +805,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
  */
 	public function getLastSaveResult(Model $Model) {
 		if(empty($this->_result[$Model->alias])) {
-			// if there were some validation errors
-			if (!empty($Model->validationErrors)) {
 
-				// return model validation errors prepared for ExtJs
-				return array(
-					'success' => false,
-					'errors' => $this->_getValidationErrors($Model)
-				);
-			}
-
-			// otherwise send error
+			// throw an exception for empty response
 			throw new BanchaException(
 				'There was nothing saved to be returned. Probably this occures because the data '.
 				'you send from ExtJS was malformed. Please use the Bancha.model.ModelName '.
@@ -824,6 +815,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				'(Sencha Touch) is set to "data".');
 		}
 
+		// otherwise return result, that is set in the saveFields() method
 		return $this->_result[$Model->alias];
 	}
 
@@ -932,8 +924,18 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$Model->set($data);
 		}
 
-		// set result with saved record
-		$this->_result[$Model->alias] = $Model->save($Model->data,$options);
+		// try to validate data
+		if(!$Model->validates()) {
+			// prepare extJs formatted response of validation errors on failure to validate
+			$this->_result[$Model->alias] = array(
+				'success' => false,
+				'errors' => $this->_getValidationErrors($Model)
+			);
+
+		} else {
+			// set result with saved record
+			$this->_result[$Model->alias] = $Model->save($Model->data,$options);
+		}
 
 		// set back
 		$this->_settings[$Model->alias]['useOnlyDefinedFields'] = $config;
