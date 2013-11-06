@@ -44,7 +44,12 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
  *
  */
 class BanchaRemotableBehaviorTest extends CakeTestCase {
-	public $fixtures = array('plugin.bancha.article','plugin.bancha.article_for_testing_save_behavior','plugin.bancha.user');
+	public $fixtures = array(
+		'plugin.bancha.article',
+		'plugin.bancha.article_for_testing_save_behavior',
+		'plugin.bancha.user',
+		'plugin.bancha.user_for_testing_last_save_result'
+	);
 	private $standardDebugLevel;
 
 	/**
@@ -1898,5 +1903,74 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 	}
 
+	public function testGetLastSaveResult_ValidationFailed() {
+		$user = ClassRegistry::init('UserForTestingLastSaveResult');
+
+		// save user
+		$user->create();
+		$this->assertTrue(!!$user->saveFieldsAndReturn(array(
+			'UserForTestingLastSaveResult' => array(
+				'name' => 'Roland',
+				'login' => 'roland',
+				'id' => 1
+		))));
+
+		// save another user
+		$user->create();
+		$this->assertTrue(!!$user->saveFieldsAndReturn(array(
+			'UserForTestingLastSaveResult' => array(
+				'name' => 'Andrejs',
+				'login' => 'andrejs',
+				'id' => 2
+		))));
+
+		// test unique login validation check
+		$user->create();
+		$result = $user->saveFieldsAndReturn(array(
+			'UserForTestingLastSaveResult' => array(
+				'name' => 'Roland',
+				'login' => 'roland',
+				'id' => 3
+		)));
+		$this->assertEqual($result, array(
+			'success' => false,
+			'errors' => array(
+				'login' => 'Login is already taken.'
+			)
+		));
+		
+		// test validation with two rule violation
+		$user->create();
+		$result = $user->saveFieldsAndReturn(array(
+			'UserForTestingLastSaveResult' => array(
+				'name' => '',
+				'login' => 'andrejs',
+				'id' => 4
+		)));
+		$this->assertEqual($result, array(
+			'success' => false,
+			'errors' => array(
+				'login' => 'Login is already taken.',
+				'name' => 'Name is required.'
+			)
+		));
+
+		// test with three invalid field values
+		$user->create();
+		$result = $user->saveFieldsAndReturn(array(
+			'UserForTestingLastSaveResult' => array(
+				'name' => 'T',
+				'login' => '@test',
+				'id' => 'five'
+		)));
+		$this->assertEqual($result, array(
+			'success' => false,
+			'errors' => array(
+				'login' => 'Login must be alphanumeric.',
+				'name' => 'Name min. length is 3',
+				'id' => 'numeric'
+			)
+		));		
+	}
 }
 

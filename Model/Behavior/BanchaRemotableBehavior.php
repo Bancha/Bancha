@@ -75,13 +75,6 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	protected $_result = array();
 
 /**
- * Keep here errors if any, see $Model->getSaveFields();
- *
- * @var array Collection of model errors
- */
-	protected $_errors = array();
-
-/**
  * Default behavoir configuration
  */
 	protected $_defaults = array(
@@ -813,9 +806,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function getLastSaveResult(Model $Model) {
 		if(empty($this->_result[$Model->alias])) {
 			// if there were some validation errors
-			if (!empty($this->_errors[$Model->alias])) {
-				// return them
-				return $this->_errors[$Model->alias];
+			if (!empty($Model->validationErrors)) {
+
+				// return model validation errors prepared for ExtJs
+				return array(
+					'success' => false,
+					'errors' => $this->_getValidationErrors($Model)
+				);
 			}
 
 			// otherwise send error
@@ -934,20 +931,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		if($data) {
 			$Model->set($data);
 		}
-		if(!$Model->validates()) {
-			// take CakePHP model validation errors and prepare for ExtJs
-			$this->_errors[$Model->alias] = array(
-				'success' => false,
-				'errors' => $this->_getValidationErrors($Model)
-			);
 
-		} else {
-			// set result with saved record
-			$this->_result[$Model->alias] = $Model->save($Model->data,$options);
+		// set result with saved record
+		$this->_result[$Model->alias] = $Model->save($Model->data,$options);
 
-			// set back
-			$this->_settings[$Model->alias]['useOnlyDefinedFields'] = $config;
-		}
+		// set back
+		$this->_settings[$Model->alias]['useOnlyDefinedFields'] = $config;
 
 		// return saved record data if not empty, otherwise false
 		return !empty($this->_result[$Model->alias]) ? $this->_result[$Model->alias] : false;
