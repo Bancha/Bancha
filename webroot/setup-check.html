@@ -203,6 +203,13 @@ var BanchaSetup = {
 		BanchaSetup.writeLog(isLoaded,'Load Bancha library', [
 			'<b>Could not load the Bancha library. </b><br />',
 			'Got exception: '+exception,
+
+			exception.toString().search('SyntaxError:')===-1 ? '' : (
+				'<br /><br />'+
+				'There seems to be an error for exposing the Bancha plugins static content. '+
+				'Please open <a href="js/Initializer.js">js/Initializer.js</a> for details.'
+			),
+
 			'<br /><br />',
 
 			'If you think this is a bug, please <a href="https://github.com/Bancha/Bancha/issues" ',
