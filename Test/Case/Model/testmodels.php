@@ -309,3 +309,65 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		return $existing_names < $limit;
 	}
 }
+
+
+/**
+ * This model is used inside
+ * BanchaRemotableBehaviorTest::testGetLastSaveResult_ValidationFailed
+ *
+ * @package       Bancha.Test.Case.Model
+ * @author        Andrejs Semovs <andrejs.semovs@gmail.com>
+ * @since         Bancha v 2.1.0
+ */
+class UserForTestingLastSaveResult extends CakeTestModel {
+/**
+ * name property
+ *
+ * @var string 'UserForTestingLastSaveResult'
+ */
+	public $name = 'UserForTestingLastSaveResult';
+	public $useTable = false;
+	
+	protected $_schema = array(
+		'id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'key' => 'primary', 'length' => NULL, 'collate' => NULL, 'comment' => ''),
+		'login' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+		'name' => array('type' => 'string', 'null' => false, 'default' => NULL, 'length' => 64, 'collate' => NULL, 'comment' => ''),
+	);
+
+	public $validate = array(
+	   'id' => array(	
+           'numeric' => array(
+               'rule' => array('numeric'),
+               'precision' => 0
+            ),
+	   ),
+	   'name' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+		        'message' => "Name is required."
+            ),
+            'minLength' => array(
+                'rule' => array('minLength',3),
+		        'message' => "Name min. length is 3"
+            ),
+            'maxLength' => array(
+                'rule' => array('maxLength',64),
+            ),
+		),
+		'login' => array(
+            'isUnique' => array(
+                'rule' => array('isUnique'),
+		        'message' => "Login is already taken."
+            ),
+            'alphaNumeric' => array(
+                'rule' => array('alphaNumeric'),
+				'message' => "Login must be alphanumeric."
+            ),
+		),
+	);
+
+/**
+ * we are testing the bancha remotable behavior
+ */
+	public $actsAs = array('Bancha.BanchaRemotable');
+}
