@@ -248,19 +248,8 @@ Ext.define('Bancha.data.Model', {
                 formHandler: false
             };
             // fake the execution method
-            fakeFn.directCfg.method = function() {
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    modelName: modelName,
-                    msg: [
-                        'Bancha: Tried to call '+modelName+'.'+method+'(...), ',
-                        'but the server-side has not implemented ',
-                        modelName+'sController->'+ map[method]+'(...). ',
-                        '(If you have special inflection rules, the server-side ',
-                        'is maybe looking for a different controller name)'
-                    ].join('')
-                });
-            };
+            fakeFn.directCfg.method = fakeFn;
+            fakeFn.getArgs = fakeFn;
             //</debug>
 
             return fakeFn;
