@@ -842,10 +842,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$fields = $Model->getColumnTypes();
 			// check if at least one field is saved to the database
 			try {
-				foreach($fields as $field => $type) {
-					if(array_key_exists($field, $Model->data[$Model->name])) {
-						$valid=true;
-						break;
+				if(isset($Model->data[$Model->name]) && is_array($Model->data[$Model->name])) {
+					foreach($fields as $field => $type) {
+						if($field!==$Model->primaryKey && array_key_exists($field, $Model->data[$Model->name])) {
+							$valid=true;
+							break;
+						}
 					}
 				}
 			} catch (Exception $e) {
