@@ -913,7 +913,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @param Model $Model the model using this behavior
  * @param Array $data the data to save (first user argument)
  * @param Array $options the save options
- * @return Array|Boolean The result of the save operation
+ * @return Array|Boolean The result of the save operation (same as in Model->save($data))
  */
 	public function saveFields(Model $Model, $data=null, $options=array()) {
 		// overwrite config for this commit
@@ -927,23 +927,26 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// try to validate data
+		$success = true;
 		if(!$Model->validates()) {
 			// prepare extJs formatted response of validation errors on failure to validate
 			$this->_result[$Model->alias] = array(
 				'success' => false,
 				'errors' => $this->_getValidationErrors($Model)
 			);
+			$success = false;
 
 		} else {
 			// set result with saved record
 			$this->_result[$Model->alias] = $Model->save($Model->data,$options);
+			$success = !empty($this->_result[$Model->alias]);
 		}
 
 		// set back
 		$this->_settings[$Model->alias]['useOnlyDefinedFields'] = $config;
 
-		// return saved record data if not empty, otherwise false
-		return !empty($this->_result[$Model->alias]) ? $this->_result[$Model->alias] : false;
+		// return saved record data if not empty and valid, otherwise false
+		return $success ? $this->_result[$Model->alias] : false;
 	}
 
 /**
