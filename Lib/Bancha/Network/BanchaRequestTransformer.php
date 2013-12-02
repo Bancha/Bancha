@@ -296,7 +296,7 @@ class BanchaRequestTransformer {
 		// normal requests
 		if ($this->isArray($this->_data, '[data][0][data]') && isset($this->_data['data'][0]['data']['id'])) {
 			$pass['id'] = $this->_data['data'][0]['data']['id'];
-			unset($this->_data['data'][0]['data']['id']);
+			//unset($this->_data['data'][0]['data']['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
 		} else if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
 			$pass['id'] = $this->_data['data'][0]['id'];
