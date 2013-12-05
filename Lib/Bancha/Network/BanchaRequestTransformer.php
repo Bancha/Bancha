@@ -300,11 +300,11 @@ class BanchaRequestTransformer {
 		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
 		} else if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
 			$pass['id'] = $this->_data['data'][0]['id'];
-			unset($this->_data['data'][0]['id']);
+			//unset($this->_data['data'][0]['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 		// form upload requests
 		} else if ($this->isFormRequest() && isset($this->_data['id'])) {
 			$pass['id'] = $this->_data['id'];
-			unset($this->_data['id']);
+			//unset($this->_data['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 			$this->_isFormRequest = true;
 		} else if(2 === count($this->_data) && isset($this->_data['type']) && 'rpc' == $this->_data['type'] && isset($this->_data['data'])) {
 			$pass = $this->_data['data'];
