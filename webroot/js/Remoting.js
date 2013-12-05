@@ -98,7 +98,7 @@ Ext.define('Bancha.Remoting', {
             '<b>'+message+'</b><br />',
             'This is triggerd by your AuthComponent configuration. ',
             'You can add your custom authentification error handler ',
-            'by setting <i>Bancha.onAuthException(exceptionType,message)</i>.<br />'
+            'by setting <i>Bancha.Remoting.onAuthException(exceptionType,message)</i>.<br />'
         ].join('');
 
         // Show the error and then throw an exception
@@ -110,7 +110,13 @@ Ext.define('Bancha.Remoting', {
             icon: Ext.MessageBox.ERROR,
             buttons: Ext.Msg.OK
         });
-        throw new Error(msg);
+
+        //<debug>
+        Ext.Error.raise({
+            plugin: 'Bancha',
+            msg: msg
+        });
+        //</debug>
     },
 
     /**
@@ -156,9 +162,11 @@ Ext.define('Bancha.Remoting', {
             icon: Ext.MessageBox.ERROR,
             buttons: Ext.Msg.OK
         });
+        //<debug>
         Ext.Error.raise({
             plugin: 'Bancha',
             msg: 'REMOTE EXCEPTION: '+operation.getError()
         });
+        //</debug>
     }
 });
