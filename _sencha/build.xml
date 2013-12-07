@@ -1,0 +1,149 @@
+<project basedir=".">
+
+    <!--
+        Please follow this guide for instructions of how to add support 
+        for Sencha Cmd to Bancha:
+
+        http://banchaproject.org/documentation-pro-sencha-cmd.html
+    -->
+
+
+
+
+
+
+    <!--
+    ###################################################################
+    ###################################################################
+    ###                                                             ###
+    ###   These tasks add packaging support for both native and     ###
+    ###   web, they allow allow calling of app refreh for apps      ###
+    ###   with Bancha models.                                       ###
+    ###                                                             ###
+    ###################################################################
+    ###################################################################
+    -->
+    <target name="-bancha-before-app-build">
+        <!-- Copy the Bancha Remote API for packaging with Sencha CMD -->
+        <get src="${bancha.api.url}" dest="${app.dir}/app/REMOTE_API.js"/>
+
+        <!-- set framework-specific tags for building bancha code -->
+        <if>
+            <equals arg1="${app.framework}" arg2="touch"/>
+            <then>
+                <property name="sencha.compile#options" value="ext:false,touch:true"/>
+            </then>
+            <else>
+                <property name="sencha.compile#options" value="ext:true,touch:false"/>
+            </else>
+        </if>
+
+        <!-- exclude unnecessary scaffold files -->
+        <x-ant-call>
+            <target name="-bancha-remove-files-for-build"/>
+        </x-ant-call>
+    </target>
+
+    <target name="-bancha-after-app-build">
+        <!-- Remove the file again -->
+        <delete file="${app.dir}/app/REMOTE_API.js"/>
+
+        <!-- exclude restore all scaffold files -->
+        <x-ant-call>
+            <target name="-bancha-restore-files-after-build"/>
+        </x-ant-call>
+    </target>
+
+
+
+
+
+
+    <!--
+    ###################################################################
+    ###################################################################
+    ###                                                             ###
+    ###   Helper targets, neede bcause Sencha Cmd does not allow    ###
+    ###   to simply exclude files.                                  ###
+    ###                                                             ###
+    ###   Simply excluding the files from the set does not work,    ###
+    ###   because not all js files are valid in all frameworks.     ###
+    ###   Therefore the x-load-app-builder-properties would fail.   ###
+    ###                                                             ###
+    ###################################################################
+    ###################################################################
+    -->
+    <target name="-bancha-remove-files-for-build">
+        <!-- Bancha Scaffold sould only by included in Ext JS builds -->
+        <available file="${bancha.folder}/webroot/js/scaffold" type="dir" property="touch.scaffoldnotmoved"/>
+        <available file="${bancha.folder}/webroot/js/scaffold/builder" type="dir" property="ext.scaffoldnotmoved"/>
+        <if>
+            <and>
+                <equals arg1="${app.framework}" arg2="touch"/>
+                <equals arg1="${touch.scaffoldnotmoved}" arg2="true"/>
+            </and>
+            <then>
+                <move
+                    file="${bancha.folder}/webroot/js/scaffold"
+                    todir="${bancha.folder}/webroot"/>
+            </then>
+        </if>
+        <if>
+            <and>
+                <equals arg1="${app.framework}" arg2="ext"/>
+                <equals arg1="${ext.scaffoldnotmoved}" arg2="true"/>
+            </and>
+            <then>
+                <!-- don't include conflicting builder and latest-build folders -->
+                <mkdir dir="${bancha.folder}/webroot/scaffold-tmp" />
+                <move
+                    file="${bancha.folder}/webroot/js/scaffold/builder"
+                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                <move
+                    file="${bancha.folder}/webroot/js/scaffold/latest-build"
+                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                <move
+                    file="${bancha.folder}/webroot/js/scaffold/samples"
+                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                <move
+                    file="${bancha.folder}/webroot/js/scaffold/tests"
+                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+            </then>
+        </if>
+    </target>
+
+    <target name="-bancha-restore-files-after-build">
+        <available file="${bancha.folder}/webroot/scaffold" type="dir" property="touch.scaffoldmoved"/>
+        <available file="${bancha.folder}/webroot/scaffold-tmp/builder" type="dir" property="ext.scaffoldmoved"/>
+        <!-- Move Bancha Scaffold to default folder again -->
+        <if>
+            <equals arg1="${touch.scaffoldmoved}" arg2="true"/>
+            <then>
+                <move
+                    file="${bancha.folder}/webroot/scaffold"
+                    todir="${bancha.folder}/webroot/js"/>
+            </then>
+        </if>
+
+        <if>
+            <equals arg1="${ext.scaffoldmoved}" arg2="true"/>
+            <then>
+                <!-- Move Bancha Scaffold folders to default folder again -->
+                <move
+                    file="${bancha.folder}/webroot/scaffold-tmp/builder"
+                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                <move
+                    file="${bancha.folder}/webroot/scaffold-tmp/latest-build"
+                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                <move
+                    file="${bancha.folder}/webroot/scaffold-tmp/samples"
+                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                <move
+                    file="${bancha.folder}/webroot/scaffold-tmp/tests"
+                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                <!-- remove tmp folder -->
+                <delete dir="${bancha.folder}/webroot/scaffold-tmp"/>
+            </then>
+        </if>
+    </target>
+</project>
