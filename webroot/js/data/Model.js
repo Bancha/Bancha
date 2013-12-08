@@ -28,13 +28,11 @@ Ext.define('Bancha.data.Model', {
     extend: 'Ext.data.Model',
 
     requires: [
+        'Bancha.Main',
         'Ext.direct.Manager',
         'Bancha.data.writer.JsonWithDateTime',
         'Bancha.data.writer.ConsistentJson',
         'Bancha.Remoting'
-    ],
-    uses: [
-        'Bancha.Main'
     ],
 
     /**
