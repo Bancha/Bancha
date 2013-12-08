@@ -80,7 +80,7 @@ Ext.define('Bancha.Remoting', {
 
     /**
      * @property {Function} onAuthException
-     * You can define your custom authentification error handler. This function
+     * You can define your custom authentication error handler. This function
      * is triggered every time the CakePHP AuthComponent prevented the
      * execution of a Bancha request.
      *
@@ -97,7 +97,7 @@ Ext.define('Bancha.Remoting', {
         var msg = [
             '<b>'+message+'</b><br />',
             'This is triggerd by your AuthComponent configuration. ',
-            'You can add your custom authentification error handler ',
+            'You can add your custom authentication error handler ',
             'by setting <i>Bancha.Remoting.onAuthException(exceptionType,message)</i>.<br />'
         ].join('');
 
