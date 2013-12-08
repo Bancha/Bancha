@@ -37,6 +37,15 @@
 //<debug>
 (function() { //closure over variables
 
+    if(!window.Ext) {
+        // Sencha Architect should exclude scripts marked with x-bootstrap from production builds
+        // Currently this works fine in Sencha Touch, but does not work in Ext JS.
+        // Since at this point in time not even Ext JS is ready we can simply make the 
+        // ScriptTagInitialier do nothing by adding this if clause. There is a minimal overhead,
+        // which is ok until Sencha fixed this bug.
+        return;
+    }
+
     if(!Ext.Loader) {
         throw 'Bancha expects the Ext.Loaded to be loaded when starting the ScriptTagInitializer.js';
     }
