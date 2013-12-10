@@ -128,6 +128,7 @@ Ext.define('Bancha.data.Model', {
 
             if(!Bancha.isRemoteModel(modelName)) {
                 //<debug>
+                //<bancha-pro>
                 Ext.Error.raise({
                     plugin: 'Bancha',
                     modelName: modelName,
@@ -137,6 +138,13 @@ Ext.define('Bancha.data.Model', {
                         '(no remote model).'
                     ].join('')
                 });
+                //</bancha-pro>
+                //<bancha-basic>
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: 'Bancha Basic does not allow to expose models, please use Bancha Pro.'
+                });
+                //</bancha-basic>
                 //</debug>
                 return false;
             }
@@ -150,12 +158,6 @@ Ext.define('Bancha.data.Model', {
                     msg: 'Bancha: Couldn\'t create the model cause the metadata is not loaded yet, please use onModelReady instead.'
                 });
                 //</bancha-pro>
-                //<bancha-basic>
-                Ext.Error.raise({
-                    plugin: 'Bancha',
-                    msg: 'Bancha Basic does not allow to expose models, please use Bancha Pro.'
-                });
-                //</bancha-basic>
                 //</debug>
                 return false;
             }
