@@ -16,6 +16,51 @@
     ###################################################################
     ###################################################################
     ###                                                             ###
+    ###   This task makes basic checks on necessary properties      ###
+    ###                                                             ###
+    ###################################################################
+    ###################################################################
+    -->
+    <target name="-bancha-check-setup">
+
+        <!-- check sencha.cfg variables -->
+        <fail message="Missing property: Please define the bancha.api.url property inside sencha.cfg">
+            <condition>
+                <or>
+                    <equals arg1="${bancha.api.url}" arg2=""/>
+                    <not>
+                        <isset property="bancha.api.url"/>
+                    </not>
+               </or>
+           </condition>
+        </fail>
+
+        <fail message="Missing property: Please define the bancha.folder property inside sencha.cfg">
+            <condition>
+                <or>
+                    <equals arg1="${bancha.folder}" arg2=""/>
+                    <not>
+                        <isset property="bancha.folder"/>
+                    </not>
+               </or>
+           </condition>
+       </fail>
+       
+        <fail message="Missing property: Please add a path to Bancha's webroot/js folder in your app.classpath property inside sencha.cfg, current app.classpath value: ${app.classpath}">
+            <condition>
+                <not>
+                    <matches pattern="Bancha\/webroot\/js" string="${app.classpath}"/>
+                </not>
+            </condition>
+       </fail>
+    </target>
+
+
+
+    <!--
+    ###################################################################
+    ###################################################################
+    ###                                                             ###
     ###   These tasks add packaging support for both native and     ###
     ###   web, they allow allow calling of app refreh for apps      ###
     ###   with Bancha models.                                       ###
@@ -23,7 +68,8 @@
     ###################################################################
     ###################################################################
     -->
-    <target name="-bancha-before-app-build">
+    <target name="-bancha-before-app-build" depends="-bancha-check-setup">
+
         <!-- Copy the Bancha Remote API for packaging with Sencha CMD -->
         <get src="${bancha.api.url}" dest="${app.dir}/app/REMOTE_API.js"/>
 
@@ -45,6 +91,7 @@
     </target>
 
     <target name="-bancha-after-app-build">
+
         <!-- Remove the file again -->
         <delete file="${app.dir}/app/REMOTE_API.js"/>
 
@@ -74,6 +121,7 @@
     ###################################################################
     -->
     <target name="-bancha-remove-files-for-build">
+
         <!-- Bancha Scaffold sould only by included in Ext JS builds -->
         <available file="${bancha.folder}/webroot/js/scaffold" type="dir" property="touch.scaffoldnotmoved"/>
         <available file="${bancha.folder}/webroot/js/scaffold/builder" type="dir" property="ext.scaffoldnotmoved"/>
@@ -113,8 +161,10 @@
     </target>
 
     <target name="-bancha-restore-files-after-build">
+
         <available file="${bancha.folder}/webroot/scaffold" type="dir" property="touch.scaffoldmoved"/>
         <available file="${bancha.folder}/webroot/scaffold-tmp/builder" type="dir" property="ext.scaffoldmoved"/>
+
         <!-- Move Bancha Scaffold to default folder again -->
         <if>
             <equals arg1="${touch.scaffoldmoved}" arg2="true"/>
