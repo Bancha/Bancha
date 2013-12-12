@@ -111,7 +111,11 @@ class ServerLogger {
 			}
 
 			// set environment variables
-			$host = empty($_SERVER['SERVER_NAME']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+			$host = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : false);
+			if(!$host) {
+				return; // no server info found, probably we are in the shell
+			}
+
 			$pos = strpos($_SERVER['REQUEST_URI'], '?_dc='); // used for cache busting
 			$path = ($pos===-1) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $pos);
 			$t->setCustomVariable(1, 'HTTP_HOST', $host);
