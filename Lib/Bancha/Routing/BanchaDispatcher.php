@@ -29,6 +29,11 @@ App::uses('ServerLogger', 'Bancha.Bancha/Logging');
 class BanchaDispatcher {
 
 	/**
+	 * Collection of all responses.
+	 * @var BanchaResponseCollection
+	 */
+	protected $_responseCollection;
+
 	 * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
 	 * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
 	 * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
@@ -47,7 +52,7 @@ class BanchaDispatcher {
 				echo 'Bancha Error: Please update your webroot/bancha-dispatcher.php file the Bancha 2 version!';
 			}
 		}
-		$Collection = new BanchaResponseCollection($CakeResponse);
+		$this->_responseCollection = new BanchaResponseCollection($CakeResponse);
 
 		//<bancha-basic>
 		/**
@@ -107,35 +112,11 @@ class BanchaDispatcher {
 
 		// Iterate through all requests, dispatch them and add the response to the transformer object.
 		foreach ($requests->getRequests() as $request) {
-			$skip_request = false;
-
-			if (!$skip_request) {
-				// Call dispatcher for the given CakeRequest.
-				// We need to use a sub classes disaptcher, because some parameters are missing in Bancha requests and
-				// because we need to full response, not only the body of the response.
-				$dispatcher = new BanchaSingleDispatcher();
-
-				try {
-					// dispatch the request
-					$subResponse = new CakeResponse(array('charset' => Configure::read('App.encoding')));
-					$dispatcher->dispatch($request, $subResponse, array('return' => true));
-
-					// add result to response colection
-					$Collection->addResponse(
-						$request['tid'],
-						$subResponse,
-						$request
-					);
-				} catch (Exception $e) {
-					$this->logException($request, $e);
-					ServerLogger::logIssue($this->_getSignature($request), $e);
-					$Collection->addException($request['tid'], $e, $request);
-				} // try catch
-			} // if (!$skip_request)
-		} // foreach
+			$this->_singleDispatch($request);
+		}
 
 		// Combine the responses
-		$Collection->getResponses();
+		$this->_responseCollection->getResponses();
 
 		// about every tenth usage send a small ping
 		if(rand(1, 10)==1) {
@@ -148,6 +129,38 @@ class BanchaDispatcher {
 		}
 
 		return $this->_send($CakeResponse);
+	}
+
+/**
+ * Dispatches a single Bancha request and adds the result
+ * to the response collection.
+ * 
+ * @param  CakeRequest $request The request to dispatch
+ * @return void
+ */
+	protected function _singleDispatch($request) {
+
+		// Call dispatcher for the given CakeRequest.
+		// We need to use a sub classes disaptcher, because some parameters are missing in Bancha requests and
+		// because we need to full response, not only the body of the response.
+		$dispatcher = new BanchaSingleDispatcher();
+
+		try {
+			// dispatch the request
+			$subResponse = new CakeResponse(array('charset' => Configure::read('App.encoding')));
+			$dispatcher->dispatch($request, $subResponse, array('return' => true));
+
+			// add result to response colection
+			$this->_responseCollection->addResponse(
+				$request['tid'],
+				$subResponse,
+				$request
+			);
+		} catch (Exception $e) {
+			$this->logException($request, $e);
+			ServerLogger::logIssue($this->_getSignature($request), $e);
+			$this->_responseCollection->addException($request['tid'], $e, $request);
+		} // try catch
 	}
 
 	/**
