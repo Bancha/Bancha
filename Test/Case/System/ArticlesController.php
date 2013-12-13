@@ -98,7 +98,7 @@ class ArticlesController extends AppController {
 		$this->set(compact('users', 'tags'));
 
 		if (defined('SLEEP_TIME')) {
-			echo "\n\nSLEEP for " . SLEEP_TIME . " SECONDS\n\n";
+			//echo "\n\nSLEEP for " . SLEEP_TIME . " SECONDS\n\n";
 			sleep(SLEEP_TIME);
 		}
 

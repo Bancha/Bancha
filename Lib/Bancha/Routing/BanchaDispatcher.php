@@ -14,6 +14,7 @@
 App::uses('Dispatcher', 'Routing');
 App::uses('BanchaResponseCollection', 'Bancha.Bancha/Network');
 App::uses('BanchaSingleDispatcher', 'Bancha.Bancha/Routing');
+App::uses('BanchaConsistencyProvider', 'Bancha.Bancha/Routing');
 App::uses('BanchaAuthLoginException', 'Bancha.Bancha/Exception');
 App::uses('BanchaAuthAccessRightsException', 'Bancha.Bancha/Exception');
 App::uses('BanchaRedirectException', 'Bancha.Bancha/Exception');
@@ -34,6 +35,13 @@ class BanchaDispatcher {
 	 */
 	protected $_responseCollection;
 
+	/**
+	 * Consistancy provider
+	 * @var BanchaConsistencyProvider
+	 */
+	protected $_consistencyProvider;
+
+	/**
 	 * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
 	 * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
 	 * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
@@ -53,6 +61,7 @@ class BanchaDispatcher {
 			}
 		}
 		$this->_responseCollection = new BanchaResponseCollection($CakeResponse);
+		$this->_consistencyProvider = new BanchaConsistencyProvider();
 
 		//<bancha-basic>
 		/**
@@ -140,6 +149,17 @@ class BanchaDispatcher {
  */
 	protected function _singleDispatch($request) {
 
+		// Ensure consitency if Client ID is given.
+		$ensureConsitency = isset($request['client_id']);
+		if ($ensureConsitency) {
+			while(!$this->_consistencyProvider->validates($request['client_id'], $request['tid'])) {
+				// ok, this is currently a super simple implementation
+				// it would be better to add the request to a ACID database
+				// and retrieve it later.
+				sleep(0.3);
+			}
+		}
+
 		// Call dispatcher for the given CakeRequest.
 		// We need to use a sub classes disaptcher, because some parameters are missing in Bancha requests and
 		// because we need to full response, not only the body of the response.
@@ -161,6 +181,11 @@ class BanchaDispatcher {
 			ServerLogger::logIssue($this->_getSignature($request), $e);
 			$this->_responseCollection->addException($request['tid'], $e, $request);
 		} // try catch
+
+		// only finalize if consistancy was used
+		if ($ensureConsitency) {
+			$this->_consistencyProvider->finalizeRequest();
+		}
 	}
 
 	/**

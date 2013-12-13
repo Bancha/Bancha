@@ -2,7 +2,7 @@
 /**
  * This script is used by the ConsistentModelTest to simulate executing multiple HTTP requests in parallel.
  *
- * this script can be called using
+ * This script can be called using:
  * php _fake_request.php client_id article_id tid title sleep_time
  *
  *
@@ -17,8 +17,18 @@
  */
 
 
+// prepare constants, like in index.php
 define('DS', DIRECTORY_SEPARATOR);
-define('ROOT', realpath(dirname(__FILE__) . '/../../../../..'));
+
+// Bancha plugin can be inside the app folder, or outside
+$pathToBancha = realpath(dirname(__FILE__) . '/../../..'); // Bancha/Test/Case/System/_fake_request.php
+if(basename(realpath($pathToBancha . '/..')) == 'Plugin') {
+	// app/Plugin/Bancha
+	define('ROOT', realpath($pathToBancha . '/../../..'));
+} else {
+	// plugins/Bancha
+	define('ROOT', realpath($pathToBancha . '/../..'));
+}	
 define('APP_DIR', basename(ROOT . '/app'));
 define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
 
@@ -28,16 +38,25 @@ define('APP_PATH', ROOT . DS . APP_DIR . DS);
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 
 include(CORE_PATH . 'Cake' . DS . 'bootstrap.php');
-include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bootstrap.php');
+include($pathToBancha . DS . 'Config' . DS . 'bootstrap.php');
 
-Configure::write('debug',1);
+Configure::write('debug', 1);
 
 App::uses('BanchaDispatcher', 'Bancha.Bancha/Routing');
 App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
+App::uses('CakeResponse', 'Network');
+
+// make sure to import the ArticlesController, which applies the sleep time
+require_once dirname(__FILE__) . '/ArticlesController.php';
+
+// make sure to use the test database
+App::uses('ClassRegistry', 'Utility');
 App::uses('AppModel', 'Model');
 App::uses('Article', 'Model');
-// require_once dirname(__FILE__) . '/ArticlesController.php';
+$article = ClassRegistry::init('Article');
+$article->setDataSource('test');
 
+// execute query
 if (isset($_SERVER['argv'][1]))
 {
 	$client_id = $_SERVER['argv'][1];
@@ -59,7 +78,6 @@ if (isset($_SERVER['argv'][5]))
 	define('SLEEP_TIME', $_SERVER['argv'][5]);
 }
 
-$dispatcher = new BanchaDispatcher();
 
 $rawPostData = json_encode(array(
 	array(
@@ -75,6 +93,10 @@ $rawPostData = json_encode(array(
 		))),
 	),
 ));
-$responses = json_decode($dispatcher->dispatch(
-	new BanchaRequestCollection($rawPostData), array('return' => true)
-));
+
+// execute
+$dispatcher = new BanchaDispatcher();
+$dispatcher->dispatch(
+	new BanchaRequestCollection($rawPostData),
+	new CakeResponse()
+);
