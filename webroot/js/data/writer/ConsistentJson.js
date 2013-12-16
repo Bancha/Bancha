@@ -24,43 +24,26 @@
  */
 Ext.define('Bancha.data.writer.ConsistentJson', {
     extend: 'Bancha.data.writer.JsonWithDateTime',
-    alias: 'writer.consistent',
+    alias: 'writer.consitentjson',
 
     /**
+     * @private
      * @cfg
      * the name of the field to send the consistent uid in
      */
     uidProperty: '__bcid',
 
-    /**
-     * @cfg {Bancha.data.Model} model
-     * the model to write for, needed to determine the value of
-     * {@link Bancha.data.Model#forceConsistency model.forceConsistency}
-     */
-    model: undefined,
     //inherit docs
-    writeRecords: function(request, data) {
-
-        //<debug>
-        if(!this.model) {
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                msg: 'Bancha: Bancha.data.writer.ConsistentJson needs a reference to the model.'
-            });
-        }
-        //</debug>
-
-        // set consistent uid if expected
-        if(this.model && this.model.forceConsistency) {
-            if (this.encode) {
-                request.params[this.uidProperty] = Bancha.getConsistentUid();
-            } else {
-                // send as jsonData
-                request.jsonData[this.uidProperty] = Bancha.getConsistentUid();
-            }
-        }
+    getRecordData: function(record, operation) {
 
         // let the json writer do all the work:
-        return this.superclass.writeRecords.apply(this,arguments);
+        var data = this.callParent(arguments);
+
+        // now simply add the client id
+        if(Ext.ClassManager.getClass(record).getForceConsistency()) {
+            data[this.uidProperty] = Bancha.getConsistentUid();
+        }
+
+        return data;
     }
 });

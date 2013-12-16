@@ -39,7 +39,7 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
      */
     getRecordData: function(record, operation) {
         // let the json writer do the real work
-        var data = this.superclass.getRecordData.apply(this,arguments),
+        var data = this.callParent(arguments),
             nameProperty = this.nameProperty,
             fields = record.fields,
             fieldItems = fields.items,

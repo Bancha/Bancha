@@ -93,7 +93,7 @@ var testErrorHandler = function(err) {
     expect(false).toEqual('Ext.Error.handle was triggered with following message:'+err.msg);
 };
 
-BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName,/*optional*/additionalConfigs) {
+BanchaSpecHelper.init = function(/*optional, a string or an array of model names */modelDefinitionsForName,/*optional, applied to all models*/additionalConfigs) {
     var api = BanchaSpecHelper.SampleData.remoteApiDefinition;
     Bancha.REMOTE_API = Ext.clone(api);
 
@@ -104,9 +104,14 @@ BanchaSpecHelper.init = function(/*optional*/modelDefinitionsForName,/*optional*
     };
 
     if(Ext.isString(modelDefinitionsForName)) {
-        // setup fake model
-        Bancha.REMOTE_API.metadata[modelDefinitionsForName] = Ext.apply(Ext.clone(Bancha.REMOTE_API.metadata.User),additionalConfigs);
-        Bancha.REMOTE_API.actions[modelDefinitionsForName] = Ext.clone(api.actions.User);
+        modelDefinitionsForName = [modelDefinitionsForName];
+    }
+    if(Ext.isArray(modelDefinitionsForName)) {
+        // setup fake models
+        Ext.each(modelDefinitionsForName, function(modelName) {
+            Bancha.REMOTE_API.metadata[modelName] = Ext.apply(Ext.clone(Bancha.REMOTE_API.metadata.User), additionalConfigs);
+            Bancha.REMOTE_API.actions[modelName] = Ext.clone(api.actions.User);
+        });
     } else if(Ext.isDefined(modelDefinitionsForName)){
         throw 'modelDefinitionsFor is not a string';
     }

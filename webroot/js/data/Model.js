@@ -36,13 +36,6 @@ Ext.define('Bancha.data.Model', {
     ],
 
     /**
-     * @cfg
-     * If true the frontend forces consistency.
-     * This is not yet supported! See http://docs.banchaproject.org/resources/Roadmap.html
-     */
-    forceConsistency: false,
-
-    /**
      * @cfg {Boolean|String}
      * If you are using Bancha with Sencha Architect, setting this to truthy will tell
      * Bancha to set all fields, validation rules, associations and the proxy based
@@ -199,7 +192,44 @@ Ext.define('Bancha.data.Model', {
 
             // set the Bancha proxy
             modelCls.setProxy(this.createBanchaProxy(modelCls, modelName));
+
+
+            // in the end add all class statics for Bancha models
+            modelCls.addStatics(this.extendedClassStatics);
         },
+
+        /**
+         * The following configs should be available on a per-model basis,
+         * therefore these statics are added to each extended class
+         */
+        extendedClassStatics: {
+            /**
+             * @cfg
+             * If set to true, Bancha will enforce consisteny for your clients actions.
+             * This prevents duplicated requests and race conditions, for more see
+             * http://bancha.io/documentation-pro-models-consistent-transactions.html
+             *
+             * This is a static config and can be set on a per-model base.
+             */
+            forceConsistency: false,
+            /**
+             * Retrieve if consistency is currently enforced for this model.
+             * @return {Boolean} True to enforce consistency
+             */
+            getForceConsistency: function() {
+                // this function exists for support of all Ext JS versions
+                return this.forceConsistency;
+            },
+            /**
+             * Change if consistency is currently enforced for this model.
+             * @param {Boolean} forceConsistency True to enforce consistency
+             */
+            setForceConsistency: function(forceConsistency) {
+                // this function exists for support of all Ext JS versions
+                this.forceConsistency = forceConsistency;
+            }
+        },
+
         /**
          * To display nicer debugging messages, i debug mode this returns
          * a fake function if the stub method doesn't exist.
@@ -294,11 +324,8 @@ Ext.define('Bancha.data.Model', {
                     type: 'json',
                     messageProperty: 'message'
                 }, configWithRootPropertySet),
-                writer: (model.forceConsistency) ? Ext.apply({
+                writer: Ext.apply({
                     type: 'consitentjson',
-                    writeAllFields: false
-                }, configWithRootPropertySet) : Ext.apply({
-                    type: 'jsondate',
                     writeAllFields: false
                 }, configWithRootPropertySet),
                 listeners: {

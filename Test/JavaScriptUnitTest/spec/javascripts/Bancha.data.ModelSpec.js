@@ -60,12 +60,12 @@ describe("Bancha.data.Model tests", function() {
             // for Ext JS
             expect(model.getProxy()).property('type').toEqual('direct');
             expect(model.getProxy()).property('reader.type').toEqual('json');
-            expect(model.getProxy()).property('writer.type').toEqual('jsondate');
+            expect(model.getProxy()).property('writer.type').toEqual('consitentjson');
         } else {
             // For Sencha Touch
             expect(model.getProxy().alias).toEqual(['proxy.direct']);
             expect(model.getProxy().getReader().alias).toEqual(['reader.json']);
-            expect(model.getProxy().getWriter().alias).toEqual(['writer.jsondate']);
+            expect(model.getProxy().getWriter().alias).toEqual(['writer.consitentjson']);
         }
     });
 
@@ -354,5 +354,29 @@ describe("Bancha.data.Model tests", function() {
 
         // verify the expectations were met
         mockProxy.verify();
+    });
+
+    it("should allow to set the forceConsistency flag on a per-model bases", function() {
+        // setup model metadata
+        h.init(['ModelTestConsistencyConfig1','ModelTestConsistencyConfig2']);
+
+        // and create the models
+        Ext.define('Bancha.model.ModelTestConsistencyConfig1', {
+            extend: 'Bancha.data.Model'
+        });
+        Ext.define('Bancha.model.ModelTestConsistencyConfig2', {
+            extend: 'Bancha.data.Model'
+        });
+
+        // check that function exists
+        expect(Bancha.model.ModelTestConsistencyConfig1.setForceConsistency).toBeAFunction();
+
+        // set the config
+        Bancha.model.ModelTestConsistencyConfig1.setForceConsistency(false);
+        Bancha.model.ModelTestConsistencyConfig2.setForceConsistency(true);
+
+        // check
+        expect(Bancha.model.ModelTestConsistencyConfig1.getForceConsistency()).toBeFalsy();
+        expect(Bancha.model.ModelTestConsistencyConfig2.getForceConsistency()).toBeTruthy();
     });
 });
