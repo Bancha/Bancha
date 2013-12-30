@@ -199,6 +199,7 @@ var BanchaSetup = {
 		} catch(e) {
 			exception = e;
 		}
+		exception = typeof exception==='string' ? exception : '';
 
 		BanchaSetup.writeLog(isLoaded,'Load Bancha library', [
 			'<b>Could not load the Bancha library. </b><br />',
