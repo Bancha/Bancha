@@ -453,7 +453,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// test that the belongsTo User record data is present
 		$this->assertEquals(95, $result['data']['user']['id']);
-		$this->assertEquals('mariano', $result['data']['user']['user']);
+		$this->assertEquals('mariano', $result['data']['user']['login']);
 
 		// test that the hasMany Tag record data is present
 		$this->assertCount(2, $result['data']['tags']);
@@ -503,7 +503,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// test that the belongsTo User record data is present
 		$this->assertEquals(95, $result['data']['user']['id']);
-		$this->assertEquals('mariano', $result['data']['user']['user']);
+		$this->assertEquals('mariano', $result['data']['user']['login']);
 		$this->assertFalse(isset($result['data']['user']['password'])); //excluded
 
 		// test that the hasMany Tag record data is present
@@ -557,7 +557,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// test that the belongsTo User record data is present
 		$this->assertEquals(95, $result['data']['user']['id']);
-		$this->assertEquals('mariano', $result['data']['user']['user']);
+		$this->assertEquals('mariano', $result['data']['user']['login']);
 
 		// test that the hasAndBelongsToMany Tag records data are present
 		$this->assertEquals(2, count($result['data']['tags']));
@@ -574,9 +574,9 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// test that the Article.User.Article's have one User record each
 		$this->assertEquals(95, $result['data']['user']['articles'][0]['user']['id']);
-		$this->assertEquals('mariano', $result['data']['user']['articles'][0]['user']['user']);
+		$this->assertEquals('mariano', $result['data']['user']['articles'][0]['user']['login']);
 		$this->assertEquals(95, $result['data']['user']['articles'][1]['user']['id']);
-		$this->assertEquals('mariano', $result['data']['user']['articles'][1]['user']['user']);
+		$this->assertEquals('mariano', $result['data']['user']['articles'][1]['user']['login']);
 
 		// test that the hasAndBelongsToMany Article.User.Article[0].Tag records data are present
 		$this->assertEquals(2, count($result['data']['user']['articles'][0]['tags']));
@@ -616,7 +616,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		// test that the belongsTo User record data is present
 		$this->assertEquals(95, $result['data'][0]['user']['id']);
-		$this->assertEquals('mariano', $result['data'][0]['user']['user']);
+		$this->assertEquals('mariano', $result['data'][0]['user']['login']);
 
 		// test that the hasAndBelongsToMany Tag records data are present
 		$this->assertEquals(2, count($result['data'][0]['tags']));
