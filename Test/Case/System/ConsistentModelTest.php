@@ -135,6 +135,9 @@ class ConsistentModelTest extends CakeTestCase {
  * See http://bancha.io/documentation-pro-models-consistent-transactions.html#duplicated-requests
  */
 	public function testInSequence() {
+		if(Configure::read('fastTestsOnly')) { 
+			$this->markTestSkipped('Skipped slow test case.');
+		}
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...),
 
@@ -233,6 +236,10 @@ class ConsistentModelTest extends CakeTestCase {
  * See http://bancha.io/documentation-pro-models-consistent-transactions.html#race-conditions
  */
 	public function testEditMultipleRequestsInParallel() {
+		if(Configure::read('fastTestsOnly')) { 
+			$this->markTestSkipped('Skipped slow test case.');
+		}
+
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...),
 
@@ -281,6 +288,9 @@ class ConsistentModelTest extends CakeTestCase {
  * Test that a lower TID is never executed after a higher one.
  */
 	public function testEditMultipleRequestsWrongSequence() {
+		if(Configure::read('fastTestsOnly')) { 
+			$this->markTestSkipped('Skipped slow test case.');
+		}
 
 		// Execute two requests from same client in wrong sequence.
 		$clientId = uniqid();

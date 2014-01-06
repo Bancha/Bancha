@@ -18,7 +18,7 @@
 /**
  * AllTestsTest class
  *
- * This test group will run all test in the Bancha/Test/Cases directory except for those in the System directory.
+ * This test group will run all fast tests in the Bancha/Test/Cases directory.
  *
  * @package       Bancha.Test.Case
  * @since         Bancha v 0.9.0

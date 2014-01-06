@@ -128,6 +128,10 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
+		$this->assertTrue(
+			isset($responses[0]->result),
+			'Expected responses to contain a response, instead $responses is '.print_r($responses,true)
+		);
 
 		$this->assertEquals(1001, $responses[0]->result->data->id);
 		$this->assertEquals('foobar', $responses[0]->result->data->title);
