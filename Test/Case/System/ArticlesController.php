@@ -93,9 +93,6 @@ class ArticlesController extends AppController {
 		} else {
 			$this->request->data = $this->Article->read(null, $id);
 		}
-		$users = $this->Article->User->find('list');
-		$tags = $this->Article->Tag->find('list');
-		$this->set(compact('users', 'tags'));
 
 		if (defined('SLEEP_TIME')) {
 			//echo "\n\nSLEEP for " . SLEEP_TIME . " SECONDS\n\n";
