@@ -151,13 +151,8 @@ class BanchaDispatcher {
 
 		// Ensure consitency if Client ID is given.
 		$ensureConsitency = isset($request['client_id']);
-		if ($ensureConsitency) {
-			while(!$this->_consistencyProvider->validates($request['client_id'], $request['tid'])) {
-				// ok, this is currently a super simple implementation
-				// it would be better to add the request to a ACID database
-				// and retrieve it later.
-				sleep(0.3);
-			}
+		if ($ensureConsitency && !$this->_consistencyProvider->validates($request['client_id'], $request['tid'])) {
+			return; // Skip this request
 		}
 
 		// Call dispatcher for the given CakeRequest.

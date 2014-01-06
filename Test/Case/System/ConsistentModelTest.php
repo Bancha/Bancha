@@ -210,7 +210,6 @@ class ConsistentModelTest extends CakeTestCase {
 			$response,
 			array('return' => true)
 		));
-		debug($responses);
 
 		// Check that the two responses were returned
 		$this->assertCount(2, $responses);
@@ -250,39 +249,26 @@ class ConsistentModelTest extends CakeTestCase {
 		// Wait some seconds until the backround processes are executed.
 		sleep(5);
 
-		// Check that the second response returns no result
-		$responses = $this->getAsyncResponse($clientId, 2);
-		$this->assertCount(0, $responses);
-
-		/* It would great to later add logic to directly do execute the second one
-		// Check that the first response returns both results
-		$responses = $this->getAsyncResponse($clientId, 1);
-		$this->assertCount(2, $responses);
-		$this->assertTrue(
-			isset($responses[0]->result->data),
-			'Expected an result for first request, instead $responses is '.print_r($responses,true)
-		);
-		$this->assertEquals('foobar', $responses[0]->result->data->title); // first request should change it to foobar
-		$this->assertEquals('barfoo', $responses[1]->result->data->title); // second request should change it to barfoo
-		*/
+		// first retrieve both requests
+		// (therefore no files are left behind if a test fails)
+		$responses1 = $this->getAsyncResponse($clientId, 1);
+		$responses2 = $this->getAsyncResponse($clientId, 2);
 
 		// Check that the first response returned a result
-		$responses = $this->getAsyncResponse($clientId, 1);
-		$this->assertCount(1, $responses);
+		$this->assertCount(1, $responses1);
 		$this->assertTrue(
-			isset($responses[0]->result->data),
-			'Expected an result for first request, instead $responses is '.print_r($responses,true)
+			isset($responses1[0]->result->data),
+			'Expected an result for first request, instead $responses1 is '.print_r($responses1,true)
 		);
-		$this->assertEquals('foobar', $responses[0]->result->data->title); // first request should change it to foobar
+		$this->assertEquals('foobar', $responses1[0]->result->data->title); // first request should change it to foobar
 
-		// now the client retries the second request
-		$responses = $this->fakeRequest($clientId, 2, 1001, 'barfoo');
-		$this->assertCount(1, $responses);
+		// Check that the second response returned a result
+		$this->assertCount(1, $responses2);
 		$this->assertTrue(
-			isset($responses[0]->result->data),
-			'Expected an result for first request, instead $responses is '.print_r($responses,true)
+			isset($responses2[0]->result->data),
+			'Expected an result for first request, instead $responses2 is '.print_r($responses2,true)
 		);
-		$this->assertEquals('barfoo', $responses[0]->result->data->title); // second request should change it to barfoo
+		$this->assertEquals('barfoo', $responses2[0]->result->data->title); // second request should change it to barfoo
 
 		// Read article from database and check if the value is correct.
 		$article = ClassRegistry::init('Article');

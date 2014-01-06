@@ -52,23 +52,31 @@ class BanchaConsistencyProvider {
 	public function validates($clientId, $tid) {
 		$this->clientId = $clientId;
 		$tid = intval($tid);
+		$this->tid = $tid;
 
 		// Check if we have an old id from this client
 		$savedTid = $this->getTid();
 
-		// Check if another request is currently processing
-		if($savedTid == 'x') {
-			// yes, so skip this request
-			$this->tid = false;
-			return false;
-		}
-
-		// Check if the request wasn't yet handled
+		// Check if the request was already handled
 		if ($savedTid && $savedTid>=$tid) {
 			// this request was already handled, so discard it
 			$this->tid = false;
 			return false;
 		}
+
+		// Check if another request is currently processing
+		while($savedTid == 'x') {
+			// yes, so wait for our turn
+			// Note: This is currently a super simple implementation
+			// it would be better to add the request to a ACID database
+			// and retrieve it later.
+			sleep(0.3);
+			// retrieve again
+			$savedTid = $this->getTid();
+		}
+
+		// keep a local reference for finalizing
+		$this->tid = $tid;
 
 		// Since Ext.Direct will always send all open requests and these are ordered by tid
 		// we don't need to worry that when one request was finished (e.g. tid 1) and the new one has a higher tid
@@ -79,8 +87,6 @@ class BanchaConsistencyProvider {
 		// Set the tid to 'x', so that no other request can be handled in parallel
 		$this->saveTid('x');
 
-		// keep a local reference for finalizing
-		$this->tid = $tid;
 
 		// process it
 		return true;
