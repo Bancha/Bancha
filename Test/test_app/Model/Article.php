@@ -20,12 +20,10 @@
  * @since         Bancha v 2.1.0
  */
 class Article extends AppModel {
-	/**
-	 * Behaviors
-	 */
-	
+/**
+ * Behaviors
+ */
 	public $actsAs = array('Bancha.BanchaRemotable');
-
 
 /**
  * Validation rules

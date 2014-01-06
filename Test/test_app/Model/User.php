@@ -20,9 +20,9 @@
  * @since         Bancha v 2.1.0
  */
 class User extends AppModel {
-	/**
-	 * Bancha behavior
-	 */
+/**
+ * Bancha behavior
+ */
 	public $actsAs = array('Bancha.BanchaRemotable');
 	
 /**
