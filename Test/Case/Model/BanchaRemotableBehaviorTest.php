@@ -1853,6 +1853,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 		// check results
 		$this->assertEqual($result['idProperty'], 'id');
+		$this->assertEquals($result['displayField'], 'title');
 		$this->assertEqual(count($result['fields']), 7);
 		$this->assertEqual(count($result['validations']), 3);
 		$this->assertEqual(count($result['associations']), 3);

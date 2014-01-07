@@ -26,6 +26,13 @@ class User extends AppModel {
 	public $actsAs = array('Bancha.BanchaRemotable');
 	
 /**
+ * Display field
+ *
+ * @var string
+ */
+    public $displayField = 'name';
+
+/**
  * Validation rules
  *
  * @var array

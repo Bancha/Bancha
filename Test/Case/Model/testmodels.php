@@ -24,6 +24,7 @@
  */
 class TestArticle extends CakeTestModel {
 	public $name = 'Article';
+    public $displayField = 'title';
 	public $useTable = false;
 	public $order = array('name.order' => 'ASC');
 

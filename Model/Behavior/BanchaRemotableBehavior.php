@@ -178,6 +178,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		$ExtMetaData = array (
 			'idProperty' => 'id',
+			'displayField' => $Model->displayField ? $Model->displayField : null,
 			'fields' => $fields,
 			'validations' => $validations,
 			'associations' => $associations,

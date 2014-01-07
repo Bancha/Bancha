@@ -157,6 +157,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		// test meta data structure
 		$this->assertEquals('id', $api->metadata->User->idProperty);
+		$this->assertEquals('name', $api->metadata->User->displayField);
 		$this->assertTrue(is_array($api->metadata->User->fields));
 		$this->assertTrue(is_array($api->metadata->User->validations));
 		$this->assertTrue(is_array($api->metadata->User->associations));
