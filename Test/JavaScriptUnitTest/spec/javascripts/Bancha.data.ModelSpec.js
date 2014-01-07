@@ -239,7 +239,7 @@ describe("Bancha.data.Model tests", function() {
         expect(rec.idProperty || rec.getIdProperty()).toEqual('login');
 
         // test that the display field is set correctly
-        expect(rec.displayField).toEqual('name');
+        expect(rec.getDisplayField()).toEqual('name');
     });
 
 

@@ -46,12 +46,17 @@ Ext.define('Bancha.data.Model', {
     bancha: false,
 
     /**
-     * @property {String|Null}
-     * Bancha automatically sets the displayField, retrieved from the
-     * CakePHP model configuation on a per model-bases.
-     * Null, if no displayField is set.
+     * Retrieve the displayField, originally set from CakePHP model configuration.
+     * @param {String|Null} The current display field value
      */
-    displayField: null,
+    getDisplayField: function() {
+        // to access the value from a record directly
+        if(Ext.versions.touch) {
+            return this.self.displayField;
+        } else {
+            return this.displayField;
+        }
+    },
 
     /**
      * For Ext JS:
@@ -174,6 +179,9 @@ Ext.define('Bancha.data.Model', {
             }
             //</debug>
 
+            // add all class statics for Bancha models
+            modelCls.addStatics(this.extendedClassStatics);
+
             // configure the new model
             config = Bancha.getModelMetaData(modelName);
 
@@ -202,9 +210,6 @@ Ext.define('Bancha.data.Model', {
 
             // set the Bancha proxy
             modelCls.setProxy(this.createBanchaProxy(modelCls, modelName));
-
-            // add all class statics for Bancha models
-            modelCls.addStatics(this.extendedClassStatics);
         },
 
         /**
@@ -236,6 +241,29 @@ Ext.define('Bancha.data.Model', {
             setForceConsistency: function(forceConsistency) {
                 // this function exists for support of all Ext JS versions
                 this.forceConsistency = forceConsistency;
+            },
+            /**
+             * @cfg {String|Null}
+             * Bancha automatically sets the displayField, retrieved from the
+             * CakePHP model configuation on a per model-bases.
+             * Null, if no displayField is set.
+             */
+            displayField: null,
+            /**
+             * Retrieve the displayField, originally set from CakePHP model configuration.
+             * @param {String|Null} The current display field value
+             */
+            getDisplayField: function() {
+                // this function exists for support of all Ext JS versions
+                return this.displayField;
+            },
+            /**
+             * Change the displayField.
+             * @param {String|Null} displayField The new display field value
+             */
+            setDisplayField: function(displayField) {
+                // this function exists for support of all Ext JS versions
+                this.displayField = displayField;
             }
         },
 
