@@ -49,6 +49,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
         _ServerDebugLevel: 0, // set the debug level to zero to suppress Banchas debug error handling
         User: {
             idProperty: 'id',
+            displayField: 'name',
             fields: [
                 {name:'id', type:'int'},
                 {name:'name', type:'string'},
@@ -78,6 +79,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
         }, //eo User
         'TestPlugin.PluginTest': {
             idProperty: 'id',
+            displayField: null,
             fields: [
                 {name:'id', type:'int'}
             ],

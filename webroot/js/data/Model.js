@@ -46,6 +46,14 @@ Ext.define('Bancha.data.Model', {
     bancha: false,
 
     /**
+     * @property {String|Null}
+     * Bancha automatically sets the displayField, retrieved from the
+     * CakePHP model configuation on a per model-bases.
+     * Null, if no displayField is set.
+     */
+    displayField: null,
+
+    /**
      * For Ext JS:
      * Every time a new subclass is created, this function will apply all Bancha model configurations.
      *
@@ -183,18 +191,19 @@ Ext.define('Bancha.data.Model', {
             if(Ext.versions.touch) {
                 modelCls.setAssociations(config.associations);
                 modelCls.setIdProperty(config.idProperty);
+                modelCls.setDisplayField(config.displayField);
                 modelCls.setValidations(config.validations);
             } else {
                 extJsOnClassExtendedData.associations = config.associations;
                 extJsOnClassExtendedData.idProperty = config.idProperty;
+                extJsOnClassExtendedData.displayField = config.displayField;
                 extJsOnClassExtendedData.validations = config.validations;
             }
 
             // set the Bancha proxy
             modelCls.setProxy(this.createBanchaProxy(modelCls, modelName));
 
-
-            // in the end add all class statics for Bancha models
+            // add all class statics for Bancha models
             modelCls.addStatics(this.extendedClassStatics);
         },
 

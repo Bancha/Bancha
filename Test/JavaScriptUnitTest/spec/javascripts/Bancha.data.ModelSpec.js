@@ -210,7 +210,7 @@ describe("Bancha.data.Model tests", function() {
         expect((posts.model || posts.getModel()).getName()).toEqual('Bancha.test.model.Post');
     });
 
-    it("should set the fields and idProperty on Bancha models (integrative test)", function() {
+    it("should set the fields, idProperty and displayField on Bancha models (integrative test)", function() {
         // setup model metadata
         h.init('ModelTestSchema2');
 
@@ -237,6 +237,9 @@ describe("Bancha.data.Model tests", function() {
 
         // test that the id property is set correctly
         expect(rec.idProperty || rec.getIdProperty()).toEqual('login');
+
+        // test that the display field is set correctly
+        expect(rec.displayField).toEqual('name');
     });
 
 
