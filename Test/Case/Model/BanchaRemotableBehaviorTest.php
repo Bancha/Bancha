@@ -18,9 +18,10 @@ if (!defined('CAKEPHP_UNIT_TEST_EXECUTION')) {
 }
 
 App::uses('AppModel', 'Model');
-require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the testModel
+require_once(dirname(__FILE__) . DS . 'testmodels.php');  //here we get the TestModel
 
 App::uses('BanchaRemotableBehavior', 'Bancha.Model/Behavior');
+App::uses('TreeBehavior', 'Model/Behavior');
 
 /**
  * Exposed protected methods from ExposedMethodsBanchaRemotable for unit testing.
@@ -32,6 +33,19 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
 	public function normalizeValidationRules($rules) {
 		return $this->_normalizeValidationRules($rules);
 	}
+}
+
+/**
+ * Used to test the TreeBehavior
+ */
+class RemotableTestTreeModel extends AppModel {
+	public $actsAs = array('Tree');
+}
+/**
+ * Used to test the TreeBehavior
+ */
+class RemotableTestTreeModelWithSpecialParentId extends AppModel {
+	public $actsAs = array('Tree'=>array('parent' => 'mother_id'));
 }
 
 /**
@@ -767,6 +781,67 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 			)
 		);
 		$this->assertEqual($expected, $model->validate['title']);
+	}
+
+	/**
+	 * If a model used the TreeBehavior, then the parent_id should be mapped 
+	 * to the Ext JS parentId field.
+	 */
+	public function testGetColumnTypeTreeParentId() {
+
+		// prepare
+		$banchaRemotable = new BanchaRemotableBehavior();
+		$cakeFieldConfig = array(
+			'type' => 'string',
+			'null' => true,
+			'default' => null
+		);
+
+		// test that nothing happens without the tree behavior attached
+		$expecedSenchaConfig = array(
+			'type' => 'string',
+			'allowNull' => true,
+			'defaultValue' => '',
+			'name' => 'parent_id',
+		);
+		$result = $banchaRemotable->getColumnType($this->getMock('Model'), 'parent_id', $cakeFieldConfig);
+		$this->assertEqual($result, $expecedSenchaConfig);
+
+		// add the tree behavior and now expect transformed column
+		$expecedSenchaConfig = array(
+			'name' => 'parentId',
+			'mapping' => 'parent_id',
+			'type' => 'auto',
+			'allowNull' => true,
+			'defaultValue' => null
+		);
+		$result = $banchaRemotable->getColumnType(new RemotableTestTreeModel(), 'parent_id', $cakeFieldConfig);
+		$this->assertEqual($result, $expecedSenchaConfig);
+
+
+		// test with non-default parent id
+		$model = new RemotableTestTreeModelWithSpecialParentId();
+
+		// test that default parent_id is not transformed
+		$expecedSenchaConfig = array(
+			'type' => 'string',
+			'allowNull' => true,
+			'defaultValue' => '',
+			'name' => 'parent_id',
+		);
+		$result = $banchaRemotable->getColumnType($model, 'parent_id', $cakeFieldConfig);
+		$this->assertEqual($result, $expecedSenchaConfig);
+
+		// test that special parent id is transformed
+		$expecedSenchaConfig = array(
+			'name' => 'parentId',
+			'mapping' => 'mother_id',
+			'type' => 'auto',
+			'allowNull' => true,
+			'defaultValue' => null
+		);
+		$result = $banchaRemotable->getColumnType($model, 'mother_id', $cakeFieldConfig);
+		$this->assertEqual($result, $expecedSenchaConfig);
 	}
 
 	/**

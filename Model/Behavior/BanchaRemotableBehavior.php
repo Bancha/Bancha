@@ -434,6 +434,18 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$fieldSchema['default'] = '';
 		}
 
+		if(isset($Model->Behaviors->Tree) && $Model->Behaviors->Tree->settings[$Model->alias]['parent'] == $fieldName) {
+			// map CakePHP tree behavior parent to Sencha Touch/Ext JS parent
+			// the response transformation happens in the client TreeParentIdTransformedJson writer
+			return array(
+				'name' => 'parentId',
+				'mapping' => $Model->Behaviors->Tree->settings[$Model->alias]['parent'],
+				'type' => 'auto',
+				'allowNull' => true,
+				'defaultValue' => $fieldSchema['default']
+			);
+		}
+
 		// handle normal fields
 		return array_merge(
 			array(
