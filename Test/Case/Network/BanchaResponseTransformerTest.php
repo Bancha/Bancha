@@ -22,7 +22,13 @@ App::uses('BanchaResponseTransformer', 'Bancha.Bancha/Network');
  * @since         Bancha v 0.9.0
  */
 class BanchaResponseTransformerTest extends CakeTestCase {
-	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
+	public $fixtures = array(
+		'plugin.bancha.article',
+		'plugin.bancha.category',
+		'plugin.bancha.user',
+		'plugin.bancha.tag',
+		'plugin.bancha.articles_tag'
+	);
 
 /**
  * Test how the BanchaResponseTransformer handles primitive and non-primitive
@@ -624,5 +630,147 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		$this->assertEquals('CakePHP', $result['data'][0]['tags'][0]['string']);
 		$this->assertEquals(2, $result['data'][0]['tags'][1]['id']);
 		$this->assertEquals('Bancha', $result['data'][0]['tags'][1]['string']);
+	}
+
+/**
+ * Tests the transform() method for threaded data with multiple records
+ */
+	public function testTransformThreadedRecordSet() {
+
+		// response "generated" by CakePHP
+		$cakeResponse = array(
+			array(
+				'Category' => array(
+					'name' => 'My Categories',
+					'id' => 1,
+					'parent_id' => null,
+					'lft' => 1,
+					'rght' => 30,
+				),
+				'User' => array( // include associated data in the test
+					'id' => 1,
+					'login' => 'mario',
+					'password' => 'this should be excluded'
+				),
+				'children' => array(
+					array(
+						'Category' => array(
+							'name' => 'Fun',
+							'id' => 2,
+							'parent_id' => 1,
+							'lft' => 2,
+							'rght' => 15,
+						),
+						'Article' => array( // included associated records sets
+							array(
+								'id' => 1,
+								'title' => 'My Article 1',
+							),
+							array(
+								'id' => 2,
+								'title' => 'My Article 2',
+							)
+						),
+						'children' => array(
+							array(
+								'Category' => array(
+									'name' => 'Sport',
+									'id' => 3,
+									'parent_id' => 2,
+									'lft' => 3,
+									'rght' => 8,
+								),
+								'children' => array()
+							),
+						)
+					),
+					array(
+						'Category' => array(
+							'name' => 'Work',
+							'id' => 9,
+							'parent_id' => 1,
+							'lft' => 16,
+							'rght' => 29,
+						),
+						'children' => array()
+					)
+				)
+			)
+		);
+
+		// load the models and behaviors
+		$categoryModel = ClassRegistry::init('Category');
+		$categoryModel->Behaviors->load('Bancha.BanchaRemotable');
+		$userModel = ClassRegistry::init('User');
+		$userModel->Behaviors->load('Bancha.BanchaRemotable', array(
+			'excludedFields' => array('password')
+		));
+		$articleModel = ClassRegistry::init('Article');
+		$articleModel->Behaviors->load('Bancha.BanchaRemotable');
+
+		$request = new CakeRequest();
+		$request->addParams(array(
+			'controller' => 'Categories',
+			'action'     => 'index',
+		));
+
+		// Response expected by Ext JS (in JSON).
+		$expectedResponse = array(
+			'success' => true,
+			'data' => array(
+				array(
+					'name' => 'My Categories',
+					'id' => 1,
+					'parent_id' => null,
+					'lft' => 1,
+					'rght' => 30,
+					'user' => array( // include associated data in the test
+						'id' => 1,
+						'login' => 'mario'
+					),
+					'data' => array(
+						array(
+							'name' => 'Fun',
+							'id' => 2,
+							'parent_id' => 1,
+							'lft' => 2,
+							'rght' => 15,
+							'articles' => array( // included associated records sets
+								array(
+									'id' => 1,
+									'title' => 'My Article 1',
+								),
+								array(
+									'id' => 2,
+									'title' => 'My Article 2',
+								)
+							),
+							'data' => array(
+								array(
+									'name' => 'Sport',
+									'id' => 3,
+									'parent_id' => 2,
+									'lft' => 3,
+									'rght' => 8,
+									'leaf' => true // instead of the empty children array
+								),
+							)
+						),
+						array(
+							'name' => 'Work',
+							'id' => 9,
+							'parent_id' => 1,
+							'lft' => 16,
+							'rght' => 29,
+							'leaf' => true // instead of the empty children array
+						)
+					)
+				)
+			)
+		);
+
+		$result = BanchaResponseTransformer::transform($cakeResponse, $request);
+		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got '.print_r($result,true));
+		$this->assertEquals($expectedResponse, $result);
 	}
 }

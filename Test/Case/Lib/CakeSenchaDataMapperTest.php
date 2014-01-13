@@ -429,7 +429,7 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
 		$mapper->walk(array($this, 'walkerCallback'));
 
-		$this->assertEquals($this->walkerResult, $expectedResult);
+		$this->assertEquals($expectedResult, $this->walkerResult);
 	}
 	private $walkerResult = false;
 	public function walkerCallback($modelName, $data) {
@@ -486,6 +486,13 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 					'Article'=> 3,
 					'User' => 3,
 					'Tag' => 5
+				)
+			),
+			array(
+				$this->threadedRecordSet,
+				array(
+					'ModelName' => 3,
+					'AssocitedModelName' => 3
 				)
 			),
 		);

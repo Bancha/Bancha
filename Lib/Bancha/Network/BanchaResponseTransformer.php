@@ -132,11 +132,17 @@ class BanchaResponseTransformer {
 
 			// filter the records
 			$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
-			$senchaModelName = lcfirst($modelName);
 
-			// flatten the result
+			if($mapper->isThreadedRecordSet()) {
+				// if the response is threaded, the walker already transformed the data
+				$senchaResponse['data'] = $response;
+				return $senchaResponse;
+			}
+
+			// for normal responses, flatten the result here
 			$conversionSuccessfull = true;
 			$data = array();
+			$senchaModelName = lcfirst($modelName);
 			foreach($response as $record) {
 				if(!isset($record[$senchaModelName]) || !is_array($record[$senchaModelName])) {
 					// there are entries which does not have data, strange
@@ -162,7 +168,7 @@ class BanchaResponseTransformer {
 		} else if($mapper->isPaginatedSet()) {
 			// this is a paging response
 
-			// the records have standard cake structure, so get them by using this function
+			// the records have a standard cake structure, so get them by using this function
 			$data = BanchaResponseTransformer::transformDataStructureToSencha($response['records'], $modelName);
 			// now add only the data to the response
 			$senchaResponse['data'] = $data['data'];

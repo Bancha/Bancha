@@ -153,12 +153,35 @@ class CakeSenchaDataMapper {
 				continue;
 			}
 
+			if(is_numeric($key) && array_key_exists('children', $value) && is_array($value['children'])) {
+				// there is a numeric key (=record set) with an children array, therefore:
+				// this is a threaded find on a tree, transform accordingly
+				// there should be one primary record, maybe associated records and a children array
+
+				// primary model data should be dirctly applied
+				$newData = array_pop($this->_walk($callable, array($this->_primary=>$value[$this->_primary])));
+
+				// handle the children
+				if(count($value['children']) == 0) {
+					$newData['leaf'] = true; // this is a leaf, add the flag instead of a children
+				} else {
+					$newData['data'] = $this->_walk($callable, $value['children']); // add the children
+				}
+
+				// transform the associated records
+				unset($value[$this->_primary]);
+				unset($value['children']);
+				$associatedData = $this->_walk($callable, $value);
+
+				$data[$key] = array_merge($newData, $associatedData);
+				continue;
+			}
+
 			if(is_numeric($key)) {
 				// we are currently in a set of records, these are primary models
 				$data[$key] = $this->_walk($callable, $value);
 				continue;
 			}
-
 
 			// found new record
 			// key is the model name, value is the data
