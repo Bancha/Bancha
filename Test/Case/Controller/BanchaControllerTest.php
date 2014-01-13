@@ -26,7 +26,13 @@ App::uses('BanchaRequestCollection', 'Bancha.Bancha/Network');
  */
 class BanchaControllerTest extends ControllerTestCase {
 
-	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
+	public $fixtures = array(
+		'plugin.bancha.article',
+		'plugin.bancha.articles_tag',
+		'plugin.bancha.category',
+		'plugin.bancha.user',
+		'plugin.bancha.tag'
+	);
 
 	/**
 	 * Keeps a reference to the default paths, since
@@ -82,6 +88,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check exposed methods
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Category));
 		$this->assertTrue(isset($api->actions->Tag));
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
@@ -117,6 +124,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($api->actions->{'TestPlugin.PluginTest'})); // plugin controller
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Category));
 		$this->assertTrue(isset($api->actions->Tag));
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
@@ -142,6 +150,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that all direct methods are exposed
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Category));
 		$this->assertTrue(isset($api->actions->Tag));
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
@@ -150,6 +159,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that only requested metadata is send
 		$this->assertFalse(isset($api->metadata->Article));
 		$this->assertFalse(isset($api->metadata->ArticlesTag));
+		$this->assertFalse(isset($api->metadata->Category));
 		$this->assertFalse(isset($api->metadata->Tag));
 		$this->assertTrue(isset($api->metadata->User)); // <-- this should be available
 		$this->assertFalse(isset($api->metadata->HelloWorld));
@@ -177,6 +187,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that all direct methods are exposed
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Category));
 		$this->assertTrue(isset($api->actions->Tag));
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
@@ -185,6 +196,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that only requested metadata is send
 		$this->assertTrue(isset($api->metadata->Article)); // <-- this should be available
 		$this->assertFalse(isset($api->metadata->ArticlesTag));
+		$this->assertFalse(isset($api->metadata->Category));
 		$this->assertFalse(isset($api->metadata->Tag));
 		$this->assertTrue(isset($api->metadata->User)); // <-- this should be available
 		$this->assertFalse(isset($api->metadata->HelloWorld));
@@ -203,6 +215,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that all direct methods are exposed
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Category));
 		$this->assertTrue(isset($api->actions->Tag));
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
@@ -211,6 +224,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that only requested metadata is send
 		$this->assertTrue(isset($api->metadata->Article));
 		$this->assertTrue(isset($api->metadata->ArticlesTag));
+		$this->assertTrue(isset($api->metadata->Category));
 		$this->assertTrue(isset($api->metadata->Tag));
 		$this->assertTrue(isset($api->metadata->User));
 		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data
@@ -237,6 +251,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that no metadata is send
 		$this->assertFalse(isset($api->metadata->Article));
 		$this->assertFalse(isset($api->metadata->ArticlesTag));
+		$this->assertFalse(isset($api->metadata->Category));
 		$this->assertFalse(isset($api->metadata->Tag));
 		$this->assertFalse(isset($api->metadata->User));
 		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data
@@ -263,6 +278,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that only requested metadata is send
 		$this->assertTrue(isset($api->metadata->Article));
 		$this->assertTrue(isset($api->metadata->ArticlesTag));
+		$this->assertTrue(isset($api->metadata->Category));
 		$this->assertTrue(isset($api->metadata->Tag));
 		$this->assertTrue(isset($api->metadata->User));
 		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data
@@ -304,6 +320,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that all direct methods are exposed
 		$this->assertTrue(isset($api->actions->Article));
 		$this->assertTrue(isset($api->actions->ArticlesTag));
+		$this->assertTrue(isset($api->actions->Category));
 		$this->assertTrue(isset($api->actions->Tag));
 		$this->assertTrue(isset($api->actions->User));
 		$this->assertTrue(isset($api->actions->HelloWorld));
@@ -312,6 +329,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// check that all metadata is exposed
 		$this->assertTrue(isset($api->metadata->Article));
 		$this->assertTrue(isset($api->metadata->ArticlesTag));
+		$this->assertTrue(isset($api->metadata->Category));
 		$this->assertTrue(isset($api->metadata->Tag));
 		$this->assertTrue(isset($api->metadata->User));
 		$this->assertFalse(isset($api->metadata->HelloWorld)); // there is no exposed model, so no meta data

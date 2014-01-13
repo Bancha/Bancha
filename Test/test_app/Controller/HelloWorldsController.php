@@ -12,6 +12,7 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 App::uses('Controller', 'Controller');
+App::uses('AppController', 'Controller');
 
 /**
  * HelloWorlds Controller
