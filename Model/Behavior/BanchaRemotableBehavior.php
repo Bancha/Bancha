@@ -281,7 +281,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// only use the exposed fields
 		$result = array();
 		foreach ($this->getExposedFields($Model) as $fieldName) {
-			if(isset($recData[$fieldName])) {
+			if(array_key_exists($fieldName, $recData)) { // isset would ignore null value, which we want to send
 				// transforms integers to type int
 				// This is necessary when a form loads fields like user_id,
 				// which need to be a integer
