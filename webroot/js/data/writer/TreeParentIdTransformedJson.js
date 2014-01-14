@@ -3,7 +3,7 @@
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
- * @package       Bancha
+ * @package       Bancha.data.writer
  * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
  * @since         Bancha v 0.0.2
@@ -15,33 +15,30 @@
 
 /**
  * @private
- * @class Bancha.data.writer.ConsistentJson
+ * @class Bancha.data.writer.TreeParentIdTransformedJson
  *
  * This should only be used by Bancha internally,
- * it adds the consistent uid to all requests.
+ * it transforms the Sencha Touch/Ext JS tree parentId into
+ * the CakePHP parent_id.
+ * 
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
-Ext.define('Bancha.data.writer.ConsistentJson', {
-    extend: 'Bancha.data.writer.TreeParentIdTransformedJson',
+Ext.define('Bancha.data.writer.TreeParentIdTransformedJson', {
+    extend: 'Bancha.data.writer.JsonWithDateTime',
     alias: 'writer.consitentjson',
-
-    /**
-     * @private
-     * @cfg
-     * the name of the field to send the consistent uid in
-     */
-    uidProperty: '__bcid',
 
     //inherit docs
     getRecordData: function(record, operation) {
 
-        // let the json writer do all the work:
+        // let the json writer do all the work
         var data = this.callParent(arguments);
 
-        // now simply add the client id
-        if(Ext.ClassManager.getClass(record).getForceConsistency()) {
-            data[this.uidProperty] = Bancha.getConsistentUid();
+        if(record.isNode && data.parentId) {
+            // this is a tree node and data needs transformation
+            var field = record.fields.get('parentId').mapping; // get the CakePHP parentId field name
+            data[field] = data.parentId;
+            delete data.parentId;
         }
 
         return data;
