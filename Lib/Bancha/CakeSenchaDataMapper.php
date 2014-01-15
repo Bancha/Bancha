@@ -159,8 +159,9 @@ class CakeSenchaDataMapper {
 				// there should be one primary record, maybe associated records and a children array
 
 				// primary model data should be dirctly applied
-				$primaryData = array($this->_primary=>$value[$this->_primary]);
-				$newData = array_pop($this->_walk($callable, $primaryData));
+				$primaryData = array($this->_primary=>$value[$this->_primary]); // walk only though primary data
+				$primaryData = $this->_walk($callable, $primaryData);
+				$newData = array_pop($primaryData); // primary data lies directly inside the data
 
 				// handle the children
 				if(count($value['children']) == 0) {
