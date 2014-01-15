@@ -43,62 +43,37 @@ env:
 matrix:
   fast_finish: true
   exclude:
-    # test everything only on PHP 5.5 (all databases, Sencha Touch and Ext JS)
-    - php: 5.2
+    # test everything on PHP 5.5 (legacy CakePHP, all databases, Sencha Touch and Ext JS)
     - php: 5.3
     - php: 5.4
+    - php: 5.5
   include:
-    # test mysql with all CakePHP on PHP 5.2
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=master
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.4.0
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.3.8
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.3.0
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.2.8
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.2.0
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.1.5
-    - php: 5.2
-      env: DB=mysql CAKEPHP_VERSION=2.1.0
-    # test mysql with all CakePHP on PHP 5.2
+    # Test all newer CakePHP versions on PHP 5.3
     - php: 5.3
       env: DB=mysql CAKEPHP_VERSION=master
     - php: 5.3
       env: DB=mysql CAKEPHP_VERSION=2.4.0
     - php: 5.3
       env: DB=mysql CAKEPHP_VERSION=2.3.8
-    - php: 5.3
-      env: DB=mysql CAKEPHP_VERSION=2.3.0
-    - php: 5.3
-      env: DB=mysql CAKEPHP_VERSION=2.2.8
-    - php: 5.3
-      env: DB=mysql CAKEPHP_VERSION=2.2.0
-    - php: 5.3
-      env: DB=mysql CAKEPHP_VERSION=2.1.5
-    - php: 5.3
-      env: DB=mysql CAKEPHP_VERSION=2.1.0
-    # test mysql with all CakePHP on PHP 5.2
+    # Test all newer CakePHP versions on PHP 5.4
     - php: 5.4
       env: DB=mysql CAKEPHP_VERSION=master
     - php: 5.4
       env: DB=mysql CAKEPHP_VERSION=2.4.0
     - php: 5.4
       env: DB=mysql CAKEPHP_VERSION=2.3.8
-    - php: 5.4
-      env: DB=mysql CAKEPHP_VERSION=2.3.0
-    - php: 5.4
-      env: DB=mysql CAKEPHP_VERSION=2.2.8
-    - php: 5.4
-      env: DB=mysql CAKEPHP_VERSION=2.2.0
-    - php: 5.4
-      env: DB=mysql CAKEPHP_VERSION=2.1.5
-    - php: 5.4
-      env: DB=mysql CAKEPHP_VERSION=2.1.0
+    # Test all newer CakePHP versions on PHP 5.5
+    - php: 5.5
+      env: DB=mysql CAKEPHP_VERSION=master
+    - php: 5.5
+      env: DB=mysql CAKEPHP_VERSION=2.4.0
+    - php: 5.5
+      env: DB=mysql CAKEPHP_VERSION=2.3.8
+    # Test all databases on PHP 5.5
+    - php: 5.5
+      env: DB=pgsql CAKEPHP_VERSION=master
+    - php: 5.5
+      env: DB=sqlite CAKEPHP_VERSION=master
 
 branches:
   only:
@@ -206,9 +181,9 @@ before_script:
   - mv ./Bancha ./cakephp/app/Plugin/ #move the Bancha Plugin to its destined directory
   - cd ./cakephp # move into the directory for execution
 
-  # CakePHP needs PHPUnit 3.7, Travis updated to PHPUnit 4
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer global require 'phpunit/phpunit=3.7.33'; fi"
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then ln -s ~/.composer/vendor/phpunit/phpunit/PHPUnit ./vendors/PHPUnit; fi"
+  # CakePHP needs PHPUnit 3.7, Travis updated to PHPUnit 4 for PHP 5.2+
+  - sh -c "if [ $CAKEPHP_VERSION -a '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer global require 'phpunit/phpunit=3.7.33'; fi"
+  - sh -c "if [ $CAKEPHP_VERSION -a '$TRAVIS_PHP_VERSION' != '5.2' ]; then ln -s ~/.composer/vendor/phpunit/phpunit/PHPUnit ./vendors/PHPUnit; fi"
 
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
