@@ -1,13 +1,9 @@
 language: php
 
 php:
-  - 5.2
-  - 5.3
-  - 5.4
-  - 5.5
+  - 5.2 # test everything on PHP 5.2 (legacy CakePHP, all databases, Sencha Touch and Ext JS)
 
 env:
-  # CakePHP and ExtJS and Sencha Touch versions are independent from each other
   - TOUCH_VERSION=2.3.1a
   - TOUCH_VERSION=2.3.0
   - TOUCH_VERSION=2.2.1
@@ -42,11 +38,6 @@ env:
 
 matrix:
   fast_finish: true
-  exclude:
-    # test everything on PHP 5.5 (legacy CakePHP, all databases, Sencha Touch and Ext JS)
-    - php: 5.3
-    - php: 5.4
-    - php: 5.5
   include:
     # Test all newer CakePHP versions on PHP 5.3
     - php: 5.3
