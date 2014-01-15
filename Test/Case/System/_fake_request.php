@@ -22,7 +22,7 @@ define('DS', DIRECTORY_SEPARATOR);
 
 // Bancha plugin can be inside the app folder, or outside
 $pathToBancha = realpath(dirname(__FILE__) . '/../../..'); // Bancha/Test/Case/System/_fake_request.php
-if(basename(realpath($pathToBancha . '/..')) == 'Plugin') {
+if (basename(realpath($pathToBancha . '/..')) == 'Plugin') {
 	// app/Plugin/Bancha
 	define('ROOT', realpath($pathToBancha . '/../../..'));
 } else {

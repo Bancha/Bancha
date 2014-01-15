@@ -127,7 +127,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  */
 	public function setup(Model $Model, $settings = array()) {
 		// apply configs
-		if(!is_array($settings)) {
+		if (!is_array($settings)) {
 			throw new CakeException("Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration");
 		}
 		$settings = array_merge($this->_defaults, $settings);
@@ -143,7 +143,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function extractBanchaMetaData(Model $Model) {
 
 		//<bancha-basic>
-		if(Configure::read('Bancha.isPro')==false) {
+		if (Configure::read('Bancha.isPro') == false) {
 			return array();
 		}
 		//</bancha-basic>
@@ -198,7 +198,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$settings = $this->_settings[$Model->alias];
 
 		// cache pattern
-		if(isset($settings['_computedExposedFields'])) {
+		if (isset($settings['_computedExposedFields'])) {
 			return $settings['_computedExposedFields'];
 		}
 
@@ -209,12 +209,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 
 		// if exposedFields is an array, match
-		if(isset($settings['exposedFields']) && is_array($settings['exposedFields'])) {
+		if (isset($settings['exposedFields']) && is_array($settings['exposedFields'])) {
 			// remove all fields which are not in exposedFields
 			$fields = array_intersect($fields, $settings['exposedFields']);
 
 			// In debug mode check if all exposed fields are valid
-			if(Configure::read('debug')>0 && (count($fields)<count($settings['exposedFields']))) {
+			if (Configure::read('debug')>0 && (count($fields)<count($settings['exposedFields']))) {
 				$wrongNames = array_diff($settings['exposedFields'], $fields);
 				throw new CakeException(
 					"Bancha: You have configured the BanchaRemotable to expose following fields for ".$Model->name.
@@ -226,12 +226,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// if excludedFields is an array, exclude those
-		if(isset($settings['excludedFields']) && is_array($settings['excludedFields'])) {
+		if (isset($settings['excludedFields']) && is_array($settings['excludedFields'])) {
 
 			// In debug mode check if all exposed fields are valid
-			if(Configure::read('debug')>0) {
+			if (Configure::read('debug')>0) {
 				$wrongNames = array_diff($settings['excludedFields'], $fields);
-				if(count($wrongNames)) {
+				if (count($wrongNames)) {
 					throw new CakeException(
 						"Bancha: You have configured the BanchaRemotable to exclude following fields for ".$Model->name.
 						" which do not exist in the schema: ".print_r($wrongNames,true).
@@ -281,11 +281,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// only use the exposed fields
 		$result = array();
 		foreach ($this->getExposedFields($Model) as $fieldName) {
-			if(array_key_exists($fieldName, $recData)) { // isset would ignore null value, which we want to send
+			if (array_key_exists($fieldName, $recData)) { // isset would ignore null value, which we want to send
 				// transforms integers to type int
 				// This is necessary when a form loads fields like user_id,
 				// which need to be a integer
-				if(ctype_digit($recData[$fieldName])) { // is integer string
+				if (ctype_digit($recData[$fieldName])) { // is integer string
 					// this looks a bit hacky, but speed is more important then
 					// doing his by checking over the models schema type
 					$recData[$fieldName] = (int) $recData[$fieldName];
@@ -298,13 +298,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$assocTypes = $Model->associations();
 		foreach ($assocTypes as $type) { // only 3 types
 			foreach($Model->{$type} as $modelName => $config) {
-				if($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+				if ($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
 					// this field is hidden from ExtJS/Sencha Touch, so also hide the associated data
 					continue;
 				}
 
 				// add associated record(s)
-				if(isset($recData[$modelName])) {
+				if (isset($recData[$modelName])) {
 					$result[$modelName] = $recData[$modelName];
 				}
 			}
@@ -338,7 +338,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$assocTypes = $Model->associations();
 		$assocs = array();
 		foreach ($assocTypes as $type) { // only 3 types
-			if($type == 'hasAndBelongsToMany') {
+			if ($type == 'hasAndBelongsToMany') {
 				// ExtJS/Sencha Touch doesn't support hasAndBelongsToMany
 				continue;
 			}
@@ -347,7 +347,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				//generate the name to retrieve associations
 				$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
 
-				if($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+				if ($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
 					// this field is hidden from ExtJS/Sencha Touch, so also hide the association
 					continue;
 				}
@@ -383,14 +383,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// add all database fields
 		foreach ($schema as $field => $fieldSchema) {
-			if($this->isExposedField($Model, $field)) {
+			if ($this->isExposedField($Model, $field)) {
 				array_push($fields, $this->getColumnType($Model, $field, $fieldSchema));
 			}
 		}
 
 		// add virtual fields
 		foreach ($Model->virtualFields as $field => $sql) {
-			if($this->isExposedField($Model, $field)) {
+			if ($this->isExposedField($Model, $field)) {
 				array_push($fields, array(
 					'name' => $field,
 					'type' => 'auto', // we can't guess the type here
@@ -411,13 +411,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// handle mysql enum field
 		$type = $fieldSchema['type'];
-		if(substr($type,0,4) == 'enum') {
+		if (substr($type,0,4) == 'enum') {
 			// find all possible options
 			preg_match_all("/'(.*?)'/", $type, $enums);
 
 			// add a new validation rule (only during api call)
 			// in a 2.0 and 2.1 compatible way
-			if(!isset($Model->validate[$fieldName])) {
+			if (!isset($Model->validate[$fieldName])) {
 				$Model->validate[$fieldName] = array();
 			}
 			$Model->validate[$fieldName]['inList'] = array(
@@ -429,12 +429,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// handle mysql timestamp default value
-		if($type=='timestamp' && $fieldSchema['default']=='CURRENT_TIMESTAMP') {
+		if ($type=='timestamp' && $fieldSchema['default']=='CURRENT_TIMESTAMP') {
 			$fieldSchema['null'] = true;
 			$fieldSchema['default'] = '';
 		}
 
-		if(isset($Model->Behaviors->Tree) && $Model->Behaviors->Tree->settings[$Model->alias]['parent'] == $fieldName) {
+		if (isset($Model->Behaviors->Tree) && $Model->Behaviors->Tree->settings[$Model->alias]['parent'] == $fieldName) {
 			// map CakePHP tree behavior parent to Sencha Touch/Ext JS parent
 			// the response transformation happens in the client TreeParentIdTransformedJson writer
 			return array(
@@ -468,7 +468,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// only use validation rules for exposed fields
 		foreach ($Model->validate as $fieldName => $fieldRules) {
-			if($this->isExposedField($Model, $fieldName)) {
+			if ($this->isExposedField($Model, $fieldName)) {
 				$rules[$fieldName] = $fieldRules;
 			}
 		}
@@ -497,7 +497,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 			$normalizedFieldRules = array();
 
-			if(is_string($fieldRules) || isset($fieldRules['rule'])) {
+			if (is_string($fieldRules) || isset($fieldRules['rule'])) {
 				// this is only one rule
 				$fieldRule = $this->_normalizeValidationRule($fieldRules);
 				$normalizedFieldRules[$fieldRule['rule'][0]] = $fieldRule;
@@ -525,7 +525,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// Transform simple rules into our normalized structure
 		// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
-		if(is_string($fieldRule)) {
+		if (is_string($fieldRule)) {
 			$fieldRule = array(
 				'rule' => array($fieldRule)
 			);
@@ -533,13 +533,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// Transform one rule per field with an string rule into our normalized structure
 		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
-		if(isset($fieldRule['rule']) && is_string($fieldRule['rule'])) {
+		if (isset($fieldRule['rule']) && is_string($fieldRule['rule'])) {
 			$fieldRule['rule'] = array($fieldRule['rule']);
 		}
 
 		// The case below is as we expect it
 		// http://book.cakephp.org/2.0/en/models/data-validation.html#one-rule-per-field
-		// if(isset($fieldRule['rule']) && is_array($fieldRule['rule'])) {
+		// if (isset($fieldRule['rule']) && is_array($fieldRule['rule'])) {
 
 		return $fieldRule;
 	}
@@ -553,13 +553,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// check if the input is required
 		$presence = false;
 		foreach($rules as $rule) {
-			if((isset($rule['required']) && $rule['required']) ||
+			if ((isset($rule['required']) && $rule['required']) ||
 			   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
 				$presence = true;
 				break;
 			}
 		}
-		if(isset($rules['notEmpty']) || $presence) {
+		if (isset($rules['notEmpty']) || $presence) {
 			$cols[] = array(
 				'type' => 'presence',
 				'field' => $fieldName,
@@ -570,7 +570,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// so we would need some business logic for that
 		// as well, maybe integrate in Bancha Scaffold
 
-		if(isset($rules['equalTo'])) {
+		if (isset($rules['equalTo'])) {
 			$cols[] = array(
 				'type' => 'inclusion',
 				'field' => $fieldName,
@@ -578,7 +578,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		if(isset($rules['boolean'])) {
+		if (isset($rules['boolean'])) {
 			$cols[] = array(
 				'type' => 'inclusion',
 				'field' => $fieldName,
@@ -586,7 +586,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		if(isset($rules['inList'])) {
+		if (isset($rules['inList'])) {
 			$cols[] = array(
 				'type' => 'inclusion',
 				'field' => $fieldName,
@@ -594,23 +594,23 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		if(isset($rules['minLength']) || isset($rules['maxLength'])) {
+		if (isset($rules['minLength']) || isset($rules['maxLength'])) {
 			$col = array(
 				'type' => 'length',
 				'field' => $fieldName,
 			);
 
-			if(isset($rules['minLength'])) {
+			if (isset($rules['minLength'])) {
 				$col['min'] = $rules['minLength']['rule'][1];
 			}
-			if(isset($rules['maxLength'])) {
+			if (isset($rules['maxLength'])) {
 				$col['max'] = $rules['maxLength']['rule'][1];
 			}
 			$cols[] = $col;
 		}
 
 		if(isset($rules['between'])) {
-			if(	isset($rules['between']['rule'][1]) ||
+			if (isset($rules['between']['rule'][1]) ||
 				isset($rules['between']['rule'][2]) ) {
 				$cols[] = array(
 					'type' => 'length',
@@ -627,7 +627,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		//TODO there is no alpha in cakephp
-		if(isset($rules['alpha'])) {
+		if (isset($rules['alpha'])) {
 			$cols[] = array(
 				'type' => 'format',
 				'field' => $fieldName,
@@ -635,7 +635,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		if(isset($rules['alphaNumeric'])) {
+		if (isset($rules['alphaNumeric'])) {
 			$cols[] = array(
 				'type' => 'format',
 				'field' => $fieldName,
@@ -643,7 +643,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		if(isset($rules['email'])) {
+		if (isset($rules['email'])) {
 			$cols[] = array(
 				'type' => 'format',
 				'field' => $fieldName,
@@ -651,7 +651,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		if(isset($rules['url'])) {
+		if (isset($rules['url'])) {
 			$cols[] = array(
 				'type' => 'format',
 				'field' => $fieldName,
@@ -660,7 +660,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// extension
-		if(isset($rules['extension'])) {
+		if (isset($rules['extension'])) {
 			$cols[] = array(
 				'type' => 'file',
 				'field' => $fieldName,
@@ -676,22 +676,22 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		);
 
 		// numberformat = precision, min, max
-		if(isset($rules['numeric']) || isset($rules['naturalNumber'])) {
-			if(isset($rules['numeric']['precision'])) {
+		if (isset($rules['numeric']) || isset($rules['naturalNumber'])) {
+			if (isset($rules['numeric']['precision'])) {
 				$numberRule['precision'] = $rules['numeric']['precision'];
 			}
-			if(isset($rules['naturalNumber'])) {
+			if (isset($rules['naturalNumber'])) {
 				$numberRule['precision'] = 0;
 			}
 
-			if(isset($rules['naturalNumber'])) {
+			if (isset($rules['naturalNumber'])) {
 				$numberRule['min'] = (isset($rules['naturalNumber']['rule'][1]) && $rules['naturalNumber']['rule'][1]==true) ? 0 : 1;
 			}
 
 			$setNumberRule = true;
 		}
 
-		if(isset($rules['range'])) {
+		if (isset($rules['range'])) {
 			// this rule is a bit ambiguous in cake, it tests like this:
 			// return ($check > $lower && $check < $upper);
 			// since ext understands it like this:
@@ -700,7 +700,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$min = $rules['range']['rule'][1];
 			$max = $rules['range']['rule'][2];
 
-			if(isset($rules['numeric']['precision'])) {
+			if (isset($rules['numeric']['precision'])) {
 				// increment/decrease by the smallest possible value
 				$amount = 1*pow(10,-$rules['numeric']['precision']);
 				$min += $amount;
@@ -708,7 +708,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			} else {
 
 				// if debug tell dev about problem
-				if(Configure::read('debug')>0) {
+				if (Configure::read('debug')>0) {
 					throw new CakeException(
 						"Bancha: You are currently using the validation rule 'range' for the model field ".$fieldName.
 						". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
@@ -729,7 +729,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$setNumberRule = true;
 		}
 
-		if($setNumberRule) {
+		if ($setNumberRule) {
 			$cols[] = $numberRule;
 		}
 
@@ -794,7 +794,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function afterSave(Model $Model, $created, $options = array()) {
 		// get all the data bancha needs for the response
 		// and save it in the data property
-		if($created) {
+		if ($created) {
 			// just add the id
 			$this->_result[$Model->alias] = $Model->data;
 			$this->_result[$Model->alias][$Model->name]['id'] = $Model->id;
@@ -817,7 +817,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @return mixed $results The record data of the last saved record
  */
 	public function getLastSaveResult(Model $Model) {
-		if(empty($this->_result[$Model->alias])) {
+		if (empty($this->_result[$Model->alias])) {
 
 			// throw an exception for empty response
 			throw new BanchaException(
@@ -839,7 +839,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  */
 	protected function _buildFieldList(Model $Model) {
 		// Make a quick quick check if the data is in the right format
-		if(isset($Model->data[$Model->name][0]) && is_array($Model->data[$Model->name][0])) {
+		if (isset($Model->data[$Model->name][0]) && is_array($Model->data[$Model->name][0])) {
 			throw new BanchaException(
 				'The data to be saved seems malformed. Probably this occures because you send '.
 				'from your own model or you one save invokation. Please use the Bancha.model.ModelName '.
@@ -850,14 +850,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 		// More extensive data validation
 		// For performance reasons this is just done in debug mode
-		if(Configure::read('debug') == 2) {
+		if (Configure::read('debug') == 2) {
 			$valid = false;
 			$fields = $Model->getColumnTypes();
 			// check if at least one field is saved to the database
 			try {
-				if(isset($Model->data[$Model->name]) && is_array($Model->data[$Model->name])) {
+				if (isset($Model->data[$Model->name]) && is_array($Model->data[$Model->name])) {
 					foreach($fields as $field => $type) {
-						if($field!==$Model->primaryKey && array_key_exists($field, $Model->data[$Model->name])) {
+						if ($field!==$Model->primaryKey && array_key_exists($field, $Model->data[$Model->name])) {
 							$valid=true;
 							break;
 						}
@@ -870,7 +870,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					'Check your model <br /><br /><pre>'.print_r($Model->data,true).'</pre>'
 				);
 			}
-			if(!$valid) {
+			if (!$valid) {
 				throw new BanchaException(
 					'You try to save a record, but Bancha is not able to find the data. Bancha could '.
 					'not find even one model field in the send data. Probably this occurs because you '.
@@ -893,7 +893,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @return Boolean True if validate operation should continue, false to abort
  */
 	public function beforeValidate(Model $Model, $options = array()) {
-		if($this->_settings[$Model->alias]['useOnlyDefinedFields'] && !empty($Model->data[$Model->name])) {
+		if ($this->_settings[$Model->alias]['useOnlyDefinedFields'] && !empty($Model->data[$Model->name])) {
 			// if not yet defined, create a field list to validate only the changes (empty records will still invalidate)
 			$Model->whitelist = empty($options['fieldList']) ? $this->_buildFieldList($Model) : $options['fieldList']; // TODO how to not overwrite the whitelist?
 		}
@@ -910,7 +910,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @return Boolean True if the operation should continue, false if it should abort
  */
 	public function beforeSave(Model $Model, $options = array()) {
-		if($this->_settings[$Model->alias]['useOnlyDefinedFields']) {
+		if ($this->_settings[$Model->alias]['useOnlyDefinedFields']) {
 			// if not yet defined, create a field list to save only the changes
 			$options['fieldList'] = empty($options['fieldList']) ? $this->_buildFieldList($Model) : $options['fieldList'];
 		}
@@ -935,13 +935,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// this should never be the case, cause Bancha cannot handle validation errors currently
 		// We expect to automatically send validation errors to the client in the right format in version 1.1
-		if($data) {
+		if ($data) {
 			$Model->set($data);
 		}
 
 		// try to validate data
 		$success = true;
-		if(!$Model->validates()) {
+		if (!$Model->validates()) {
 			// prepare extJs formatted response of validation errors on failure to validate
 			$this->_result[$Model->alias] = array(
 				'success' => false,
@@ -1010,19 +1010,19 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	public function getSorters(Model $Model) {
 		$sorters = array();
 
-		if(empty($Model->order)) {
+		if (empty($Model->order)) {
 			return $sorters;
 		}
 
-		if(is_string($Model->order)) {
+		if (is_string($Model->order)) {
 			$order = trim($Model->order);
 
-			if(strpos($order, '.')===false) {
+			if (strpos($order, '.') === false) {
 				// this is just the field name
 				$fieldName = $order;
 				$direction = 'ASC';
 
-			} else if(strpos($order, ' ')===false) {
+			} else if (strpos($order, ' ') === false) {
 				// this has a model name and a field name, but no direction
 				$modelName = strtok($order, ".");
 				$fieldName = strtok(" ");
@@ -1035,7 +1035,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
 
-		} else if(is_array($Model->order)) {
+		} else if (is_array($Model->order)) {
 			foreach($Model->order as $key => $direction) {
 				$modelName = strtok($key, ".");
 				$fieldName = strtok(".");

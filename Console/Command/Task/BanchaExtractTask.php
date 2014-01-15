@@ -31,7 +31,7 @@ class Bancha_JavaScriptToken {
 	protected $_remaining_code;
 
 	public function __construct($type, $content, $remainingCode) {
-		if(gettype($type) == 'string') {
+		if (gettype($type) == 'string') {
 			$type = $type=='string' ? self::$TYPE_STRING : (
 					$type=='variable' ? self::$TYPE_VARIABLE : (
 					$type=='ternary' ? self::$TYPE_TERNARY : false));
@@ -58,31 +58,31 @@ class Bancha_JavaScriptToken {
 	}
 
 	public function getStringValue() {
-		if(!$this->isString()) {
+		if (!$this->isString()) {
 			throw new Exception('Bancha_JavaScriptToken::getStringValue should only be called for a token of type string.');
 		}
 		return $this->_content;
 	}
 	public function getVariableName() {
-		if(!$this->isVariable()) {
+		if (!$this->isVariable()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
 		return $this->_content;
 	}
 	public function getTernaryFirstValue() {
-		if(!$this->isTernary()) {
+		if (!$this->isTernary()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
 		return $this->_content[0];
 	}
 	public function getTernarySecondValue() {
-		if(!$this->isTernary()) {
+		if (!$this->isTernary()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
 		return $this->_content[1];
 	}
 	public function getTernaryValues() {
-		if(!$this->isTernary()) {
+		if (!$this->isTernary()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
 		return $this->_content;
@@ -280,8 +280,8 @@ class BanchaExtractTask extends ExtractTask {
  */
 	protected function _extractTokensFromHtmlFile($file) {
 		$html = new DOMDocument();
-		if(!@$html->loadHTMLFile($file)) {
-			exit('The PHP DOMDocument class could not read file '.$file);
+		if (!@$html->loadHTMLFile($file)) {
+			exit('The PHP DOMDocument class could not read file ' . $file);
 		}
 		$elements = $html->getElementsByTagName('script');
 		if (!is_null($elements)) {
@@ -319,9 +319,9 @@ class BanchaExtractTask extends ExtractTask {
 		$originalCode = $code;
 
 		// check if it really looks like a string
-		if($code[0]!='"' && $code[0]!="'") {
+		if ($code[0]!='"' && $code[0]!="'") {
 			$this->_markerError($this->_file, substr($code, 0, 100),
-				__d('cake_console', 'Expected a string, but instead saw '.substr($code,0,20)), $code);
+				__d('cake_console', 'Expected a string, but instead saw ' . substr($code,0,20)), $code);
 			return new Bancha_JavaScriptToken('error', false, $originalCode);
 		}
 
@@ -340,7 +340,7 @@ class BanchaExtractTask extends ExtractTask {
 			$endPosition = strpos($code, $start_quote);
 
 			// make sure there is an end
-			if($endPosition === FALSE) {
+			if ($endPosition === FALSE) {
 				return new Bancha_JavaScriptToken('error', false, $originalCode);
 			}
 
@@ -366,12 +366,12 @@ class BanchaExtractTask extends ExtractTask {
 
 		// check if there maybe now is a concatination
 		$code = ltrim($code);
-		if(substr($code,0,1) == '+') {
+		if (substr($code,0,1) == '+') {
 			// there is another token, collect this (recursive)
 			$code = ltrim(substr($code,1));
 			$token = $this->_collectJsToken($code);
-			if(!$token->isString()) {
-				$this->err(__d('cake_console', '<warning>The translation function is called with a variable, near '.substr($originalCode,0,100).'</warning>'));
+			if (!$token->isString()) {
+				$this->err(__d('cake_console', '<warning>The translation function is called with a variable, near ' . substr($originalCode,0,100) . '</warning>'));
 			}
 			$string .= $token->getStringValue();
 			$code = $token->getRemainingCode();
@@ -394,7 +394,7 @@ class BanchaExtractTask extends ExtractTask {
 		$pos = ($pos===FALSE || ($pos>strpos($code, ';') && strpos($code, ';')!==FALSE)) ? strpos($code, ';') : $pos;
 
 		// make sure there is an end
-		if($pos === FALSE) {
+		if ($pos === FALSE) {
 			// there is no variable name end, return error
 			return new Bancha_JavaScriptToken('error', false, $code);
 		}
@@ -408,10 +408,10 @@ class BanchaExtractTask extends ExtractTask {
 		$code = ltrim($code);
 		$character = substr($code,0,1);
 
-		if($character=='"' || $character=="'") { // string
+		if ($character=='"' || $character=="'") { // string
 			return $this->_findString($code);
 		}
-		if($character=='[') { // array of strings
+		if ($character=='[') { // array of strings
 			// collect all strings
 			$strs = array();
 			$token = $this->_findString(ltrim(substr($code,1)));
@@ -420,7 +420,7 @@ class BanchaExtractTask extends ExtractTask {
 				$strs[] = $token->getStringValue();
 
 				// expect a comma now
-				if(substr($token->getRemainingCode(),0,1) != ',') {
+				if (substr($token->getRemainingCode(),0,1) != ',') {
 					// this was the last argument
 					break;
 				}
@@ -430,12 +430,12 @@ class BanchaExtractTask extends ExtractTask {
 			}
 
 			// the loop might ended because there was a variable, we can't handle that
-			if($token->isVariable() || $token->isTernary()) {
+			if ($token->isVariable() || $token->isTernary()) {
 				return new Bancha_JavaScriptToken('error', false, $originalCode);
 			}
 
 			// now expect a closing array sign followed by a join
-			if(substr($token->getRemainingCode(),0,1) != ']') {
+			if (substr($token->getRemainingCode(),0,1) != ']') {
 				// missing array end
 				return new Bancha_JavaScriptToken('error', false, $originalCode);
 			}
@@ -448,10 +448,10 @@ class BanchaExtractTask extends ExtractTask {
 			$validJoin = $validJoin && substr($code,0,1) == '('; // check for join
 			$code = ltrim(substr($code,1));
 			$concatBy = ',';
-			if(substr($code,0,1) != ')') {
+			if (substr($code,0,1) != ')') {
 				// the array is concatinated by a string
 				$token = $this->_findString($code);
-				if($token->isError()) {
+				if ($token->isError()) {
 					// something went wrong
 					return new Bancha_JavaScriptToken('error', false, $originalCode);
 				}
@@ -461,14 +461,14 @@ class BanchaExtractTask extends ExtractTask {
 			$validJoin = $validJoin && substr($code,0,1) == ')'; // check for join end
 			$code = ltrim(substr($code,1));
 
-			if(!$validJoin) {
+			if (!$validJoin) {
 				return new Bancha_JavaScriptToken('error', false, $originalCode);
 			}
 
 			// return a token for the concatinated array
 			return new Bancha_JavaScriptToken('string', implode($concatBy, $strs), $code);
 		}
-		if(preg_match('/[a-zA-Z]/', $character) === 1) { // variable
+		if (preg_match('/[a-zA-Z]/', $character) === 1) { // variable
 			return $this->_findVariable($code);
 		}
 		// there is some kind of operator here
@@ -479,7 +479,7 @@ class BanchaExtractTask extends ExtractTask {
 		$result = $this->_collectJsToken($code);
 
 		// check if it might is a ternary
-		if(substr($result->getRemainingCode(),0,1) != '?') {
+		if (substr($result->getRemainingCode(),0,1) != '?') {
 			return $result;
 		}
 
@@ -487,9 +487,9 @@ class BanchaExtractTask extends ExtractTask {
 		$first = $this->_collectJsToken(ltrim(substr($result->getRemainingCode(),1)));
 
 		// expect a double quote
-		if(substr($first->getRemainingCode(), 0, 1) !== ':') {
+		if (substr($first->getRemainingCode(), 0, 1) !== ':') {
 			$this->_markerError($this->_file, substr($code, 0, 100),
-				__d('cake_console', 'Expected a ternary, but instead saw '.substr($first->getRemainingCode(), 0, 5)), $code);
+				__d('cake_console', 'Expected a ternary, but instead saw ' . substr($first->getRemainingCode(), 0, 5)), $code);
 			return new Bancha_JavaScriptToken('error',false,$code);
 		}
 
@@ -521,13 +521,13 @@ class BanchaExtractTask extends ExtractTask {
 			$occurrences = explode($functionName, $string);
 
 			foreach ($occurrences as $position => $originalCode) {
-				if($position==0) {
+				if ($position==0) {
 					//the first is not a match, but we want to keep it for possible error messages
 					continue;
 				}
 
 				// keep track of the line
-				if($line !== false) {
+				if ($line !== false) {
 					// always add the number of new line breaks in the previous token
 					// // to be at the current line number
 					$breaks = str_replace("\r\n", "\r", $occurrences[$position-1]);
@@ -541,7 +541,7 @@ class BanchaExtractTask extends ExtractTask {
 				// get the function invocation
 				$wholeCode = $functionName . (strlen($originalCode)>60 ? substr($originalCode, 0, 60) : $originalCode);
 				// and some code afterwards if there's not much code yet
-				if(strlen($wholeCode)<60) {
+				if (strlen($wholeCode)<60) {
 					$wholeCode .= $functionName;
 					$wholeCode .= isset($occurrences[$position+1]) ? substr($occurrences[$position+1], 0, (60-strlen($wholeCode))) : '';
 				}
@@ -551,7 +551,7 @@ class BanchaExtractTask extends ExtractTask {
 				$code = trim($originalCode);
 
 				// expect a opening parenthesis
-				if(substr($code, 0, 1) !== '(') {
+				if (substr($code, 0, 1) !== '(') {
 					// this is probably a check if the function exists in the environment, ignore it
 					continue;
 				}
@@ -570,7 +570,7 @@ class BanchaExtractTask extends ExtractTask {
 				/* Add support for nested calls
 				// it might be that this occures because the translatiosn are nested, try to fix this
 				for($pos = $position+1; $pos<count($occurrences); $pos++) {
-					if(end($arguments)->isError()) {
+					if (end($arguments)->isError()) {
 						// we couldn't cleanly read last arguments, try again
 						$code = end($arguments)->getRemainingCode();
 						array_pop($arguments); // remove latest element
@@ -579,7 +579,7 @@ class BanchaExtractTask extends ExtractTask {
 
 
 				// error collecting the arguments
-				if(end($arguments)->isError()) {
+				if (end($arguments)->isError()) {
 					$this->_markerError($this->_file, $line,
 						__d('cake_console', 'Expected strings or variables as arguments for %s, instead saw "%s"', $functionName, substr($code,0,20)), $wholeCode);
 					continue;
@@ -590,7 +590,7 @@ class BanchaExtractTask extends ExtractTask {
 				$code = end($arguments)->getRemainingCode();
 
 				// expect a closing brace
-				if(substr($code, 0, 1) !== ')') {
+				if (substr($code, 0, 1) !== ')') {
 					$this->_markerError($this->_file, $line,
 						__d('cake_console', 'Expected an closing braces after %s, instead saw "%s"', $functionName, substr($code,0,10)), $wholeCode);
 					continue;
@@ -599,15 +599,15 @@ class BanchaExtractTask extends ExtractTask {
 				// check if the arguments make sense
 
 				// if there is a variable we can't collect it
-				if($arguments[0]->isVariable()) {
+				if ($arguments[0]->isVariable()) {
 					$this->out(__d('cake_console',
-						'<warning>'.$functionName." is called with a variable/statement, we can't collect this.\n".
-						'Error happend near: '.substr($wholeCode,0,100).'</warning>'));
+						'<warning>' . $functionName . " is called with a variable/statement, we can't collect this.\n".
+						'Error happend near: ' . substr($wholeCode,0,100) . '</warning>'));
 					continue;
 				}
 				// check against errors
 				foreach ($arguments as $argument) {
-					if($argument->isError()) {
+					if ($argument->isError()) {
 						$this->_markerError($this->_file, $line,
 							__d('cake_console', 'Could not read the function, code looked malformed.'), $wholeCode);
 						continue;
@@ -616,7 +616,7 @@ class BanchaExtractTask extends ExtractTask {
 
 
 				// check strings if possible %s match given arguments
-				// if($arguments[0])
+				// if ($arguments[0])
 				// TODO $replacements = preg_match_all("%s", $singular, $matches);
 
 				// add the translation
@@ -633,19 +633,19 @@ class BanchaExtractTask extends ExtractTask {
 
 				// the _addTranslation signature changed between CakePHP 2.3.8 to 2.4.0
 				// we want to support both
-				if(substr(Configure::version(), 2, 3) < 4) {
+				if (substr(Configure::version(), 2, 3) < 4) {
 					// CakePHP 2.0 - 2.3
-					if($arguments[0]->isString()) {
+					if ($arguments[0]->isString()) {
 						$this->_addTranslation($domain, $arguments[0]->getStringValue(), $details);
-					} else if($arguments[0]->isTernary()) {
+					} else if ($arguments[0]->isTernary()) {
 						$this->_addTranslation($domain, $arguments[0]->getTernaryFirstValue(), $details);
 						$this->_addTranslation($domain, $arguments[0]->getTernarySecondValue(), $details);
 					}
 				} else {
 					// CakePHP 2.4+
-					if($arguments[0]->isString()) {
+					if ($arguments[0]->isString()) {
 						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getStringValue(), $details);
-					} else if($arguments[0]->isTernary()) {
+					} else if ($arguments[0]->isTernary()) {
 						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getTernaryFirstValue(), $details);
 						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getTernarySecondValue(), $details);
 					}

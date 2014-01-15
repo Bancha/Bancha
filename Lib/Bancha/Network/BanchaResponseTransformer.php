@@ -65,7 +65,7 @@ class BanchaResponseTransformer {
 		// if we only got an array with a success property we expect
 		// that this data is already in the correct format, so only
 		// enforce that the success value is a boolean and we're done
-		if(is_array($response) && isset($response['success'])) {
+		if (is_array($response) && isset($response['success'])) {
 
 			// enforce that the success value is of type boolean
 			$response['success'] = $response['success']==='false' ? false : !!$response['success'];
@@ -76,7 +76,7 @@ class BanchaResponseTransformer {
 		// these are the cases where we transform data:
 
 		// understand primitive responses
-		if($response===true || $response===false) {
+		if ($response===true || $response===false) {
 			// this was an un-/successfull operation, return that to ext/touch
 			return array(
 				'success' => $response,
@@ -84,7 +84,7 @@ class BanchaResponseTransformer {
 		}
 
 		// understand string and numeric responses
-		if(is_string($response) || is_numeric($response)) {
+		if (is_string($response) || is_numeric($response)) {
 			// this was an successfull operation with a string/number as data
 			return array(
 				'success' => true,
@@ -93,7 +93,7 @@ class BanchaResponseTransformer {
 		}
 
 		// this is a strange case, we got some class object, expect this should be the data
-		if(!is_array($response)) {
+		if (!is_array($response)) {
 			return array(
 				'success' => true,
 				'data' => $response,
@@ -107,7 +107,7 @@ class BanchaResponseTransformer {
 			'data' => $response
 		);
 
-		if($modelName == 'Bancha') {
+		if ($modelName == 'Bancha') {
 			// this is a request from the BanchaApi, nothing to transform here
 			return $senchaResponse;
 		}
@@ -115,7 +115,7 @@ class BanchaResponseTransformer {
 		// transform model data
 		$mapper = new CakeSenchaDataMapper($response, $modelName);
 
-		if($mapper->isSingleRecord()) {
+		if ($mapper->isSingleRecord()) {
 			// filter the records
 			$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
 			$senchaModelName = lcfirst($modelName);
@@ -127,13 +127,13 @@ class BanchaResponseTransformer {
 			// this is standard cake single element structure
 			$senchaResponse['data'] = array_merge($primaryModel, $response);
 
-		} else if($mapper->isRecordSet()) {
+		} else if ($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
 
 			// filter the records
 			$response = $mapper->walk(array('BanchaResponseTransformer', 'walkerDataTransformer'));
 
-			if($mapper->isThreadedRecordSet()) {
+			if ($mapper->isThreadedRecordSet()) {
 				// if the response is threaded, the walker already transformed the data
 				$senchaResponse['data'] = $response;
 				return $senchaResponse;
@@ -144,7 +144,7 @@ class BanchaResponseTransformer {
 			$data = array();
 			$senchaModelName = lcfirst($modelName);
 			foreach($response as $record) {
-				if(!isset($record[$senchaModelName]) || !is_array($record[$senchaModelName])) {
+				if (!isset($record[$senchaModelName]) || !is_array($record[$senchaModelName])) {
 					// there are entries which does not have data, strange
 					$conversionSuccessfull = false;
 					break;
@@ -158,14 +158,14 @@ class BanchaResponseTransformer {
 				array_push($data, array_merge($primaryModel, $record));
 			}
 
-			if($conversionSuccessfull) {
+			if ($conversionSuccessfull) {
 				$senchaResponse['data'] = $data;
 			} else {
 				$senchaResponse['message'] = 'Expected the response to be multiple ' . $modelName . ' records, '.
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
 
-		} else if($mapper->isPaginatedSet()) {
+		} else if ($mapper->isPaginatedSet()) {
 			// this is a paging response
 
 			// the records have a standard cake structure, so get them by using this function
@@ -194,7 +194,7 @@ class BanchaResponseTransformer {
 		$senchaModelName = lcfirst($senchaModelName);
 
 		// if the data is null, we just create an empty array
-		if($data === null) {
+		if ($data === null) {
 			return array($senchaModelName, array());
 		}
 
@@ -207,7 +207,7 @@ class BanchaResponseTransformer {
 			return array(false, null);
 		}
 
-		if(!isset($Model->Behaviors->BanchaRemotable)) {
+		if (!isset($Model->Behaviors->BanchaRemotable)) {
 			// this model should not be exposed
 			// (need to be tested here, since the filterRecord method might not be available)
 			return array(false, null);

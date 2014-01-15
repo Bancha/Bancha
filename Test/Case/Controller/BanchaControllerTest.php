@@ -34,11 +34,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		'plugin.bancha.tag'
 	);
 
-	/**
-	 * Keeps a reference to the default paths, since
-	 * we need to change them in the setUp method
-	 * @var Array
-	 */
+/**
+ * Keeps a reference to the default paths, since
+ * we need to change them in the setUp method
+ * @var Array
+ */
 	private $originalPaths = null;
 	private $originalOrigin;
 	private $originalDebugLevel;

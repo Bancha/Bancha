@@ -476,10 +476,10 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		$this->assertEquals($paging['page'], $cakePaginate['page']);
 		$this->assertEquals($paging['limit'], $cakePaginate['limit']);
 		$this->assertEquals($paging['order'], $cakePaginate['order']);
-		if(isset($cakePaginate['sort'])) {
+		if (isset($cakePaginate['sort'])) {
 			$this->assertEquals($paging['sort'], $cakePaginate['sort']);
 		}
-		if(isset($cakePaginate['direction'])) {
+		if (isset($cakePaginate['direction'])) {
 			$this->assertEquals($paging['direction'], $cakePaginate['direction']);
 		}
 	}

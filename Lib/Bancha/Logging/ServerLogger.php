@@ -36,12 +36,12 @@ class ServerLogger {
 	 * @return void
 	 */
 	public static function logIssue($signature, Exception $exception) {
-		if(!Configure::read('Bancha.ServerLogger.logIssues')) {
+		if (!Configure::read('Bancha.ServerLogger.logIssues')) {
 			return; // don't log
 		}
 
 		$type = get_class($exception);
-		if( $type=='CacheException' ||
+		if ( $type=='CacheException' ||
 			$type=='ConfigureException' ||
 			$type=='MethodNotAllowedException' ||
 			$type=='NotFoundException' ||
@@ -56,8 +56,8 @@ class ServerLogger {
 
 		// we are not interested in any data!
 		$signature = substr($signature, 0, strpos($signature, '('));
-		$msg       = $signature.' has caused '.$type.
-					$exception->getMessage(). ' in file ' . $exception->getFile() .
+		$msg       = $signature . ' has caused ' . $type .
+					$exception->getMessage() . ' in file ' . $exception->getFile() .
 					' on line ' . $exception->getLine();
 
 		self::_log('exception', $msg);
@@ -79,7 +79,7 @@ class ServerLogger {
 	 * @return void
 	 */
 	public static function logEnvironment() {
-		if(!Configure::read('Bancha.ServerLogger.logEnvironment')) {
+		if (!Configure::read('Bancha.ServerLogger.logEnvironment')) {
 			return; // don't log
 		}
 
@@ -99,20 +99,20 @@ class ServerLogger {
 		try {
 			// create the tracker
 			$t = new PiwikTracker($idSite = 6, 'http://environments.banchaproject.org/');
-			$t->setUrl('http://environments.banchaproject.org/'.$type);
+			$t->setUrl('http://environments.banchaproject.org/' . $type);
 
 			// get datasource name
 			$datasource = '';
-			if(class_exists('DATABASE_CONFIG')) {
+			if (class_exists('DATABASE_CONFIG')) {
 				$config = new DATABASE_CONFIG();
-				if(isset($config->default['datasource'])) {
+				if (isset($config->default['datasource'])) {
 					$datasource = $config->default['datasource'];
 				}
 			}
 
 			// set environment variables
 			$host = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : (!empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : false);
-			if(!$host) {
+			if (!$host) {
 				return; // no server info found, probably we are in the shell
 			}
 
@@ -124,8 +124,8 @@ class ServerLogger {
 			$t->setCustomVariable(4, 'BANCHA_VERSION', Configure::read('Bancha.version'));
 			$t->setCustomVariable(5, 'CAKE_VERSION',
 				Configure::version().
-				', mode: '.Configure::read('debug').
-				' with '.$datasource);
+				', mode: ' . Configure::read('debug') .
+				' with ' . $datasource);
 
 			// log it
 			$t->doTrackPageView(urlencode($msg));

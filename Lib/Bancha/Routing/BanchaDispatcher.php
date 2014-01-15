@@ -53,10 +53,10 @@ class BanchaDispatcher {
 	 * @return string|void            If 'return' is TRUE, the body is returned otherwise void is returned.
 	 */
 	public function dispatch(BanchaRequestCollection $requests, CakeResponse $CakeResponse = null, $additionalParams = array()) {
-		if($CakeResponse === null) {
+		if ($CakeResponse === null) {
 			// Legacy support for Bancha 1.x
 			$CakeResponse = new CakeResponse();
-			if(Configure::read('debug') == 2) {
+			if (Configure::read('debug') == 2) {
 				echo 'Bancha Error: Please update your webroot/bancha-dispatcher.php file the Bancha 2 version!';
 			}
 		}
@@ -75,7 +75,7 @@ class BanchaDispatcher {
 		 */
 		//</bancha-basic>
 		/*<bancha-basic>
-		if(Configure::read('Bancha.isPro') != false) {
+		if (Configure::read('Bancha.isPro') != false) {
 			echo 'Bancha Error: You are using Bancha Basic, please don\'t change the Bancha.isPro config!';
 		}
 		</bancha-basic>*/
@@ -83,7 +83,7 @@ class BanchaDispatcher {
 		$allowedDomains = Configure::read('Bancha.allowedDomains');
 		if ($allowedDomains && $allowedDomains!=='*' && !isset($_SERVER['HTTP_ORIGIN'])) {
 			// we need to have a origin to validate the domain!
-			if(Configure::read('debug') == 2) {
+			if (Configure::read('debug') == 2) {
 				echo 'Bancha Error: Bancha expects that any request has a '.
 					 'HTTP_ORIGIN header.';
 			}
@@ -94,7 +94,7 @@ class BanchaDispatcher {
 			!in_array($_SERVER['HTTP_ORIGIN'], $allowedDomains)) {
 			// this domain is prohibited according to the access control list
 			// block it
-			if(Configure::read('debug') == 2) {
+			if (Configure::read('debug') == 2) {
 				echo 'Bancha Error: According to the '.
 					 'Configure::read("Bancha.allowedDomains") '.
 					 'this request is not allowed!';
@@ -128,7 +128,7 @@ class BanchaDispatcher {
 		$this->_responseCollection->getResponses();
 
 		// about every tenth usage send a small ping
-		if(rand(1, 10)==1) {
+		if (rand(1, 10) == 1) {
 			ServerLogger::logEnvironment();
 		}
 
@@ -194,13 +194,13 @@ class BanchaDispatcher {
 
 		// Bancha might be available from multiple locations
 		// See in bootstrap.php for the Bancha.allowedDomains config
-		if(Configure::read('Bancha.allowedDomains') !== false) {
+		if (Configure::read('Bancha.allowedDomains') !== false) {
 			// configure the access controll headers
 			$CakeResponse->header(array(
 				'Access-Control-Allow-Methods' => 'POST, OPTIONS',
 				'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type',
 													// we are only able to set one domain, see https://cakephp.lighthouseapp.com/projects/42648-cakephp/tickets/3960
-				'Access-Control-Allow-Origin'  => (Configure::read('Bancha.allowedDomains')=='*' ? '*' : $_SERVER['HTTP_ORIGIN']),
+				'Access-Control-Allow-Origin'  => (Configure::read('Bancha.allowedDomains') == '*' ? '*' : $_SERVER['HTTP_ORIGIN']),
 				'Access-Control-Max-Age'       => '3600' // require preflight request only once
 			));
 		}
@@ -226,10 +226,10 @@ class BanchaDispatcher {
 		list($url, $status, $exit) = $event->data;
 
 		// Handle actions fron AuthComponent
-		if(isset($controller->Auth) && !$controller->Auth->loggedIn()) {
+		if (isset($controller->Auth) && !$controller->Auth->loggedIn()) {
 			throw new BanchaAuthLoginException('Please login first. Maybe your session expired.');
 		}
-		if(isset($controller->Auth) && !$controller->Auth->isAuthorized($controller->Auth->user())) {
+		if (isset($controller->Auth) && !$controller->Auth->isAuthorized($controller->Auth->user())) {
 			throw new BanchaAuthAccessRightsException('You are not allowed to see this page.');
 		}
 
@@ -250,7 +250,7 @@ class BanchaDispatcher {
 	 */
 	public function logException(CakeRequest $CakeRequest, Exception $exception) {
 
-		if(Configure::read('debug')==2 || // don't log anything in debug mode
+		if (Configure::read('debug') == 2 || // don't log anything in debug mode
 		   !Configure::read('Bancha.logExceptions') || // dev disabled logging
 		   in_array(get_class($exception), Configure::read('Bancha.passExceptions')) // this is an expected exception
 			) {
@@ -276,7 +276,7 @@ class BanchaDispatcher {
 		foreach($CakeRequest->params['pass'] as $pass) {
 			$signature .= var_export($pass,true) . ', ';
 		}
-		if(!empty($CakeRequest->params['pass'])) {
+		if (!empty($CakeRequest->params['pass'])) {
 			// remove the trailing comma
 			$signature = substr($signature, 0, strlen($signature)-2);
 		}

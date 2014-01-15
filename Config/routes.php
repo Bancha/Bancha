@@ -21,11 +21,11 @@
  * In CakePHP 2.2 and above Router:setExtensions could be used,
  * for legacy support we need the bug fix version below
  */
-if(Router::extensions() !== true) { // if all extensions are supported we are done
+if (Router::extensions() !== true) { // if all extensions are supported we are done
 
 	// add json and javascript to the extensions
 	$extensions = Router::extensions();
-	if(!is_array($extensions)) {
+	if (!is_array($extensions)) {
 		$extensions = array('json','js');
 	} else {
 		array_push($extensions, 'json');

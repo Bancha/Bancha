@@ -58,7 +58,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$client_folder = TMP . 'bancha-clients';
 		$client_file = $client_folder . DS . 'ConsistentModelTest' . '.txt';
 
-		if(!is_dir($client_folder)) {
+		if (!is_dir($client_folder)) {
 			$this->assertTrue(@mkdir($client_folder),"\n\n\nCould not create folder ".$client_folder.". Please check permissions!\n\n\n");
 		}
 		$this->assertTrue(false !== @file_put_contents($client_file, "lala"),"\n\n\nCould not create file ".$client_file.". Please check permissions!\n\n\n");
@@ -117,7 +117,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$cmd = 'php ' . dirname(__FILE__) . '/_fake_request.php ' . $clientId . ' ' .
 				$articleId . ' ' . $tid . ' ' . $new_title . ' ' . $sleep_time;
 
-		if($sleep_time == 0) {
+		if ($sleep_time == 0) {
 			$result = array();
 			exec($cmd, $result);
 			return json_decode(implode('', $result));

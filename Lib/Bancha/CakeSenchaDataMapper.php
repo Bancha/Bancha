@@ -112,7 +112,7 @@ class CakeSenchaDataMapper {
  * @return array             The resulting data array.
  */
 	public function walk($callable) {
-		if($this->isPaginatedSet()) {
+		if ($this->isPaginatedSet()) {
 			// walk though the record entries only
 			$data = $this->_data;
 			$data['records'] = $this->_walk($callable, $data['records']);
@@ -134,26 +134,26 @@ class CakeSenchaDataMapper {
 
 		// find all data entries
 		foreach($data as $key => $value) {
-			if(!is_array($value)) {
+			if (!is_array($value)) {
 				continue; // this is simply a record field
 			}
-			if(empty($value)) {
+			if (empty($value)) {
 				// this is an empty array of nested data,
 				// transform the model name.
 				list($newKey, $newData) = call_user_func($callable, $key, null, false);
 				unset($data[$key]);
-				if($newKey!==false) $data[$newKey] = array();
+				if ($newKey!==false) $data[$newKey] = array();
 				continue; 
 			}
 
-			if(isset($value[0])) {
+			if (isset($value[0])) {
 				// this is a multi-record result of non-primary records, 
 				// walk each entry
 				$data = $this->_walkNestedSet($callable, $data, $key);
 				continue;
 			}
 
-			if(is_numeric($key) && array_key_exists('children', $value) && is_array($value['children'])) {
+			if (is_numeric($key) && array_key_exists('children', $value) && is_array($value['children'])) {
 				// there is a numeric key (=record set) with an children array, therefore:
 				// this is a threaded find on a tree, transform accordingly
 				// there should be one primary record, maybe associated records and a children array
@@ -164,7 +164,7 @@ class CakeSenchaDataMapper {
 				$newData = array_pop($primaryData); // primary data lies directly inside the data
 
 				// handle the children
-				if(count($value['children']) == 0) {
+				if (count($value['children']) == 0) {
 					$newData['leaf'] = true; // this is a leaf, add the flag instead of a children
 				} else {
 					$newData['data'] = $this->_walk($callable, $value['children']); // add the children
@@ -179,7 +179,7 @@ class CakeSenchaDataMapper {
 				continue;
 			}
 
-			if(is_numeric($key)) {
+			if (is_numeric($key)) {
 				// we are currently in a set of records, these are primary models
 				$data[$key] = $this->_walk($callable, $value);
 				continue;
@@ -191,7 +191,7 @@ class CakeSenchaDataMapper {
 			unset($data[$key]);
 
 			// now walk the child data
-			if($newKey!==false) $data[$newKey] = $this->_walk($callable, $newData);
+			if ($newKey!==false) $data[$newKey] = $this->_walk($callable, $newData);
 		}
 
 		return $data;
@@ -219,7 +219,7 @@ class CakeSenchaDataMapper {
 			list($newKey, $newData) = call_user_func($callable, $modelName, $value, false);
 
 			// now walk in nested record
-			if($newKey!==false) array_push($newNestedData, $this->_walk($callable, $newData));
+			if ($newKey!==false) array_push($newNestedData, $this->_walk($callable, $newData));
 		}
 		$data[$newKey] = $newNestedData;
 

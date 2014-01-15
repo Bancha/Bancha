@@ -30,28 +30,30 @@ App::uses('BanchaApi', 'Bancha.Bancha');
 class BanchaController extends BanchaAppController {
 
 	public $name = 'Bancha';
+
 	public $autoRender = false; //we don't need a view for this
+
 	public $autoLayout = false;
 
-	/**
-	 * The index method is called by default by cakePHP if no action is specified,
-	 * it will print the API for the Controllers which have the Bancha-
-	 * Behavior set. This will not include any model meta data. to specify which
-	 * model meta data should be printed you will have to pass the model name or 'all'
-	 * For more see [how to adopt the layout](http://docs.banchaproject.org/resources/Installation.html#setting-up-extjs)
-	 *
-	 * @param string $metadataFilter Model metadata that should be exposed through the Bancha API. Either 'all' or '[all]'
-	 *                               to get the metadata for all models or a comma separated list of models like
-	 *                               '[User,Article]'.
-	 * @param string $schema         Possible Values: false (default), 'development', 'packaged'
-	 *                               If set to false, the default Ext.Direct definition will be output.
-	 *                               In development we use the Ext.Loader for loading dependencies including the Remote API. In that
-	 *                               case (/bancha-api-class.js) $schema will be set to 'development'.
-	 *                               For packaging, Sencha CMD is used. Sencha CMD expects explicit define statements, these will be
-	 *                               added when $schema is set to 'packaged' (/bancha-api-packaged.js)
-	 * @return void
-	 */
-	public function index($metadataFilter='', $schema=false) {
+/**
+ * The index method is called by default by cakePHP if no action is specified,
+ * it will print the API for the Controllers which have the Bancha-
+ * Behavior set. This will not include any model meta data. to specify which
+ * model meta data should be printed you will have to pass the model name or 'all'
+ * For more see [how to adopt the layout](http://docs.banchaproject.org/resources/Installation.html#setting-up-extjs)
+ *
+ * @param string $metadataFilter Model metadata that should be exposed through the Bancha API. Either 'all' or '[all]'
+ *                               to get the metadata for all models or a comma separated list of models like
+ *                               '[User,Article]'.
+ * @param string $schema         Possible Values: false (default), 'development', 'packaged'
+ *                               If set to false, the default Ext.Direct definition will be output.
+ *                               In development we use the Ext.Loader for loading dependencies including the Remote API. In that
+ *                               case (/bancha-api-class.js) $schema will be set to 'development'.
+ *                               For packaging, Sencha CMD is used. Sencha CMD expects explicit define statements, these will be
+ *                               added when $schema is set to 'packaged' (/bancha-api-packaged.js)
+ * @return void
+ */
+	public function index($metadataFilter = '', $schema = false) {
 		$metadataFilter = urldecode($metadataFilter);
 		$banchaApi = new BanchaApi();
 
@@ -66,7 +68,7 @@ class BanchaController extends BanchaAppController {
 		$remotableModels = $this->_getRemotableModels($banchaApi);
 		//</bancha-pro>
 		//<bancha-basic>
-		if(Configure::read('Bancha.isPro')==false) {
+		if (Configure::read('Bancha.isPro') == false) {
 			$remotableModels = array();
 		}
 		//</bancha-basic>
@@ -77,12 +79,12 @@ class BanchaController extends BanchaAppController {
 			$remotableModelsActions = $banchaApi->getRemotableModelActions($remotableModels);
 		} catch(MissingControllerException $e) {
 			$error  = 'You have exposed a model with BanchaRemotable, so Bancha requires the corresponding controller to exist.<br />';
-			$error .= '<br />Bancha looks at this controller to see which CRUD functions should be exposed. <b>But the '.$e->getMessage().'</b>';
+			$error .= '<br />Bancha looks at this controller to see which CRUD functions should be exposed. <b>But the ' . $e->getMessage() . '</b>';
 			$error .= '<br />Please create this controller!';
 		}
 
 		// build actions
-		if(($actions = Cache::read('actions_'.Configure::read('debug'), '_bancha_api_')) === false) {
+		if (($actions = Cache::read('actions_' . Configure::read('debug'), '_bancha_api_')) === false) {
 			$actions = array_merge_recursive(
 				$remotableModelsActions,
 				$banchaApi->getRemotableMethods(),
@@ -100,17 +102,17 @@ class BanchaController extends BanchaAppController {
 			);
 
 			// cache for future requests
-			Cache::write('actions_'.Configure::read('debug'), $actions, '_bancha_api_');
+			Cache::write('actions_' . Configure::read('debug'), $actions, '_bancha_api_');
 		}
 
-		$url = (Configure::read('Bancha.Api.domain')==null) ? '' : Configure::read('Bancha.Api.domain');
+		$url = (Configure::read('Bancha.Api.domain') == null) ? '' : Configure::read('Bancha.Api.domain');
 		$api = array(
 			'url'		=> $url.$this->request->webroot.'bancha-dispatcher.php',
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
 								$this->_getMetadata($banchaApi, $remotableModels, $metadataFilter),
-								array('_ServerError' => Configure::read('debug')==0 ? !!$error : $error)), // send the text only in debug mode
+								array('_ServerError' => Configure::read('debug') == 0 ? !!$error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
 
@@ -126,18 +128,18 @@ class BanchaController extends BanchaAppController {
 		// except we quote the key.
 		// For a detailed description see https://developers.google.com/closure/compiler/docs/limitations
 		// under "Using string names to refer to object properties"
-		if($schema == false) {
+		if ($schema == false) {
 			$api = json_encode($api);
-			$api = Configure::read('debug')==2 ? $this->_beautifyJson($api) : $api;
+			$api = Configure::read('debug') == 2 ? $this->_beautifyJson($api) : $api;
 			$result = sprintf("Ext.ns('Bancha');\n%s=%s", Configure::read('Bancha.Api.remoteApiNamespace'), $api);
 		} else {
 			$api['singleton'] = true; // the api is also our class registry, so set the class to singleton
 			$api = json_encode($api);
-			$api = Configure::read('debug')==2 ? $this->_beautifyJson($api) : $api;
+			$api = Configure::read('debug') == 2 ? $this->_beautifyJson($api) : $api;
 			$result = sprintf("Ext.define('%s',%s);", Configure::read('Bancha.Api.remoteApiNamespace'), $api);
 		}
 
-		if($schema === 'packaged') {
+		if ($schema === 'packaged') {
 			// add the class definitions
 			$result .= "\n\n";
 			foreach($banchaApi->filterRemotableModels($remotableModels, $metadataFilter) as $modelName) {
@@ -167,8 +169,8 @@ class BanchaController extends BanchaAppController {
 	 */
 	public function loadMetaData() {
 		$models = null;
-		if(isset($this->params['data'][0])) { $models = $this->params['data'][0]; } //for Ext.Direct
-		if(isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync request
+		if (isset($this->params['data'][0])) { $models = $this->params['data'][0]; } //for Ext.Direct
+		if (isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync request
 		if ($models == null) {
 			return false;
 		}
@@ -179,11 +181,11 @@ class BanchaController extends BanchaAppController {
 			$result = $this->_getMetaData($banchaApi, $this->_getRemotableModels($banchaApi), $models);
 
 			// support both direct ajax requests and Bancha requests
-			if($this->params['isBancha']) {
+			if ($this->params['isBancha']) {
 				return $result;
 			} else {
 				$result = json_encode($result);
-				$result = Configure::read('debug')==2 ? $this->_beautifyJson($result) : $result;
+				$result = Configure::read('debug') == 2 ? $this->_beautifyJson($result) : $result;
 				$this->response->body($result);
 			}
 		} catch(MissingModelException $e) {
@@ -191,7 +193,7 @@ class BanchaController extends BanchaAppController {
 			// So the Bancha class loader can handle the error handling
 
 			// support both direct ajax requests and Bancha requests
-			if($this->params['isBancha']) {
+			if ($this->params['isBancha']) {
 				return array(
 					'success' => false,
 					'message' => $e->getMessage()
@@ -210,13 +212,13 @@ class BanchaController extends BanchaAppController {
 	 * @return see BanchaApi::getRemotableModels
 	 */
 	protected function _getRemotableModels(BanchaApi $banchaApi) {
-		if(($remotableModels = Cache::read('remotable_models_'.Configure::read('debug'), '_bancha_api_')) !== false) {
+		if (($remotableModels = Cache::read('remotable_models_' . Configure::read('debug'), '_bancha_api_')) !== false) {
 			return $remotableModels;
 		}
 
 		// get remotable models (iterates through all models)
 		$remotableModels = $banchaApi->getRemotableModels();
-		Cache::write('remotable_models_'.Configure::read('debug'), $remotableModels, '_bancha_api_');
+		Cache::write('remotable_models_' . Configure::read('debug'), $remotableModels, '_bancha_api_');
 
 		return $remotableModels;
 	}
@@ -230,10 +232,10 @@ class BanchaController extends BanchaAppController {
 		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 
 		// build a caching key, make sure we are always using the right models
-		$cacheKey = 'metadata_'.md5(implode(",", $metadataModels)).'_'.Configure::read('debug'); // md5 for shorter file names
+		$cacheKey = 'metadata_' . md5(implode(",", $metadataModels)).'_' . Configure::read('debug'); // md5 for shorter file names
 
 		// check cache
-		if(($metadata = Cache::read($cacheKey, '_bancha_api_')) !== false) {
+		if (($metadata = Cache::read($cacheKey, '_bancha_api_')) !== false) {
 			return $metadata;
 		}
 
@@ -276,7 +278,7 @@ class BanchaController extends BanchaAppController {
 
 	        // If this character is the end of an element,
 	        // output a new line and indent the next line.
-	        } else if(($char == '}' || $char == ']') && $outOfQuotes) {
+	        } else if (($char == '}' || $char == ']') && $outOfQuotes) {
 	            $result .= $newLine;
 	            $pos --;
 	            for ($j=0; $j<$pos; $j++) {
@@ -337,7 +339,7 @@ class BanchaController extends BanchaAppController {
 
 		// no extra view file needed, simply output
 		$output = json_encode($jsTranslations);
-		$output = Configure::read('debug')==2 ? $this->_beautifyJson($output) : $output;
+		$output = Configure::read('debug') == 2 ? $this->_beautifyJson($output) : $output;
 		$this->response->body($output);
     }
 
@@ -351,10 +353,10 @@ class BanchaController extends BanchaAppController {
      * @return boolean		 True to indicate that everything worked.
      */
 	public function logError($error, $type) {
-		if($type!=='js_error' && $type!=='missing_translation') {
+		if ($type!=='js_error' && $type!=='missing_translation') {
 			$this->log(
-				'Someone send a javascript error message of type "'.$type.'" to CakePHP, but this type does not exist. '.
-				'If you did this, please never use the serverside Bancha::logError directly. Instead use the JavaScript '.
+				'Someone send a javascript error message of type "' . $type . '" to CakePHP, but this type does not exist. ' .
+				'If you did this, please never use the serverside Bancha::logError directly. Instead use the JavaScript ' .
 				'function Bancha.log');
 			return false;
 		} else {

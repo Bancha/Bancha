@@ -79,7 +79,7 @@ class BanchaResponseCollection {
  */
 	public function addException($tid, Exception $e, CakeRequest $CakeRequest) {
 		// only add exception information in debug mode
-		if(Configure::read('debug') > 0) {
+		if (Configure::read('debug') > 0) {
 			$response = array(
 				'type'			=> 'exception',
 				'exceptionType'	=> get_class($e), // added by Bancha
@@ -87,7 +87,7 @@ class BanchaResponseCollection {
 				'where'			=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
 				'trace'			=> $e->getTraceAsString(),
 			);
-		} else if(in_array(get_class($e), Configure::read('Bancha.passExceptions'))) {
+		} else if (in_array(get_class($e), Configure::read('Bancha.passExceptions'))) {
 			// this exception is explicitly marked to be forwarded to the user
 			// since we are not in debug mode, don't send the trace or exception source
 			$response = array(
@@ -119,8 +119,8 @@ class BanchaResponseCollection {
  */
 	public function getResponses() {
 		// Log usage once
-		if(!Configure::read('Bancha.isPro') && !Configure::read('Bancha.ServerLogger.logEnvironment')
-			&& Cache::read('bancha-logged')==false) {
+		if (!Configure::read('Bancha.isPro') && !Configure::read('Bancha.ServerLogger.logEnvironment')
+			&& Cache::read('bancha-logged') == false) {
 			Cache::write('bancha-logged', true);
 			try {
 				$url = 'http://logs.banchaproject.org/';

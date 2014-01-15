@@ -53,15 +53,15 @@ class BanchaRequestCollection {
  */
 	public function getRequests() {
 
-		if(isset($this->_postData) && isset($this->_postData['extTID'])) {
+		if (isset($this->_postData) && isset($this->_postData['extTID'])) {
 			// this is a form request, form request data is directly avialable
 			// in the $postData and only contains one request.
 			$data = array($this->_postData); // make an array of requests data
 
-		} else if(strlen($this->_rawPostData)) {
+		} else if (strlen($this->_rawPostData)) {
 			// It is a normal Ext.Direct request, payload is read from php://input (saved in $rawPostData)
 			$data = json_decode($this->_rawPostData, true);
-			if($data === NULL) {
+			if ($data === NULL) {
 				// payload could not be converted, probably misformed json
 				throw new BanchaException(
 					'Misformed Input: The Bancha Dispatcher expected a json string, instead got ' . $this->_rawPostData);
@@ -80,7 +80,7 @@ class BanchaRequestCollection {
 		}
 
 		$requests = array();
-		if(count($data) > 0) {
+		if (count($data) > 0) {
 	 		for ($i=0; $i < count($data); $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
 

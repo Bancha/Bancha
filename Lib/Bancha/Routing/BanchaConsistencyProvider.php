@@ -99,11 +99,11 @@ class BanchaConsistencyProvider {
  * @return void
  */
 	public function finalizeRequest() {
-		if($this->tid === null) {
+		if ($this->tid === null) {
 			return $this->handleError('Bancha internal error, executed BanchaConsistencyProvider::finalizeRequest() before BanchaConsistencyProvider::validates()!');
 		}
 
-		if($this->tid == false) {
+		if ($this->tid == false) {
 			// this request was skipped, so nothing to do here
 			return;
 		}
@@ -147,14 +147,14 @@ class BanchaConsistencyProvider {
 	public function saveTid($tid) {
 
 		// if it doesn't exist, create a folder to save all the client_ids
-		if(!is_dir($this->folder)) { // this can make problems under windows, see https://bugs.php.net/bug.php?id=39198
+		if (!is_dir($this->folder)) { // this can make problems under windows, see https://bugs.php.net/bug.php?id=39198
 			if (!@mkdir($this->folder)) {
 				// error handling
 				return $this->handleError("Bancha was not able to create a tmp dir for saving Bancha consistency client ids, the path is: ". $client_folder);
 			}
 		}
 
-		if(false === file_put_contents($this->getFileName(), $tid)) {
+		if (false === file_put_contents($this->getFileName(), $tid)) {
 			// error handling
 			return $this->handleError('Bancha could not write client tid for consistency to the file: '. $this->getFileName());
 		}
@@ -166,7 +166,7 @@ class BanchaConsistencyProvider {
  */
 	public function handleError($msg) {
 		CakeLog::write('error', $msg);
-		if(Configure::read('debug')>0) {
+		if (Configure::read('debug')>0) {
 			throw new CakeException($msg);
 		}
 		return false;

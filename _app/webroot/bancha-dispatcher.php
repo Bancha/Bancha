@@ -31,7 +31,7 @@
 /**
  * this is for the check setup page
  */
-if(isset($_GET['setup-check']) && $_GET['setup-check']) {
+if (isset($_GET['setup-check']) && $_GET['setup-check']) {
 	// send as javascript
 	header('Content-type: text/javascript');
 	exit('{"BanchaDispatcherIsSetup":true}');
@@ -119,12 +119,12 @@ if (!empty($failed)) {
 // first we need to find where Bancha is located
 if (file_exists(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 	// Bancha is in the general plugins folder
-	if(!include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+	if (!include(ROOT . DS . 'plugins' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 		$failed = true;
 	}
 } else if (file_exists(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 	// Bancha is in the app Plugin folder
-	if(!include(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
+	if (!include(ROOT . DS . APP_DIR . DS . 'Plugin' . DS . 'Bancha' . DS . 'Config' . DS . 'bancha-dispatcher-bootstrap.php')) {
 		$failed = true;
 	}
 }

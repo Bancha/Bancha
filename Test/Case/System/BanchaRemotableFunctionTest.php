@@ -42,7 +42,7 @@ class RemotableFunctionsController extends Controller {
 	 * Return the request data to check if Bancha sets them correctly
 	 */
 	public function returnInputRequestData($param1, $param2) {
-		if(is_null($this->request->data)) {
+		if (is_null($this->request->data)) {
 			return false; // this is a nicer error message for debugging what's going wrong here
 		}
 		return $this->request->data;
@@ -107,7 +107,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		parent::tearDown();
 
 		// reset the origin
-		if($this->originalOrigin !== false) {
+		if ($this->originalOrigin !== false) {
 			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
 		} else {
 			unset($_SERVER['HTTP_ORIGIN']);

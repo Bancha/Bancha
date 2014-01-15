@@ -50,7 +50,7 @@ Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
  *
  * See also http://banchaproject.org/documentation-cross-domain-requests.html
  */
-if(Configure::read('Bancha.allowedDomains') === null) { // conditionals are needed because of loading order
+if (Configure::read('Bancha.allowedDomains') === null) { // conditionals are needed because of loading order
 	Configure::write('Bancha.allowedDomains', false);
 }
 
@@ -72,7 +72,7 @@ if(Configure::read('Bancha.allowedDomains') === null) { // conditionals are need
  *           'BanchaAuthAccessRightsException'
  *       ));
  */
-if(Configure::read('Bancha.passExceptions') === null) { // conditionals are needed because of loading order
+if (Configure::read('Bancha.passExceptions') === null) { // conditionals are needed because of loading order
 	Configure::write('Bancha.passExceptions', array(
 		'BanchaAuthLoginException',
 		'BanchaAuthAccessRightsException'
@@ -85,7 +85,7 @@ if(Configure::read('Bancha.passExceptions') === null) { // conditionals are need
  *
  * Normally there is no reason to do this.
  */
-if(Configure::read('Bancha.Api.stubsNamespace') === null) { // conditionals are needed because of loading order
+if (Configure::read('Bancha.Api.stubsNamespace') === null) { // conditionals are needed because of loading order
 	Configure::write('Bancha.Api.stubsNamespace', 'Bancha.RemoteStubs');
 }
 
@@ -99,7 +99,7 @@ if(Configure::read('Bancha.Api.stubsNamespace') === null) { // conditionals are 
  * If you feel like changing this, please write us an email before to
  * support@banchaproject.org, you're probably doing something wrong.
  */
-if(Configure::read('Bancha.Api.remoteApiNamespace') === null) {
+if (Configure::read('Bancha.Api.remoteApiNamespace') === null) {
 	Configure::write('Bancha.Api.remoteApiNamespace', 'Bancha.REMOTE_API');
 }
 /**
@@ -116,7 +116,7 @@ if(Configure::read('Bancha.Api.remoteApiNamespace') === null) {
  *
  * Please never batch records on the proxy level (Ext.Direct is batching them).
  */
-if(Configure::read('Bancha.allowMultiRecordRequests') === null) {
+if (Configure::read('Bancha.allowMultiRecordRequests') === null) {
 	Configure::write('Bancha.allowMultiRecordRequests', false);
 }
 
@@ -126,7 +126,7 @@ if(Configure::read('Bancha.allowMultiRecordRequests') === null) {
  *
  * To change disable it, please override it in your core.php
  */
-if(Configure::read('Bancha.logExceptions') === null) {
+if (Configure::read('Bancha.logExceptions') === null) {
 	Configure::write('Bancha.logExceptions', true);
 }
 
@@ -137,7 +137,7 @@ if(Configure::read('Bancha.logExceptions') === null) {
  *
  * To disable it, please override it in your core.php
  */
-if(Configure::read('Bancha.ServerLogger.logIssues') === null) {
+if (Configure::read('Bancha.ServerLogger.logIssues') === null) {
 	Configure::write('Bancha.ServerLogger.logIssues', true);
 }
 
@@ -150,7 +150,7 @@ if(Configure::read('Bancha.ServerLogger.logIssues') === null) {
  *
  * To disable it, please override it in your core.php
  */
-if(Configure::read('Bancha.ServerLogger.logEnvironment') === null) {
+if (Configure::read('Bancha.ServerLogger.logEnvironment') === null) {
 	Configure::write('Bancha.ServerLogger.logEnvironment', true);
 }
 
@@ -160,12 +160,12 @@ if(Configure::read('Bancha.ServerLogger.logEnvironment') === null) {
  * since some files and js is missing. Do not change this manually.
  */
 //<bancha-pro>
-if(Configure::read('Bancha.isPro') === null) {
+if (Configure::read('Bancha.isPro') === null) {
 	Configure::write('Bancha.isPro', true);
 }
 //</bancha-pro>
 //<bancha-basic>
-if(Configure::read('Bancha.isPro') === null) {
+if (Configure::read('Bancha.isPro') === null) {
 	Configure::write('Bancha.isPro', false);
 }
 //</bancha-basic>

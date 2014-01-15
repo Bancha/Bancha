@@ -63,9 +63,9 @@ class BanchaDispatcherTest extends CakeTestCase {
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
 		// first check if stream exists, because if run from the browser it doesn't
 		if (in_array('stderr', CakeLog::configured())) {
-			if(version_compare(Configure::version(), '2.2') >= 0) {
+			if (version_compare(Configure::version(), '2.2') >= 0) {
 				CakeLog::disable('stderr');
-			} else if(CakeLog::stream('stderr')) {
+			} else if (CakeLog::stream('stderr')) {
 				// just drop stderr for CakePHP 2.1 and older
 				CakeLog::drop('stderr');
 			}
@@ -76,7 +76,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		parent::tearDown();
 
 		// reset the origin
-		if($this->originalOrigin !== false) {
+		if ($this->originalOrigin !== false) {
 			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
 		} else {
 			unset($_SERVER['HTTP_ORIGIN']);
@@ -491,7 +491,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertEqual('Bancha Error: According to the Configure::read("Bancha.allowedDomains") this request is not allowed!', $rawResponse);
 
 		// tear down
-		if($originalRequestMethod !== false ) {
+		if ($originalRequestMethod !== false ) {
 			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
 		} else {
 			unset($_SERVER['REQUEST_METHOD']);
@@ -548,7 +548,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 
 		// tear down
-		if($originalRequestMethod !== false) {
+		if ($originalRequestMethod !== false) {
 			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
 		} else {
 			unset($_SERVER['REQUEST_METHOD']);
@@ -608,7 +608,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 
 
 		// tear down
-		if($originalRequestMethod !== false) {
+		if ($originalRequestMethod !== false) {
 			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
 		} else {
 			unset($_SERVER['REQUEST_METHOD']);

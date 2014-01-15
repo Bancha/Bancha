@@ -25,7 +25,7 @@ class BanchaExceptionHandler extends Object {
 	public function handleException(Exception $e) {
 		// first log exception
 		$config = Configure::read('Exception');
-		if(!empty($config['log'])) {
+		if (!empty($config['log'])) {
 			$message = sprintf("[%s] %s\n%s",
 						   get_class($e),
 						   $e->getMessage(),

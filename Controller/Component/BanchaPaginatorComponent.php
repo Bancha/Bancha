@@ -100,18 +100,18 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @return void
  */
 	public function initialize(Controller $Controller) {
-		if(!isset($Controller->request->params['isBancha']) || !$Controller->request->params['isBancha']) {
+		if (!isset($Controller->request->params['isBancha']) || !$Controller->request->params['isBancha']) {
 			// this is not a Bancha request, so nothing for us to do here
 			return;
 		}
 
 		// If there is a RequestHandler, deactivate all callbacks
-		if(isset($Controller->RequestHandler)) {
+		if (isset($Controller->RequestHandler)) {
 			$Controller->Components->disable('RequestHandler');
 		}
 
 		// If there is a AuthComponent, missing rights should trigger a redirect, not a rendering
-		if(isset($Controller->Auth)) {
+		if (isset($Controller->Auth)) {
 			$Controller->Auth->ajaxLogin = null;
 		}
 	}
@@ -123,7 +123,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @return void
  */
 	public function startup(Controller $Controller) {
-		if(!isset($Controller->request->params['isBancha']) || !$Controller->request->params['isBancha']) {
+		if (!isset($Controller->request->params['isBancha']) || !$Controller->request->params['isBancha']) {
 			// this is not a Bancha request, so nothing for us to do here
 			return;
 		}
@@ -150,13 +150,13 @@ class BanchaPaginatorComponent extends PaginatorComponent {
     public function paginate($object = null, $scope = array(), $whitelist = array()) {
 
     	// bancha-specific access-restriction logic
-		if(isset($this->_Controller->request->params['isBancha']) && $this->_Controller->request->params['isBancha']) {
+		if (isset($this->_Controller->request->params['isBancha']) && $this->_Controller->request->params['isBancha']) {
 
 			// apply the Bancha default settings
 			$this->settings = array_merge($this->settings, $this->banchaSettings);
 
 			// debug warning
-			if(Configure::read('debug')==2 && isset($this->_Controller->request->params['named']['limit']) &&
+			if (Configure::read('debug') == 2 && isset($this->_Controller->request->params['named']['limit']) &&
 				$this->settings['maxLimit']<$this->_Controller->request->params['named']['limit']) {
 				throw new BanchaException(sprintf(
 					'The pageSize(%u) you set is bigger then the maxLimit(%u) set in CakePHP.', 
@@ -179,15 +179,15 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			// We place this here instead of in the RequestTransformer to make
 			// sure the other requests ares till handled correctly and that we
 			// return an Ext.Direct response.
-			if(Configure::read('Bancha.isPro')==false && $this->_Controller->request->named['page']>1) {
+			if (Configure::read('Bancha.isPro') == false && $this->_Controller->request->named['page']>1) {
 				throw new BanchaException(
-					'Bancha Basic does not support pagiantion. <br>'.
+					'Bancha Basic does not support pagiantion. <br>' .
 					'If you need advanced features, please consider buying Bancha Pro.'
 				);
 			}
-			if(Configure::read('Bancha.isPro')==false && !empty($this->_Controller->request->named['conditions'])) {
+			if (Configure::read('Bancha.isPro') == false && !empty($this->_Controller->request->named['conditions'])) {
 				throw new BanchaException(
-					'Bancha Basic does not support remote filtering of data. <br>'.
+					'Bancha Basic does not support remote filtering of data. <br>' .
 					'If you need advanced features, please consider buying Bancha Pro.'
 				);
 			}
@@ -217,13 +217,13 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		// override defaults by component configs
 		foreach ($settings as $key => $value) {
-			if(property_exists($this, $key)) {
+			if (property_exists($this, $key)) {
 				$this->{$key} = $value; // override
 			}
 		}
 
 		//<bancha-pro>
-		if(Configure::read('Bancha.isPro')==true) {
+		if (Configure::read('Bancha.isPro') == true) {
 			// allowedFilters is already set, now verify correctness
 			$this->setAllowedFilters($this->allowedFilters);
 		}
@@ -251,10 +251,10 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		 * small company and if we don't earn money to life from this project
 		 * we are not able to further develop Bancha.
 		 */
-		if(Configure::read('Bancha.isPro')==false) {
+		if (Configure::read('Bancha.isPro') == false) {
 			throw new BanchaException(
-				'Bancha Basic does not support remote filtering of data, therefore using '.
-				'$this->Paginator->setAllowedFilters is not possible. <br>'.
+				'Bancha Basic does not support remote filtering of data, therefore using ' .
+				'$this->Paginator->setAllowedFilters is not possible. <br>' .
 				'If you need advanced features, please consider buying Bancha Pro.'
 			);
 		}
@@ -262,23 +262,23 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		//<bancha-pro>
 		// check if the allowedFilters is configured correctly
-		if(!isset($allowedFilters)) {
+		if (!isset($allowedFilters)) {
 			throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration needs to be set.');
 		}
-		if(is_string($allowedFilters)) {
-			if(!in_array($allowedFilters, array('all', 'associations', 'none'))) {
+		if (is_string($allowedFilters)) {
+			if (!in_array($allowedFilters, array('all', 'associations', 'none'))) {
 				throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration is a unknown string value: ' . $allowedFilters);
 			}
 
 			// transform 'none' to an empty array
-			if($allowedFilters == 'none') {
+			if ($allowedFilters == 'none') {
 				$allowedFilters = array();
 			}
-		} else if(is_array($allowedFilters)) {
+		} else if (is_array($allowedFilters)) {
 
 			// check if the array is in the form array('field1','field2') and if so transform
-			if(count($allowedFilters)!=0) {
-				if(strpos($allowedFilters[0], '.') === FALSE) {
+			if (count($allowedFilters)!=0) {
+				if (strpos($allowedFilters[0], '.') === FALSE) {
 					$modelName = $this->_Controller->modelClass; // the name of the primary model
 					foreach($allowedFilters as $key=>$value) {
 						$allowedFilters[$key] = $modelName . '.' . $value; // transform to Model.field
@@ -286,31 +286,35 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 				}
 
 				// in debug mode check if the field are really existing
-				if(Configure::read('debug') == 2) {
+				if (Configure::read('debug') == 2) {
 					foreach($allowedFilters as $key=>$value) {
 						$parts = explode('.',$value);
-						if(count($parts) != 2) {
-							throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration could not be recognized at array position '.$key.', value: '.$value);
+						if (count($parts) != 2) {
+							throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration could not be recognized at array position ' . $key . ', value: ' . $value);
 						}
 						$modelName = $parts[0];
 						$fieldName = $parts[1];
 
-						if(!is_object($this->_Controller->{$modelName})) {
+						if (!is_object($this->_Controller->{$modelName})) {
 							throw new BanchaException(
-								'The '.$this->_Controller->name.'Controller is missing the model '.$modelName.
-								', but has a configuration for this model in BanchaPaginatorComponents '.
-								'allowedFilters configuration. Please make sure to define the controllers uses '.
+								'The ' . $this->_Controller->name . 'Controller is missing the model ' . $modelName .
+								', but has a configuration for this model in BanchaPaginatorComponents ' .
+								'allowedFilters configuration. Please make sure to define the controllers uses ' .
 								'property or use the beforeFilter for loading.'
 								);
 						}
-						if($this->_Controller->{$modelName}->virtualFields && isset($this->_Controller->{$modelName}->virtualFields[$fieldName])) {
-							throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration allows filtering on '.$value.', but this is a virtual field cakephp can\'t handle constraints on them.');
+						if ($this->_Controller->{$modelName}->virtualFields && isset($this->_Controller->{$modelName}->virtualFields[$fieldName])) {
+							throw new BanchaException(
+								'The BanchaPaginatorComponents allowedFilters configuration allows filtering on ' . $value .
+								', but this is a virtual field cakephp can\'t handle constraints on them.');
 						}
 
 						$schema = $this->_Controller->{$modelName}->schema();
-						if(!isset($schema[$fieldName])) {
+						if (!isset($schema[$fieldName])) {
 							// this field doesn't exist in the database
-							throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration allows filtering on '.$value.', but this is field doesn\'t exist in the models schema.');
+							throw new BanchaException(
+								'The BanchaPaginatorComponents allowedFilters configuration allows filtering on ' . $value .
+								', but this is field doesn\'t exist in the models schema.');
 						}
 					}
 				}
@@ -335,12 +339,12 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @return Array the allowed filter conditions
  */
 	protected function _sanitizeFilterConditions($allowedFilters, array $conditions) {
-		if($allowedFilters == 'all') {
+		if ($allowedFilters == 'all') {
 			return $conditions;
 		}
 
 		// check each condition and filter unalloweds out
-		if($allowedFilters == 'associations') {
+		if ($allowedFilters == 'associations') {
 			// check each condition individualy
 			foreach($conditions as $field=>$value) {
 				list($modelName, $fieldName) = explode('.', $field);
@@ -350,19 +354,22 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 				$assocs = $model->Behaviors->BanchaRemotable->getAssociated($model); // use the Bancha-specific method to get the foreign keys
 				$valid = false;
 				foreach($assocs as $assoc) {
-					if($assoc['foreignKey'] == $fieldName) {
+					if ($assoc['foreignKey'] == $fieldName) {
 						$valid = true; // this is a valid association key
 						break;
 					}
 				}
 
-				if($model->primaryKey == $fieldName) {
+				if ($model->primaryKey == $fieldName) {
 					$valid = true; // filtering the id field is also allowed
 				}
 
-				if(!$valid) {
-					if(Configure::read('debug') == 2) {
-						throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->_Controller->name.' BanchaPaginatorComponents allowedFilters configuration.');
+				if (!$valid) {
+					if (Configure::read('debug') == 2) {
+						throw new BanchaException(
+							'The last ExtJS/Sencha Touch request tried to filter by ' . $field .
+							', which is not allowed according to the ' . $this->_Controller->name .
+							' BanchaPaginatorComponents allowedFilters configuration.');
 					} else {
 						// we are not in debug mode where we want to throw an exception, so just ignore this filtering
 						unset($conditions[$field]);
@@ -375,8 +382,8 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		// allowedFilters is an array
 		// check each condition individually
 		foreach($conditions as $field=>$value) {
-			if(!in_array($field, $allowedFilters)) {
-				if(Configure::read('debug') == 2) {
+			if (!in_array($field, $allowedFilters)) {
+				if (Configure::read('debug') == 2) {
 					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->_Controller->name.' BanchaPaginatorComponents allowedFilters configuration.');
 				} else {
 					// we are not in debug mode where we want to throw an exception, so just ignore this filtering

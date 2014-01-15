@@ -52,7 +52,7 @@ class BanchaBasicTest extends CakeTestCase {
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
 		// first check if stream exists, because if run from the browser it doesn't
 		if (in_array('stderr', CakeLog::configured())) {
-			if(version_compare(Configure::version(), '2.2') >= 0) {
+			if (version_compare(Configure::version(), '2.2') >= 0) {
 				CakeLog::disable('stderr');
 			} else {
 				// just drop stderr for CakePHP 2.1 and older

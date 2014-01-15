@@ -63,9 +63,9 @@ class BanchaApi {
 					}
 				}
 				// alternatively (for newer cake releases) check if the BehaviorCollection has the Remotable Behavior
-				else if(isset($model->Behaviors->_enabled) && is_array($model->Behaviors->_enabled)) {
+				else if (isset($model->Behaviors->_enabled) && is_array($model->Behaviors->_enabled)) {
 					// check if the behavior is attached
-					if(array_key_exists('Bancha.BanchaRemotable', $model->Behaviors->_enabled)) {
+					if (array_key_exists('Bancha.BanchaRemotable', $model->Behaviors->_enabled)) {
 						$remotableModels[] = $modelClass;
 					}
 				}
@@ -242,7 +242,7 @@ class BanchaApi {
 
 		// make sure the AppModel and plugin AppModel are available
 		App::uses('AppModel' , 'Model');
-		if(strlen($plugin)>0) {
+		if (strlen($plugin)>0) {
 			App::uses(substr($plugin,0,strlen($plugin)-1).'AppModel' , $plugin . 'Model');
 		}
 
@@ -269,7 +269,7 @@ class BanchaApi {
 
 		// make sure the AppController and plugin AppController is available
 		App::uses('AppController', 'Controller');
-		if(strlen($plugin)>0) {
+		if (strlen($plugin)>0) {
 			App::uses(substr($plugin,0,strlen($plugin)-1).'AppController', $plugin . 'Controller');
 		}
 

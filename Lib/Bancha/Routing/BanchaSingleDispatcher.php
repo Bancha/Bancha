@@ -16,7 +16,7 @@ App::uses('Dispatcher', 'Routing');
 
 // To support PHP 5.4 strict we need to match the method signature exactly, therefore this workaround
 // to support the old before 2.2 and the new 2.2+ signature.
-if(substr(Configure::version(), 2, 3) < 2) {
+if (substr(Configure::version(), 2, 3) < 2) {
 	/**
 	 * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
 	 *

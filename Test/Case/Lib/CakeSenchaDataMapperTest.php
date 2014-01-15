@@ -433,7 +433,7 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 	}
 	private $walkerResult = false;
 	public function walkerCallback($modelName, $data) {
-		if(!isset($this->walkerResult[$modelName])) {
+		if (!isset($this->walkerResult[$modelName])) {
 			$this->walkerResult[$modelName] = 1;
 		} else {
 			$this->walkerResult[$modelName]++;
@@ -500,11 +500,11 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 	// walker function for below
 	public function walkerRenamingCallback($modelName, $data) {
-		if($data == null) {
+		if ($data == null) {
 			// this is the empty tags array
 			return array(substr($modelName, 1), $data);
 		}
-		if(!isset($data['id'])) {
+		if (!isset($data['id'])) {
 			throw new Exception('Expected record data, instead got malformed input: '.print_r(aray($modelName, $data), true));
 		}
 		// remove id keys
@@ -713,13 +713,13 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		return array((($modelName=='Article' && $data['id']==1001) ? false : $modelName), $data);
 	}
 	public function walkerRemoveEntriesCallback4($modelName, $data) {
-		if($modelName=='User' && isset($data['Article'])) {
+		if ($modelName=='User' && isset($data['Article'])) {
 			unset($data['Article']);
 		}
 		return array($modelName, $data);
 	}
 	public function walkerRemoveEntriesCallback5($modelName, $data) {
-		if($modelName=='Article' && isset($data['User'])) {
+		if ($modelName=='Article' && isset($data['User'])) {
 			unset($data['User']);
 		}
 		return array($modelName, $data);
