@@ -38,7 +38,13 @@ env:
 
 matrix:
   fast_finish: true
+  allow_failures:
+    - php: 5.5
+      env: DB=mysql CAKEPHP_VERSION=master PHPCS=1
   include:
+    # Run PHPCS on the code
+    - php: 5.5
+      env: DB=mysql CAKEPHP_VERSION=master PHPCS=1
     # Test all newer CakePHP versions on PHP 5.3
     - php: 5.3
       env: DB=mysql CAKEPHP_VERSION=master
@@ -176,6 +182,11 @@ before_script:
   - sh -c "if [ $CAKEPHP_VERSION -a '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer global require 'phpunit/phpunit=3.7.33'; fi"
   - sh -c "if [ $CAKEPHP_VERSION -a '$TRAVIS_PHP_VERSION' != '5.2' ]; then ln -s ~/.composer/vendor/phpunit/phpunit/PHPUnit ./vendors/PHPUnit; fi"
 
+  # install PHPCS
+  - if [ '$PHPCS' == '1' ]; then pear channel-discover pear.cakephp.org fi
+  - if [ '$PHPCS' == '1' ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer fi
+  - if [ '$PHPCS' == '1' ]; then phpenv rehash fi
+
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
   - if [ $TOUCH_VERSION ]; then wget http://cdn.sencha.io/touch/sencha-touch-$TOUCH_VERSION/sencha-touch-all-debug.js ; fi
@@ -187,8 +198,9 @@ before_script:
   - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
-  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake  ; fi # make sure to execute it
-  - if [ $CAKEPHP_VERSION ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
+  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
+  - if [ $CAKEPHP_VERSION -a '$PHPCS' != '1' ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
+  - if [ '$PHPCS' == '1' ]; then sh -c "phpcs --standard=CakePHP ./cakephp/app/Plugin/Bancha;" fi # run PHPCS on the code 
 
   # execute the jasmine tests
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
