@@ -43,6 +43,32 @@ matrix:
       env: DB=pgsql
     - php: 5.5
       env: DB=sqlite
+    # Test old CakePHP versions only on PHP 5.2 to make the build faster
+    - php: 5.3
+      env: CAKEPHP_VERSION=2.3.8
+    - php: 5.3
+      env: CAKEPHP_VERSION=2.2.8
+    - php: 5.3
+      env: CAKEPHP_VERSION=2.1.0
+    - php: 5.3
+      env: CAKEPHP_VERSION=2.1.5
+    - php: 5.4
+      env: CAKEPHP_VERSION=2.3.8
+    - php: 5.4
+      env: CAKEPHP_VERSION=2.2.8
+    - php: 5.4
+      env: CAKEPHP_VERSION=2.1.0
+    - php: 5.4
+      env: CAKEPHP_VERSION=2.1.5
+    - php: 5.5
+      env: CAKEPHP_VERSION=2.3.8
+    - php: 5.5
+      env: CAKEPHP_VERSION=2.2.8
+    - php: 5.5
+      env: CAKEPHP_VERSION=2.1.0
+    - php: 5.5
+      env: CAKEPHP_VERSION=2.1.5
+
 branches:
   only:
     - master
