@@ -8,13 +8,26 @@ php:
 
 env:
   # CakePHP and ExtJS and Sencha Touch versions are independent from each other
-  - DB=mysql CAKEPHP_VERSION=master                        EXTJS_VERSION=4.2.1
-  - DB=mysql CAKEPHP_VERSION=2.4.0  TOUCH_VERSION=2.3.0    EXTJS_VERSION=4.2.0
-  - DB=mysql CAKEPHP_VERSION=2.3.8  TOUCH_VERSION=2.2.1    EXTJS_VERSION_LEGACY=4.1.1a
-  - DB=mysql CAKEPHP_VERSION=2.3.0  TOUCH_VERSION=2.2.0    EXTJS_VERSION_LEGACY=4.1.0
-  - DB=mysql CAKEPHP_VERSION=2.2.8  TOUCH_VERSION=2.1.1    EXTJS_VERSION_LEGACY=4.0.7
-  - DB=mysql CAKEPHP_VERSION=2.2.0  TOUCH_VERSION=2.1.0
-  - DB=mysql CAKEPHP_VERSION=2.1.5  TOUCH_VERSION=2.0.1.1
+  - TOUCH_VERSION=2.3.1a
+  - TOUCH_VERSION=2.3.0
+  - TOUCH_VERSION=2.2.1
+  - TOUCH_VERSION=2.2.0
+  - TOUCH_VERSION=2.1.1
+  - TOUCH_VERSION=2.1.0
+  - TOUCH_VERSION=2.0.1.1
+
+  - EXTJS_VERSION=4.2.0
+  - EXTJS_VERSION_LEGACY=4.1.1a
+  - EXTJS_VERSION_LEGACY=4.1.0
+  - EXTJS_VERSION_LEGACY=4.0.7
+
+  - DB=mysql CAKEPHP_VERSION=master
+  - DB=mysql CAKEPHP_VERSION=2.4.0
+  - DB=mysql CAKEPHP_VERSION=2.3.8
+  - DB=mysql CAKEPHP_VERSION=2.3.0
+  - DB=mysql CAKEPHP_VERSION=2.2.8
+  - DB=mysql CAKEPHP_VERSION=2.2.0
+  - DB=mysql CAKEPHP_VERSION=2.1.5
   - DB=mysql CAKEPHP_VERSION=2.1.0
 
   - DB=pgsql CAKEPHP_VERSION=master
@@ -30,44 +43,62 @@ env:
 matrix:
   fast_finish: true
   exclude:
-    # The database variation are just tested on PHP 5.4, since the PHP version won't make a difference here
+    # test everything only on PHP 5.5 (all databases, Sencha Touch and Ext JS)
     - php: 5.2
-      env: DB=pgsql
+    - php: 5.3
+    - php: 5.4
+  include:
+    # test mysql with all CakePHP on PHP 5.2
     - php: 5.2
-      env: DB=sqlite
+      env: DB=mysql CAKEPHP_VERSION=master
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.4.0
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.3.8
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.3.0
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.2.8
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.2.0
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.1.5
+    - php: 5.2
+      env: DB=mysql CAKEPHP_VERSION=2.1.0
+    # test mysql with all CakePHP on PHP 5.2
     - php: 5.3
-      env: DB=pgsql
+      env: DB=mysql CAKEPHP_VERSION=master
     - php: 5.3
-      env: DB=sqlite
-    - php: 5.5
-      env: DB=pgsql
-    - php: 5.5
-      env: DB=sqlite
-    # Test old CakePHP versions only on PHP 5.2 to make the build faster
+      env: DB=mysql CAKEPHP_VERSION=2.4.0
     - php: 5.3
-      env: CAKEPHP_VERSION=2.3.8
+      env: DB=mysql CAKEPHP_VERSION=2.3.8
     - php: 5.3
-      env: CAKEPHP_VERSION=2.2.8
+      env: DB=mysql CAKEPHP_VERSION=2.3.0
     - php: 5.3
-      env: CAKEPHP_VERSION=2.1.0
+      env: DB=mysql CAKEPHP_VERSION=2.2.8
     - php: 5.3
-      env: CAKEPHP_VERSION=2.1.5
+      env: DB=mysql CAKEPHP_VERSION=2.2.0
+    - php: 5.3
+      env: DB=mysql CAKEPHP_VERSION=2.1.5
+    - php: 5.3
+      env: DB=mysql CAKEPHP_VERSION=2.1.0
+    # test mysql with all CakePHP on PHP 5.2
     - php: 5.4
-      env: CAKEPHP_VERSION=2.3.8
+      env: DB=mysql CAKEPHP_VERSION=master
     - php: 5.4
-      env: CAKEPHP_VERSION=2.2.8
+      env: DB=mysql CAKEPHP_VERSION=2.4.0
     - php: 5.4
-      env: CAKEPHP_VERSION=2.1.0
+      env: DB=mysql CAKEPHP_VERSION=2.3.8
     - php: 5.4
-      env: CAKEPHP_VERSION=2.1.5
-    - php: 5.5
-      env: CAKEPHP_VERSION=2.3.8
-    - php: 5.5
-      env: CAKEPHP_VERSION=2.2.8
-    - php: 5.5
-      env: CAKEPHP_VERSION=2.1.0
-    - php: 5.5
-      env: CAKEPHP_VERSION=2.1.5
+      env: DB=mysql CAKEPHP_VERSION=2.3.0
+    - php: 5.4
+      env: DB=mysql CAKEPHP_VERSION=2.2.8
+    - php: 5.4
+      env: DB=mysql CAKEPHP_VERSION=2.2.0
+    - php: 5.4
+      env: DB=mysql CAKEPHP_VERSION=2.1.5
+    - php: 5.4
+      env: DB=mysql CAKEPHP_VERSION=2.1.0
 
 branches:
   only:
