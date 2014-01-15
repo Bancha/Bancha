@@ -26,7 +26,7 @@
  */
 Ext.define('Bancha.data.writer.TreeParentIdTransformedJson', {
     extend: 'Bancha.data.writer.JsonWithDateTime',
-    alias: 'writer.consitentjson',
+    alias: 'writer.treeenabledjsonwriter',
 
     //inherit docs
     getRecordData: function(record, operation) {
