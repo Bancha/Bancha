@@ -74,6 +74,14 @@ class ConsistentModelTest extends CakeTestCase {
 		);
 	}
 
+	public function skipIfSqlite() {
+		$config = ConnectionManager::enumConnectionObjects();
+		$this->skipIf(
+			$config['default']['datasource'] ===  'Database/Sqlite',
+			'Default database needs to be persistent for this test'
+		);
+	}
+
 /*
  * This will execute $cmd in the background (no cmd window) without PHP 
  * waiting for it to finish, on both Windows and Unix. 
@@ -135,9 +143,8 @@ class ConsistentModelTest extends CakeTestCase {
  * See http://bancha.io/documentation-pro-models-consistent-transactions.html#duplicated-requests
  */
 	public function testInSequence() {
-		if(Configure::read('fastTestsOnly')) { 
-			$this->markTestSkipped('Skipped slow test case.');
-		}
+		$this->skipIf(Configure::read('fastTestsOnly'), 'Skipped slow test case.');
+		$this->skipIfSqlite();
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...),
 
@@ -236,9 +243,8 @@ class ConsistentModelTest extends CakeTestCase {
  * See http://bancha.io/documentation-pro-models-consistent-transactions.html#race-conditions
  */
 	public function testEditMultipleRequestsInParallel() {
-		if(Configure::read('fastTestsOnly')) { 
-			$this->markTestSkipped('Skipped slow test case.');
-		}
+		$this->skipIf(Configure::read('fastTestsOnly'), 'Skipped slow test case.');
+		$this->skipIfSqlite();
 
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...),
@@ -288,9 +294,8 @@ class ConsistentModelTest extends CakeTestCase {
  * Test that a lower TID is never executed after a higher one.
  */
 	public function testEditMultipleRequestsWrongSequence() {
-		if(Configure::read('fastTestsOnly')) { 
-			$this->markTestSkipped('Skipped slow test case.');
-		}
+		$this->skipIf(Configure::read('fastTestsOnly'), 'Skipped slow test case.');
+		$this->skipIfSqlite();
 
 		// Execute two requests from same client in wrong sequence.
 		$clientId = uniqid();
