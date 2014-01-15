@@ -10,7 +10,7 @@
 	 * coding standards
 	 */
 	"bitwise": true,
-	"camelcase": true,
+	"camelcase": false, /* sometimes this does not fit CakePHP data */
 	"curly": true,
 	"eqeqeq": true,
 	"es3": true, /* we need to support IE 6 */
