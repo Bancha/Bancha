@@ -268,6 +268,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$responses2 = $this->getAsyncResponse($clientId, 2);
 
 		// Check that the first response returned a result
+		$this->asserttrue(is_array($responses1), 'Expected result to be an array '.print_r($responses1,true));
 		$this->assertCount(1, $responses1);
 		$this->assertTrue(
 			isset($responses1[0]->result->data),
@@ -276,6 +277,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$this->assertEquals('foobar', $responses1[0]->result->data->title); // first request should change it to foobar
 
 		// Check that the second response returned a result
+		$this->asserttrue(is_array($responses2), 'Expected result to be an array '.print_r($responses1,true));
 		$this->assertCount(1, $responses2);
 		$this->assertTrue(
 			isset($responses2[0]->result->data),
