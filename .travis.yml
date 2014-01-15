@@ -185,7 +185,7 @@ before_script:
   # install PHPCS
   - if [ '$PHPCS' == '1' ]; then pear channel-discover pear.cakephp.org ; fi
   - if [ '$PHPCS' == '1' ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer ; fi
-  - if [ '$PHPCS' == '1' ]; then phpenv rehash ; fi
+  - if [ '$PHPCS' == '1' ]; then phpenv rehash ;fi
 
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
@@ -198,9 +198,9 @@ before_script:
   - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
-  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake ; fi # make sure to execute it
-  - if [ $CAKEPHP_VERSION -a '$PHPCS' != '1' ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr ; fi # execute all Tests
-  - if [ '$PHPCS' == '1' ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP ./cakephp/app/Plugin/Bancha;" ; fi # run PHPCS on the code 
+  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
+  - if [ $CAKEPHP_VERSION -a $PHPCS != '1' ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
+  - if [ $PHPCS == '1' ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP ./cakephp/app/Plugin/Bancha" ; fi # run PHPCS on the code 
 
   # execute the jasmine tests
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
