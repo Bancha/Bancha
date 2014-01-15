@@ -27,6 +27,22 @@ env:
   - DB=sqlite CAKEPHP_VERSION=2.2.8
   - DB=sqlite CAKEPHP_VERSION=2.1.5
 
+matrix:
+  fast_finish: true
+  exclude:
+    # The database variation are just tested on PHP 5.4, since the PHP version won't make a difference here
+    - php: 5.2
+      env: DB=pgsql
+    - php: 5.2
+      env: DB=sqlite
+    - php: 5.3
+      env: DB=pgsql
+    - php: 5.3
+      env: DB=sqlite
+    - php: 5.5
+      env: DB=pgsql
+    - php: 5.5
+      env: DB=sqlite
 branches:
   only:
     - master
