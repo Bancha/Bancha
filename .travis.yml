@@ -200,7 +200,7 @@ before_script:
 script:
   - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
   - if [ $CAKEPHP_VERSION -a -z "$PHPCS" ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
-  - if [ $PHPCS ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP ./cakephp/app/Plugin/Bancha" ; fi # run PHPCS on the code 
+  - if [ $PHPCS ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP ./app/Plugin/Bancha" ; fi # run PHPCS on the code 
 
   # execute the jasmine tests
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
