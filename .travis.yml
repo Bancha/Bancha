@@ -32,6 +32,10 @@ branches:
     - master
 
 before_script:
+  # CakePHP needs PHPUnit 3.7, Travis updated to PHPUnit 4
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer global require 'phpunit/phpunit=3.7.33'; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then ln -s ~/.composer/vendor/phpunit/phpunit/PHPUnit ./vendors/PHPUnit; fi"
+
   # create the databases
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'CREATE DATABASE bancha_test;'; fi"
   - sh -c "if [ '$DB' = 'pgsql' ]; then psql -c 'CREATE DATABASE bancha_test;' -U postgres; fi"
