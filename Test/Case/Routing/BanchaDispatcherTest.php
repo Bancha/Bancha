@@ -65,7 +65,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		if (in_array('stderr', CakeLog::configured())) {
 			if (version_compare(Configure::version(), '2.2') >= 0) {
 				CakeLog::disable('stderr');
-			} else if (CakeLog::stream('stderr')) {
+			} elseif (CakeLog::stream('stderr')) {
 				// just drop stderr for CakePHP 2.1 and older
 				CakeLog::drop('stderr');
 			}

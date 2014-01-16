@@ -637,7 +637,7 @@ class BanchaExtractTask extends ExtractTask {
 					// CakePHP 2.0 - 2.3
 					if ($arguments[0]->isString()) {
 						$this->_addTranslation($domain, $arguments[0]->getStringValue(), $details);
-					} else if ($arguments[0]->isTernary()) {
+					} elseif ($arguments[0]->isTernary()) {
 						$this->_addTranslation($domain, $arguments[0]->getTernaryFirstValue(), $details);
 						$this->_addTranslation($domain, $arguments[0]->getTernarySecondValue(), $details);
 					}
@@ -645,7 +645,7 @@ class BanchaExtractTask extends ExtractTask {
 					// CakePHP 2.4+
 					if ($arguments[0]->isString()) {
 						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getStringValue(), $details);
-					} else if ($arguments[0]->isTernary()) {
+					} elseif ($arguments[0]->isTernary()) {
 						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getTernaryFirstValue(), $details);
 						$this->_addTranslation('LC_MESSAGES', $domain, $arguments[0]->getTernarySecondValue(), $details);
 					}

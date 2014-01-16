@@ -126,7 +126,7 @@ class BanchaRequestTransformer {
 		if (isset($this->_data['action'])) {
 			$controller = $this->_data['action'];
 			unset($this->_data['action']);
-		} else if (isset($this->_data['extAction'])) {
+		} elseif (isset($this->_data['extAction'])) {
 			$controller = $this->_data['extAction'];
 			unset($this->_data['extAction']);
 			$this->_isFormRequest = true;
@@ -194,7 +194,7 @@ class BanchaRequestTransformer {
 		if (isset($this->_data['method'])) {
 			$this->_action = $this->_data['method'];
 			unset($this->_data['method']);
-		} else if (isset($this->_data['extMethod'])) {
+		} elseif (isset($this->_data['extMethod'])) {
 			$this->_action = $this->_data['extMethod'];
 			unset($this->_data['extMethod']);
 			$this->isFormRequest = true;
@@ -261,7 +261,7 @@ class BanchaRequestTransformer {
 		if (isset($this->_data['tid'])) {
 			$this->_tid = $this->_data['tid'];
 			unset($this->_data['tid']);
-		} else if (isset($this->_data['extTID'])) {
+		} elseif (isset($this->_data['extTID'])) {
 			$this->_tid = $this->_data['extTID'];
 			unset($this->_data['extTID']);
 		}
@@ -298,15 +298,15 @@ class BanchaRequestTransformer {
 			$pass['id'] = $this->_data['data'][0]['data']['id'];
 			//unset($this->_data['data'][0]['data']['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
-		} else if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
+		} elseif ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
 			$pass['id'] = $this->_data['data'][0]['id'];
 			//unset($this->_data['data'][0]['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 		// form upload requests
-		} else if ($this->isFormRequest() && isset($this->_data['id'])) {
+		} elseif ($this->isFormRequest() && isset($this->_data['id'])) {
 			$pass['id'] = $this->_data['id'];
 			//unset($this->_data['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 			$this->_isFormRequest = true;
-		} else if (2 === count($this->_data) && isset($this->_data['type']) && 'rpc' == $this->_data['type'] && isset($this->_data['data'])) {
+		} elseif (2 === count($this->_data) && isset($this->_data['type']) && 'rpc' == $this->_data['type'] && isset($this->_data['data'])) {
 			$pass = $this->_data['data'];
 		}
 		return $pass;
@@ -337,7 +337,7 @@ class BanchaRequestTransformer {
 			if (isset($params['page'])) {
 				$page = $params['page'];
 				unset($params['page']);
-			} else if (isset($params['start']) && isset($params['limit'])) {
+			} elseif (isset($params['start']) && isset($params['limit'])) {
 				$page = floor($params['start'] / $params['limit']);
 			}
 
@@ -435,7 +435,7 @@ class BanchaRequestTransformer {
 				);
 			}
 			$this->_data = $result;
-		} else if ($this->isArray($this->_data,'[data][0][data]')) {
+		} elseif ($this->isArray($this->_data,'[data][0][data]')) {
 			// this is standard extjs-bancha structure, transform to cake
 			$this->_data[$modelName] = $this->_data['data'][0]['data'];
 			unset($this->_data['data']);
@@ -445,7 +445,7 @@ class BanchaRequestTransformer {
 				// ... so delete it
 				unset($this->_data[$modelName]['id']);
 			}
-		} else if ($this->isArray($this->_data, '[data]')) {
+		} elseif ($this->isArray($this->_data, '[data]')) {
 			// some arbitrary data from ext to just pass through
 			$this->_data = $this->_data['data'];
 		} else {

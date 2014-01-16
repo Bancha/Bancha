@@ -209,7 +209,7 @@ const DEFAULT_CHARSET_PARAMETER_VALUES = 'utf-8';
 	public function getCustomVariable($id, $scope = 'visit') {
 		if ($scope == 'page') {
 			return isset($this->pageCustomVar[$id]) ? $this->pageCustomVar[$id] : false;
-		} else if ($scope != 'visit') {
+		} elseif ($scope != 'visit') {
 			throw new Exception("Invalid 'scope' parameter value");
 		}
 		if (!empty($this->visitorCustomVar[$id])) {
@@ -917,7 +917,7 @@ const DEFAULT_CHARSET_PARAMETER_VALUES = 'utf-8';
 			if (!empty($response)) {
 				list($header, $content) = explode("\r\n\r\n", $response, $limitCount = 2);
 			}
-		} else if (function_exists('stream_context_create')) {
+		} elseif (function_exists('stream_context_create')) {
 			$stream_options = array(
 				'http' => array(
 					'method'	 => $method,
@@ -1076,7 +1076,7 @@ const DEFAULT_CHARSET_PARAMETER_VALUES = 'utf-8';
 		$url = '';
 		if (!empty($_SERVER['PATH_INFO'])) {
 			$url = $_SERVER['PATH_INFO'];
-		} else if (!empty($_SERVER['REQUEST_URI'])) {
+		} elseif (!empty($_SERVER['REQUEST_URI'])) {
 			if (($pos = strpos($_SERVER['REQUEST_URI'], '?')) !== false) {
 				$url = substr($_SERVER['REQUEST_URI'], 0, $pos);
 			} else {

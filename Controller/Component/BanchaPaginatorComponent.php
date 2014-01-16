@@ -274,7 +274,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			if ($allowedFilters == 'none') {
 				$allowedFilters = array();
 			}
-		} else if (is_array($allowedFilters)) {
+		} elseif (is_array($allowedFilters)) {
 
 			// check if the array is in the form array('field1','field2') and if so transform
 			if (count($allowedFilters)!=0) {

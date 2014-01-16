@@ -58,7 +58,7 @@ class BanchaRequestCollection {
 			// in the $postData and only contains one request.
 			$data = array($this->_postData); // make an array of requests data
 
-		} else if (strlen($this->_rawPostData)) {
+		} elseif (strlen($this->_rawPostData)) {
 			// It is a normal Ext.Direct request, payload is read from php://input (saved in $rawPostData)
 			$data = json_decode($this->_rawPostData, true);
 			if ($data === NULL) {

@@ -127,7 +127,7 @@ class BanchaResponseTransformer {
 			// this is standard cake single element structure
 			$senchaResponse['data'] = array_merge($primaryModel, $response);
 
-		} else if ($mapper->isRecordSet()) {
+		} elseif ($mapper->isRecordSet()) {
 			// this is standard cake multiple element structure
 
 			// filter the records
@@ -165,7 +165,7 @@ class BanchaResponseTransformer {
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
 
-		} else if ($mapper->isPaginatedSet()) {
+		} elseif ($mapper->isPaginatedSet()) {
 			// this is a paging response
 
 			// the records have a standard cake structure, so get them by using this function

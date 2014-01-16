@@ -87,7 +87,7 @@ class BanchaResponseCollection {
 				'where'			=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
 				'trace'			=> $e->getTraceAsString(),
 			);
-		} else if (in_array(get_class($e), Configure::read('Bancha.passExceptions'))) {
+		} elseif (in_array(get_class($e), Configure::read('Bancha.passExceptions'))) {
 			// this exception is explicitly marked to be forwarded to the user
 			// since we are not in debug mode, don't send the trace or exception source
 			$response = array(
@@ -138,7 +138,7 @@ class BanchaResponseCollection {
 					ob_start();
 					$response = @curl_exec($ch);
 					ob_end_clean();
-				} else if (function_exists('stream_context_create')) {
+				} elseif (function_exists('stream_context_create')) {
 					$stream_options = array(
 						'http' => array(
 							'method'  => 'POST',
