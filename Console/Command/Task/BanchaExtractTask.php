@@ -41,53 +41,108 @@ class Bancha_JavaScriptToken {
 		$this->_remainingCode = ltrim($remainingCode);
 	}
 
+/**
+ * Returns type of the token
+ * @return boolean|integer the type code
+ */
 	public function getType() {
 		return $this->_type;
 	}
+/**
+ * Returns true if the token is of type string
+ * @return boolean True if an string
+ */
 	public function isString() {
 		return $this->_type == self::$TYPE_STRING;
 	}
+
+/**
+ * Returns true if the token is of type variable
+ * @return boolean True if an variable
+ */
 	public function isVariable() {
 		return $this->_type == self::$TYPE_VARIABLE;
 	}
+
+/**
+ * Returns true if the token is of type ternary
+ * @return boolean True if an ternary
+ */
 	public function isTernary() {
 		return $this->_type == self::$TYPE_TERNARY;
 	}
+
+/**
+ * Returns true if the token is of type error
+ * @return boolean True if an error
+ */
 	public function isError() {
 		return $this->_type == self::$TYPE_ERROR;
 	}
 
+/**
+ * Get's the content of a string token.
+ * @throws Exception If this is not a string token.
+ * @return string the content
+ */
 	public function getStringValue() {
 		if (!$this->isString()) {
 			throw new Exception('Bancha_JavaScriptToken::getStringValue should only be called for a token of type string.');
 		}
 		return $this->_content;
 	}
+
+/**
+ * Get's the variable name from the token
+ * @throws Exception If this is not a variable token.
+ * @return string the name
+ */
 	public function getVariableName() {
 		if (!$this->isVariable()) {
 			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
 		}
 		return $this->_content;
 	}
+
+/**
+ * Get's the first value from the token
+ * @throws Exception If this is not a ternary token.
+ * @return string first expression
+ */
 	public function getTernaryFirstValue() {
 		if (!$this->isTernary()) {
-			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
+			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type ternary.');
 		}
 		return $this->_content[0];
 	}
+
+/**
+ * Get's the second value from the token
+ * @throws Exception If this is not a ternary token.
+ * @return string first expression
+ */
 	public function getTernarySecondValue() {
 		if (!$this->isTernary()) {
-			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
+			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type ternary.');
 		}
 		return $this->_content[1];
 	}
+
+/**
+ * Get's the first value from the token
+ * @throws Exception If this is not a ternary token.
+ * @return array An array of two ternary tokens
+ */
 	public function getTernaryValues() {
 		if (!$this->isTernary()) {
-			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type variable.');
+			throw new Exception('Bancha_JavaScriptToken::getVariableName should only be called for a token of type ternary.');
 		}
 		return $this->_content;
 	}
 
+/**
+ * The remaining code
+ */
 	public function getRemainingCode() {
 		return $this->_remainingCode;
 	}
