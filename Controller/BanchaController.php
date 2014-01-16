@@ -170,8 +170,12 @@ class BanchaController extends BanchaAppController {
 	 */
 	public function loadMetaData() {
 		$models = null;
-		if (isset($this->params['data'][0])) { $models = $this->params['data'][0]; } //for Ext.Direct
-		if (isset($this->params['pass'][0])) { $models = $this->params['pass'][0]; } //sync request
+		if (isset($this->params['data'][0])) { // for Ext.Direct, look in data
+			$models = $this->params['data'][0];
+		}
+		if (isset($this->params['pass'][0])) { // sync request requests, here its a pass param
+			$models = $this->params['pass'][0];
+		}
 		if ($models == null) {
 			return false;
 		}
