@@ -26,7 +26,6 @@ class CategoriesController extends AppController {
 /**
  * Returns threaded tree data from the category model.
  *
- * @banchaRemotable
  * @return array the data.
  */
 	public function index() {

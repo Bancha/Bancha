@@ -77,7 +77,7 @@ class ConsistentModelTest extends CakeTestCase {
 	public function skipIfSqlite() {
 		$config = ConnectionManager::enumConnectionObjects();
 		$this->skipIf(
-			$config['default']['datasource'] ===  'Database/Sqlite',
+			$config['default']['datasource'] == 'Database/Sqlite',
 			'Default database needs to be persistent for this test'
 		);
 	}
