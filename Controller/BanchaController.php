@@ -78,7 +78,7 @@ class BanchaController extends BanchaAppController {
 		try {
 			$remotableModelsActions = $banchaApi->getRemotableModelActions($remotableModels);
 		} catch(MissingControllerException $e) {
-			$error  = 'You have exposed a model with BanchaRemotable, so Bancha requires the corresponding controller to exist.<br />';
+			$error = 'You have exposed a model with BanchaRemotable, so Bancha requires the corresponding controller to exist.<br />';
 			$error .= '<br />Bancha looks at this controller to see which CRUD functions should be exposed. <b>But the ' . $e->getMessage() . '</b>';
 			$error .= '<br />Please create this controller!';
 		}
@@ -107,7 +107,7 @@ class BanchaController extends BanchaAppController {
 
 		$url = (Configure::read('Bancha.Api.domain') == null) ? '' : Configure::read('Bancha.Api.domain');
 		$api = array(
-			'url'		=> $url.$this->request->webroot.'bancha-dispatcher.php',
+			'url'		=> $url . $this->request->webroot . 'bancha-dispatcher.php',
 			'namespace'	=> Configure::read('Bancha.Api.stubsNamespace'),
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
@@ -144,8 +144,8 @@ class BanchaController extends BanchaAppController {
 			$result .= "\n\n";
 			foreach ($banchaApi->filterRemotableModels($remotableModels, $metadataFilter) as $modelName) {
 				$result .= sprintf(
-					"Ext.define('Bancha.model.%s', {\n".
-					"    extend: 'Bancha.data.Model'\n".
+					"Ext.define('Bancha.model.%s', {\n" .
+					"    extend: 'Bancha.data.Model'\n" .
 					"});\n", $modelName);
 			}
 		}
@@ -232,10 +232,10 @@ class BanchaController extends BanchaAppController {
  * This function decorates the BanchaApi::getMetadata() method with caching
  * 
  * @param BanchaApi    $banchaApi The BanchaApi to use, if not yet in cache
- * @param array        $models List of remotable models
- * @param string/array $filter Explicit list of remotable models. Can be "all",
- *                     "[all]" or "[Model1,Model2,...]" (without quotes). Or 
- *                     an array of models.
+ * @param array        $remotableModels List of remotable models
+ * @param string/array $metadataFilter Explicit list of remotable models.
+ *                     Can be "all", "[all]" or "[Model1,Model2,...]" 
+ *                     (without quotes). Or an array of models.
  * @return             see BanchaApi::getMetadata
  */
 	protected function _getMetaData(BanchaApi $banchaApi, $remotableModels, $metadataFilter) {
@@ -243,7 +243,7 @@ class BanchaController extends BanchaAppController {
 		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
 
 		// build a caching key, make sure we are always using the right models
-		$cacheKey = 'metadata_' . md5(implode(",", $metadataModels)).'_' . Configure::read('debug'); // md5 for shorter file names
+		$cacheKey = 'metadata_' . md5(implode(",", $metadataModels)) . '_' . Configure::read('debug'); // md5 for shorter file names
 
 		// check cache
 		if (($metadata = Cache::read($cacheKey, '_bancha_api_')) !== false) {
@@ -270,15 +270,15 @@ class BanchaController extends BanchaAppController {
  */
 	protected function _beautifyJson($json) {
 
-		$result      = '';
-		$pos         = 0;
-		$strLen      = strlen($json);
-		$indentStr   = '  ';
-		$newLine     = "\n";
-		$prevChar    = '';
+		$result = '';
+		$pos = 0;
+		$strLen = strlen($json);
+		$indentStr = '  ';
+		$newLine = "\n";
+		$prevChar = '';
 		$outOfQuotes = true;
 
-		for ($i=0; $i <= $strLen; $i++) {
+		for ($i = 0; $i <= $strLen; $i++) {
 
 			// Grab the next character in the string.
 			$char = substr($json, $i, 1);
@@ -287,12 +287,12 @@ class BanchaController extends BanchaAppController {
 			if ($char == '"' && $prevChar != '\\') {
 				$outOfQuotes = !$outOfQuotes;
 
-			// If this character is the end of an element,
-			// output a new line and indent the next line.
 			} elseif (($char == '}' || $char == ']') && $outOfQuotes) {
+				// If this character is the end of an element,
+				// output a new line and indent the next line.
 				$result .= $newLine;
 				$pos --;
-				for ($j=0; $j<$pos; $j++) {
+				for ($j = 0; $j < $pos; $j++) {
 					$result .= $indentStr;
 				}
 			}
@@ -331,7 +331,6 @@ class BanchaController extends BanchaAppController {
  *                              with all data.
  */
 	public function translations($languageCode, $domain = 'bancha') {
-
 		App::uses('I18n', 'I18n');
 		$i18n = I18n::getInstance();
 
@@ -344,8 +343,8 @@ class BanchaController extends BanchaAppController {
 
 		// transform
 		$jsTranslations = array();
-		foreach ($translations as $key=>$value) {
-			array_push($jsTranslations, array('key'=>$key,'value'=>$value));
+		foreach ($translations as $key => $value) {
+			array_push($jsTranslations, array('key' => $key, 'value' => $value));
 		}
 
 		// no extra view file needed, simply output

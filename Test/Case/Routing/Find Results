@@ -1,0 +1,124 @@
+Searching 80 files for "originalPaths"
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/Controller/BanchaControllerTest.php:
+   40   * @var Array
+   41   */
+   42: 	private $originalPaths = null;
+   43  	private $originalOrigin;
+   44  	protected $_originalDebugLevel;
+   ..
+   48  
+   49  		$this->_originalDebugLevel = Configure::read('debug');
+   50: 		$this->originalPaths = App::paths();
+   51  
+   52  		// make sure there's no old cache
+   ..
+   67  
+   68  		// reset the paths
+   69: 		App::build($this->originalPaths, App::RESET);
+   70  
+   71  		// make sure to flush after tests, so that real app is not influenced
+   ..
+  134  		CakePlugin::unload('TestPlugin');
+  135  		App::build(array(
+  136: 			'Plugin' => $this->originalPaths['Plugin'],
+  137  		), App::RESET);
+  138  		App::objects('plugin', null, false);
+  ...
+  430  		CakePlugin::unload('TestPlugin');
+  431  		App::build(array(
+  432: 			'Plugin' => $this->originalPaths['Plugin'],
+  433  		), App::RESET);
+  434  		App::objects('plugin', null, false);
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/Lib/BanchaApiTest.php:
+   30   * @var Array
+   31   */
+   32: 	private $originalPaths = null;
+   33  
+   34  	public function setUp() {
+   35  		parent::setUp();
+   36  
+   37: 		$this->originalPaths = App::paths();
+   38  
+   39  		// build up the test paths
+   ..
+   58  
+   59  		// reset the paths
+   60: 		App::build($this->originalPaths, App::RESET);
+   61  
+   62  		// force the cache to renew
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/System/TreeIntegrationTest.php:
+   38   * @var Array
+   39   */
+   40: 	private $originalPaths = null;
+   41  	protected $_originalDebugLevel;
+   42  
+   ..
+   64  
+   65  		// build up the test paths
+   66: 		$this->originalPaths = App::paths();
+   67  		App::build(array(
+   68  			'Controller' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Controller' . DS,
+   ..
+  233  
+  234  		// reset the paths
+  235: 		App::build($this->originalPaths, App::RESET);
+  236  	}
+  237  }
+
+11 matches across 3 files
+
+
+Searching 80 files for "originalOrigin"
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/Controller/BanchaControllerTest.php:
+   41   */
+   42  	protected $_originalPaths = null;
+   43: 	private $originalOrigin;
+   44  	protected $_originalDebugLevel;
+   45  
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/Routing/BanchaDispatcherTest.php:
+   51  class BanchaDispatcherTest extends CakeTestCase {
+   52  
+   53: 	private $originalOrigin;
+   54  	protected $_originalDebugLevel;
+   55  
+   ..
+   57  		parent::setUp();
+   58  
+   59: 		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+   60  		$this->_originalDebugLevel = Configure::read('debug');
+   61  		$this->allowedDomains = Configure::read('Bancha.allowedDomains');
+   ..
+   77  
+   78  		// reset the origin
+   79: 		if ($this->originalOrigin !== false) {
+   80: 			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+   81  		} else {
+   82  			unset($_SERVER['HTTP_ORIGIN']);
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/System/BanchaDebugExceptionsTest.php:
+   27  class BanchaDebugExceptionsTest extends CakeTestCase {
+   28  
+   29: 	private $originalOrigin;
+   30  	protected $_originalDebugLevel;
+   31  
+
+/Users/roland/Documents/AptanaWorkspace/BanchaTestProject/app/Plugin/Bancha/Test/Case/System/BanchaRemotableFunctionTest.php:
+   98  class BanchaRemotableFunctionTest extends CakeTestCase {
+   99  
+  100: 	private $originalOrigin;
+  101  
+  102  	public function setUp() {
+  ...
+  112  
+  113  		// reset the origin
+  114: 		if ($this->originalOrigin !== false) {
+  115: 			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+  116  		} else {
+  117  			unset($_SERVER['HTTP_ORIGIN']);
+
+9 matches across 4 files

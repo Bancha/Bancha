@@ -29,12 +29,12 @@ class BanchaApiTest extends CakeTestCase {
  * we need to change them in the setUp method
  * @var Array
  */
-	private $originalPaths = null;
+	protected $_originalPaths = null;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalPaths = App::paths();
+		$this->_originalPaths = App::paths();
 
 		// build up the test paths
 		App::build(array(
@@ -57,7 +57,7 @@ class BanchaApiTest extends CakeTestCase {
 		CakePlugin::unload('TestPlugin');
 
 		// reset the paths
-		App::build($this->originalPaths, App::RESET);
+		App::build($this->_originalPaths, App::RESET);
 
 		// force the cache to renew
 		App::objects('plugin', null, false);

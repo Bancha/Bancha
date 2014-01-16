@@ -40,13 +40,13 @@ class BanchaBasicTest extends CakeTestCase {
 	public $fixtures = array('plugin.bancha.article');
 
 
-	private $originalDebugLevel;
+	protected $_originalDebugLevel;
 	private $originalIsPro;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalDebugLevel = Configure::read('debug');
 		$this->originalIsPro = Configure::read('Bancha.isPro');
 		
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
@@ -68,7 +68,7 @@ class BanchaBasicTest extends CakeTestCase {
 		Configure::write('Bancha.isPro', $this->originalIsPro);
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 
 		// clear the registry
 		ClassRegistry::flush();

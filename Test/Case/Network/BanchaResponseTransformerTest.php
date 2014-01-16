@@ -70,7 +70,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 			array( -1, array('success'=>true,'data'=>-1) ),
 			array( 0, array('success'=>true,'data'=>0) ),
 			array( 1, array('success'=>true,'data'=>1) ),
-			array( array('lala','lolo'), array('success'=>true,'data'=>array('lala','lolo')) ),
+			array( array('lala','lolo'), array('success'=>true,'data' => array('lala','lolo')) ),
 		);
 	}
 
@@ -341,14 +341,14 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		return array(
 			array(
 				array('count'=>0,'records'=>array()),
-				array('success'=>true,'total'=>0,'data'=>array())
+				array('success'=>true,'total'=>0,'data' => array())
 			),
 			array(
 				array('count'=>9,'records'=>array(
 					array('Article'=>array('id'=>5,'title'=>'whatever')),
 					array('Article'=>array('id'=>6,'title'=>'whatever2'))
 				)),
-				array('success'=>true,'total'=>9,'data'=>array(
+				array('success'=>true,'total'=>9,'data' => array(
 					array('id'=>5,'title'=>'whatever'),
 					array('id'=>6,'title'=>'whatever2')
 				)),

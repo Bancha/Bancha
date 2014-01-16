@@ -26,20 +26,19 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  */
 class BanchaDebugExceptionsTest extends CakeTestCase {
 
-	private $originalOrigin;
-	private $originalDebugLevel;
+	protected $_originalDebugLevel;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
 	public function tearDown() {
 		parent::tearDown();
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 	}
 
 	// helper method

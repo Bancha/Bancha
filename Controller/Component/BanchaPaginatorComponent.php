@@ -147,7 +147,6 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @throws BanchaException If there is a configuration error in Bancha
  */
 	public function paginate($object = null, $scope = array(), $whitelist = array()) {
-
 		// bancha-specific access-restriction logic
 		if (isset($this->_Controller->request->params['isBancha']) && $this->_Controller->request->params['isBancha']) {
 
@@ -156,7 +155,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 			// debug warning
 			if (Configure::read('debug') == 2 && isset($this->_Controller->request->params['named']['limit']) &&
-				$this->settings['maxLimit']<$this->_Controller->request->params['named']['limit']) {
+				$this->settings['maxLimit'] < $this->_Controller->request->params['named']['limit']) {
 				throw new BanchaException(sprintf(
 					'The pageSize(%u) you set is bigger then the maxLimit(%u) set in CakePHP.',
 					$this->_Controller->request->params['named']['limit'],
@@ -178,7 +177,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			// We place this here instead of in the RequestTransformer to make
 			// sure the other requests ares till handled correctly and that we
 			// return an Ext.Direct response.
-			if (Configure::read('Bancha.isPro') == false && $this->_Controller->request->named['page']>1) {
+			if (Configure::read('Bancha.isPro') == false && $this->_Controller->request->named['page'] > 1) {
 				throw new BanchaException(
 					'Bancha Basic does not support pagiantion. <br>' .
 					'If you need advanced features, please consider buying Bancha Pro.'
@@ -212,7 +211,6 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @return void
  */
 	protected function _setSettings(array $settings) {
-
 		// override defaults by component configs
 		foreach ($settings as $key => $value) {
 			if (property_exists($this, $key)) {
@@ -231,12 +229,12 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 /**
  * Change the allowedFilter at run-time. This function will santizise and may throw an
  * error if the configuration is malformed.
+ * 
  * @param string/string[] $allowedFilters the new value for the allowedFilters property
  * @throws BanchaException
  * @return void
  */
 	public function setAllowedFilters($allowedFilters) {
-
 		//<bancha-basic>
 		/*
 		 * Bancha Basic does not allow filtering.
@@ -275,10 +273,10 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		} elseif (is_array($allowedFilters)) {
 
 			// check if the array is in the form array('field1','field2') and if so transform
-			if (count($allowedFilters)!=0) {
-				if (strpos($allowedFilters[0], '.') === FALSE) {
+			if (count($allowedFilters) != 0) {
+				if (strpos($allowedFilters[0], '.') === false) {
 					$modelName = $this->_Controller->modelClass; // the name of the primary model
-					foreach ($allowedFilters as $key=>$value) {
+					foreach ($allowedFilters as $key => $value) {
 						$allowedFilters[$key] = $modelName . '.' . $value; // transform to Model.field
 					}
 				}
@@ -326,7 +324,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		//</bancha-pro>
 	}
 
-//<bancha-pro>
+	//<bancha-pro>
 /**
  * This functions loops through all filter conditions and check if the are valid
  * according to the allowedFilters configuration.
@@ -344,7 +342,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		// check each condition and filter unalloweds out
 		if ($allowedFilters == 'associations') {
 			// check each condition individualy
-			foreach ($conditions as $field=>$value) {
+			foreach ($conditions as $field => $value) {
 				list($modelName, $fieldName) = explode('.', $field);
 
 				// look though all associations if we can find the field name as foreign key
@@ -379,10 +377,13 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		// allowedFilters is an array
 		// check each condition individually
-		foreach ($conditions as $field=>$value) {
+		foreach ($conditions as $field => $value) {
 			if (!in_array($field, $allowedFilters)) {
 				if (Configure::read('debug') == 2) {
-					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->_Controller->name.' BanchaPaginatorComponents allowedFilters configuration.');
+					throw new BanchaException(
+						'The last ExtJS/Sencha Touch request tried to filter by ' . $field .
+						', which is not allowed according to the ' . $this->_Controller->name .
+						' BanchaPaginatorComponents allowedFilters configuration.');
 				} else {
 					// we are not in debug mode where we want to throw an exception, so just ignore this filtering
 					unset($conditions[$field]);
@@ -392,5 +393,6 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		return $conditions;
 	}
-//</bancha-pro>
+	//</bancha-pro>
+
 }

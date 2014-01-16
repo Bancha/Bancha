@@ -21,67 +21,80 @@ App::uses('ExtractTask', 'Console/Command/Task');
  * @since         Bancha v 1.3.0
  */
 class Bancha_JavaScriptToken {
-	public static $TYPE_ERROR = false;
-	public static $TYPE_STRING = 1;
-	public static $TYPE_VARIABLE = 2;
-	public static $TYPE_TERNARY = 3;
 
+/**
+ * The tokens type, can be 'error', 'string', 'variable' or 'ternary'.
+ * 
+ * @var string
+ */
 	protected $_type;
-	protected $_content; // this is the value of the string, the name of the variable or an array of two ternary tokens
+
+/**
+ * This is the value of the string, the name of the variable or an 
+ * array of two ternary tokens
+ * @var string|array
+ */
+	protected $_content;
+/**
+ * The remaining code.
+ * 
+ * @var string
+ */
 	protected $_remaining_code;
 
 	public function __construct($type, $content, $remainingCode) {
-		if (gettype($type) == 'string') {
-			$type = $type == 'string' ? self::$TYPE_STRING : (
-					$type == 'variable' ? self::$TYPE_VARIABLE : (
-					$type == 'ternary' ? self::$TYPE_TERNARY : false));
-		}
 		$this->_type = $type;
 		$this->_content = $content;
 		$this->_remainingCode = ltrim($remainingCode);
 	}
 
 /**
- * Returns type of the token
- * @return boolean|integer the type code
+ * Returns type of the token.
+ * 
+ * @return string the type
  */
 	public function getType() {
 		return $this->_type;
 	}
+
 /**
  * Returns true if the token is of type string
  * @return boolean True if an string
  */
 	public function isString() {
-		return $this->_type == self::$TYPE_STRING;
+		return $this->_type == 'string';
 	}
 
 /**
- * Returns true if the token is of type variable
+ * Returns true if the token is of type variable.
+ * 
  * @return boolean True if an variable
  */
 	public function isVariable() {
-		return $this->_type == self::$TYPE_VARIABLE;
+		return $this->_type == 'variable';
 	}
 
 /**
- * Returns true if the token is of type ternary
+ * Returns true if the token is of type ternary.
+ * 
  * @return boolean True if an ternary
  */
 	public function isTernary() {
-		return $this->_type == self::$TYPE_TERNARY;
+		return $this->_type == 'ternary';
 	}
 
 /**
- * Returns true if the token is of type error
+ * Returns true if the token is of type error.
+ * 
  * @return boolean True if an error
  */
 	public function isError() {
-		return $this->_type == self::$TYPE_ERROR;
+		return $this->_type == 'error';
 	}
 
 /**
  * Get's the content of a string token.
+ * 
  * @throws Exception If this is not a string token.
  * @return string the content
  */
@@ -93,7 +106,8 @@ class Bancha_JavaScriptToken {
 	}
 
 /**
- * Get's the variable name from the token
+ * Get's the variable name from the token.
+ * 
  * @throws Exception If this is not a variable token.
  * @return string the name
  */
@@ -105,7 +119,8 @@ class Bancha_JavaScriptToken {
 	}
 
 /**
- * Get's the first value from the token
+ * Get's the first value from the token.
+ * 
  * @throws Exception If this is not a ternary token.
  * @return string first expression
  */
@@ -117,7 +132,8 @@ class Bancha_JavaScriptToken {
 	}
 
 /**
- * Get's the second value from the token
+ * Get's the second value from the token.
+ * 
  * @throws Exception If this is not a ternary token.
  * @return string first expression
  */
@@ -130,6 +146,7 @@ class Bancha_JavaScriptToken {
 
 /**
  * Get's the first value from the token
+ * 
  * @throws Exception If this is not a ternary token.
  * @return array An array of two ternary tokens
  */
@@ -174,6 +191,7 @@ class BanchaExtractTask extends ExtractTask {
  * @var array
  */
 	public $exclude = array();
+
 /**
  * @access private
  * Merge all domains string into the default.pot file
@@ -182,6 +200,7 @@ class BanchaExtractTask extends ExtractTask {
  * @var boolean
  */
 	protected $_merge = false;
+
 /**
  * @access private
  * Don't extract validation messages
@@ -357,7 +376,7 @@ class BanchaExtractTask extends ExtractTask {
 			// ignore all operators, and just include strings and html tokens
 			if (is_array($token) && ($token[0] == T_CONSTANT_ENCAPSED_STRING || $token[0] == T_INLINE_HTML)) {
 				// add just the string, if not inline html we need to un-escape it first
-				$token[0] = $token[0]==T_CONSTANT_ENCAPSED_STRING ? $this->_formatString($token[1]) : $token[1];
+				$token[0] = ($token[0] == T_CONSTANT_ENCAPSED_STRING) ? $this->_formatString($token[1]) : $token[1];
 				$this->_tokens[] =  $token;
 			}
 		}
@@ -365,8 +384,11 @@ class BanchaExtractTask extends ExtractTask {
 	}
 
 /**
- * Finds a string inside a code and returns the string and the remaining string part
+ * Finds a string inside a code and returns the string and the 
+ * remaining string part as remaingingCode value.
  *
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The calculated token
  */
 	protected function _findString($code) {
 		$originalCode = $code;
@@ -374,7 +396,7 @@ class BanchaExtractTask extends ExtractTask {
 		// check if it really looks like a string
 		if ($code[0]!='"' && $code[0]!="'") {
 			$this->_markerError($this->_file, substr($code, 0, 100),
-				__d('cake_console', 'Expected a string, but instead saw ' . substr($code,0,20)), $code);
+				__d('cake_console', 'Expected a string, but instead saw ' . substr($code, 0, 20)), $code);
 			return new Bancha_JavaScriptToken('error', false, $originalCode);
 		}
 
@@ -419,12 +441,12 @@ class BanchaExtractTask extends ExtractTask {
 
 		// check if there maybe now is a concatination
 		$code = ltrim($code);
-		if (substr($code,0,1) == '+') {
+		if (substr($code, 0, 1) == '+') {
 			// there is another token, collect this (recursive)
-			$code = ltrim(substr($code,1));
+			$code = ltrim(substr($code, 1));
 			$token = $this->_collectJsToken($code);
 			if (!$token->isString()) {
-				$this->err(__d('cake_console', '<warning>The translation function is called with a variable, near ' . substr($originalCode,0,100) . '</warning>'));
+				$this->err(__d('cake_console', '<warning>The translation function is called with a variable, near ' . substr($originalCode, 0, 100) . '</warning>'));
 			}
 			$string .= $token->getStringValue();
 			$code = $token->getRemainingCode();
@@ -435,16 +457,19 @@ class BanchaExtractTask extends ExtractTask {
 	}
 
 /**
- * Finds a string inside a code and returns the string and the remaining string part
+ * Finds a string inside a code and returns the variable and the 
+ * remaining string part as remaingingCode value.
  *
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The calculated token
  */
 	protected function _findVariable($code) {
 		// just find the next whitespace or , or ) or ;
 		$pos = strpos($code, ' ');
-		$pos = ($pos===FALSE || ($pos>strpos($code, ',') && strpos($code, ',')!==FALSE)) ? strpos($code, ',') : $pos;
-		$pos = ($pos===FALSE || ($pos>strpos($code, ')') && strpos($code, ')')!==FALSE)) ? strpos($code, ')') : $pos;
-		$pos = ($pos===FALSE || ($pos>strpos($code, '}') && strpos($code, '}')!==FALSE)) ? strpos($code, '}') : $pos;
-		$pos = ($pos===FALSE || ($pos>strpos($code, ';') && strpos($code, ';')!==FALSE)) ? strpos($code, ';') : $pos;
+		$pos = ($pos === FALSE || ($pos > strpos($code, ',') && strpos($code, ',') !== FALSE)) ? strpos($code, ',') : $pos;
+		$pos = ($pos === FALSE || ($pos > strpos($code, ')') && strpos($code, ')') !== FALSE)) ? strpos($code, ')') : $pos;
+		$pos = ($pos === FALSE || ($pos > strpos($code, '}') && strpos($code, '}') !== FALSE)) ? strpos($code, '}') : $pos;
+		$pos = ($pos === FALSE || ($pos > strpos($code, ';') && strpos($code, ';') !== FALSE)) ? strpos($code, ';') : $pos;
 
 		// make sure there is an end
 		if ($pos === FALSE) {
@@ -454,12 +479,16 @@ class BanchaExtractTask extends ExtractTask {
 
 		return new Bancha_JavaScriptToken('variable', substr($code, 0, $pos), substr($code, $pos));
 	}
+
 /**
- * Collects a string or variable
+ * Collects a string or variable as token.
+ * 
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The calculated token
  */
 	protected function _collectJsToken($code) {
 		$code = ltrim($code);
-		$character = substr($code,0,1);
+		$character = substr($code, 0, 1);
 
 		if ($character == '"' || $character == "'") { // string
 			return $this->_findString($code);
@@ -467,19 +496,19 @@ class BanchaExtractTask extends ExtractTask {
 		if ($character == '[') { // array of strings
 			// collect all strings
 			$strs = array();
-			$token = $this->_findString(ltrim(substr($code,1)));
+			$token = $this->_findString(ltrim(substr($code, 1)));
 			$originalCode = $code;
 			while($token->isString()) {
 				$strs[] = $token->getStringValue();
 
 				// expect a comma now
-				if (substr($token->getRemainingCode(),0,1) != ',') {
+				if (substr($token->getRemainingCode(), 0, 1) != ',') {
 					// this was the last argument
 					break;
 				}
 
 				// there is another string to collect
-				$token = $this->_findString(ltrim(substr($token->getRemainingCode(),1)));
+				$token = $this->_findString(ltrim(substr($token->getRemainingCode(), 1)));
 			}
 
 			// the loop might ended because there was a variable, we can't handle that
@@ -488,20 +517,20 @@ class BanchaExtractTask extends ExtractTask {
 			}
 
 			// now expect a closing array sign followed by a join
-			if (substr($token->getRemainingCode(),0,1) != ']') {
+			if (substr($token->getRemainingCode(), 0, 1) != ']') {
 				// missing array end
 				return new Bancha_JavaScriptToken('error', false, $originalCode);
 			}
 			// now expect a join
-			$code = ltrim(substr($token->getRemainingCode(),1));
-			$validJoin = substr($code,0,1) == '.'; // check for point
-			$code = ltrim(substr($code,1));
-			$validJoin = $validJoin && substr($code,0,4) == 'join'; // check for join
+			$code = ltrim(substr($token->getRemainingCode(), 1));
+			$validJoin = substr($code, 0, 1) == '.'; // check for point
+			$code = ltrim(substr($code, 1));
+			$validJoin = $validJoin && substr($code, 0, 4) == 'join'; // check for join
 			$code = ltrim(substr($code,4));
-			$validJoin = $validJoin && substr($code,0,1) == '('; // check for join
-			$code = ltrim(substr($code,1));
+			$validJoin = $validJoin && substr($code, 0, 1) == '('; // check for join
+			$code = ltrim(substr($code, 1));
 			$concatBy = ',';
-			if (substr($code,0,1) != ')') {
+			if (substr($code, 0, 1) != ')') {
 				// the array is concatinated by a string
 				$token = $this->_findString($code);
 				if ($token->isError()) {
@@ -511,8 +540,8 @@ class BanchaExtractTask extends ExtractTask {
 				$concatBy = $token->getStringValue();
 				$code = $token->getRemainingCode();
 			}
-			$validJoin = $validJoin && substr($code,0,1) == ')'; // check for join end
-			$code = ltrim(substr($code,1));
+			$validJoin = $validJoin && substr($code, 0, 1) == ')'; // check for join end
+			$code = ltrim(substr($code, 1));
 
 			if (!$validJoin) {
 				return new Bancha_JavaScriptToken('error', false, $originalCode);
@@ -528,16 +557,22 @@ class BanchaExtractTask extends ExtractTask {
 		return new Bancha_JavaScriptToken('error', false, $code);
 	}
 
+/**
+ * Get the arguments value as token.
+ * 
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The arguments token
+ */
 	protected function _collectJsArgument($code) {
 		$result = $this->_collectJsToken($code);
 
 		// check if it might is a ternary
-		if (substr($result->getRemainingCode(),0,1) != '?') {
+		if (substr($result->getRemainingCode(), 0, 1) != '?') {
 			return $result;
 		}
 
 		// handle ternary
-		$first = $this->_collectJsToken(ltrim(substr($result->getRemainingCode(),1)));
+		$first = $this->_collectJsToken(ltrim(substr($result->getRemainingCode(), 1)));
 
 		// expect a double quote
 		if (substr($first->getRemainingCode(), 0, 1) !== ':') {
@@ -546,7 +581,7 @@ class BanchaExtractTask extends ExtractTask {
 			return new Bancha_JavaScriptToken('error',false, $code);
 		}
 
-		$second = $this->_collectJsToken(substr($first->getRemainingCode(),1));
+		$second = $this->_collectJsToken(substr($first->getRemainingCode(), 1));
 
 		// build the new ternary array
 		return new Bancha_JavaScriptToken(
@@ -574,7 +609,7 @@ class BanchaExtractTask extends ExtractTask {
 			$occurrences = explode($functionName, $string);
 
 			foreach ($occurrences as $position => $originalCode) {
-				if ($position==0) {
+				if ($position == 0) {
 					//the first is not a match, but we want to keep it for possible error messages
 					continue;
 				}
@@ -614,9 +649,9 @@ class BanchaExtractTask extends ExtractTask {
 					$this->_collectJsArgument($code));
 
 				// collect additional arguments
-				while(!end($arguments)->isError() && substr(end($arguments)->getRemainingCode(),0,1) == ',') {
+				while(!end($arguments)->isError() && substr(end($arguments)->getRemainingCode(), 0, 1) == ',') {
 					// there is another argument
-					$arguments[] = $this->_collectJsArgument(substr(end($arguments)->getRemainingCode(),1));
+					$arguments[] = $this->_collectJsArgument(substr(end($arguments)->getRemainingCode(), 1));
 				}
 
 				/* Add support for nested calls
@@ -632,7 +667,7 @@ class BanchaExtractTask extends ExtractTask {
 				// error collecting the arguments
 				if (end($arguments)->isError()) {
 					$this->_markerError($this->_file, $line,
-						__d('cake_console', 'Expected strings or variables as arguments for %s, instead saw "%s"', $functionName, substr($code,0,20)), $wholeCode);
+						__d('cake_console', 'Expected strings or variables as arguments for %s, instead saw "%s"', $functionName, substr($code, 0, 20)), $wholeCode);
 					continue;
 				}
 
@@ -642,7 +677,7 @@ class BanchaExtractTask extends ExtractTask {
 				// expect a closing brace
 				if (substr($code, 0, 1) !== ')') {
 					$this->_markerError($this->_file, $line,
-						__d('cake_console', 'Expected an closing braces after %s, instead saw "%s"', $functionName, substr($code,0,10)), $wholeCode);
+						__d('cake_console', 'Expected an closing braces after %s, instead saw "%s"', $functionName, substr($code, 0, 10)), $wholeCode);
 					continue;
 				}
 
@@ -652,7 +687,7 @@ class BanchaExtractTask extends ExtractTask {
 				if ($arguments[0]->isVariable()) {
 					$this->out(__d('cake_console',
 						'<warning>' . $functionName . " is called with a variable/statement, we can't collect this.\n".
-						'Error happend near: ' . substr($wholeCode,0,100) . '</warning>'));
+						'Error happend near: ' . substr($wholeCode, 0, 100) . '</warning>'));
 					continue;
 				}
 				// check against errors
@@ -706,10 +741,10 @@ class BanchaExtractTask extends ExtractTask {
 /**
  * Indicate an invalid marker on a processed file
  *
- * @param string $file File where invalid marker resides
+ * @param string  $file File where invalid marker resides
  * @param integer $line Line number
- * @param string $marker Marker found
- * @param integer $count Count
+ * @param string  $errorMsg the error message to display
+ * @param string  $code The code the error happened around
  * @return void
  */
 	protected function _markerError($file, $line, $errorMsg, $code) {
@@ -720,6 +755,7 @@ class BanchaExtractTask extends ExtractTask {
 /**
  * Search files that may contain translatable strings
  * Same code as ExtractTask.php except that it also includes html and js files
+ * 
  * @return void
  */
 	protected function _searchFiles() {

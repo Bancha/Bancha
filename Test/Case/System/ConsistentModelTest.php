@@ -191,7 +191,7 @@ class ConsistentModelTest extends CakeTestCase {
 				'method'		=> 'update',
 				'tid'			=> 1,
 				'type'			=> 'rpc',
-				'data'			=> array(array('data'=>array(
+				'data'			=> array(array('data' => array(
 					'__bcid'		=> $clientId,
 					'id'			=> 1001,
 					'title'			=> 'foobar'
@@ -202,7 +202,7 @@ class ConsistentModelTest extends CakeTestCase {
 				'method'		=> 'update',
 				'tid'			=> 2,
 				'type'			=> 'rpc',
-				'data'			=> array(array('data'=>array(
+				'data'			=> array(array('data' => array(
 					'__bcid'		=> $clientId,
 					'id'			=> 1001,
 					'title'			=> 'barfoo'
@@ -225,7 +225,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$this->assertCount(2, $responses);
 		$this->assertTrue(
 			isset($responses[0]->result->data),
-			'Expected an result for first request, instead $responses is '.print_r($responses,true)
+			'Expected an result for first request, instead $responses is ' . print_r($responses, true)
 		);
 		$this->assertEquals('foobar', $responses[0]->result->data->title); // first request should change it to foobar
 		$this->assertEquals('barfoo', $responses[1]->result->data->title); // second request should change it to barfoo

@@ -37,20 +37,20 @@ class TreeIntegrationTest extends CakeTestCase {
  * we need to change them in the setUp method
  * @var Array
  */
-	private $originalPaths = null;
-	private $originalDebugLevel;
+	protected $_originalPaths = null;
+	protected $_originalDebugLevel;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
 	public function tearDown() {
 		parent::tearDown();
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 
 		// clear the registry
 		ClassRegistry::flush();
@@ -63,7 +63,7 @@ class TreeIntegrationTest extends CakeTestCase {
 	public function testIndex() {
 
 		// build up the test paths
-		$this->originalPaths = App::paths();
+		$this->_originalPaths = App::paths();
 		App::build(array(
 			'Controller' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Controller' . DS,
 			'Model' => App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Model' . DS,
@@ -90,7 +90,7 @@ class TreeIntegrationTest extends CakeTestCase {
 		$controller->Category = ClassRegistry::init('Category');
 
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)), true);
-		$this->assertTrue(isset($responses[0]['result']), 'Expected an result for request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]['result']), 'Expected an result for request, instead $responses is ' . print_r($responses, true));
 
 		// basic tree checks
 		$this->assertEquals(1, count($responses[0]['result']['data']), 'Expected one root element.');
@@ -232,6 +232,6 @@ class TreeIntegrationTest extends CakeTestCase {
 		$this->assertEquals($expected, $responses[0]['result']['data']);
 
 		// reset the paths
-		App::build($this->originalPaths, App::RESET);
+		App::build($this->_originalPaths, App::RESET);
 	}
 }

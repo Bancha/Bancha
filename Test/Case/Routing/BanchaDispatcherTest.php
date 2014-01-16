@@ -50,14 +50,14 @@ class TestsController extends AppController {
  */
 class BanchaDispatcherTest extends CakeTestCase {
 
-	private $originalOrigin;
-	private $originalDebugLevel;
+	protected $_originalOrigin;
+	protected $_originalDebugLevel;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
+		$this->_originalDebugLevel = Configure::read('debug');
 		$this->allowedDomains = Configure::read('Bancha.allowedDomains');
 		
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
@@ -76,14 +76,14 @@ class BanchaDispatcherTest extends CakeTestCase {
 		parent::tearDown();
 
 		// reset the origin
-		if ($this->originalOrigin !== false) {
-			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		if ($this->_originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->_originalOrigin;
 		} else {
 			unset($_SERVER['HTTP_ORIGIN']);
 		}
 
 		// reset the debug level and allowed domains
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 		Configure::write('Bancha.allowedDomains', $this->allowedDomains);
 
 		// enable stderr stream after testing (CakePHP 2.2 and up)
@@ -131,7 +131,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// verify
-		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('Hello World!', $responses[0]->result->data->text);
 		$this->assertEquals('foobar', $responses[1]->result->data->text);
 	}
@@ -174,7 +174,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$responses = json_decode(ob_get_clean());
 
 		// verify
-		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected $responses[0]->result to pre present, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('Hello World!', $responses[0]->result->data->text);
 		$this->assertEquals('foobar', $responses[1]->result->data->text);
 	}
@@ -211,7 +211,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// verify
-		$this->assertTrue(isset($responses[0]->type), 'Expected $responses[0]->type to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->type), 'Expected $responses[0]->type to pre present, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertEquals('MissingControllerException', $responses[0]->exceptionType);
 		$this->assertEquals('Controller class SomeControllersController could not be found.', $responses[0]->message);
@@ -249,7 +249,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$responses = json_decode($Dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// verify
-		$this->assertTrue(isset($responses[0]->type), 'Expected $responses[0]->type to pre present, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->type), 'Expected $responses[0]->type to pre present, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('exception', $responses[0]->type);
 
 		// this data should be protected

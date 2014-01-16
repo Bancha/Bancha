@@ -7,6 +7,7 @@
  * @since         Bancha v 2.2.0
  */
 class Category extends AppModel {
+
 /**
  * Behaviors
  */

@@ -39,8 +39,8 @@ class AllTestsTest extends PHPUnit_Framework_TestSuite {
 		$suite->addTestFile($path . DS . 'AllNetworkTest.php');
 		$suite->addTestFile($path . DS . 'AllRoutingTest.php');
 		$suite->addTestFile($path . DS . 'AllSystemTest.php');
-		$suite->addTestFile($path . DS . 'Lib' . DS .'BanchaApiTest.php');
-		$suite->addTestFile($path . DS . 'Lib' . DS .'CakeSenchaDataMapperTest.php');
+		$suite->addTestFile($path . DS . 'Lib' . DS . 'BanchaApiTest.php');
+		$suite->addTestFile($path . DS . 'Lib' . DS . 'CakeSenchaDataMapperTest.php');
 		$suite->addTestFile($path . DS . 'Console' . DS . 'Command' . DS . 'Task' . DS . 'BanchaExtractTaskTest.php');
 
 		//$suite->addTestDirectory($path);

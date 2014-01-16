@@ -20,6 +20,7 @@
  * @since         Bancha v 2.1.0
  */
 class ArticlesTag extends AppModel {
+
 /**
  * Behaviors
  */

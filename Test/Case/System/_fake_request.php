@@ -27,7 +27,7 @@ if (basename(realpath($pathToBancha . '/..')) == 'Plugin') {
 } else {
 	// plugins/Bancha
 	define('ROOT', realpath($pathToBancha . '/../..'));
-}	
+}
 define('APP_DIR', basename(ROOT . '/app'));
 define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'lib');
 
@@ -36,8 +36,8 @@ define('WEBROOT_DIR', basename(WWW_ROOT));
 define('APP_PATH', ROOT . DS . APP_DIR . DS);
 define('CORE_PATH', CAKE_CORE_INCLUDE_PATH . DS);
 
-include(CORE_PATH . 'Cake' . DS . 'bootstrap.php');
-include($pathToBancha . DS . 'Config' . DS . 'bootstrap.php');
+include (CORE_PATH . 'Cake' . DS . 'bootstrap.php');
+include ($pathToBancha . DS . 'Config' . DS . 'bootstrap.php');
 
 Configure::write('debug', 1);
 
@@ -56,24 +56,19 @@ $article = ClassRegistry::init('Article');
 $article->setDataSource('test');
 
 // execute query
-if (isset($_SERVER['argv'][1]))
-{
-	$client_id = $_SERVER['argv'][1];
+if (isset($_SERVER['argv'][1])) {
+	$clientId = $_SERVER['argv'][1];
 }
-if (isset($_SERVER['argv'][2]))
-{
-	$article_id = $_SERVER['argv'][2];
+if (isset($_SERVER['argv'][2])) {
+	$articleId = $_SERVER['argv'][2];
 }
-if (isset($_SERVER['argv'][3]))
-{
+if (isset($_SERVER['argv'][3])) {
 	$tid = $_SERVER['argv'][3];
 }
-if (isset($_SERVER['argv'][4]))
-{
+if (isset($_SERVER['argv'][4])) {
 	$title = $_SERVER['argv'][4];
 }
-if (isset($_SERVER['argv'][5]))
-{
+if (isset($_SERVER['argv'][5])) {
 	define('SLEEP_TIME', $_SERVER['argv'][5]);
 }
 
@@ -84,9 +79,9 @@ $rawPostData = json_encode(array(
 		'method'		=> 'update',
 		'tid'			=> $tid,
 		'type'			=> 'rpc',
-		'data'			=> array(array('data'=>array(
-			'__bcid'		=> $client_id,
-			'id'			=> $article_id,
+		'data'			=> array(array('data' => array(
+			'__bcid'		=> $clientId,
+			'id'			=> $articleId,
 			'title'			=> $title,
 			'published'		=> true,
 		))),

@@ -32,31 +32,36 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  * @since         Bancha v 0.9.0
  */
 class BanchaCrudTest extends CakeTestCase {
-	public $fixtures = array('plugin.bancha.article','plugin.bancha.user','plugin.bancha.tag','plugin.bancha.articles_tag');
 
-	private $originalDebugLevel;
+	public $fixtures = array(
+		'plugin.bancha.article',
+		'plugin.bancha.user',
+		'plugin.bancha.tag',
+		'plugin.bancha.articles_tag'
+	);
+
+	protected $_originalDebugLevel;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
 	public function tearDown() {
 		parent::tearDown();
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 
 		// clear the registry
 		ClassRegistry::flush();
 	}
 
 	public function testAdd() {
-
 		$config = ConnectionManager::enumConnectionObjects();
 		$this->skipIf(
-			$config['default']['datasource'] ===  'Database/Sqlite',
+			$config['default']['datasource'] == 'Database/Sqlite',
 			'Default database needs to be persistent for this test'
 		);
 
@@ -66,7 +71,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'create',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array(
+			'data'			=> array(array('data' => array(
 				'title'			=> 'Hello World',
 				'body'			=> 'foobar',
 				'published'		=> false,
@@ -83,7 +88,10 @@ class BanchaCrudTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(
+			isset($responses[0]->result),
+			'Expected an result for first request, instead $responses is ' . print_r($responses, true)
+		);
 		$this->assertNotNull($responses[0]->result->data->id);
 		$this->assertEquals('Hello World', $responses[0]->result->data->title);
 		$this->assertEquals(false, $responses[0]->result->data->published);
@@ -112,7 +120,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'update',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array(
+			'data'			=> array(array('data' => array(
 				'id'			=> 1001,
 				'title'			=> 'foobar',
 				'published'		=> 1,
@@ -129,7 +137,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 		$this->assertTrue(
 			isset($responses[0]->result),
-			'Expected responses to contain a response, instead $responses is '.print_r($responses,true)
+			'Expected responses to contain a response, instead $responses is ' . print_r($responses, true)
 		);
 
 		$this->assertEquals(1001, $responses[0]->result->data->id);
@@ -254,7 +262,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'destroy',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array('id' => 1001)))
+			'data'			=> array(array('data' => array('id' => 1001)))
 		)));
 
 		// setup
@@ -529,7 +537,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'create',
 			'tid'			=> 1,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array(
+			'data'			=> array(array('data' => array(
 				'title'			=> 'Hello World',
 				'body'			=> 'foobar',
 				'published'		=> false,
@@ -540,7 +548,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'method'		=> 'update',
 			'tid'			=> 2,
 			'type'			=> 'rpc',
-			'data'			=> array(array('data'=>array(
+			'data'			=> array(array('data' => array(
 				'id'			=> 1001,
 				'title'			=> 'foobar',
 				'published'		=> false,
@@ -557,7 +565,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// general response checks (check dispatcher, collections and transformers)
-		$this->assertTrue(isset($responses[0]->result), 'Expected an action proptery on first response, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an action proptery on first response, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('create', $responses[0]->method);
 		$this->assertEquals('rpc', $responses[0]->type);

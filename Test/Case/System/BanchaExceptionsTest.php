@@ -30,13 +30,12 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  */
 class BanchaExceptionsTest extends CakeTestCase {
 
-	private $originalOrigin;
-	private $originalDebugLevel;
+	protected $_originalDebugLevel;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalDebugLevel = Configure::read('debug');
 		
 
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
@@ -55,7 +54,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		parent::tearDown();
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 
 		// enable stderr stream after testing (CakePHP 2.2 and up)
 		if (in_array('stderr', CakeLog::configured()) && version_compare(Configure::version(), '2.2') >= 0) {

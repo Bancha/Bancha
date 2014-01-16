@@ -37,7 +37,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$rawPostData = json_encode(array(
 			'action'	=> 'Test',
 			'method'	=> 'create',
-			'data'		=> array(array('data'=>array(
+			'data'		=> array(array('data' => array(
 				'__bcid'		=> $client_id,
 			))),
 			'type'		=> 'rpc',
@@ -189,7 +189,7 @@ class BanchaRequestCollectionTest extends CakeTestCase {
 		$rawPostData = json_encode(array(
 			'action'	=> 'Bancha',
 			'method'	=> 'loadMetaData',
-			'data'		=> array(array('data'=>array(
+			'data'		=> array(array('data' => array(
 				'User',
 				'Article'
 			))),

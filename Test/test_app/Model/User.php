@@ -20,11 +20,12 @@
  * @since         Bancha v 2.1.0
  */
 class User extends AppModel {
+
 /**
  * Bancha behavior
  */
 	public $actsAs = array('Bancha.BanchaRemotable');
-	
+
 /**
  * Display field
  *
@@ -38,7 +39,7 @@ class User extends AppModel {
  * @var array
  */
 	public $validate = array( // TODO example for validation rule "url" missing
-		'id' => array(	
+		'id' => array(
 			'numeric' => array(
 				'rule' => array('numeric'),
 				'precision' => 0
@@ -49,10 +50,10 @@ class User extends AppModel {
 				'rule' => array('notempty')
 			),
 			'minLength' => array(
-				'rule' => array('minLength',3),
+				'rule' => array('minLength', 3),
 			),
 			'maxLength' => array(
-				'rule' => array('maxLength',64),
+				'rule' => array('maxLength', 64),
 			),
 		),
 		'login' => array(
@@ -65,7 +66,7 @@ class User extends AppModel {
 				'required' => true, // this one is slick
 			),
 			'maxLength' => array(
-				'rule' => array('maxLength',64),
+				'rule' => array('maxLength', 64),
 			),
 			'alphaNumeric' => array(
 				'rule' => array('alphaNumeric')
@@ -102,12 +103,12 @@ class User extends AppModel {
 		),
 		'avatar' => array(
 			'file' => array( // this validation rule forces Bancha.scaffold in the frontend to render a fileuploadfield
-				 'rule' => array('file')
-			 ),
+				'rule' => array('file')
+			),
 			'extension' => array(
-				 'rule' => array('extension', array('gif', 'jpeg', 'png', 'jpg')),
-				 'allowEmpty' => true,
-				 'message' => 'Please supply a valid image.'
+				'rule' => array('extension', array('gif', 'jpeg', 'png', 'jpg')),
+				'allowEmpty' => true,
+				'message' => 'Please supply a valid image.'
 			 ),
 		),
 	);

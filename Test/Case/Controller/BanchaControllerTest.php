@@ -39,15 +39,14 @@ class BanchaControllerTest extends ControllerTestCase {
  * we need to change them in the setUp method
  * @var Array
  */
-	private $originalPaths = null;
-	private $originalOrigin;
-	private $originalDebugLevel;
+	protected $_originalPaths = null;
+	protected $_originalDebugLevel;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->originalDebugLevel = Configure::read('debug');
-		$this->originalPaths = App::paths();
+		$this->_originalDebugLevel = Configure::read('debug');
+		$this->_originalPaths = App::paths();
 
 		// make sure there's no old cache
 		Cache::clear(false,'_bancha_api_');
@@ -63,10 +62,10 @@ class BanchaControllerTest extends ControllerTestCase {
 		parent::tearDown();
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 
 		// reset the paths
-		App::build($this->originalPaths, App::RESET);
+		App::build($this->_originalPaths, App::RESET);
 
 		// make sure to flush after tests, so that real app is not influenced
 		Cache::clear(false,'_bancha_api_');
@@ -133,7 +132,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// tear down - unload plugin
 		CakePlugin::unload('TestPlugin');
 		App::build(array(
-			'Plugin' => $this->originalPaths['Plugin'],
+			'Plugin' => $this->_originalPaths['Plugin'],
 		), App::RESET);
 		App::objects('plugin', null, false);
 	}
@@ -429,7 +428,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// tear down - unload plugin
 		CakePlugin::unload('TestPlugin');
 		App::build(array(
-			'Plugin' => $this->originalPaths['Plugin'],
+			'Plugin' => $this->_originalPaths['Plugin'],
 		), App::RESET);
 		App::objects('plugin', null, false);
 	}
@@ -469,7 +468,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// check the basic response and the result property
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals(true, $responses[0]->result->success);
 
 		// check that only requested metadata is send
@@ -507,7 +506,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// check the basic response, the result property and message
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals(false, $responses[0]->result->success);
 		$this->assertEquals('Model Imaginary could not be found.', $responses[0]->result->message);
 	}

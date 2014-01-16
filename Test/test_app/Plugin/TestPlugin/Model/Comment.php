@@ -24,7 +24,8 @@ class Comment extends TestPluginAppModel {
 	public $actsAs = array('Bancha.BanchaRemotable');
 
 	public $useTable = false;
-	public $_schema = array(
+
+	protected $_schema = array(
 		'id' => array(
 			'type' => 'integer',
 			'key' => 'primary',

@@ -22,9 +22,9 @@ App::uses('Controller', 'Controller');
  */
 class AppController extends Controller {
 
-	/**
-	 * Use the BanchaPaginatorComponent to also support pagination
-	 * and remote searching for Sencha Touch and ExtJS stores
-	 */
+/**
+ * Use the BanchaPaginatorComponent to also support pagination
+ * and remote searching for Sencha Touch and ExtJS stores
+ */
 	public $components = array('Session', 'Paginator' => array('className' => 'Bancha.BanchaPaginator'));
 }

@@ -20,6 +20,7 @@
  * @since         Bancha v 2.1.0
  */
 class Tag extends AppModel {
+
 /**
  * Behaviors
  */

@@ -27,15 +27,43 @@ App::uses('BanchaExtractTask', 'Bancha.Console/Command/Task');
  * This class simply exposed protected functions for unit testing
  */
 class BanchaExtractTestTask extends BanchaExtractTask {
+
+/**
+ * A public function for the protected _collectJsArgument.
+ * 
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The arguments token
+ */
 	public function collectJsArgument($code) {
 		return $this->_collectJsArgument($code);
 	}
+
+/**
+ * A public function for the protected _collectJsToken.
+ * 
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The calculated token
+ */
 	public function collectJsToken($code) {
 		return $this->_collectJsToken($code);
 	}
+
+/**
+ * A public function for the protected _findString.
+ * 
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The calculated token
+ */
 	public function findString($code) {
 		return $this->_findString($code);
 	}
+
+/**
+ * A public function for the protected _findVariable.
+ * 
+ * @param  string $code           The code to process
+ * @return Bancha_JavaScriptToken The calculated token
+ */
 	public function findVariable($code) {
 		return $this->_findVariable($code);
 	}
@@ -87,8 +115,12 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		CakePlugin::unload();
 	}
 
+/**
+ * Test the BanchaExtractTask::_findString method.
+ * 
+ * @return void
+ */
 	public function testFindString() {
-
 		$result = $this->Task->findString('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('This is a simple string', $result->getStringValue());
@@ -127,6 +159,11 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->assertEquals('This one is missing some end quote.', $result->getRemainingCode()); //the original code
 	}
 
+/**
+ * Test the BanchaExtractTask::_findVariable method.
+ * 
+ * @return void
+ */
 	public function testFindVariable() {
 		// test with parenteses
 		$result = $this->Task->findVariable("someVar); Some more code");
@@ -154,6 +191,11 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->assertEquals('someNoneEndingVarToken', $result->getRemainingCode());
 	}
 
+/**
+ * Test the BanchaExtractTask::_collectJsToken method.
+ * 
+ * @return void
+ */
 	public function testCollectJsToken() {
 		$result = $this->Task->collectJsToken('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
@@ -200,10 +242,13 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->assertTrue($result->isError());
 	}
 
+/**
+ * Test the BanchaExtractTask::_collectJsArgument method.
+ * 
+ * @return void
+ */
 	public function testCollectJsArgument() {
-
 		// test same as above
-
 		$result = $this->Task->collectJsArgument('"This is a simple string"); Some more code');
 		$this->assertTrue($result->isString());
 		$this->assertEquals('This is a simple string', $result->getStringValue());
@@ -375,7 +420,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
  *
  * @return void
  */
-	public function testExecute_NestedCalls() {
+	public function testExecuteNestedCalls() {
 		$this->markTestSkipped('Add support for nested calls');
 		// js code for nested calls
 		// Bancha.t('This is the first part, with %', Bancha.t('a second sub-part in a nested call'));
@@ -415,7 +460,7 @@ class BanchaExtractTaskTest extends CakeTestCase {
  *
  * @return void
  */
-	public function testExecute_Warnings() {
+	public function testExecuteWarnings() {
 		$this->markTestSkipped('Write more tests for Bancha Jsi18n extraction');
 		$this->Task->interactive = false;
 		$this->Task->params['paths'] = dirname(__FILE__) . DS . 'extraction_test_files';

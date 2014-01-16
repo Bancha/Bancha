@@ -71,6 +71,8 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 
 	public $fixtures = array('plugin.bancha.article');
 
+	protected $_originalDebugLevel;
+
 /**
  * This method creates a controller and a component with the given settings
  */
@@ -108,14 +110,14 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		*/
 	
 		// keep debug level
-		$this->originalDebugLevel = Configure::read('debug');
+		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
 	public function tearDown() {
 		parent::tearDown();
 
 		// reset the debug level
-		Configure::write('debug', $this->originalDebugLevel);
+		Configure::write('debug', $this->_originalDebugLevel);
 
 		// Clean up after we're done
 		unset($this->BanchaPaginatorComponent);

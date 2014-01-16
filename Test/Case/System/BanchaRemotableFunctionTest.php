@@ -97,12 +97,10 @@ class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsCo
  */
 class BanchaRemotableFunctionTest extends CakeTestCase {
 
-	private $originalOrigin;
+	protected $_originalOrigin;
 
 	public function setUp() {
 		parent::setUp();
-
-		$this->originalDebugLevel = Configure::read('debug');
 
 		// Bancha will check that this is set, so for all tests which are not
 		// about the feature, this should be set.
@@ -113,8 +111,8 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		parent::tearDown();
 
 		// reset the origin
-		if ($this->originalOrigin !== false) {
-			$_SERVER['HTTP_ORIGIN'] = $this->originalOrigin;
+		if ($this->_originalOrigin !== false) {
+			$_SERVER['HTTP_ORIGIN'] = $this->_originalOrigin;
 		} else {
 			unset($_SERVER['HTTP_ORIGIN']);
 		}
@@ -143,7 +141,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
 
@@ -175,9 +173,9 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
-		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got '.print_r($responses,true));
+		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got ' . print_r($responses, true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
 
@@ -229,10 +227,10 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
 		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
-		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got '.print_r($responses,true));
+		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got ' . print_r($responses, true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
 
@@ -285,7 +283,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('BanchaRedirectException', $responses[0]->exceptionType);
 	}
 
@@ -321,7 +319,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('BanchaAuthLoginException', $responses[0]->exceptionType);
 	}
 
@@ -359,10 +357,10 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is '.print_r($responses,true));
+		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
 		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
 		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
-		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got '.print_r($responses,true));
+		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got ' . print_r($responses, true));
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
 
@@ -388,7 +386,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is '.print_r($responses,true));
+		$this->assertEquals('exception', $responses[0]->type, 'Expected an exception, instead $responses is ' . print_r($responses, true));
 		$this->assertEquals('BanchaAuthAccessRightsException', $responses[0]->exceptionType);
 
 		// tear down
