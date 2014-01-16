@@ -297,7 +297,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// add associated models
 		$assocTypes = $Model->associations();
 		foreach ($assocTypes as $type) { // only 3 types
-			foreach($Model->{$type} as $modelName => $config) {
+			foreach ($Model->{$type} as $modelName => $config) {
 				if ($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
 					// this field is hidden from ExtJS/Sencha Touch, so also hide the associated data
 					continue;
@@ -342,7 +342,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				// ExtJS/Sencha Touch doesn't support hasAndBelongsToMany
 				continue;
 			}
-			foreach($Model->{$type} as $modelName => $config) {
+			foreach ($Model->{$type} as $modelName => $config) {
 
 				//generate the name to retrieve associations
 				$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
@@ -552,7 +552,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// check if the input is required
 		$presence = false;
-		foreach($rules as $rule) {
+		foreach ($rules as $rule) {
 			if ((isset($rule['required']) && $rule['required']) ||
 			   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
 				$presence = true;
@@ -856,7 +856,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// check if at least one field is saved to the database
 			try {
 				if (isset($Model->data[$Model->name]) && is_array($Model->data[$Model->name])) {
-					foreach($fields as $field => $type) {
+					foreach ($fields as $field => $type) {
 						if ($field!==$Model->primaryKey && array_key_exists($field, $Model->data[$Model->name])) {
 							$valid=true;
 							break;
@@ -1036,7 +1036,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
 
 		} else if (is_array($Model->order)) {
-			foreach($Model->order as $key => $direction) {
+			foreach ($Model->order as $key => $direction) {
 				$modelName = strtok($key, ".");
 				$fieldName = strtok(".");
 				array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
