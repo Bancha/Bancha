@@ -147,14 +147,14 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// show that there was an exception, but with no information!
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(isset($responses[0]->exceptionType)); // don't send exception info
-		$this->assertEquals(__('Unknown error.',true),$responses[0]->message); // don't give usefull info to possible hackers
+		$this->assertEquals(__('Unknown error.',true), $responses[0]->message); // don't give usefull info to possible hackers
 		$this->assertFalse(isset($responses[0]->where));
 		$this->assertFalse(isset($responses[0]->trace));
 
 		// show that there was an exception, but with no information!
 		$this->assertEquals('exception', $responses[1]->type);
 		$this->assertTrue(isset($responses[1]->exceptionType)); // send exception info
-		$this->assertEquals(__('Invalid article',true),$responses[1]->message); // send exception message
+		$this->assertEquals(__('Invalid article',true), $responses[1]->message); // send exception message
 		$this->assertFalse(isset($responses[1]->where)); // don't give usefull info to possible hackers
 		$this->assertFalse(isset($responses[1]->trace));
 

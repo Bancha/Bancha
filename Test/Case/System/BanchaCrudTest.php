@@ -222,7 +222,7 @@ class BanchaCrudTest extends CakeTestCase {
 		$result = $dispatcher->dispatch($collection, $response, array('return' => true));
 
 		// the response should be surounded by some html (because of the upload)
-		$this->assertEquals(1,preg_match("/\<html\>\<body\>\<textarea\>(.*)\<\/textarea\>\<\/body\>\<\/html\>/",$result));
+		$this->assertEquals(1,preg_match("/\<html\>\<body\>\<textarea\>(.*)\<\/textarea\>\<\/body\>\<\/html\>/", $result));
 
 		// decode by excluding the html part
 		$responses = json_decode(substr($result,22,-25));

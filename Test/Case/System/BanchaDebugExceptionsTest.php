@@ -43,7 +43,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 	}
 
 	// helper method
-	private function getResultForMethod($method,$data=array()) {
+	private function getResultForMethod($method, $data=array()) {
 		$rawPostData = json_encode(array(
 			'action'		=> 'DebugException',
 			'method'		=> $method,

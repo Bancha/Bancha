@@ -279,7 +279,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 
 
 		// tear down
-		Configure::write('Bancha.allowMultiRecordRequests',$currentConfig);
+		Configure::write('Bancha.allowMultiRecordRequests', $currentConfig);
 	}
 
 /**
