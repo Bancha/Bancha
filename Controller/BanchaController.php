@@ -272,53 +272,53 @@ class BanchaController extends BanchaAppController {
 	 */
 	protected function _beautifyJson($json) {
 
-	    $result      = '';
-	    $pos         = 0;
-	    $strLen      = strlen($json);
-	    $indentStr   = '  ';
-	    $newLine     = "\n";
-	    $prevChar    = '';
-	    $outOfQuotes = true;
+		$result      = '';
+		$pos         = 0;
+		$strLen      = strlen($json);
+		$indentStr   = '  ';
+		$newLine     = "\n";
+		$prevChar    = '';
+		$outOfQuotes = true;
 
-	    for ($i=0; $i<=$strLen; $i++) {
+		for ($i=0; $i<=$strLen; $i++) {
 
-	        // Grab the next character in the string.
-	        $char = substr($json, $i, 1);
+			// Grab the next character in the string.
+			$char = substr($json, $i, 1);
 
-	        // Are we inside a quoted string?
-	        if ($char == '"' && $prevChar != '\\') {
-	            $outOfQuotes = !$outOfQuotes;
+			// Are we inside a quoted string?
+			if ($char == '"' && $prevChar != '\\') {
+				$outOfQuotes = !$outOfQuotes;
 
-	        // If this character is the end of an element,
-	        // output a new line and indent the next line.
-	        } else if (($char == '}' || $char == ']') && $outOfQuotes) {
-	            $result .= $newLine;
-	            $pos --;
-	            for ($j=0; $j<$pos; $j++) {
-	                $result .= $indentStr;
-	            }
-	        }
+			// If this character is the end of an element,
+			// output a new line and indent the next line.
+			} else if (($char == '}' || $char == ']') && $outOfQuotes) {
+				$result .= $newLine;
+				$pos --;
+				for ($j=0; $j<$pos; $j++) {
+					$result .= $indentStr;
+				}
+			}
 
-	        // Add the character to the result string.
-	        $result .= $char;
+			// Add the character to the result string.
+			$result .= $char;
 
-	        // If the last character was the beginning of an element,
-	        // output a new line and indent the next line.
-	        if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
-	            $result .= $newLine;
-	            if ($char == '{' || $char == '[') {
-	                $pos ++;
-	            }
+			// If the last character was the beginning of an element,
+			// output a new line and indent the next line.
+			if (($char == ',' || $char == '{' || $char == '[') && $outOfQuotes) {
+				$result .= $newLine;
+				if ($char == '{' || $char == '[') {
+					$pos ++;
+				}
 
-	            for ($j = 0; $j < $pos; $j++) {
-	                $result .= $indentStr;
-	            }
-	        }
+				for ($j = 0; $j < $pos; $j++) {
+					$result .= $indentStr;
+				}
+			}
 
-	        $prevChar = $char;
-	    }
+			$prevChar = $char;
+		}
 
-	    return $result;
+		return $result;
 	}
 
 	/**
@@ -354,17 +354,17 @@ class BanchaController extends BanchaAppController {
 		$output = json_encode($jsTranslations);
 		$output = Configure::read('debug') == 2 ? $this->_beautifyJson($output) : $output;
 		$this->response->body($output);
-    }
+	}
 
-    /**
-     * This function logs an javascript error to eigther js_error.log or
-     * missing_translation.log. This function should never be called directly.
-     * use the JavaScript Bancha.log method to log errors.
-	 *
-     * @param  string $error the error message to log
-     * @param  string $type  'js_error' or 'missing_translation'
-     * @return boolean		 True to indicate that everything worked.
-     */
+/**
+ * This function logs an javascript error to eigther js_error.log or
+ * missing_translation.log. This function should never be called directly.
+ * use the JavaScript Bancha.log method to log errors.
+ *
+ * @param  string $error the error message to log
+ * @param  string $type  'js_error' or 'missing_translation'
+ * @return boolean		 True to indicate that everything worked.
+ */
 	public function logError($error, $type) {
 		if ($type!=='js_error' && $type!=='missing_translation') {
 			$this->log(
