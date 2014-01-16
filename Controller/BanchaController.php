@@ -332,7 +332,7 @@ class BanchaController extends BanchaAppController {
 	 * @return void                 No return value, the response body is set to an json object
 	 *                              with all data.
 	 */
-	public function translations($languageCode, $domain='bancha') {
+	public function translations($languageCode, $domain = 'bancha') {
 
 		App::uses('I18n', 'I18n');
 		$i18n = I18n::getInstance();
@@ -366,7 +366,7 @@ class BanchaController extends BanchaAppController {
  * @return boolean		 True to indicate that everything worked.
  */
 	public function logError($error, $type) {
-		if ($type!=='js_error' && $type!=='missing_translation') {
+		if ($type !== 'js_error' && $type !== 'missing_translation') {
 			$this->log(
 				'Someone send a javascript error message of type "' . $type . '" to CakePHP, but this type does not exist. ' .
 				'If you did this, please never use the serverside Bancha::logError directly. Instead use the JavaScript ' .

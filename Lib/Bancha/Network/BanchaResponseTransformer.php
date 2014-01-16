@@ -68,7 +68,7 @@ class BanchaResponseTransformer {
 		if (is_array($response) && isset($response['success'])) {
 
 			// enforce that the success value is of type boolean
-			$response['success'] = $response['success']==='false' ? false : !!$response['success'];
+			$response['success'] = ($response['success'] === 'false') ? false : !!$response['success'];
 
 			return $response; // everything done
 		}

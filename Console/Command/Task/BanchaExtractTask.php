@@ -32,9 +32,9 @@ class Bancha_JavaScriptToken {
 
 	public function __construct($type, $content, $remainingCode) {
 		if (gettype($type) == 'string') {
-			$type = $type=='string' ? self::$TYPE_STRING : (
-					$type=='variable' ? self::$TYPE_VARIABLE : (
-					$type=='ternary' ? self::$TYPE_TERNARY : false));
+			$type = $type == 'string' ? self::$TYPE_STRING : (
+					$type == 'variable' ? self::$TYPE_VARIABLE : (
+					$type == 'ternary' ? self::$TYPE_TERNARY : false));
 		}
 		$this->_type = $type;
 		$this->_content = $content;
@@ -349,7 +349,7 @@ class BanchaExtractTask extends ExtractTask {
 			$foundEscapes = 0;
 			$position = $endPosition-1;
 			// collect the number of escape strings before
-			while($position>=0 && $code[$position]=='\\') {
+			while($position>=0 && $code[$position] == '\\') {
 				$foundEscapes++;
 				$position--;
 			}
@@ -408,10 +408,10 @@ class BanchaExtractTask extends ExtractTask {
 		$code = ltrim($code);
 		$character = substr($code,0,1);
 
-		if ($character=='"' || $character=="'") { // string
+		if ($character == '"' || $character == "'") { // string
 			return $this->_findString($code);
 		}
-		if ($character=='[') { // array of strings
+		if ($character == '[') { // array of strings
 			// collect all strings
 			$strs = array();
 			$token = $this->_findString(ltrim(substr($code,1)));

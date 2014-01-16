@@ -81,7 +81,7 @@ class BanchaDispatcher {
 		</bancha-basic>*/
 
 		$allowedDomains = Configure::read('Bancha.allowedDomains');
-		if ($allowedDomains && $allowedDomains!=='*' && !isset($_SERVER['HTTP_ORIGIN'])) {
+		if ($allowedDomains && $allowedDomains !== '*' && !isset($_SERVER['HTTP_ORIGIN'])) {
 			// we need to have a origin to validate the domain!
 			if (Configure::read('debug') == 2) {
 				echo 'Bancha Error: Bancha expects that any request has a '.
@@ -90,7 +90,7 @@ class BanchaDispatcher {
 			return; // abort
 		}
 
-		if ($allowedDomains && $allowedDomains!=='*' &&
+		if ($allowedDomains && $allowedDomains !== '*' &&
 			!in_array($_SERVER['HTTP_ORIGIN'], $allowedDomains)) {
 			// this domain is prohibited according to the access control list
 			// block it

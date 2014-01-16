@@ -704,22 +704,22 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 	}
 	public function walkerRemoveEntriesCallback1($modelName, $data) {
-		return array(($modelName=='Tag' ? false : $modelName), $data);
+		return array(($modelName == 'Tag' ? false : $modelName), $data);
 	}
 	public function walkerRemoveEntriesCallback2($modelName, $data) {
-		return array(($modelName=='User' ? false : $modelName), $data);
+		return array(($modelName == 'User' ? false : $modelName), $data);
 	}
 	public function walkerRemoveEntriesCallback3($modelName, $data) {
-		return array((($modelName=='Article' && $data['id']==1001) ? false : $modelName), $data);
+		return array((($modelName == 'Article' && $data['id'] == 1001) ? false : $modelName), $data);
 	}
 	public function walkerRemoveEntriesCallback4($modelName, $data) {
-		if ($modelName=='User' && isset($data['Article'])) {
+		if ($modelName == 'User' && isset($data['Article'])) {
 			unset($data['Article']);
 		}
 		return array($modelName, $data);
 	}
 	public function walkerRemoveEntriesCallback5($modelName, $data) {
-		if ($modelName=='Article' && isset($data['User'])) {
+		if ($modelName == 'Article' && isset($data['User'])) {
 			unset($data['User']);
 		}
 		return array($modelName, $data);
