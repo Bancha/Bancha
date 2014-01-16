@@ -31,10 +31,10 @@ class TestBanchaPaginatorComponentsController extends Controller {
 	public $uses = array('Article');
 	public $components = array('Session', 'Paginator' => array('className' => 'Bancha.BanchaPaginator'));
 
-	/*
-	 * Used in the testPaginationConditionApplying to
-	 * test setting the paginate via method argument
-	 */
+/*
+ * Used in the testPaginationConditionApplying to
+ * test setting the paginate via method argument
+ */
 	public function getPaginationConditionsArgument() {
 		$this->Article->recursive = -1;
 
@@ -43,10 +43,11 @@ class TestBanchaPaginatorComponentsController extends Controller {
 			array('Article.title' => 'Title 1')
 		));
 	}
-	/*
-	 * Used in the testPaginationConditionApplying to
-	 * test setting the paginate via overloaded property
-	 */
+
+/*
+ * Used in the testPaginationConditionApplying to
+ * test setting the paginate via overloaded property
+ */
 	public function getPaginationConditionsProperty() {
 		$this->Article->recursive = -1;
 

@@ -87,7 +87,6 @@ class BanchaConsistencyProvider {
 		// Set the tid to 'x', so that no other request can be handled in parallel
 		$this->saveTid('x');
 
-
 		// process it
 		return true;
 	}
@@ -114,11 +113,11 @@ class BanchaConsistencyProvider {
 		return;
 	}
 
-
-
-
-
-	// helper functions
+// ######################################
+// ######################################
+// ####      helper functions        ####
+// ######################################
+// ######################################
 
 /**
  * convenience method to get the file name where the client ids are saved

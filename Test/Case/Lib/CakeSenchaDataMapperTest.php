@@ -257,11 +257,11 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		),
 	);
 
-	/**
-	 * Test isSingleRecord function
-	 *
-	 * @dataProvider isSingleRecordDataProvider
-	 */
+/**
+ * Test isSingleRecord function
+ *
+ * @dataProvider isSingleRecordDataProvider
+ */
 	public function testIsSingleRecord($data, $expectedResult) {
 
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
@@ -269,9 +269,10 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 		$this->assertEquals($result, $expectedResult);
 	}
-	/**
-	 * Data Provider for testIsSingleRecord
-	 */
+
+/**
+ * Data Provider for testIsSingleRecord
+ */
 	public function isSingleRecordDataProvider() {
 		return array(
 			array(
@@ -297,12 +298,11 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		);
 	}
 
-
-	/**
-	 * Test isRecordSet function
-	 *
-	 * @dataProvider isRecordSetDataProvider
-	 */
+/**
+ * Test isRecordSet function
+ *
+ * @dataProvider isRecordSetDataProvider
+ */
 	public function testIsRecordSet($data, $expectedResult) {
 
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
@@ -310,9 +310,10 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 		$this->assertEquals($result, $expectedResult);
 	}
-	/**
-	 * Data Provider for testIsRecordSet
-	 */
+
+/**
+ * Data Provider for testIsRecordSet
+ */
 	public function isRecordSetDataProvider() {
 		return array(
 			array(
@@ -338,11 +339,11 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		);
 	}
 
-	/**
-	 * Test isThreadedRecordSet function
-	 *
-	 * @dataProvider isThreadedRecordSetDataProvider
-	 */
+/**
+ * Test isThreadedRecordSet function
+ *
+ * @dataProvider isThreadedRecordSetDataProvider
+ */
 	public function testIsThreadedRecordSet($data, $expectedResult) {
 
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
@@ -350,9 +351,10 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 		$this->assertEquals($result, $expectedResult);
 	}
-	/**
-	 * Data Provider for testIsThreadedRecordSet
-	 */
+
+/**
+ * Data Provider for testIsThreadedRecordSet
+ */
 	public function isThreadedRecordSetDataProvider() {
 		return array(
 			array(
@@ -378,12 +380,11 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		);
 	}
 
-
-	/**
-	 * Test isPaginatedSet function
-	 *
-	 * @dataProvider isPaginatedSetDataProvider
-	 */
+/**
+ * Test isPaginatedSet function
+ *
+ * @dataProvider isPaginatedSetDataProvider
+ */
 	public function testIsPaginatedSet($data, $expectedResult) {
 
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
@@ -391,9 +392,10 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 
 		$this->assertEquals($result, $expectedResult);
 	}
-	/**
-	 * Data Provider for testIsPaginatedSet
-	 */
+
+/**
+ * Data Provider for testIsPaginatedSet
+ */
 	public function isPaginatedSetDataProvider() {
 		return array(
 			array(
@@ -419,11 +421,11 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		);
 	}
 
-	/**
-	 * Test walk function, simply check that each record is visited
-	 *
-	 * @dataProvider walkDataProvider
-	 */
+/**
+ * Test walk function, simply check that each record is visited
+ *
+ * @dataProvider walkDataProvider
+ */
 	public function testWalk($data, $expectedResult) {
 		$this->walkerResult = array();
 		$mapper = new CakeSenchaDataMapper($data, 'ModelName');
@@ -440,9 +442,10 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		}
 		return array($modelName, $data);
 	}
-	/**
-	 * Data Provider for walk
-	 */
+
+/**
+ * Data Provider for walk
+ */
 	public function walkDataProvider() {
 		return array(
 			array(
@@ -513,9 +516,9 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		return array(substr($modelName, 1), $data);
 	}
 
-	/**
-	 * Test that the walk function is able to transform model name keys.
-	 */
+/**
+ * Test that the walk function is able to transform model name keys.
+ */
 	public function testWalkSingleRecordRenaming() {
 
 		// execute
@@ -533,9 +536,9 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$this->assertFalse(isset($result['ssocitedModelName']['id']));
 	}
 
-	/**
-	 * Test that the walk function is able to transform model name keys.
-	 */
+/**
+ * Test that the walk function is able to transform model name keys.
+ */
 	public function testWalkRecordSetRenaming() {
 
 		// execute
@@ -569,9 +572,9 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$this->assertFalse(isset($result[2]['ssocitedModelName']['id']));
 	}
 
-	/**
-	 * Test that the walk function is able to transform model name keys.
-	 */
+/**
+ * Test that the walk function is able to transform model name keys.
+ */
 	public function testWalkPaginatedRecordSetRenaming() {
 
 		// execute
@@ -588,10 +591,10 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$this->assertFalse(isset($result['records'][0]['odelName']['id']));
 		$this->assertFalse(isset($result['records'][0]['ssocitedModelName']['id']));
 	}
-	
-	/**
-	 * Test that the walk function is able to transform model name keys.
-	 */
+
+/**
+ * Test that the walk function is able to transform model name keys.
+ */
 	public function testWalkRecursiveRenaming() {
 
 		// execute
@@ -637,9 +640,9 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$this->assertFalse(isset($result['ser']['rticle'][1]['ser']['id']));
 	}
 
-	/**
-	 * Test that the walk function is able to remove entries from the array
-	 */
+/**
+ * Test that the walk function is able to remove entries from the array
+ */
 	public function testWalkRemoveEntries() {
 
 		// test removing of all tags
@@ -687,7 +690,6 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 		$this->assertTrue(isset($result['Tag']));
 
 		$this->assertFalse(isset($result['User']['Article']));
-
 
 		// each Article removes this User record (nested ones only)
 		$mapper = new CakeSenchaDataMapper($this->singleRecordWithDeeplyNestedData, 'Article');

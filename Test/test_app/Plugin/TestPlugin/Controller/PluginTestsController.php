@@ -23,8 +23,8 @@ class PluginTestsController extends TestPluginAppController {
 
 	public $uses = array();
 
-	/**
-	 * @banchaRemotable
-	 */
+/**
+ * @banchaRemotable
+ */
 	public function exposedTestMethod() {}
 }

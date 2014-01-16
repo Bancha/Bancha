@@ -16,7 +16,6 @@
  * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
  */
 
-
 // prepare constants, like in index.php
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -78,7 +77,7 @@ if (isset($_SERVER['argv'][5]))
 	define('SLEEP_TIME', $_SERVER['argv'][5]);
 }
 
-
+// prepare the fake request
 $rawPostData = json_encode(array(
 	array(
 		'action'		=> 'Articles',

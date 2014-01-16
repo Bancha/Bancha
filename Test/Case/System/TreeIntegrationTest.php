@@ -32,11 +32,11 @@ App::uses('CategoriesController', 'Controller');
 class TreeIntegrationTest extends CakeTestCase {
 	public $fixtures = array('plugin.bancha.category');
 
-	/**
-	 * Keeps a reference to the default paths, since
-	 * we need to change them in the setUp method
-	 * @var Array
-	 */
+/**
+ * Keeps a reference to the default paths, since
+ * we need to change them in the setUp method
+ * @var Array
+ */
 	private $originalPaths = null;
 	private $originalDebugLevel;
 

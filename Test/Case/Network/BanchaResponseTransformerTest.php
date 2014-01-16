@@ -50,9 +50,10 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		$this->assertTrue(isset($result['success']), 'Expected result to have a sucesss property, instead got '.print_r($result,true));
 		$this->assertEquals($expectedResponse, $result);
 	}
-	/**
-	 * Data provider for testTransformNonModelRecordCases
-	 */
+
+/**
+ * Data provider for testTransformNonModelRecordCases
+ */
 	public function transformNonModelRecordCasesDataProvider() {
 		return array(
 			// primitive responses are the success value

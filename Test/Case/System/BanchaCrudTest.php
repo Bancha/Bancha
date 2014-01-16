@@ -52,7 +52,6 @@ class BanchaCrudTest extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
-
 	public function testAdd() {
 
 		$config = ConnectionManager::enumConnectionObjects();
@@ -145,9 +144,9 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 	}
 
-	/**
-	 * test form submission including the different request form of ext.direct
-	 */
+/**
+ * test form submission including the different request form of ext.direct
+ */
 	public function testSubmit() {
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...)
@@ -192,7 +191,6 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->read(null,1001);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
-
 
 	public function testSubmit_WithUpload() {
 		// used fixture:
@@ -244,7 +242,6 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->read(null,1001);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
-
 
 	public function testDelete() {
 		// Preparation: create article
@@ -325,8 +322,6 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
 		$this->assertEquals(1, count($responses));
-
-
 
 		// Test page two
 		$rawPostData = json_encode(array(array(
@@ -486,14 +481,12 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(1001, $responses[0]->result->data->id);
 		$this->assertEquals('Title 1', $responses[0]->result->data->title);
 
-
 		// general response checks (check dispatcher, collections and transformers)
 		$this->assertEquals('Article', $responses[0]->action);
 		$this->assertEquals('read', $responses[0]->method);
 		$this->assertEquals('rpc', $responses[0]->type);
 		$this->assertEquals(1, $responses[0]->tid);
 		$this->assertEquals(1, count($responses));
-
 
 		// now look for a second one
 		$rawPostData = json_encode(array(array(
@@ -521,10 +514,6 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals('Title 2', $responses[0]->result->data->title);
 		$this->assertEquals(2, $responses[0]->tid);
 	}
-
-
-
-
 
 /**
  * Test the bancha stack, especially the dispatching with a multi-request
@@ -580,7 +569,6 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(2, $responses[1]->tid);
 
 		$this->assertEquals(2, count($responses));
-
 
 		// verify data for first request
 		$this->assertNotNull($responses[0]->result->data->id);

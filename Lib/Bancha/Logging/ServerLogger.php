@@ -19,22 +19,22 @@ App::uses('PiwikTracker', 'Bancha.Bancha/Logging');
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 class ServerLogger {
-	/**
-	 * Log an error to the Bancha developers.
-	 *
-	 * To find bugs more easily and fix them fast, if this feature is activated,
-	 * Bancha provides exceptions to the Bancha developers, including environment
-	 * informations like the PHP and CakePHP version, but without any data.
-	 *
-	 * To disable it, please add to your core.php
-	 *
-	 *     Configure::write('Bancha.ServerLogger.logIssues', false);
-	 *
-	 * @since  Bancha v 2.0.0
-	 * @param  string    $signature The controller invokation signature
-	 * @param  Exception $exception The caugth exception
-	 * @return void
-	 */
+/**
+ * Log an error to the Bancha developers.
+ *
+ * To find bugs more easily and fix them fast, if this feature is activated,
+ * Bancha provides exceptions to the Bancha developers, including environment
+ * informations like the PHP and CakePHP version, but without any data.
+ *
+ * To disable it, please add to your core.php
+ *
+ *     Configure::write('Bancha.ServerLogger.logIssues', false);
+ *
+ * @since  Bancha v 2.0.0
+ * @param  string    $signature The controller invokation signature
+ * @param  Exception $exception The caugth exception
+ * @return void
+ */
 	public static function logIssue($signature, Exception $exception) {
 		if (!Configure::read('Bancha.ServerLogger.logIssues')) {
 			return; // don't log
@@ -63,21 +63,21 @@ class ServerLogger {
 		self::_log('exception', $msg);
 	}
 
-	/**
-	 * Log environment information to the Bancha developers.
-	 *
-	 * To get a better idea what server environments are the most important
-	 * to test and when features we should implement next, if this feature
-	 * is activated, Bancha will provide usage information, including environment informations
-	 * informations like the PHP and CakePHP version, but without any data.
-	 *
-	 * To disable it, please add to your core.php
-	 *
-	 *     Configure::write('Bancha.ServerLogger.logEnvironment', false);
-	 *
-	 * @since  Bancha v 2.0.0
-	 * @return void
-	 */
+/**
+ * Log environment information to the Bancha developers.
+ *
+ * To get a better idea what server environments are the most important
+ * to test and when features we should implement next, if this feature
+ * is activated, Bancha will provide usage information, including environment informations
+ * informations like the PHP and CakePHP version, but without any data.
+ *
+ * To disable it, please add to your core.php
+ *
+ *     Configure::write('Bancha.ServerLogger.logEnvironment', false);
+ *
+ * @since  Bancha v 2.0.0
+ * @return void
+ */
 	public static function logEnvironment() {
 		if (!Configure::read('Bancha.ServerLogger.logEnvironment')) {
 			return; // don't log
@@ -86,14 +86,14 @@ class ServerLogger {
 		self::_log('usage', 'Bancha Usage');
 	}
 
-	/**
-	 * The underlying log function.
-	 *
-	 * @since  Bancha v 2.0.0
-	 * @param  string $type  The type of message to log
-	 * @param  string $msg   The message to send
-	 * @return void
-	 */
+/**
+ * The underlying log function.
+ *
+ * @since  Bancha v 2.0.0
+ * @param  string $type  The type of message to log
+ * @param  string $msg   The message to send
+ * @return void
+ */
 	protected static function _log($type, $msg) {
 		// repress all possible exceptions
 		try {

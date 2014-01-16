@@ -94,7 +94,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		));
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
-
 		// test 1 input of type boolean
 		$expected = array(false);
 		$transformer = new BanchaRequestTransformer(array(
@@ -103,7 +102,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		));
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 
-
 		// test input of type string
 		$expected = array('input string');
 		$transformer = new BanchaRequestTransformer(array(
@@ -111,7 +109,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			'data' => $expected, // ext writes all function arguments inside the data property
 		));
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
-
 
 		// test input of type number
 		$expected = array(-1);
@@ -141,7 +138,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			'data' => $expected, // ext writes all function arguments inside the data property
 		));
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
-
 
 		// test input of type array
 		$expected = array( // this is the real input data
@@ -276,7 +272,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			)
 		));
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
-
 
 		// tear down
 		Configure::write('Bancha.allowMultiRecordRequests', $currentConfig);

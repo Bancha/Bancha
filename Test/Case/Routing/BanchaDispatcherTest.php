@@ -217,7 +217,6 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertEquals('Controller class SomeControllersController could not be found.', $responses[0]->message);
 	}
 
-
 /**
  * Bancha should not throw PHP Exceptions, because Sencha can't handle this,
  * instead it should send Ext.Direct exceptions
@@ -257,8 +256,6 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertFalse(isset($responses[0]->exceptionType));
 		$this->assertEquals('Unknown error.', $responses[0]->message);
 	}
-
-
 
 /**
  * Tests that Bancha only requires an HTTP_ORIGIN header when Bancha.allowedDomains is set
@@ -546,7 +543,6 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertEqual('http://example.org', $headers['Access-Control-Allow-Origin']);
 		$this->assertEqual('3600', $headers['Access-Control-Max-Age']);
 
-
 		// tear down
 		if ($originalRequestMethod !== false) {
 			$_SERVER['REQUEST_METHOD'] = $originalRequestMethod;
@@ -605,7 +601,6 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->assertEqual('Origin, X-Requested-With, Content-Type', $headers['Access-Control-Allow-Headers']);
 		$this->assertEqual('*', $headers['Access-Control-Allow-Origin']);
 		$this->assertEqual('3600', $headers['Access-Control-Max-Age']);
-
 
 		// tear down
 		if ($originalRequestMethod !== false) {

@@ -182,10 +182,10 @@ class BanchaBasicTest extends CakeTestCase {
 		$this->assertContains('Bancha Basic does not support remote filtering of data.', $responses[0]->message);
 	}
 
-	/**
-	 * @expectedException         BanchaException
-	 * @expectedExceptionMessage  Bancha Basic does not support remote filtering of data,
-	 */
+/**
+ * @expectedException         BanchaException
+ * @expectedExceptionMessage  Bancha Basic does not support remote filtering of data,
+ */
 	public function testPagination_AllowedFilters() {
 
 		Configure::write('Bancha.isPro', false);

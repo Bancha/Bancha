@@ -111,7 +111,6 @@ class Bancha_JavaScriptToken {
  */
 class BanchaExtractTask extends ExtractTask {
 
-
 /**
  * @access private
  * An array of directories to exclude.
@@ -149,7 +148,6 @@ class BanchaExtractTask extends ExtractTask {
 			$this->params['exclude'] = dirname(dirname(dirname(dirname(__FILE__))));
 		}
 		$this->_exclude = explode(',', $this->params['exclude']);
-
 
 		if (isset($this->params['files']) && !is_array($this->params['files'])) {
 			$this->_files = explode(',', $this->params['files']);
@@ -546,7 +544,6 @@ class BanchaExtractTask extends ExtractTask {
 					$wholeCode .= isset($occurrences[$position+1]) ? substr($occurrences[$position+1], 0, (60-strlen($wholeCode))) : '';
 				}
 
-
 				// parse code
 				$code = trim($originalCode);
 
@@ -577,14 +574,12 @@ class BanchaExtractTask extends ExtractTask {
 						...
 				 */
 
-
 				// error collecting the arguments
 				if (end($arguments)->isError()) {
 					$this->_markerError($this->_file, $line,
 						__d('cake_console', 'Expected strings or variables as arguments for %s, instead saw "%s"', $functionName, substr($code,0,20)), $wholeCode);
 					continue;
 				}
-
 
 				// just after the arguments
 				$code = end($arguments)->getRemainingCode();
@@ -613,7 +608,6 @@ class BanchaExtractTask extends ExtractTask {
 						continue;
 					}
 				}
-
 
 				// check strings if possible %s match given arguments
 				// if ($arguments[0])

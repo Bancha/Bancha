@@ -395,13 +395,13 @@ class BanchaRequestTransformer {
 		return $this->_paginate;
 	}
 
-	/**
-	 * Ext.Direct writes the list of parameters to $data['data'].
-	 * Transform a Bancha request with model elements to cake structure,
-	 * otherwise just return the original response.
-	 *
-	 * @param $modelName The model name of the current request
-	 */
+/**
+ * Ext.Direct writes the list of parameters to $data['data'].
+ * Transform a Bancha request with model elements to cake structure,
+ * otherwise just return the original response.
+ *
+ * @param $modelName The model name of the current request
+ */
 	public function transformDataStructureToCake($modelName) {
 
 		// form uploads save all fields directly in the data array

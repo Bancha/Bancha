@@ -24,11 +24,11 @@ App::uses('BanchaApi', 'Bancha.Bancha');
 class BanchaApiTest extends CakeTestCase {
     public $fixtures = array('plugin.bancha.article','plugin.bancha.articles_tag','plugin.bancha.user','plugin.bancha.tag');
 
-	/**
-	 * Keeps a reference to the default paths, since
-	 * we need to change them in the setUp method
-	 * @var Array
-	 */
+/**
+ * Keeps a reference to the default paths, since
+ * we need to change them in the setUp method
+ * @var Array
+ */
 	private $originalPaths = null;
 
 	public function setUp() {
@@ -136,19 +136,19 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertContains('TestPlugin.Comment', $filteredModels);
 	}
 
-	/**
-	 * filterRemotableModels() should throw a MissingModelException when a model is provided in $filter which is not
-	 * remotable model.
-	 * @expectedException MissingModelException
-	 */
+/**
+ * filterRemotableModels() should throw a MissingModelException when a model is provided in $filter which is not
+ * remotable model.
+ * @expectedException MissingModelException
+ */
 	public function testFilterRemotableModels_MissingModel() {
 		$api = new BanchaApi();
 		$api->filterRemotableModels(array(), '[InvalidModel]');
 	}
 
-	/**
-	 * Tests if getMetadata returns meta data for all given models.
-	 */
+/**
+ * Tests if getMetadata returns meta data for all given models.
+ */
 	public function testGetMetadata() {
 		$api = new BanchaApi();
 		$metadata = $api->getMetadata(array('User', 'Article', 'TestPlugin.Comment'));

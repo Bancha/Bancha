@@ -144,8 +144,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @param array $whitelist List of allowed fields for ordering.  This allows you to prevent ordering
  *   on non-indexed, or undesirable columns.
  * @return array Model query results
- * @throws MissingModelException
- * @throws BanchaException
+ * @throws BanchaException If there is a configuration error in Bancha
  */
 	public function paginate($object = null, $scope = array(), $whitelist = array()) {
 
@@ -159,13 +158,13 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			if (Configure::read('debug') == 2 && isset($this->_Controller->request->params['named']['limit']) &&
 				$this->settings['maxLimit']<$this->_Controller->request->params['named']['limit']) {
 				throw new BanchaException(sprintf(
-					'The pageSize(%u) you set is bigger then the maxLimit(%u) set in CakePHP.', 
+					'The pageSize(%u) you set is bigger then the maxLimit(%u) set in CakePHP.',
 					$this->_Controller->request->params['named']['limit'],
 					$this->settings['maxLimit']));
 			}
 
 			//<bancha-basic>
-			/**
+			/*
 			 * Bancha Basic does not allow pagination.
 			 *
 			 * Yes, if you want to hack this software, it is pretty simply. We want
@@ -201,7 +200,6 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			$scope = array_merge($remoteConditions, $scope);
 			//</bancha-pro>
 		}
-
 
 		return parent::paginate($object, $scope, $whitelist);
 	}
@@ -240,7 +238,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 	public function setAllowedFilters($allowedFilters) {
 
 		//<bancha-basic>
-		/**
+		/*
 		 * Bancha Basic does not allow filtering.
 		 *
 		 * Yes, if you want to hack this software, it is pretty simply. We want

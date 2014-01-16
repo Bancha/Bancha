@@ -150,7 +150,6 @@ class BanchaResponseCollection {
 			} catch(Exception $e) {}
 		}
 
-
 		// request was successfull
 		$this->_CakeResponse->statusCode(200);
 		$this->_CakeResponse->charset('utf-8');

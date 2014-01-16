@@ -104,7 +104,6 @@ class TestArticleNoValidationRules extends CakeTestModel {
 	);
 } //eo TestArticleNoValidationRules
 
-
 /**
  * This model is used inside
  * BanchaRemotableBehaviorTest::testGetValidations_BasicStructure
@@ -154,7 +153,6 @@ class TestUser extends CakeTestModel {
 		),
 	);
 }
-
 
 /**
  * This model is used inside
@@ -225,7 +223,6 @@ class TestUserCoreValidationRules extends TestUser {
 	);
 }
 
-
 /**
  * TestingSaveArticleModel class
  *
@@ -262,7 +259,6 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length'=>8),
 	);
 
-
 /**
  * we are testing the bancha remotable behavior
  */
@@ -297,9 +293,9 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		),
 	);
 
-	/**
-	 * custom function to test bancha remotable behavior
-	 */
+/**
+ * custom function to test bancha remotable behavior
+ */
 	function customFunctionLimitDuplicates($check, $limit) {
 		// $check will have value: array('name' => 'some-value')
 		// $limit will have value: 25
@@ -310,7 +306,6 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		return $existing_names < $limit;
 	}
 }
-
 
 /**
  * This model is used inside

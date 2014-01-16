@@ -153,21 +153,21 @@ class BanchaController extends BanchaAppController {
 		$this->response->body($result);
 	}
 
-	/**
-	 * loadMetaData returns the Metadata of the models passed.
-	 *
-	 * Ext.Direct will pass them in params['data'], Ext.Ajax in params['pass'].
-	 *
-	 * E.g. for Ext.Ajax: http://localhost/bancha-load-metadata/[User,Article].js
-	 * will load the metadata from the models Users and Articles.
-	 *
-	 * This function is only used by Bancha internally for dependency resolution
-	 * in the Bancha.loader.Models and in Ext#onModelReady. Internally this is
-	 * triggered from Bancha#loadModelMetaData.
-	 *
-	 * @throws MissingModelException If the model can't be loaded and this is an AJAX request
-	 * @return void
-	 */
+/**
+ * loadMetaData returns the Metadata of the models passed.
+ *
+ * Ext.Direct will pass them in params['data'], Ext.Ajax in params['pass'].
+ *
+ * E.g. for Ext.Ajax: http://localhost/bancha-load-metadata/[User,Article].js
+ * will load the metadata from the models Users and Articles.
+ *
+ * This function is only used by Bancha internally for dependency resolution
+ * in the Bancha.loader.Models and in Ext#onModelReady. Internally this is
+ * triggered from Bancha#loadModelMetaData.
+ *
+ * @throws MissingModelException If the model can't be loaded and this is an AJAX request
+ * @return void
+ */
 	public function loadMetaData() {
 		$models = null;
 		if (isset($this->params['data'][0])) { // for Ext.Direct, look in data
@@ -210,14 +210,12 @@ class BanchaController extends BanchaAppController {
 		}
 	}
 
-
-
-	/**
-	 * This function decorates the BanchaApi::getRemotableModels() method with caching
-	 *
-	 * @param BanchaApi $banchaApi The BanchaApi to use, if not yet in cache
-	 * @return see BanchaApi::getRemotableModels
-	 */
+/**
+ * This function decorates the BanchaApi::getRemotableModels() method with caching
+ *
+ * @param BanchaApi $banchaApi The BanchaApi to use, if not yet in cache
+ * @return see BanchaApi::getRemotableModels
+ */
 	protected function _getRemotableModels(BanchaApi $banchaApi) {
 		if (($remotableModels = Cache::read('remotable_models_' . Configure::read('debug'), '_bancha_api_')) !== false) {
 			return $remotableModels;
@@ -230,16 +228,16 @@ class BanchaController extends BanchaAppController {
 		return $remotableModels;
 	}
 
-	/**
-	 * This function decorates the BanchaApi::getMetadata() method with caching
-	 * 
-	 * @param BanchaApi    $banchaApi The BanchaApi to use, if not yet in cache
-	 * @param array        $models List of remotable models
-	 * @param string/array $filter Explicit list of remotable models. Can be "all",
-	 *                     "[all]" or "[Model1,Model2,...]" (without quotes). Or 
-	 *                     an array of models.
-	 * @return             see BanchaApi::getMetadata
-	 */
+/**
+ * This function decorates the BanchaApi::getMetadata() method with caching
+ * 
+ * @param BanchaApi    $banchaApi The BanchaApi to use, if not yet in cache
+ * @param array        $models List of remotable models
+ * @param string/array $filter Explicit list of remotable models. Can be "all",
+ *                     "[all]" or "[Model1,Model2,...]" (without quotes). Or 
+ *                     an array of models.
+ * @return             see BanchaApi::getMetadata
+ */
 	protected function _getMetaData(BanchaApi $banchaApi, $remotableModels, $metadataFilter) {
 		// filter the models (performant function)
 		$metadataModels = $banchaApi->filterRemotableModels($remotableModels, $metadataFilter);
@@ -261,15 +259,15 @@ class BanchaController extends BanchaAppController {
 		return $metadata;
 	}
 
-	/**
-	 * Indents a flat JSON string to make it more human-readable.
-	 *
-	 * http://www.daveperrett.com/articles/2008/03/11/format-json-with-php/
-	 *
-	 * @param string $json The original JSON string to process.
-	 *
-	 * @return string Indented version of the original JSON string.
-	 */
+/**
+ * Indents a flat JSON string to make it more human-readable.
+ *
+ * http://www.daveperrett.com/articles/2008/03/11/format-json-with-php/
+ *
+ * @param string $json The original JSON string to process.
+ *
+ * @return string Indented version of the original JSON string.
+ */
 	protected function _beautifyJson($json) {
 
 		$result      = '';
@@ -321,17 +319,17 @@ class BanchaController extends BanchaAppController {
 		return $result;
 	}
 
-	/**
-	 * This function returns all translations in the given domain, which are known to cakephp for
-	 * the defined language. By default the domain bancha is used for all front-side translatable
-	 * strings (see also the jsi18n shell tool). When Bancha needs to translate a string for the
-	 * first time in the frontend it uses this method to load all translations.
-	 *
-	 * @param  string $languageCode three-letter language code, see CakePHP language codes
-	 * @param  string $domain       The used domain, default is 'bancha'
-	 * @return void                 No return value, the response body is set to an json object
-	 *                              with all data.
-	 */
+/**
+ * This function returns all translations in the given domain, which are known to cakephp for
+ * the defined language. By default the domain bancha is used for all front-side translatable
+ * strings (see also the jsi18n shell tool). When Bancha needs to translate a string for the
+ * first time in the frontend it uses this method to load all translations.
+ *
+ * @param  string $languageCode three-letter language code, see CakePHP language codes
+ * @param  string $domain       The used domain, default is 'bancha'
+ * @return void                 No return value, the response body is set to an json object
+ *                              with all data.
+ */
 	public function translations($languageCode, $domain = 'bancha') {
 
 		App::uses('I18n', 'I18n');

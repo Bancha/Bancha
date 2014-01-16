@@ -30,7 +30,6 @@ require_once dirname(__FILE__) . '/ArticlesController.php';
  */
 class BanchaExceptionsTest extends CakeTestCase {
 
-
 	private $originalOrigin;
 	private $originalDebugLevel;
 
@@ -286,7 +285,6 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// In Production mode the exact type is not send, only the Ext.Direct type
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(file_exists(LOGS . 'error.log'));
-
 
 		// In Debug Mode we want to see no error log
 		Configure::write('Bancha.logExceptions', true);

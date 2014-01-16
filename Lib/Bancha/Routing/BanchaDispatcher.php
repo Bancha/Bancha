@@ -29,29 +29,29 @@ App::uses('ServerLogger', 'Bancha.Bancha/Logging');
  */
 class BanchaDispatcher {
 
-	/**
-	 * Collection of all responses.
-	 * @var BanchaResponseCollection
-	 */
+/**
+ * Collection of all responses.
+ * @var BanchaResponseCollection
+ */
 	protected $_responseCollection;
 
-	/**
-	 * Consistancy provider
-	 * @var BanchaConsistencyProvider
-	 */
+/**
+ * Consistancy provider
+ * @var BanchaConsistencyProvider
+ */
 	protected $_consistencyProvider;
 
-	/**
-	 * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
-	 * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
-	 * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
-	 * response is returned instead of directly sent to the browser.
-	 *
-	 * @param BanchaRequestCollection $requests A BanchaRequestCollection can contains multiple CakeRequest objects.
-	 * @param CakeResponse            $CakeResponse The CakePHP response object to send the content or return the body.
-	 * @param array                   $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
-	 * @return string|void            If 'return' is TRUE, the body is returned otherwise void is returned.
-	 */
+/**
+ * Dispatches a BanchaRequestCollection object. It uses the standard CakePHP dispatcher to dispatch the single
+ * CakeRequest objects returned by BanchaRequest. Further it uses BanchaResponseCollection to transform the responses
+ * into a single CakeResponse object. If the 'return' option in the $additionalParams argument is TRUE, the body of the
+ * response is returned instead of directly sent to the browser.
+ *
+ * @param BanchaRequestCollection $requests A BanchaRequestCollection can contains multiple CakeRequest objects.
+ * @param CakeResponse            $CakeResponse The CakePHP response object to send the content or return the body.
+ * @param array                   $additionalParams If 'return' is TRUE, the body is returned instead of sent to the browser.
+ * @return string|void            If 'return' is TRUE, the body is returned otherwise void is returned.
+ */
 	public function dispatch(BanchaRequestCollection $requests, CakeResponse $CakeResponse = null, $additionalParams = array()) {
 		if ($CakeResponse === null) {
 			// Legacy support for Bancha 1.x
@@ -111,7 +111,6 @@ class BanchaDispatcher {
 			$this->_send($CakeResponse);
 			return;
 		}
-
 
 		// CakePHP should think that every Bancha request is a POST request.
 		$_SERVER['REQUEST_METHOD'] = 'POST';
@@ -183,13 +182,13 @@ class BanchaDispatcher {
 		}
 	}
 
-	/**
-	 * Set the appropriate CORS headers, if the *Bancha.allowedDomains* config
-	 * is set. Then send the response.
-	 *
-	 * @param  CakeResponse $response The CakeResponse to send
-	 * @return void
-	 */
+/**
+ * Set the appropriate CORS headers, if the *Bancha.allowedDomains* config
+ * is set. Then send the response.
+ *
+ * @param  CakeResponse $response The CakeResponse to send
+ * @return void
+ */
 	protected function _send(CakeResponse $CakeResponse) {
 
 		// Bancha might be available from multiple locations
@@ -208,19 +207,19 @@ class BanchaDispatcher {
 		$CakeResponse->send();
 	}
 
-	/**
-	 * This handler will be called every time a redirect is triggered.
-	 * Instead of doing a redirect this handler with throw an exception,
-	 * createswhich will be catched by the BanchaDispatcher::dispatch
-	 * and a ExtJS/Sencha Touch exception.
-	 *
-	 * @since  Bancha v 2.0.0
-	 * @throws BanchaAuthLoginException If the user is not logged in and tried to access a denied method
-	 * @throws BanchaAuthAccessRightsException If the user is not authorized to access this method
-	 * @throws BanchaRedirectException If a redirect was triggered from app code
-	 * @param  CakeEvent $event The event which triggered the redirect
-	 * @return void
-	 */
+/**
+ * This handler will be called every time a redirect is triggered.
+ * Instead of doing a redirect this handler with throw an exception,
+ * createswhich will be catched by the BanchaDispatcher::dispatch
+ * and a ExtJS/Sencha Touch exception.
+ *
+ * @since  Bancha v 2.0.0
+ * @throws BanchaAuthLoginException If the user is not logged in and tried to access a denied method
+ * @throws BanchaAuthAccessRightsException If the user is not authorized to access this method
+ * @throws BanchaRedirectException If a redirect was triggered from app code
+ * @param  CakeEvent $event The event which triggered the redirect
+ * @return void
+ */
 	public function redirectHandler($event) {
 		$controller = $event->subject();
 		list($url, $status, $exit) = $event->data;
@@ -237,17 +236,17 @@ class BanchaDispatcher {
 		throw new BanchaRedirectException($event->subject()->name . 'Controller forced a redirect to ' . $url . (empty($status) ? '' : ' with status '.$status));
 	}
 
-	/**
-	 * When a Controller throws a exception we will write it to the error log,
-	 * since this is in normal cases a unwanted behavior. In most cases you
-	 * want to return an array with success=>false to indicate to
-	 * ExtJS/Sencha Touch that the request was not successfull.
-	 *
-	 * @since  Bancha v 2.0.0
-	 * @param  CakeRequest $request   The request which caused the error
-	 * @param  Exception   $exception The caugth exception
-	 * @return void
-	 */
+/**
+ * When a Controller throws a exception we will write it to the error log,
+ * since this is in normal cases a unwanted behavior. In most cases you
+ * want to return an array with success=>false to indicate to
+ * ExtJS/Sencha Touch that the request was not successfull.
+ *
+ * @since  Bancha v 2.0.0
+ * @param  CakeRequest $request   The request which caused the error
+ * @param  Exception   $exception The caugth exception
+ * @return void
+ */
 	public function logException(CakeRequest $CakeRequest, Exception $exception) {
 
 		if (Configure::read('debug') == 2 || // don't log anything in debug mode

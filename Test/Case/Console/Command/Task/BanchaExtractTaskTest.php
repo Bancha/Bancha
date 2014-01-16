@@ -87,7 +87,6 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		CakePlugin::unload();
 	}
 
-
 	public function testFindString() {
 
 		$result = $this->Task->findString('"This is a simple string"); Some more code');
@@ -278,8 +277,6 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$pattern = '/"Plural-Forms\: nplurals\=INTEGER; plural\=EXPRESSION;/';
 		$this->assertRegExp($pattern, $result);
 
-
-
 		// extraction_tests.ctp
 		$pattern = '/msgid "This is some string inside a php code"\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
@@ -287,13 +284,9 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$pattern = '/msgid "This is a string in a partial javascript code"\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
 
-
-
 		// extraction_tests.html
 		$pattern = '/msgid "BanchaI18n also searches html files."\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
-
-
 
 		// extraction_tests.js
 		// normal ones
@@ -353,16 +346,10 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$pattern = '/msgid "I quote \\\\"bla\\\\" and \'bla\'"\nmsgstr ""\n/';
 		$this->assertRegExp($pattern, $result);
 
-
-
-
-
 		// Bancha shell writtes every string only once
 		$pattern = '/msgid "Bancha supports simple with double."\nmsgstr ""\n/';
 		$found = preg_match_all($pattern, $result, $matches);
 		$this->assertEquals(1, $found);
-
-
 
 		// check for correct line numbers in php
 		$pattern = '/\#: (\\\\|\/)extraction_tests\.ctp:16\nmsgid "This is some string inside a php code./';
@@ -383,7 +370,6 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->assertRegExp($pattern, $result);
 	}
 
-
 /**
  * testExecute method
  *
@@ -393,7 +379,6 @@ class BanchaExtractTaskTest extends CakeTestCase {
 		$this->markTestSkipped('Add support for nested calls');
 		// js code for nested calls
 		// Bancha.t('This is the first part, with %', Bancha.t('a second sub-part in a nested call'));
-
 
 		$this->Task->interactive = false;
 		$this->Task->params['paths'] = dirname(__FILE__) . DS . 'extraction_test_files';

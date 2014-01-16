@@ -426,7 +426,6 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($data->Tag));
 		$this->assertTrue(isset($data->User));
 
-
 		// tear down - unload plugin
 		CakePlugin::unload('TestPlugin');
 		App::build(array(
@@ -435,20 +434,20 @@ class BanchaControllerTest extends ControllerTestCase {
 		App::objects('plugin', null, false);
 	}
 
-	/**
-	 * AJAX requests to invalid models should throw an exception,
-	 * so that Ext.Ajax triggers the failure routine.
-	 *
-	 * @expectedException MissingModelException
-	 */
+/**
+ * AJAX requests to invalid models should throw an exception,
+ * so that Ext.Ajax triggers the failure routine.
+ *
+ * @expectedException MissingModelException
+ */
 	public function testLoadModelMetaData_Ajax_Error() {
 		$this->testAction('/bancha-load-metadata/[Imaginary].js');
 	}
 
-	/**
-	 * Bancha via Ext.Direct requests send the data in a different peroperty
-	 * and also expects the result in a different format, check this.
-	 */
+/**
+ * Bancha via Ext.Direct requests send the data in a different peroperty
+ * and also expects the result in a different format, check this.
+ */
 	public function testLoadModelMetaData_ExtDirect_Multiple() {
 		// we can't fake an Bancha request that easily,
 		// (We would need to set $this->params['isBancha'])
@@ -481,12 +480,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($data->User)); // <-- this should be available
 	}
 
-	/**
-	 * Bancha via Ext.Direct requests to invalid models should return
-	 * a result with success false, but should not throw a client-side
-	 * exception, because Ext.loader.Models should be able to handle
-	 * the error.
-	 */
+/**
+ * Bancha via Ext.Direct requests to invalid models should return
+ * a result with success false, but should not throw a client-side
+ * exception, because Ext.loader.Models should be able to handle
+ * the error.
+ */
 	public function testLoadModelMetaData_ExtDirect_Error() {
 		// we can't fake an Bancha request that easily,
 		// (We would need to set $this->params['isBancha'])
@@ -542,14 +541,14 @@ class BanchaControllerTest extends ControllerTestCase {
 		Configure::write('debug', $debugLevel);
 	}
 
-	/**
-	 * In this test there are models, but the controllers are missing.
-	 * This should result into an error flag in the Bancha-Api.
-	 *
-	 * We will not need a separate test_app model folder here anymore
-	 * after we have refactored the static App::objects out of the
-	 * BanchaApi library class.
-	 */
+/**
+ * In this test there are models, but the controllers are missing.
+ * This should result into an error flag in the Bancha-Api.
+ *
+ * We will not need a separate test_app model folder here anymore
+ * after we have refactored the static App::objects out of the
+ * BanchaApi library class.
+ */
 	public function testBanchaApiServerErrorProperty_MissingControllerError() {
 		$debugLevel = Configure::read('debug');
 
@@ -579,5 +578,3 @@ class BanchaControllerTest extends ControllerTestCase {
 		Configure::write('debug', $debugLevel);
 	}
 }
-
-

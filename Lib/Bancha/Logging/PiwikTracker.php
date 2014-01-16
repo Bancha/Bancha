@@ -1045,7 +1045,6 @@ const DEFAULT_CHARSET_PARAMETER_VALUES = 'utf-8';
 		return $url;
 	}
 
-
 /**
  * Returns a first party cookie which name contains $name
  *

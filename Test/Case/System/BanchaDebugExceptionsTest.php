@@ -99,7 +99,6 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		)));
 	}
 
-
 /**
  * See testMultipleRecordInputException()
  * See also BanchaRequestTransformerTest::testTransformDataStructureToCake_MultipleRecords
@@ -124,10 +123,6 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		)));
 	}
 }
-
-
-
-
 
 /**
  * DebugExceptionsController, has many errors a developer can make

@@ -34,7 +34,7 @@ class BanchaExceptionHandler extends Object {
 			CakeLog::write(LOG_ERR, $message);
 		}
 
-		/** TODO: initialize renderer ?
+		/* TODO: initialize renderer ?
 		 * see lib/cake/errorhandler.php
 		 * */
 
