@@ -165,6 +165,7 @@ class BanchaController extends BanchaAppController {
 	 * in the Bancha.loader.Models and in Ext#onModelReady. Internally this is
 	 * triggered from Bancha#loadModelMetaData.
 	 *
+	 * @throws MissingModelException If the model can't be loaded and this is an AJAX request
 	 * @return void
 	 */
 	public function loadMetaData() {
@@ -209,6 +210,8 @@ class BanchaController extends BanchaAppController {
 
 	/**
 	 * This function decorates the BanchaApi::getRemotableModels() method with caching
+	 *
+	 * @param BanchaApi $banchaApi The BanchaApi to use, if not yet in cache
 	 * @return see BanchaApi::getRemotableModels
 	 */
 	protected function _getRemotableModels(BanchaApi $banchaApi) {
@@ -225,7 +228,13 @@ class BanchaController extends BanchaAppController {
 
 	/**
 	 * This function decorates the BanchaApi::getMetadata() method with caching
-	 * @return see BanchaApi::getMetadata
+	 * 
+	 * @param BanchaApi    $banchaApi The BanchaApi to use, if not yet in cache
+	 * @param array        $models List of remotable models
+	 * @param string/array $filter Explicit list of remotable models. Can be "all",
+	 *                     "[all]" or "[Model1,Model2,...]" (without quotes). Or 
+	 *                     an array of models.
+	 * @return             see BanchaApi::getMetadata
 	 */
 	protected function _getMetaData(BanchaApi $banchaApi, $remotableModels, $metadataFilter) {
 		// filter the models (performant function)
