@@ -89,7 +89,7 @@ class BanchaRequestTransformer {
 		}
 
 		// check each path part
-		foreach($paths as $property) {
+		foreach ($paths as $property) {
 			if (!isset($variable[$property]) || !is_array($variable[$property])) {
 				return false;
 			}
@@ -429,7 +429,7 @@ class BanchaRequestTransformer {
 			}
 			// parse multi-request
 			$result = array();
-			foreach($this->_data['data'][0]['data'] as $entry) {
+			foreach ($this->_data['data'][0]['data'] as $entry) {
 				$result[] = array(
 					$modelName => $entry
 				);

@@ -142,7 +142,7 @@ class BanchaController extends BanchaAppController {
 		if ($schema === 'packaged') {
 			// add the class definitions
 			$result .= "\n\n";
-			foreach($banchaApi->filterRemotableModels($remotableModels, $metadataFilter) as $modelName) {
+			foreach ($banchaApi->filterRemotableModels($remotableModels, $metadataFilter) as $modelName) {
 				$result .= sprintf(
 					"Ext.define('Bancha.model.%s', {\n".
 					"    extend: 'Bancha.data.Model'\n".
@@ -333,7 +333,7 @@ class BanchaController extends BanchaAppController {
 
 		// transform
 		$jsTranslations = array();
-		foreach($translations as $key=>$value) {
+		foreach ($translations as $key=>$value) {
 			array_push($jsTranslations, array('key'=>$key,'value'=>$value));
 		}
 

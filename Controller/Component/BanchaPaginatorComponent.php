@@ -280,14 +280,14 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			if (count($allowedFilters)!=0) {
 				if (strpos($allowedFilters[0], '.') === FALSE) {
 					$modelName = $this->_Controller->modelClass; // the name of the primary model
-					foreach($allowedFilters as $key=>$value) {
+					foreach ($allowedFilters as $key=>$value) {
 						$allowedFilters[$key] = $modelName . '.' . $value; // transform to Model.field
 					}
 				}
 
 				// in debug mode check if the field are really existing
 				if (Configure::read('debug') == 2) {
-					foreach($allowedFilters as $key=>$value) {
+					foreach ($allowedFilters as $key=>$value) {
 						$parts = explode('.',$value);
 						if (count($parts) != 2) {
 							throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration could not be recognized at array position ' . $key . ', value: ' . $value);
@@ -346,14 +346,14 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 		// check each condition and filter unalloweds out
 		if ($allowedFilters == 'associations') {
 			// check each condition individualy
-			foreach($conditions as $field=>$value) {
+			foreach ($conditions as $field=>$value) {
 				list($modelName, $fieldName) = explode('.', $field);
 
 				// look though all associations if we can find the field name as foreign key
 				$model = $this->_Controller->{$modelName};
 				$assocs = $model->Behaviors->BanchaRemotable->getAssociated($model); // use the Bancha-specific method to get the foreign keys
 				$valid = false;
-				foreach($assocs as $assoc) {
+				foreach ($assocs as $assoc) {
 					if ($assoc['foreignKey'] == $fieldName) {
 						$valid = true; // this is a valid association key
 						break;
@@ -381,7 +381,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		// allowedFilters is an array
 		// check each condition individually
-		foreach($conditions as $field=>$value) {
+		foreach ($conditions as $field=>$value) {
 			if (!in_array($field, $allowedFilters)) {
 				if (Configure::read('debug') == 2) {
 					throw new BanchaException('The last ExtJS/Sencha Touch request tried to filter by '.$field.', which is not allowed according to the '.$this->_Controller->name.' BanchaPaginatorComponents allowedFilters configuration.');

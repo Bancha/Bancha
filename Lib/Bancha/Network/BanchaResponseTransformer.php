@@ -143,7 +143,7 @@ class BanchaResponseTransformer {
 			$conversionSuccessfull = true;
 			$data = array();
 			$senchaModelName = lcfirst($modelName);
-			foreach($response as $record) {
+			foreach ($response as $record) {
 				if (!isset($record[$senchaModelName]) || !is_array($record[$senchaModelName])) {
 					// there are entries which does not have data, strange
 					$conversionSuccessfull = false;

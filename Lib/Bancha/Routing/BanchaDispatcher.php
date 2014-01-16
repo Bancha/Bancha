@@ -273,7 +273,7 @@ class BanchaDispatcher {
 	protected function _getSignature(CakeRequest $CakeRequest) {
 		$signature = (!empty($CakeRequest->params['plugin']) ? $CakeRequest->params['plugin'].'.' : '').
 						$CakeRequest->params['controller'].'::'.$CakeRequest->params['action'] . '(';
-		foreach($CakeRequest->params['pass'] as $pass) {
+		foreach ($CakeRequest->params['pass'] as $pass) {
 			$signature .= var_export($pass,true) . ', ';
 		}
 		if (!empty($CakeRequest->params['pass'])) {

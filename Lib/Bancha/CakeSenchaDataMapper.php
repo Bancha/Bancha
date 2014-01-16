@@ -133,7 +133,7 @@ class CakeSenchaDataMapper {
 	protected function _walk($callable, $data) {
 
 		// find all data entries
-		foreach($data as $key => $value) {
+		foreach ($data as $key => $value) {
 			if (!is_array($value)) {
 				continue; // this is simply a record field
 			}
@@ -214,7 +214,7 @@ class CakeSenchaDataMapper {
 		// walk through all entries
 		$newKey = '';
 		$newNestedData = array(); // we need a new array to not break the foreach when removing an entry
-		foreach($nestedData as $key => $value) {
+		foreach ($nestedData as $key => $value) {
 			// key is the index, value is the data
 			list($newKey, $newData) = call_user_func($callable, $modelName, $value, false);
 
