@@ -336,34 +336,34 @@ class UserForTestingLastSaveResult extends CakeTestModel {
 	);
 
 	public $validate = array(
-	   'id' => array(	
-           'numeric' => array(
-               'rule' => array('numeric'),
-               'precision' => 0
-            ),
-	   ),
-	   'name' => array(
-            'notempty' => array(
-                'rule' => array('notempty'),
-		        'message' => "Name is required."
-            ),
-            'minLength' => array(
-                'rule' => array('minLength',3),
-		        'message' => "Name min. length is 3"
-            ),
-            'maxLength' => array(
-                'rule' => array('maxLength',64),
-            ),
+		'id' => array(	
+			'numeric' => array(
+				'rule' => array('numeric'),
+				'precision' => 0
+			),
+		),
+		'name' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+				'message' => "Name is required."
+			),
+			'minLength' => array(
+				'rule' => array('minLength',3),
+				'message' => "Name min. length is 3"
+			),
+			'maxLength' => array(
+				'rule' => array('maxLength',64),
+			),
 		),
 		'login' => array(
-            'isUnique' => array(
-                'rule' => array('isUnique'),
-		        'message' => "Login is already taken."
-            ),
-            'alphaNumeric' => array(
-                'rule' => array('alphaNumeric'),
+			'isUnique' => array(
+				'rule' => array('isUnique'),
+				'message' => "Login is already taken."
+			),
+			'alphaNumeric' => array(
+				'rule' => array('alphaNumeric'),
 				'message' => "Login must be alphanumeric."
-            ),
+			),
 		),
 	);
 

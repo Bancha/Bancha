@@ -147,9 +147,9 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * @throws MissingModelException
  * @throws BanchaException
  */
-    public function paginate($object = null, $scope = array(), $whitelist = array()) {
+	public function paginate($object = null, $scope = array(), $whitelist = array()) {
 
-    	// bancha-specific access-restriction logic
+		// bancha-specific access-restriction logic
 		if (isset($this->_Controller->request->params['isBancha']) && $this->_Controller->request->params['isBancha']) {
 
 			// apply the Bancha default settings

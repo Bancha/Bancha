@@ -250,10 +250,10 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	 * @return AuthComponent
 	 */
 	private function getAuthComponent() {
-        // setup the component collection
-        $Collection = new ComponentCollection();
+		// setup the component collection
+		$Collection = new ComponentCollection();
 
-        // setup the auth component
+		// setup the auth component
 		$auth = new AuthComponent($Collection, array());
 
 		return $auth;

@@ -192,10 +192,10 @@ class BanchaBasicTest extends CakeTestCase {
 
 		// Setting allowed filters should result in an an exception
 
-        // setup the paginator component
+		// setup the paginator component
 		$banchaPaginatorComponent = new BanchaPaginatorComponent(new ComponentCollection(), array());
 
-        // here is should break
+		// here is should break
 		$banchaPaginatorComponent->setAllowedFilters(array('id'));
 	}
 }

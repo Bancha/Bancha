@@ -67,37 +67,38 @@ class TestBanchaPaginatorComponentsController extends Controller {
  * @since         Bancha v 1.1.0
  */
 class BanchaPaginatorComponentTest extends ControllerTestCase {
-    public $fixtures = array('plugin.bancha.article');
+
+	public $fixtures = array('plugin.bancha.article');
 
 /**
  * This method creates a controller and a component with the given settings
  */
 	public function setUpComponent($settings, $conditions = array()) {
-        // Setup our component and fake test controller
-        // See http://book.cakephp.org/2.0/en/development/testing.html#testing-components
+		// Setup our component and fake test controller
+		// See http://book.cakephp.org/2.0/en/development/testing.html#testing-components
 
-        // setup the controller
-        $CakeRequest = new CakeRequest();
-        $CakeRequest->params['isBancha'] = true; // fake a Bancha request
-        $CakeRequest->params['named']['conditions'] = $conditions; // this exist in every Bancha request
-        $CakeResponse = new CakeResponse();
-        $this->Controller = new TestBanchaPaginatorComponentsController($CakeRequest, $CakeResponse);
+		// setup the controller
+		$CakeRequest = new CakeRequest();
+		$CakeRequest->params['isBancha'] = true; // fake a Bancha request
+		$CakeRequest->params['named']['conditions'] = $conditions; // this exist in every Bancha request
+		$CakeResponse = new CakeResponse();
+		$this->Controller = new TestBanchaPaginatorComponentsController($CakeRequest, $CakeResponse);
 		$this->Controller->Article->recursive = -1; // we only load article fixture, so don't load associated data
 
-        // setup the component collection
-        $Collection = new ComponentCollection();
-        $Collection->init($this->Controller);
+		// setup the component collection
+		$Collection = new ComponentCollection();
+		$Collection->init($this->Controller);
 
-        // setup the paginator component
+		// setup the paginator component
 		$this->BanchaPaginatorComponent = new BanchaPaginatorComponent($Collection, $settings);
-        $this->BanchaPaginatorComponent->startup($this->Controller);
+		$this->BanchaPaginatorComponent->startup($this->Controller);
 	}
 
 	public function setUp() {
 		parent::setUp();
 
 		/*
-        App::build(array(
+		App::build(array(
 			'plugins' => $this->_paths['plugins'],
 			'views' => $this->_paths['views'],
 			'controllers' => $this->_paths['controllers'],
@@ -115,7 +116,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		// reset the debug level
 		Configure::write('debug', $this->originalDebugLevel);
 
-        // Clean up after we're done
+		// Clean up after we're done
 		unset($this->BanchaPaginatorComponent);
 		unset($this->Controller);
 	}
