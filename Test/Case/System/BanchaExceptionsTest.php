@@ -341,7 +341,7 @@ class ArticlesExceptionsController extends ArticlesController {
 /**
  * Throws a exception for testing purposes.
  * 
- * @param  string $id will be ignored
+ * @param string $id will be ignored
  * @return void
  * @throws NotFoundException always
  */

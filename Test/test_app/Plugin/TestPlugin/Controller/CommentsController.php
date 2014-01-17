@@ -34,7 +34,7 @@ class CommentsController extends TestPluginAppController {
 /**
  * This is an default CRUD method, which does nothing.
  *
- * @param  string $id ignored
+ * @param string $id ignored
  * @return void nothing
  */
 	public function view($id = null) {
@@ -51,7 +51,7 @@ class CommentsController extends TestPluginAppController {
 /**
  * This is an default CRUD method, which does nothing.
  * 
- * @param  string $id ignored
+ * @param string $id ignored
  * @return void nothing
  */
 	public function edit($id = null) {

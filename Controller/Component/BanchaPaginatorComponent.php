@@ -96,7 +96,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * So every time the request is made by Bancha we will disable the RequestHandler,
  * if available.
  *
- * @param  Controller $Controller Controller with components to initialize
+ * @param Controller $Controller Controller with components to initialize
  * @return void
  */
 	public function initialize(Controller $Controller) {
@@ -330,8 +330,8 @@ class BanchaPaginatorComponent extends PaginatorComponent {
  * This functions loops through all filter conditions and check if the are valid
  * according to the allowedFilters configuration.
  *
- * @param  Array|String $allowedFilters the allowedFilters configuration for this pagination request
- * @param  Array $conditions the given remote filter conditions to santisize
+ * @param array|String $allowedFilters the allowedFilters configuration for this pagination request
+ * @param array $conditions the given remote filter conditions to santisize
  * @throws BanchaException
  * @return Array the allowed filter conditions
  */

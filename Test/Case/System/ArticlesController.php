@@ -80,7 +80,7 @@ class ArticlesController extends AppController {
  *
  * @param string $id The id of the article to edit
  * @return void
- * @throws NotFoundException If article id diesn't exist
+ * @throws NotFoundException If article id doesn't exist
  */
 	public function edit($id = null) {
 		$this->Article->id = $id;
@@ -109,8 +109,9 @@ class ArticlesController extends AppController {
 /**
  * delete method
  *
- * @param string $id
+ * @param string $id The id of the article to delete
  * @return void
+ * @throws NotFoundException If article id doesn't exist
  */
 	public function delete($id = null) {
 		if (!$this->request->is('post')) {

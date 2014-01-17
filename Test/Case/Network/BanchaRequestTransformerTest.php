@@ -337,9 +337,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * - read -> view (if an ID is provided in the Data array).
  * - read -> index (if no ID is provided in the Data array).
  *
- * @param  string $extAction  The action to fake
- * @param  array  $extData    The data to fake
- * @param  string $cakeAction The expected CakePHP action name
+ * @param string $extAction  The action to fake
+ * @param array  $extData    The data to fake
+ * @param string $cakeAction The expected CakePHP action name
  * @return void
  * @dataProvider getActionProvider
  */
@@ -371,9 +371,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 /**
  * Same as {@see testGetAction()} but for form requests.
  *
- * @param  string $extAction  The action to fake
- * @param  array  $extData    The data to fake
- * @param  string $cakeAction The expected CakePHP action name
+ * @param string $extAction  The action to fake
+ * @param array  $extData    The data to fake
+ * @param string $cakeAction The expected CakePHP action name
  * @return void
  * @dataProvider getActionFormProvider
  */
@@ -495,8 +495,8 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with
  * page, limit and order. The sort in Ext looks like [property: X, direction: Y], in Cake like [Controller.X => Y].
  * 
- * @param  array  $extData      The data to fake
- * @param  string $cakePaginate The expected CakePHP paginate value
+ * @param array  $extData      The data to fake
+ * @param string $cakePaginate The expected CakePHP paginate value
  * @return void
  * @dataProvider getPagingProvider
  */

@@ -324,10 +324,10 @@ class BanchaController extends BanchaAppController {
  * strings (see also the jsi18n shell tool). When Bancha needs to translate a string for the
  * first time in the frontend it uses this method to load all translations.
  *
- * @param  string $languageCode three-letter language code, see CakePHP language codes
- * @param  string $domain       The used domain, default is 'bancha'
- * @return void                 No return value, the response body is set to an json object
- *                              with all data.
+ * @param string $languageCode three-letter language code, see CakePHP language codes
+ * @param string $domain       The used domain, default is 'bancha'
+ * @return void                No return value, the response body is set to an json object
+ *                             with all data.
  */
 	public function translations($languageCode, $domain = 'bancha') {
 		App::uses('I18n', 'I18n');
@@ -357,9 +357,9 @@ class BanchaController extends BanchaAppController {
  * missing_translation.log. This function should never be called directly.
  * use the JavaScript Bancha.log method to log errors.
  *
- * @param  string $error the error message to log
- * @param  string $type  'js_error' or 'missing_translation'
- * @return boolean		 True to indicate that everything worked.
+ * @param string $error the error message to log
+ * @param string $type  'js_error' or 'missing_translation'
+ * @return boolean      True to indicate that everything worked.
  */
 	public function logError($error, $type) {
 		if ($type !== 'js_error' && $type !== 'missing_translation') {

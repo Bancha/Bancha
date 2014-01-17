@@ -37,9 +37,9 @@ class RemotableFunctionsController extends Controller {
 /**
  * Return the controller method arguments to check if Bancha sets them correctly
  * 
- * @param  string $param1 Arbitrary content which is returned
- * @param  string $param2 Arbitrary content which is returned
- * @return array          Array of params
+ * @param string $param1 Arbitrary content which is returned
+ * @param string $param2 Arbitrary content which is returned
+ * @return array         Array of params
  */
 	public function returnInputParameters($param1, $param2) {
 		return array($param1, $param2);
@@ -48,9 +48,9 @@ class RemotableFunctionsController extends Controller {
 /**
  * Return the request data to check if Bancha sets them correctly
  * 
- * @param  string $param1 Arbitrary content
- * @param  string $param2 Arbitrary content
- * @return array          The request data
+ * @param string $param1 Arbitrary content
+ * @param string $param2 Arbitrary content
+ * @return array         The request data
  */
 	public function returnInputRequestData($param1, $param2) {
 		if (is_null($this->request->data)) {

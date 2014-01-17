@@ -596,7 +596,7 @@ class BanchaExtractTask extends ExtractTask {
 		if (substr($first->getRemainingCode(), 0, 1) !== ':') {
 			$this->_markerError($this->_file, substr($code, 0, 100),
 				__d('cake_console', 'Expected a ternary, but instead saw ' . substr($first->getRemainingCode(), 0, 5)), $code);
-			return new Bancha_JavaScriptToken('error',false, $code);
+			return new Bancha_JavaScriptToken('error', false, $code);
 		}
 
 		$second = $this->_collectJsToken(substr($first->getRemainingCode(), 1));
@@ -619,9 +619,7 @@ class BanchaExtractTask extends ExtractTask {
  * @return void
  */
 	protected function _parse($functionName, $map) {
-
 		foreach ($this->_tokens as $key => $token) {
-
 			// find all occurrences of $functionName
 			list($type, $string, $line) = $token;
 			$occurrences = explode($functionName, $string);
