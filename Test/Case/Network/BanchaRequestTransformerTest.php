@@ -32,39 +32,39 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		$cls = new BanchaRequestTransformer();
 
 		// check with no path
-		$this->assertFalse($cls->publicIsArray(true, ''));
-		$this->assertFalse($cls->publicIsArray('string', ''));
-		$this->assertTrue($cls->publicIsArray(array(), ''));
+		$this->assertFalse($cls->isArray(true, ''));
+		$this->assertFalse($cls->isArray('string', ''));
+		$this->assertTrue($cls->isArray(array(), ''));
 
 		// check with parts, both integer and string properties
-		$this->assertFalse($cls->publicIsArray(array(
+		$this->assertFalse($cls->isArray(array(
 			'string'
 		), '[data]'));
-		$this->assertFalse($cls->publicIsArray(array(
+		$this->assertFalse($cls->isArray(array(
 			'data' => 'string'
 		), '[data]'));
-		$this->assertTrue($cls->publicIsArray(array(
+		$this->assertTrue($cls->isArray(array(
 			'data' => array('string')
 		), '[data]'));
 
-		$this->assertFalse($cls->publicIsArray(array(
+		$this->assertFalse($cls->isArray(array(
 			'string'
 		), '[0]'));
-		$this->assertTrue($cls->publicIsArray(array(
+		$this->assertTrue($cls->isArray(array(
 			array('string')
 		), '[0]'));
 
-		$this->assertFalse($cls->publicIsArray(array(array(
+		$this->assertFalse($cls->isArray(array(array(
 			array('string')
 		)), '[0][data]'));
-		$this->assertTrue($cls->publicIsArray(array(array(
+		$this->assertTrue($cls->isArray(array(array(
 			'data' => array('string')
 		)), '[0][data]'));
 
-		$this->assertTrue($cls->publicIsArray(array(array(
+		$this->assertTrue($cls->isArray(array(array(
 			'data' => array(array('string'))
 		)), '[0][data][0]'));
-		$this->assertTrue($cls->publicIsArray(array(array(
+		$this->assertTrue($cls->isArray(array(array(
 			'data' => array(array(
 				'data' => array('string')))
 		)), '[0][data][0][data]'));
