@@ -202,14 +202,17 @@ before_script:
   - "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js"
 
 script:
-  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
-  - if [ $CAKEPHP_VERSION -a -z "$PHPCS" ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
-  - if [ $PHPCS ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP ./app/Plugin/Bancha" ; fi # run PHPCS on the code 
-
-  # execute the jasmine tests
+  # execute the jasmine tests for Sencha Touch and Ext JS
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
   - if [ $EXTJS_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
   - if [ $EXTJS_VERSION_LEGACY ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
+
+  # execute the PHPUnti tests for CakePHP
+  - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
+  - if [ $CAKEPHP_VERSION -a -z "$PHPCS" ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
+
+  # execude PHP_CodeSniffer
+  - if [ $PHPCS ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP --ignore=./app/Plugin/Bancha/webroot/js/scaffold ./app/Plugin/Bancha" ; fi
 
 notifications:
   email:
