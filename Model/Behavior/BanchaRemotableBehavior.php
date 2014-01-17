@@ -20,7 +20,14 @@ App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 // backwards compability with 5.2
 if (function_exists('lcfirst') === false) {
-	function lcfirst( $str ) { return (string)(strtolower(substr($str,0,1)).substr($str,1)); }
+	/**
+	 * Make a string's first character lowercase
+	 * @param string $str The string to transform
+	 * @return string     The transformed string
+	 */
+	function lcfirst($str) {
+		return (string)(strtolower(substr($str, 0, 1)) . substr($str, 1));
+	}
 }
 
 /**
@@ -581,7 +588,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$cols[] = array(
 				'type' => 'inclusion',
 				'field' => $fieldName,
-				'list' => array(true,false,'0','1',0,1)
+				'list' => array(true,false, '0', '1', 0, 1)
 			);
 		}
 
@@ -711,7 +718,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					throw new CakeException(
 						"Bancha: You are currently using the validation rule 'range' for the model field ".$fieldName.
 						". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
-						"map the validation rules. \nUsage: array('rule' => array('numeric'),'precision'=> ? ) \n".
+						"map the validation rules. \nUsage: array('rule' => array('numeric'), 'precision'=> ? ) \n".
 						"This error is only displayed in debug mode."
 					);
 				}

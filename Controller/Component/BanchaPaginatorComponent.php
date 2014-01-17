@@ -272,7 +272,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			}
 		} elseif (is_array($allowedFilters)) {
 
-			// check if the array is in the form array('field1','field2') and if so transform
+			// check if the array is in the form array('field1', 'field2') and if so transform
 			if (count($allowedFilters) != 0) {
 				if (strpos($allowedFilters[0], '.') === false) {
 					$modelName = $this->_Controller->modelClass; // the name of the primary model

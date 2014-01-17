@@ -109,7 +109,7 @@ class User extends AppModel {
 				'rule' => array('extension', array('gif', 'jpeg', 'png', 'jpg')),
 				'allowEmpty' => true,
 				'message' => 'Please supply a valid image.'
-			 ),
+			),
 		),
 	);
 

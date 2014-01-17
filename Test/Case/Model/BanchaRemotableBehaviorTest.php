@@ -50,6 +50,7 @@ class RemotableTestTreeModel extends AppModel {
 
 	public $actsAs = array('Tree');
 }
+
 /**
  * Used to test the TreeBehavior
  */

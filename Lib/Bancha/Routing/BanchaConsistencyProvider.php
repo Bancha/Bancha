@@ -18,20 +18,21 @@
  * @subpackage Lib.Routing
  */
 class BanchaConsistencyProvider {
+
 /**
  * the folder name to save the client_ids for consistency to
  */
-	private $folder = null;
+	protected $_folder = null;
 
 /**
  * the current client id for consistency
  */
-	private $clientId = null;
+	protected $_clientId = null;
 
 /**
  * the currents request tid, set during validates()
  */
-	private $tid = null;
+	protected $_tid = null;
 
 /**
  * Constructor.
@@ -39,7 +40,7 @@ class BanchaConsistencyProvider {
  * @param string $folder the folder to save consistany ids in, false to use default
  */
 	public function __construct($folder = false) {
-		$this->folder = $folder ? $folder : (TMP . 'bancha-clients');
+		$this->_folder = $folder ? $folder : (TMP . 'bancha-clients');
 	}
 
 /**
@@ -50,9 +51,9 @@ class BanchaConsistencyProvider {
  * @return true to execute the request
  */
 	public function validates($clientId, $tid) {
-		$this->clientId = $clientId;
+		$this->_clientId = $clientId;
 		$tid = intval($tid);
-		$this->tid = $tid;
+		$this->_tid = $tid;
 
 		// Check if we have an old id from this client
 		$savedTid = $this->getTid();
@@ -60,7 +61,7 @@ class BanchaConsistencyProvider {
 		// Check if the request was already handled
 		if ($savedTid && $savedTid>=$tid) {
 			// this request was already handled, so discard it
-			$this->tid = false;
+			$this->_tid = false;
 			return false;
 		}
 
@@ -76,7 +77,7 @@ class BanchaConsistencyProvider {
 		}
 
 		// keep a local reference for finalizing
-		$this->tid = $tid;
+		$this->_tid = $tid;
 
 		// Since Ext.Direct will always send all open requests and these are ordered by tid
 		// we don't need to worry that when one request was finished (e.g. tid 1) and the new one has a higher tid
@@ -98,56 +99,60 @@ class BanchaConsistencyProvider {
  * @return void
  */
 	public function finalizeRequest() {
-		if ($this->tid === null) {
+		if ($this->_tid === null) {
 			return $this->handleError('Bancha internal error, executed BanchaConsistencyProvider::finalizeRequest() before BanchaConsistencyProvider::validates()!');
 		}
 
-		if ($this->tid == false) {
+		if ($this->_tid == false) {
 			// this request was skipped, so nothing to do here
 			return;
 		}
 
 		// request was executed, so now the next tid can be executed
-		$this->saveTid($this->tid);
+		$this->saveTid($this->_tid);
 
 		return;
 	}
 
-// ######################################
-// ######################################
-// ####      helper functions        ####
-// ######################################
-// ######################################
+	// ######################################
+	// ######################################
+	// ####      helper functions        ####
+	// ######################################
+	// ######################################
 
 /**
  * convenience method to get the file name where the client ids are saved
+ *
+ * @return string The path to the file
  */
 	public function getFileName() {
-		return $this->folder . DS . $this->clientId . '.txt';
+		return $this->_folder . DS . $this->_clientId . '.txt';
 	}
 
 /**
  * Looks if an old tid from this client exists.
- * @return null|string|integer If another process is currently working it returns 'x', otherwise the last finished tid, or null if no tid was saved yet.
+ * 
+ * @return null|string|integer If another process is currently working it returns 'x',
+ *                             otherwise the last finished tid, or null if no tid was saved yet.
  */
 	public function getTid() {
 		if (file_exists($this->getFileName())) {
 			$tid = trim(file_get_contents($this->getFileName()));
-			return $tid=='x' ? $tid : intval($tid);
+			return $tid == 'x' ? $tid : intval($tid);
 		}
 		return null;
 	}
 
 /**
  * Saves a tid to the client file (overwrite olds)
+ * 
  * @param $tid the tid to save
  * @return in case of an error it returns false, otherwise true
  */
 	public function saveTid($tid) {
-
 		// if it doesn't exist, create a folder to save all the client_ids
-		if (!is_dir($this->folder)) { // this can make problems under windows, see https://bugs.php.net/bug.php?id=39198
-			if (!@mkdir($this->folder)) {
+		if (!is_dir($this->_folder)) { // this can make problems under windows, see https://bugs.php.net/bug.php?id=39198
+			if (!@mkdir($this->_folder)) {
 				// error handling
 				return $this->handleError("Bancha was not able to create a tmp dir for saving Bancha consistency client ids, the path is: ". $client_folder);
 			}
@@ -161,6 +166,8 @@ class BanchaConsistencyProvider {
 
 /**
  * Handles write errors from the filesystem
+ *
+ * @throws CakeException If in debug mode
  * @return false
  */
 	public function handleError($msg) {

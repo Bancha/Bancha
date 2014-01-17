@@ -37,7 +37,7 @@ class TestBanchaPaginatorComponentsController extends Controller {
  * Used in the testPaginationConditionApplying to
  * test setting the paginate via method argument
  *
- * @return  void
+ * @return void
  */
 	public function getPaginationConditionsArgument() {
 		$this->Article->recursive = -1;
@@ -52,7 +52,7 @@ class TestBanchaPaginatorComponentsController extends Controller {
  * Used in the testPaginationConditionApplying to
  * test setting the paginate via overloaded property
  *
- * @return  void
+ * @return void
  */
 	public function getPaginationConditionsProperty() {
 		$this->Article->recursive = -1;
@@ -255,7 +255,14 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 	public function testSanitizeConditionsDebugModeProhibitedFieldArray() {
 		// test using prohibit filters
 		// it should not yet throw an error when setting up
-		$this->setUpComponent(array('allowedFilters' => array('Article.title','Article.body','Article.date')), array('Article.title' => 'Titel 01','Article.published' => true));
+		$this->setUpComponent(
+			array(
+				'allowedFilters' => array('Article.title', 'Article.body', 'Article.date')
+			),
+			array(
+				'Article.title' => 'Titel 01',
+				'Article.published' => true)
+		);
 
 		// if should trown an error when paginating
 		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.published, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
@@ -269,7 +276,16 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
  */
 	public function testSanitizeConditionsDebugModeAllowedFieldArray() {
 		// test using allowed filters
-		$this->setUpComponent(array('allowedFilters' => array('Article.title','Article.body','Article.published')), array('Article.title' => 'Titel 01','Article.published' => true));
+		$this->setUpComponent(
+			array(
+				'allowedFilters' => array('Article.title', 'Article.body', 'Article.published')
+			),
+			array(
+				'Article.title' => 'Titel 01',
+				'Article.published' => true
+			)
+		);
+
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.title']));
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.published']));
 		$this->assertEquals('Titel 01', $this->Controller->request['named']['conditions']['Article.title']);
@@ -287,7 +303,14 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 	public function testSanitizeConditionsDebugModeProhibitedFieldAssociations() {
 		// test using prohibit filters
 		// it should not yet throw an error when setting up
-		$this->setUpComponent(array('allowedFilters' => 'associations'), array('Article.title' => 'Titel 01'));
+		$this->setUpComponent(
+			array(
+				'allowedFilters' => 'associations'
+			),
+			array(
+				'Article.title' => 'Titel 01'
+			)
+		);
 
 		// if should trown an error when paginating
 		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
@@ -301,7 +324,14 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
  */
 	public function testSanitizeConditionsDebugModeAllowedFieldAssociations() {
 		// test using allowed filters
-		$this->setUpComponent(array('allowedFilters' => 'associations'), array('Article.user_id'=>2));
+		$this->setUpComponent(
+			array(
+				'allowedFilters' => 'associations'
+			),
+			array(
+				'Article.user_id' =>2
+			)
+		);
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.user_id']));
 		$this->assertEquals(2, $this->Controller->request['named']['conditions']['Article.user_id']);
 
@@ -309,7 +339,14 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		$this->BanchaPaginatorComponent->paginate('Article');
 
 		// should also allow filtering via id
-		$this->setUpComponent(array('allowedFilters' => 'associations'), array('Article.id'=>1001));
+		$this->setUpComponent(
+			array(
+				'allowedFilters' => 'associations'
+			),
+			array(
+				'Article.id' => 1001
+			)
+		);
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.id']));
 		$this->assertEquals(1001, $this->Controller->request['named']['conditions']['Article.id']);
 
@@ -323,7 +360,15 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
  */
 	public function testSanitizeConditionsDebugModeAllowedFieldAll() {
 		// test using allowed filters
-		$this->setUpComponent(array('allowedFilters' => 'all'), array('Article.title' => 'Titel 01','Article.published' => true));
+		$this->setUpComponent(
+			array(
+				'allowedFilters' => 'all'
+			),
+			array(
+				'Article.title' => 'Titel 01',
+				'Article.published' => true
+			)
+		);
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.title']));
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.published']));
 		$this->assertEquals('Titel 01', $this->Controller->request['named']['conditions']['Article.title']);

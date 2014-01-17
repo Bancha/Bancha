@@ -55,7 +55,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->_originalPaths = App::paths();
 
 		// make sure there's no old cache
-		Cache::clear(false,'_bancha_api_');
+		Cache::clear(false, '_bancha_api_');
 
 		// build up the test paths
 		App::build(array(
@@ -79,7 +79,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		App::build($this->_originalPaths, App::RESET);
 
 		// make sure to flush after tests, so that real app is not influenced
-		Cache::clear(false,'_bancha_api_');
+		Cache::clear(false, '_bancha_api_');
 	}
 
 /**

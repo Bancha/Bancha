@@ -435,7 +435,7 @@ class BanchaRequestTransformer {
 				);
 			}
 			$this->_data = $result;
-		} elseif ($this->isArray($this->_data,'[data][0][data]')) {
+		} elseif ($this->isArray($this->_data, '[data][0][data]')) {
 			// this is standard extjs-bancha structure, transform to cake
 			$this->_data[$modelName] = $this->_data['data'][0]['data'];
 			unset($this->_data['data']);

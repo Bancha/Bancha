@@ -37,7 +37,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
  * @return void
  * @author Florian Eckerstorfer
  */
-	function testGetResponses() {
+	public function testGetResponses() {
 		// Content of responses.
 		$response1 = array(
 			'body'	=> array(
@@ -54,7 +54,8 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 				'success' => true,
 				'message' => 'Hello Plugin-World'),
 		);
-		$response4 = new Exception('This is an exception'); $exception_line = __LINE__;
+		$response4 = new Exception('This is an exception');
+		$exceptionLine = __LINE__;
 
 		// ResponseCollection needs additional information from the request.
 		$request1 = new CakeRequest();
@@ -72,9 +73,9 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		// The heart of the test: create BanchaResponseCollection, add responses and get combined response.
 		$collection = new BanchaResponseCollection($response);
 		$collection->addResponse(1, new CakeResponse($response1), $request1)
-				   ->addResponse(2, new CakeResponse($response2), $request2)
-				   ->addResponse(3, new CakeResponse($response3), $request3)
-				   ->addException(4, $response4, $request4);
+					->addResponse(2, new CakeResponse($response2), $request2)
+					->addResponse(3, new CakeResponse($response3), $request3)
+					->addException(4, $response4, $request4);
 		// getResponses() is a CakeResponse with JSON as body.
 		$actualResponse = json_decode($collection->getResponses()->body());
 
@@ -102,7 +103,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		// Exception response
 		$this->assertEquals('exception', $actualResponse[3]->type);
 		$this->assertEquals('This is an exception', $actualResponse[3]->message);
-		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $exception_line . '.', $actualResponse[3]->where);
+		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $exceptionLine . '.', $actualResponse[3]->where);
 	}
 
 /**
@@ -110,9 +111,9 @@ class BanchaResponseCollectionTest extends CakeTestCase {
  * the response should not be JSON encoded but rather a valid HTML structure which contains the result inside a
  * <textarea>-element.
  *
+ * @return void
  */
-	public function testGetResponses_extUpload() {
-
+	public function testGetResponsesExtUpload() {
 		$response1 = array(
 			'body'	=> array(
 				'success' => true,
@@ -128,7 +129,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$collection->addResponse(2, new CakeResponse($response1), $request);
 
 		$expected = '<html><body><textarea>[{"type":"rpc","tid":2,"action":"foo","method":"bar",'.
-					'"result":'.json_encode($response1['body']).',"extUpload":true}]</textarea></body></html>';
+					'"result":' . json_encode($response1['body']) . ',"extUpload":true}]</textarea></body></html>';
 
 		$this->assertEquals($expected, $collection->getResponses()->body());
 	}

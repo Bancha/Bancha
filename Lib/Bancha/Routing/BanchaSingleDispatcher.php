@@ -27,6 +27,7 @@ if (substr(Configure::version(), 2, 3) < 2) {
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 	class BanchaSingleDispatcher extends Dispatcher {
+
 /**
  * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
  * applies the routes.

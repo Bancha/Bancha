@@ -361,12 +361,12 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function getActionProvider() {
 		return array(
-			array('create',  array(),                                 'add'),
-			array('update',  array(array('data' => array('id' => 42))), 'edit'),
+			array('create',	array(),'add'),
+			array('update',	array(array('data' => array('id' => 42))), 'edit'),
 			array('destroy', array(array('data' => array('id' => 42))), 'delete'),
-			array('read',    array(array('data' => array('id' => 42))), 'view'),
-			array('read',    array(),                                 'index'),
-			array('special', array(),                                 'special'), // non-standard crud actions stay the same
+			array('read', array(array('data' => array('id' => 42))), 'view'),
+			array('read', array(), 'index'),
+			array('special', array(), 'special'), // non-standard crud actions stay the same
 		);
 	}
 
@@ -395,8 +395,8 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function getActionFormProvider() {
 		return array(
-			array('submit',  array(), 'add'),
-			array('submit',  array('id' => 42), 'edit'),
+			array('submit', array(), 'add'),
+			array('submit', array('id' => 42), 'edit'),
 			array('special', array(), 'special'), // non-standard crud actions stay the same
 		);
 	}
@@ -424,7 +424,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			'data' => array(array(
 				'data' => array(
 					'__bcid' => '123456',
-					'other'  => 'recordFields',
+					'other' => 'recordFields',
 				),
 			)),
 		));
@@ -555,8 +555,8 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 					'order'		=> array(
 						'Test.title'	=> 'asc',
 					),
-					'sort'      => 'title',
-					'direction' => 'ASC'
+					'sort'		=> 'title',
+					'direction'	=> 'ASC'
 				),
 			),
 			// page = start / limit

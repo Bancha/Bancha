@@ -64,7 +64,7 @@ class BanchaDispatcher {
 		$this->_consistencyProvider = new BanchaConsistencyProvider();
 
 		//<bancha-basic>
-		/**
+		/*
 		 * Yes, if you want to hack this software, it is pretty simply. We want
 		 * to spend our time making Bancha even better, not adding piracy
 		 * protection.
@@ -84,8 +84,8 @@ class BanchaDispatcher {
 		if ($allowedDomains && $allowedDomains !== '*' && !isset($_SERVER['HTTP_ORIGIN'])) {
 			// we need to have a origin to validate the domain!
 			if (Configure::read('debug') == 2) {
-				echo 'Bancha Error: Bancha expects that any request has a '.
-					 'HTTP_ORIGIN header.';
+				echo 'Bancha Error: Bancha expects that any request has a ' .
+					'HTTP_ORIGIN header.';
 			}
 			return; // abort
 		}
@@ -95,9 +95,9 @@ class BanchaDispatcher {
 			// this domain is prohibited according to the access control list
 			// block it
 			if (Configure::read('debug') == 2) {
-				echo 'Bancha Error: According to the '.
-					 'Configure::read("Bancha.allowedDomains") '.
-					 'this request is not allowed!';
+				echo 'Bancha Error: According to the ' .
+					'Configure::read("Bancha.allowedDomains") ' .
+					'this request is not allowed!';
 			}
 			return; // abort
 		}
@@ -147,7 +147,6 @@ class BanchaDispatcher {
  * @return void
  */
 	protected function _singleDispatch($request) {
-
 		// Ensure consitency if Client ID is given.
 		$ensureConsitency = isset($request['client_id']);
 		if ($ensureConsitency && !$this->_consistencyProvider->validates($request['client_id'], $request['tid'])) {
@@ -186,21 +185,20 @@ class BanchaDispatcher {
  * Set the appropriate CORS headers, if the *Bancha.allowedDomains* config
  * is set. Then send the response.
  *
- * @param  CakeResponse $response The CakeResponse to send
+ * @param  CakeResponse $CakeResponse The CakeResponse to send
  * @return void
  */
 	protected function _send(CakeResponse $CakeResponse) {
-
 		// Bancha might be available from multiple locations
 		// See in bootstrap.php for the Bancha.allowedDomains config
 		if (Configure::read('Bancha.allowedDomains') !== false) {
 			// configure the access controll headers
 			$CakeResponse->header(array(
-				'Access-Control-Allow-Methods' => 'POST, OPTIONS',
-				'Access-Control-Allow-Headers' => 'Origin, X-Requested-With, Content-Type',
+				'Access-Control-Allow-Methods'	=> 'POST, OPTIONS',
+				'Access-Control-Allow-Headers'	=> 'Origin, X-Requested-With, Content-Type',
 													// we are only able to set one domain, see https://cakephp.lighthouseapp.com/projects/42648-cakephp/tickets/3960
-				'Access-Control-Allow-Origin'  => (Configure::read('Bancha.allowedDomains') == '*' ? '*' : $_SERVER['HTTP_ORIGIN']),
-				'Access-Control-Max-Age'       => '3600' // require preflight request only once
+				'Access-Control-Allow-Origin'	=> (Configure::read('Bancha.allowedDomains') == '*' ? '*' : $_SERVER['HTTP_ORIGIN']),
+				'Access-Control-Max-Age'		=> '3600' // require preflight request only once
 			));
 		}
 
@@ -213,12 +211,12 @@ class BanchaDispatcher {
  * createswhich will be catched by the BanchaDispatcher::dispatch
  * and a ExtJS/Sencha Touch exception.
  *
- * @since  Bancha v 2.0.0
+ * @param  CakeEvent $event The event which triggered the redirect
  * @throws BanchaAuthLoginException If the user is not logged in and tried to access a denied method
  * @throws BanchaAuthAccessRightsException If the user is not authorized to access this method
  * @throws BanchaRedirectException If a redirect was triggered from app code
- * @param  CakeEvent $event The event which triggered the redirect
  * @return void
+ * @since  Bancha v 2.0.0
  */
 	public function redirectHandler($event) {
 		$controller = $event->subject();
@@ -233,7 +231,10 @@ class BanchaDispatcher {
 		}
 
 		// general redirect handling, will trigger an exception
-		throw new BanchaRedirectException($event->subject()->name . 'Controller forced a redirect to ' . $url . (empty($status) ? '' : ' with status '.$status));
+		throw new BanchaRedirectException(
+			$event->subject()->name . 'Controller forced a redirect to ' . $url .
+			(empty($status) ? '' : ' with status ' . $status)
+		);
 	}
 
 /**
@@ -242,44 +243,44 @@ class BanchaDispatcher {
  * want to return an array with success=>false to indicate to
  * ExtJS/Sencha Touch that the request was not successfull.
  *
- * @since  Bancha v 2.0.0
- * @param  CakeRequest $request   The request which caused the error
- * @param  Exception   $exception The caugth exception
+ * @param  CakeRequest $CakeRequest The request which caused the error
+ * @param  Exception   $exception   The caugth exception
  * @return void
+ * @since  Bancha v 2.0.0
  */
 	public function logException(CakeRequest $CakeRequest, Exception $exception) {
-
 		if (Configure::read('debug') == 2 || // don't log anything in debug mode
-		   !Configure::read('Bancha.logExceptions') || // dev disabled logging
-		   in_array(get_class($exception), Configure::read('Bancha.passExceptions')) // this is an expected exception
+			!Configure::read('Bancha.logExceptions') || // dev disabled logging
+			in_array(get_class($exception), Configure::read('Bancha.passExceptions')) // this is an expected exception
 			) {
 			return; // don't log
 		}
 
 		// log the error
 		CakeLog::write(LOG_ERR, 
-			'A Bancha request to '.$this->_getSignature($CakeRequest).' resulted in the following '.get_class($exception).':'.
+			'A Bancha request to ' . $this->_getSignature($CakeRequest) .
+			' resulted in the following ' . get_class($exception) . ':' .
 			"\n".$exception."\n\n");
 	}
 
-	/**
-	 * Build a string representation of the invocaton signature, used for error logs.
-	 *
-	 * @since  Bancha v 2.0.0
-	 * @param  CakeRequest $request   The request
-	 * @return void
-	 */
+/**
+ * Build a string representation of the invocaton signature, used for error logs.
+ *
+ * @param  CakeRequest $CakeRequest The request which caused the error
+ * @return void
+ * @since  Bancha v 2.0.0
+ */
 	protected function _getSignature(CakeRequest $CakeRequest) {
-		$signature = (!empty($CakeRequest->params['plugin']) ? $CakeRequest->params['plugin'].'.' : '').
-						$CakeRequest->params['controller'].'::'.$CakeRequest->params['action'] . '(';
+		$signature = (!empty($CakeRequest->params['plugin']) ? $CakeRequest->params['plugin'] . '.' : '') .
+						$CakeRequest->params['controller'] . '::' . $CakeRequest->params['action'] . '(';
 		foreach ($CakeRequest->params['pass'] as $pass) {
-			$signature .= var_export($pass,true) . ', ';
+			$signature .= var_export($pass, true) . ', ';
 		}
 		if (!empty($CakeRequest->params['pass'])) {
 			// remove the trailing comma
-			$signature = substr($signature, 0, strlen($signature)-2);
+			$signature = substr($signature, 0, strlen($signature) - 2);
 		}
-		$signature =  $signature . ')';
+		$signature = $signature . ')';
 
 		return $signature;
 	}

@@ -22,15 +22,21 @@
  */
 class BanchaExceptionHandler extends Object {
 
+/**
+ * Handles an expection for Bancha requests.
+ * @param  Exception $e The exception that occured
+ * @return void
+ */
 	public function handleException(Exception $e) {
 		// first log exception
 		$config = Configure::read('Exception');
 		if (!empty($config['log'])) {
-			$message = sprintf("[%s] %s\n%s",
-						   get_class($e),
-						   $e->getMessage(),
-						   $e->getTraceAsString()
-					  	);
+			$message = sprintf(
+				"[%s] %s\n%s",
+				get_class($e),
+				$e->getMessage(),
+				$e->getTraceAsString()
+			);
 			CakeLog::write(LOG_ERR, $message);
 		}
 

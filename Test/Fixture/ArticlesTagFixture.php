@@ -28,8 +28,8 @@ class ArticlesTagFixture extends CakeTestFixture {
  * @access public
  */
 	public $fields = array(
-		'article_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'collate' => NULL, 'comment' => ''),
-		'tag_id' => array('type' => 'integer', 'null' => false, 'default' => NULL, 'collate' => NULL, 'comment' => ''),
+		'article_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'collate' => null, 'comment' => ''),
+		'tag_id' => array('type' => 'integer', 'null' => false, 'default' => null, 'collate' => null, 'comment' => ''),
 	);
 
 /**

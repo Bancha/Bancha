@@ -124,7 +124,7 @@ class BanchaResponseCollection {
 			Cache::write('bancha-logged', true);
 			try {
 				$url = 'http://logs.banchaproject.org/';
-				$data = array('url'=>$_SERVER['HTTP_HOST'],'path'=>$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
+				$data = array('url'=>$_SERVER['HTTP_HOST'], 'path'=>$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
 				if (function_exists('curl_init')) {
 					$options = array(
 						CURLOPT_URL            => $url,
