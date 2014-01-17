@@ -267,9 +267,9 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
  */
 	protected $_schema = array(
 		'id' => array('type' => 'integer', 'null' => false, 'default' => null, 'collate' => null, 'key' => 'primary', 'collate' => null, 'comment' => '', 'length' => 8),
-		'title' => array('type' => 'string', 'null' => true, 'default' => null,'collate' => null,  'length' => 64, 'comment' => ''),
+		'title' => array('type' => 'string', 'null' => true, 'default' => null, 'collate' => null, 'length' => 64, 'comment' => ''),
 		'date' => array('type' => 'date', 'null' => '1', 'default' => '', 'length' => ''),
-		'body' => array('type' => 'text', 'null' => true, 'default' => null,'collate' => null,  'comment' => ''),
+		'body' => array('type' => 'text', 'null' => true, 'default' => null, 'collate' => null, 'comment' => ''),
 		'published' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length' => 1),
 		'user_id' => array('type' => 'integer', 'null' => false, 'default' => 0, 'comment' => '', 'length' => 8),
 	);
@@ -324,6 +324,7 @@ class ArticleForTestingSaveBehavior extends CakeTestModel {
 		));
 		return $existingNames < $limit;
 	}
+
 }
 
 /**

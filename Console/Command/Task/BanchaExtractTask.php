@@ -66,7 +66,8 @@ class Bancha_JavaScriptToken {
 	}
 
 /**
- * Returns true if the token is of type string
+ * Returns true if the token is of type string.
+ * 
  * @return boolean True if an string
  */
 	public function isString() {
@@ -173,6 +174,7 @@ class Bancha_JavaScriptToken {
 	public function getRemainingCode() {
 		return $this->_remainingCode;
 	}
+
 }
 
 /**
@@ -403,7 +405,7 @@ class BanchaExtractTask extends ExtractTask {
  * Finds a string inside a code and returns the string and the 
  * remaining string part as remaingingCode value.
  *
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The calculated token
  */
 	protected function _findString($code) {
@@ -476,7 +478,7 @@ class BanchaExtractTask extends ExtractTask {
  * Finds a string inside a code and returns the variable and the 
  * remaining string part as remaingingCode value.
  *
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The calculated token
  */
 	protected function _findVariable($code) {
@@ -488,7 +490,7 @@ class BanchaExtractTask extends ExtractTask {
 		$pos = ($pos === false || ($pos > strpos($code, ';') && strpos($code, ';') !== false)) ? strpos($code, ';') : $pos;
 
 		// make sure there is an end
-		if ($pos === FALSE) {
+		if ($pos === false) {
 			// there is no variable name end, return error
 			return new Bancha_JavaScriptToken('error', false, $code);
 		}
@@ -499,7 +501,7 @@ class BanchaExtractTask extends ExtractTask {
 /**
  * Collects a string or variable as token.
  * 
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The calculated token
  */
 	protected function _collectJsToken($code) {
@@ -542,7 +544,7 @@ class BanchaExtractTask extends ExtractTask {
 			$validJoin = substr($code, 0, 1) == '.'; // check for point
 			$code = ltrim(substr($code, 1));
 			$validJoin = $validJoin && substr($code, 0, 4) == 'join'; // check for join
-			$code = ltrim(substr($code,4));
+			$code = ltrim(substr($code, 4));
 			$validJoin = $validJoin && substr($code, 0, 1) == '('; // check for join
 			$code = ltrim(substr($code, 1));
 			$concatBy = ',';
@@ -576,7 +578,7 @@ class BanchaExtractTask extends ExtractTask {
 /**
  * Get the arguments value as token.
  * 
- * @param  string $code           The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The arguments token
  */
 	protected function _collectJsArgument($code) {

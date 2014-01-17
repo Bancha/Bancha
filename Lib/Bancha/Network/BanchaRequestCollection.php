@@ -28,10 +28,19 @@ App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
  */
 class BanchaRequestCollection {
 
-/** @var string */
+/**
+ * The raw http post data, should be retireved using:
+ * file_get_contents("php://input");
+ * 
+ * @var string
+ */
 	protected $_rawPostData;
 
-/** @var array */
+/**
+ * The php $_POST array.
+ * 
+ * @var array
+ */
 	protected $_postData;
 
 /**
@@ -49,10 +58,10 @@ class BanchaRequestCollection {
  * Returns an array of CakeRequest objects. Performs various transformations on the request passed to the constructor,
  * so that the requests match the format expected by CakePHP.
  *
- * @return array Array with CakeRequest objects.
+ * @return array Array with CakeRequest objects
+ * @throws BanchaException If no data is given
  */
 	public function getRequests() {
-
 		if (isset($this->_postData) && isset($this->_postData['extTID'])) {
 			// this is a form request, form request data is directly avialable
 			// in the $postData and only contains one request.
@@ -81,7 +90,7 @@ class BanchaRequestCollection {
 
 		$requests = array();
 		if (count($data) > 0) {
-	 		for ($i=0; $i < count($data); $i++) {
+			for ($i = 0, $dataCount = count($data); $i < $dataCount; $i++) {
 				$transformer = new BanchaRequestTransformer($data[$i]);
 
 				// Create CakeRequest and fill it with values from the transformer.
@@ -111,7 +120,7 @@ class BanchaRequestCollection {
 					$requests[$i]->data($key, $value);
 				}
 			}
- 		}
+		}
 		return $requests;
 	}
 

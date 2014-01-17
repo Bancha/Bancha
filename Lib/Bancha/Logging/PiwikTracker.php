@@ -23,6 +23,7 @@
  * @package PiwikTracker
  */
 class PiwikTracker {
+
 /**
  * Piwik base URL, for example http://example.org/piwik/
  * Must be set before using the class by calling

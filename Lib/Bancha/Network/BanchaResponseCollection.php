@@ -40,6 +40,9 @@ class BanchaResponseCollection {
 
 /**
  * Constructor
+ *
+ * @param CakeResponse $CakeResponse The response to use for the result
+ * @return void
  */
 	public function __construct(CakeResponse $CakeResponse) {
 		$this->_CakeResponse = $CakeResponse;
@@ -57,7 +60,7 @@ class BanchaResponseCollection {
 		$response = array(
 			'type'		=> 'rpc',
 			'tid'		=> $tid,
-			'action'	=> ($CakeRequest->plugin ? $CakeRequest->plugin.'.' : '').Inflector::singularize($CakeRequest->controller), // controllers are called action in Ext JS
+			'action'	=> ($CakeRequest->plugin ? $CakeRequest->plugin . '.' : '') . Inflector::singularize($CakeRequest->controller), // controllers are called action in Ext JS
 			'method'	=> BanchaResponseTransformer::getMethod($CakeRequest), // actions are called methods in Ext JS
 			'result'	=> BanchaResponseTransformer::transform($CakeResponse->body(), $CakeRequest),
 		);
@@ -109,7 +112,7 @@ class BanchaResponseCollection {
 		$this->_responses[] = $response;
 
 		return $this;
-	 }
+	}
 
 /**
  * Combines all CakeResponses into a single response and transforms it into JSON. If it is an formHandler request
@@ -124,7 +127,10 @@ class BanchaResponseCollection {
 			Cache::write('bancha-logged', true);
 			try {
 				$url = 'http://logs.banchaproject.org/';
-				$data = array('url'=>$_SERVER['HTTP_HOST'], 'path'=>$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']);
+				$data = array(
+					'url' => $_SERVER['HTTP_HOST'],
+					'path' => $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']
+				);
 				if (function_exists('curl_init')) {
 					$options = array(
 						CURLOPT_URL            => $url,
@@ -139,15 +145,16 @@ class BanchaResponseCollection {
 					$response = @curl_exec($ch);
 					ob_end_clean();
 				} elseif (function_exists('stream_context_create')) {
-					$stream_options = array(
+					$streamOptions = array(
 						'http' => array(
-							'method'  => 'POST',
+							'method' => 'POST',
 							'content' => $data
 					));
-					$ctx = stream_context_create($stream_options);
+					$ctx = stream_context_create($streamOptions);
 					$response = file_get_contents($url, 0, $ctx);
 				}
-			} catch(Exception $e) {}
+			} catch(Exception $e) {
+			}
 		}
 
 		// request was successfull

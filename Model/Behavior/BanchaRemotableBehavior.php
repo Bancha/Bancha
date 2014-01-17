@@ -20,6 +20,7 @@ App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 // backwards compability with 5.2
 if (function_exists('lcfirst') === false) {
+
 /**
  * Make a string's first character lowercase.
  * 
@@ -29,6 +30,7 @@ if (function_exists('lcfirst') === false) {
 	function lcfirst($str) {
 		return (string)(strtolower(substr($str, 0, 1)) . substr($str, 1));
 	}
+
 }
 
 /**
@@ -224,7 +226,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			if (Configure::read('debug') > 0 && (count($fields) < count($settings['exposedFields']))) {
 				$wrongNames = array_diff($settings['exposedFields'], $fields);
 				throw new CakeException(
-					"Bancha: You have configured the BanchaRemotable to expose following fields for " . 
+					"Bancha: You have configured the BanchaRemotable to expose following fields for " .
 					$model->name . " which do not exist in the schema: " . print_r($wrongNames, true) .
 					"\nPlease remove them or fix your schema.\n" .
 					"This error is only displayed in debug mode."
@@ -236,7 +238,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		if (isset($settings['excludedFields']) && is_array($settings['excludedFields'])) {
 
 			// In debug mode check if all exposed fields are valid
-			if (Configure::read('debug')>0) {
+			if (Configure::read('debug') > 0) {
 				$wrongNames = array_diff($settings['excludedFields'], $fields);
 				if (count($wrongNames)) {
 					throw new CakeException(
@@ -296,7 +298,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				if (ctype_digit($recData[$fieldName])) { // is integer string
 					// this looks a bit hacky, but speed is more important then
 					// doing his by checking over the models schema type
-					$recData[$fieldName] = (int) $recData[$fieldName];
+					$recData[$fieldName] = (int)$recData[$fieldName];
 				}
 				$result[$fieldName] = $recData[$fieldName];
 			}
@@ -411,8 +413,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * The $model is only used for MySQL enum support, 
- * @see #getColumnTypes
+ * The $model is only used for MySQL enum support, @see #getColumnTypes.
  * 
  * @param Model  $model       Model using this behavior
  * @param string $fieldName   The fieldname of the model
@@ -420,7 +421,6 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @return array              The Sencha Touch/Ext JS column configuration
  */
 	public function getColumnType(Model $model, $fieldName, array $fieldSchema) {
-
 		// handle mysql enum field
 		$type = $fieldSchema['type'];
 		if (substr($type, 0, 4) == 'enum') {
@@ -559,9 +559,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * Retrieve the Sencha Touch/Ext JS validation rules from the CakePHP
  * schema.
  * 
- * @param string $fieldName   The field name of the model
- * @param array  $rules       The CakePHP rules for the field
- * @return array              The generated Sencha Touch/Ext JS validation rules
+ * @param string $fieldName The field name of the model
+ * @param array  $rules     The CakePHP rules for the field
+ * @return array            The generated Sencha Touch/Ext JS validation rules
+ * @throws CakeException    if in debug mode and range validation rule is wrongly configured.
  */
 	protected function _getValidationRulesForField($fieldName, $rules) {
 		$cols = array();
@@ -625,7 +626,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$cols[] = $col;
 		}
 
-		if(isset($rules['between'])) {
+		if (isset($rules['between'])) {
 			if (isset($rules['between']['rule'][1]) ||
 				isset($rules['between']['rule'][2]) ) {
 				$cols[] = array(
@@ -753,9 +754,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- *	Prepare an array of Model's validation error messages
- *  @param model $model Model using this behavior
- *	@return String
+ * Prepare an array of Model's validation error messages.
+ * 
+ * @param model $model Model using this behavior
+ * @return String
  */
 	protected function _getValidationErrors(Model $model) {
 		// Initialize array of validation errors
@@ -795,18 +797,23 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		return is_uploaded_file($uploadInfo['tmp_name']);
 	}
 
-	// TODO remove workarround for 'file' validation
+/**
+ * A workaround to provide a validation rule 'file'
+ *
+ * @param  array $check The file to check
+ * @return true         Since only validated in the frotnend, nothing to do here
+ */
 	public function file($check) {
 		return true;
 	}
 
 /**
  * After saving load the full record from the database to
- * return to the frontend
+ * return to the frontend.
  *
- * @param Model    $model   Model using this behavior
- * @param boolean  $created True if this save created a new record
- * @param array    $options Options passed from Model::save().
+ * @param Model   $model   Model using this behavior
+ * @param boolean $created True if this save created a new record
+ * @param array   $options Options passed from Model::save().
  * @return boolean          True if saving should proceed
  */
 	public function afterSave(Model $model, $created, $options = array()) {
@@ -834,6 +841,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * 
  * @param Model $model The model using this behavior
  * @return mixed       The record data of the last saved record
+ * @throws BanchaException If there is not result for this model.
  */
 	public function getLastSaveResult(Model $model) {
 		if (empty($this->_result[$model->alias])) {
@@ -854,7 +862,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * Builds a field list with all defined fields.
  *
- * @param Model $model the model using this behavior
+ * @param Model $model Model using this behavior
+ * @return array       A list of fields
+ * @throws BanchaException If the data is malformed.
  */
 	protected function _buildFieldList(Model $model) {
 		// Make a quick quick check if the data is in the right format
@@ -876,8 +886,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			try {
 				if (isset($model->data[$model->name]) && is_array($model->data[$model->name])) {
 					foreach ($fields as $field => $type) {
-						if ($field!==$model->primaryKey && array_key_exists($field, $model->data[$model->name])) {
-							$valid=true;
+						if ($field !== $model->primaryKey && array_key_exists($field, $model->data[$model->name])) {
+							$valid = true;
 							break;
 						}
 					}
@@ -924,8 +934,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * See $this->_defaults['useOnlyDefinedFields'] for an explanation
  *
- * @param Model $model the model using this behavior
- * @param Array $options
+ * @param Model $model   Model using this behavior
+ * @param array $options Options passed from Model::save().
  * @return Boolean True if the operation should continue, false if it should abort
  */
 	public function beforeSave(Model $model, $options = array()) {
@@ -987,7 +997,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * for return value see also getLastSaveResult()
  *
  * @param Model $model The model is always the first param (cake does this automatically)
- * @param $data        The data to save, first function argument
+ * @param array $data  The data to save, first function argument
  * @return mixed       The record data of the saved record
  */
 	public function saveFieldsAndReturn(Model $model, $data = null) {
@@ -1003,10 +1013,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *
  * @param Model $model Model using this behavior
  * @return array|boolean The latest save result
+ * @throws NotFoundException If the record doesn't exist.
  */
 	public function deleteAndReturn(Model $model) {
 		if (!$model->exists()) {
-			throw new NotFoundException(__('Invalid user'));
+			throw new NotFoundException(__('Invalid ' . $model->name));
 		}
 		$model->delete();
 		return $this->getLastSaveResult($model);
@@ -1030,6 +1041,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @param Model $model Model using this behavior
  * @return array       The Sencha Touch/Ext JS formated sorters like
  *                     { property: 'name', direction: 'ASC'	}
+ * @throws CakeException If the sorter data is in an malformed form.
  */
 	public function getSorters(Model $model) {
 		$sorters = array();
@@ -1055,7 +1067,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				// this has a model name, a field name and a direction
 				$modelName = strtok($order, ".");
 				$fieldName = strtok(" ");
-				$direction = strtoupper(substr($order, strpos($order, ' ')+1));
+				$direction = strtoupper(substr($order, strpos($order, ' ') + 1));
 			}
 			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
 

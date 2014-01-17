@@ -53,6 +53,7 @@ class TestsController extends AppController {
 	public function returnTrue() {
 		return true;
 	}
+
 }
 
 /**
@@ -80,7 +81,7 @@ class BanchaDispatcherTest extends CakeTestCase {
 		$this->_originalOrigin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : false;
 		$this->_originalDebugLevel = Configure::read('debug');
 		$this->allowedDomains = Configure::read('Bancha.allowedDomains');
-		
+
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
 		// first check if stream exists, because if run from the browser it doesn't
 		if (in_array('stderr', CakeLog::configured())) {
@@ -129,7 +130,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testDispatchWithReturn() {
-
 		// input
 		$rawPostData = json_encode(array(
 			array(
@@ -170,7 +170,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testDispatchWithResponseSend() {
-
 		// input
 		$rawPostData = json_encode(array(
 			array(
@@ -214,7 +213,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testMissingControllerDebug() {
-
 		// input
 		$rawPostData = json_encode(array(
 			array(
@@ -252,7 +250,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testMissingControllerProduction() {
-
 		// input
 		$rawPostData = json_encode(array(
 			array(
@@ -292,7 +289,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testRequireHttpOriginHeaderPass() {
-
 		// input
 		$rawPostData = json_encode(array(
 			'action'		=> 'Test',
@@ -325,7 +321,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testRequireHttpOriginHeaderRejectedDebug() {
-
 		// input
 		$rawPostData = json_encode(array(
 			'action'		=> 'Test',
@@ -365,7 +360,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testRequireHttpOriginHeaderRejectedProduction() {
-
 		// input
 		$rawPostData = json_encode(array(
 			'action'		=> 'Test',
@@ -405,7 +399,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testAllowedDomainsRestrictionAccepted() {
-
 		// input
 		$rawPostData = json_encode(array(
 			'action'		=> 'Test',
@@ -444,7 +437,6 @@ class BanchaDispatcherTest extends CakeTestCase {
  * @return void
  */
 	public function testAllowedDomainsRestrictionRejectedDebug() {
-
 		// input
 		$rawPostData = json_encode(array(
 			'action'		=> 'Test',

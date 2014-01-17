@@ -67,6 +67,7 @@ class RemotableFunctionsController extends Controller {
 	public function redirectMethod() {
 		$this->redirect('redirected-page.html', 302);
 	}
+
 }
 
 class RemotableFunctionWithRequestHandlersController extends RemotableFunctionsController {
@@ -95,8 +96,8 @@ class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsCo
 /**
  * Returns true is the method is not prohibitMethod
  * 
- * @param  array  $user Not used
- * @return boolean      Returns true if request action is not method isAuthorized
+ * @param array $user Not used
+ * @return boolean Returns true if request action is not method isAuthorized
  */
 	public function isAuthorized($user = null) {
 		return $this->request->action !== 'prohibitMethod';
@@ -109,6 +110,7 @@ class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsCo
  */
 	public function prohibitMethod() {
 	}
+
 }
 
 /**
@@ -125,6 +127,11 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 
 	protected $_originalOrigin;
 
+/**
+ * setUp method
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
@@ -133,6 +140,11 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$_SERVER['HTTP_ORIGIN'] = 'http://example.org';
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -147,6 +159,11 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
+/**
+ * Test setting of the input parameters
+ *
+ * @return void
+ */
 	public function testInputParametersAndReturnTransformation() {
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -178,6 +195,11 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 	}
 
+/**
+ * Test setting of the request data
+ *
+ * @return void
+ */
 	public function testRequestDataAndReturnTransformation() {
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -223,6 +245,8 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
  *
  * This test is exactly the same as the one above except that they are running
  * against a Controller with an activated RequestHandler.
+ *
+ * @return void
  */
 	public function testRequestDataAndReturnTransformationWithRequestHandler() {
 		// keep original values
@@ -410,7 +434,7 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		);
 		$this->assertFalse(
 			is_string($responses[0]->result->data),
-			'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data, true)
+			'Expected the data-result to be an array, instead got a string ' . var_export($responses[0]->result->data, true)
 		);
 		$this->assertTrue(
 			is_array($responses[0]->result->data),

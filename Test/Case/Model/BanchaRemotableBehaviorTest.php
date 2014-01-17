@@ -31,9 +31,9 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
 /**
  * A public function for the protected _getValidationRulesForField.
  * 
- * @param string $fieldName   The field name of the model
- * @param array  $rules       The CakePHP rules for the field
- * @return array              The generated Sencha Touch/Ext JS validation rules
+ * @param string $fieldName The field name of the model
+ * @param array  $rules     The CakePHP rules for the field
+ * @return array            The generated Sencha Touch/Ext JS validation rules
  */
 	public function getValidationRulesForField($fieldName, $rules) {
 		return $this->_getValidationRulesForField($fieldName, $rules);
@@ -48,6 +48,7 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
 	public function normalizeValidationRules($rules) {
 		return $this->_normalizeValidationRules($rules);
 	}
+
 }
 
 /**
@@ -483,7 +484,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * 
  * @return void
  */
-	public function testFilterRecord_IntegerIdFields() {
+	public function testFilterRecordIntegerIdFields() {
 		// setup
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
@@ -1415,7 +1416,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					array(
 						'type' => 'inclusion',
 						'field' => 'published',
-						'list' => array(true,false, '0', '1',0,1),
+						'list' => array(true, false, '0', '1', 0, 1),
 					),
 				),
 			),
@@ -1802,8 +1803,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * Test that getValidationRulesForField returns all validation definitions
  * for one model field in ExtJS/Sencha Touch format
  *
- * @param string $fieldName    The field name to use for testing
- * @param array $rules         The rules to use for testing
+ * @param string $fieldName The field name to use for testing
+ * @param array $rules      The rules to use for testing
  * @return void
  * @dataProvider getValidationRulesForFieldDataProviderExceptions
  */
@@ -2062,7 +2063,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 			)
 		));
 		$this->assertFalse($article->validates());
-
 	}
 
 /**

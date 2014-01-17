@@ -15,7 +15,17 @@ App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 // backwards compability with 5.2
 if (function_exists('lcfirst') === false) {
-	function lcfirst( $str ) { return (string)(strtolower(substr($str,0,1)).substr($str,1)); }
+
+/**
+ * Make a string's first character lowercase.
+ * 
+ * @param string $str The string to transform
+ * @return string     The transformed string
+ */
+	function lcfirst($str) {
+		return (string)(strtolower(substr($str, 0, 1)) . substr($str, 1));
+	}
+
 }
 
 /**
@@ -35,6 +45,7 @@ class BanchaResponseTransformer {
  * @param  CakeRequest $CakeRequest Request object.
  * @return array|string             Transformed response. If this is a response to an 'extUpload' request this is a string,
  *                                  otherwise this is an array.
+ * @throws BanchaException          If the response is null.
  */
 	public static function transform($response, CakeRequest $CakeRequest) {
 		$modelName = null;
@@ -56,12 +67,11 @@ class BanchaResponseTransformer {
  * otherwise just return the original response.
  * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
  *
- * @param  object      $response   The input request from Bancha
- * @param  string      $modelName  The model name of the current request
- * @return array                   ExtJS/Sencha Touch formated data
+ * @param  object $response  The input request from Bancha
+ * @param  string $modelName The model name of the current request
+ * @return array             ExtJS/Sencha Touch formated data
  */
 	public static function transformDataStructureToSencha($response, $modelName) {
-
 		// if we only got an array with a success property we expect
 		// that this data is already in the correct format, so only
 		// enforce that the success value is a boolean and we're done
@@ -76,7 +86,7 @@ class BanchaResponseTransformer {
 		// these are the cases where we transform data:
 
 		// understand primitive responses
-		if ($response===true || $response===false) {
+		if ($response === true || $response === false) {
 			// this was an un-/successfull operation, return that to ext/touch
 			return array(
 				'success' => $response,
@@ -161,7 +171,7 @@ class BanchaResponseTransformer {
 			if ($conversionSuccessfull) {
 				$senchaResponse['data'] = $data;
 			} else {
-				$senchaResponse['message'] = 'Expected the response to be multiple ' . $modelName . ' records, '.
+				$senchaResponse['message'] = 'Expected the response to be multiple ' . $modelName . ' records, ' .
 				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
 			}
 
@@ -182,13 +192,13 @@ class BanchaResponseTransformer {
 
 /**
  * This walker function is used by the transform function to re-format the output.
+ * 
  * @param  string     $modelName the model name of the currently invoked model
  * @param  array|null $data      The data
  * @param  boolean    $isPrimary True if it is a primary model structure
  * @return array                 The result
  */
 	public static function walkerDataTransformer($modelName, $data, $isPrimary) {
-
 		// sencha expects model collections to have plural names
 		$senchaModelName = $isPrimary ? $modelName : Inflector::pluralize($modelName);
 		$senchaModelName = lcfirst($senchaModelName);
@@ -218,11 +228,12 @@ class BanchaResponseTransformer {
 	}
 
 /**
- *
- * translates CakePHP CRUD to ExtJS CRUD method names
- * @param string $method
+ * Translates CakePHP CRUD to ExtJS CRUD method names.
+ * 
+ * @param string $request The CakePHP request
+ * @return string         The Sencha Touch/Ext JS method name
  */
-	public static function getMethod($request) {
+	public static function getMethod(CakeRequest $request) {
 		switch($request->action) {
 			case 'index': // fall through, it's the same as view
 			case 'view':

@@ -186,7 +186,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		// Response expected by Ext JS (in JSON).
 		$expectedResponse = array(
 			'success' => true,
-			'data'    => array(
+			'data' => array(
 				'id'		=> 304,
 				'title'		=> 'foo',
 				'body'		=> 'This is the text for foo',
@@ -231,8 +231,8 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		$request = new CakeRequest();
 		$request->addParams(array(
-			'controller' => 'Articles',
-			'action'     => 'index',
+			'controller'	=> 'Articles',
+			'action'		=> 'index',
 		));
 
 		// Response expected by Ext JS (in JSON).
@@ -296,8 +296,8 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		$request = new CakeRequest();
 		$request->addParams(array(
-			'controller' => 'Articles',
-			'action'     => 'index',
+			'controller'	=> 'Articles',
+			'action'		=> 'index',
 		));
 
 		// Configure the model to not expose date and user_id
@@ -357,13 +357,13 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 	public function getCakeRecords() {
 		return array(
 			array(
-				array('count' => 0, 'records' =>array()),
+				array('count' => 0, 'records' => array()),
 				array('success' => true, 'total' => 0, 'data' => array())
 			),
 			array(
-				array('count' => 9, 'records' =>array(
-					array('Article' =>array('id' => 5, 'title' => 'whatever')),
-					array('Article' =>array('id' => 6, 'title' => 'whatever2'))
+				array('count' => 9, 'records' => array(
+					array('Article' => array('id' => 5, 'title' => 'whatever')),
+					array('Article' => array('id' => 6, 'title' => 'whatever2'))
 				)),
 				array('success' => true, 'total' => 9, 'data' => array(
 					array('id' => 5, 'title' => 'whatever'),
@@ -382,10 +382,10 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 	public function testTransformPaginatedFiltered() {
 		// testup
 		$paginatedRecords = array(
-			'count'   => 9,
+			'count' => 9,
 			'records' => array(
 				array(
-					'Article' =>array(
+					'Article' => array(
 						'id'		=> 304,
 						'title'		=> 'foo',
 						'date'		=> '2011-11-21 01:50:00', // should not be in result set
@@ -395,7 +395,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 					),
 				),
 				array(
-					'Article'       => array(
+					'Article' => array(
 						'id'		=> 305,
 						'title'		=> 'bar',
 						'date'		=> '2011-12-21 01:50:00', // should not be in result set
@@ -408,9 +408,9 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		);
 
 		$expectedResponse = array(
-			'success' => true,
-			'total'   => 9,
-			'data'    => array(
+			'success'	=> true,
+			'total'		=> 9,
+			'data'		=> array(
 				array(
 					'id'		=> 304,
 					'title'		=> 'foo',
@@ -454,7 +454,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		// Article has many Tags: CakePHP 1, Bancha 2
 		$articleModel = ClassRegistry::init('Article');
 		$articleModel->recursive = 3;
-		$articleModel->read(null,1001); // get the input
+		$articleModel->read(null, 1001); // get the input
 
 		// define excluded fields to test filtering
 		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array());
@@ -499,7 +499,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		// Article 1001 belongsTo User 95
 		// Article has many Tags: CakePHP 1, Bancha 2
 		$articleModel = ClassRegistry::init('Article');
-		$articleModel->read(null,1001); // get the input
+		$articleModel->read(null, 1001); // get the input
 
 		// define excluded fields to test filtering
 		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array(
@@ -567,7 +567,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		// Article.User has two articles 1001 and 1002
 		$articleModel = ClassRegistry::init('Article');
 		$articleModel->recursive = 3;
-		$articleModel->read(null,1001); // get the input
+		$articleModel->read(null, 1001); // get the input
 
 		// prepare
 		$articleModel->Behaviors->load('Bancha.BanchaRemotable', array());
@@ -580,7 +580,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		// execute
 		$result = BanchaResponseTransformer::transform($articleModel->data, $request);
 		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got ' . print_r($result, true));
-		
+
 		// test that the single record data is present
 		$this->assertEquals(1001, $result['data']['id']);
 		$this->assertEquals('Title 1', $result['data']['title']);
@@ -637,7 +637,7 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		$result = BanchaResponseTransformer::transform($input, $request);
 		$this->assertTrue($result['success'], 'Expected result to have a sucess property with value true, instead got ' . print_r($result, true));
-		
+
 		// test one level of nesting, rest should be the same as in the test above
 		$this->assertEquals(103, count($result['data']));
 
@@ -736,8 +736,8 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 
 		$request = new CakeRequest();
 		$request->addParams(array(
-			'controller' => 'Categories',
-			'action'     => 'index',
+			'controller'	=> 'Categories',
+			'action'		=> 'index',
 		));
 
 		// Response expected by Ext JS (in JSON).

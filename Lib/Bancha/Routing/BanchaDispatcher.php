@@ -257,10 +257,10 @@ class BanchaDispatcher {
 		}
 
 		// log the error
-		CakeLog::write(LOG_ERR, 
+		CakeLog::write(LOG_ERR,
 			'A Bancha request to ' . $this->_getSignature($CakeRequest) .
 			' resulted in the following ' . get_class($exception) . ':' .
-			"\n".$exception."\n\n");
+			"\n" . $exception . "\n\n");
 	}
 
 /**

@@ -45,7 +45,8 @@ class CakeSenchaDataMapper {
 	}
 
 /**
- * Returns true if the current set is in cakes find('first') data structure
+ * Returns true if the current set is in cakes find('first') data structure.
+ * 
  * @return boolean True if this is a single record array
  */
 	public function isSingleRecord() {
@@ -53,7 +54,8 @@ class CakeSenchaDataMapper {
 	}
 
 /**
- * Returns true if the current set is in cakes find('all') data structure
+ * Returns true if the current set is in cakes find('all') data structure.
+ * 
  * @return boolean True if this is a record array for possibly multiple records
  */
 	public function isRecordSet() {
@@ -61,7 +63,8 @@ class CakeSenchaDataMapper {
 	}
 
 /**
- * Returns true if the current set is in cakes find('threaded') data structure
+ * Returns true if the current set is in cakes find('threaded') data structure.
+ * 
  * @return boolean True if this is a record array is threaded
  */
 	public function isThreadedRecordSet() {
@@ -80,9 +83,9 @@ class CakeSenchaDataMapper {
  * @return boolean True if this is a pagination set
  */
 	public function isPaginatedSet() {
-		return isset($this->_data['records']) && isset($this->_data['count']) &&  // this is how a paginated result set should look with Bancha
-				(isset($this->_data['records']['0'][$this->_primary]) || 			// paginagted records with records
-				(is_array($this->_data['records']) && $this->_data['count']==0)); // pagination with zero records
+		return isset($this->_data['records']) && isset($this->_data['count']) && // this is how a paginated result set should look with Bancha
+				(isset($this->_data['records']['0'][$this->_primary]) || // paginagted records with records
+				(is_array($this->_data['records']) && $this->_data['count'] == 0)); // pagination with zero records
 	}
 
 /**
@@ -124,14 +127,14 @@ class CakeSenchaDataMapper {
 	}
 
 /**
- * Helper function for {@link walk}
+ * Helper function for {@link walk}.
+ * 
  * @param callback $callable PHP valid callback to be called for every 
  *                           record data found in the input data.
  * @param  array   $data     The CakePHP data in any format
  * @return array             The resulting data array.
  */
 	protected function _walk($callable, $data) {
-
 		// find all data entries
 		foreach ($data as $key => $value) {
 			if (!is_array($value)) {
@@ -142,8 +145,10 @@ class CakeSenchaDataMapper {
 				// transform the model name.
 				list($newKey, $newData) = call_user_func($callable, $key, null, false);
 				unset($data[$key]);
-				if ($newKey!==false) $data[$newKey] = array();
-				continue; 
+				if ($newKey !== false) {
+					$data[$newKey] = array();
+				}
+				continue;
 			}
 
 			if (isset($value[0])) {
@@ -159,7 +164,7 @@ class CakeSenchaDataMapper {
 				// there should be one primary record, maybe associated records and a children array
 
 				// primary model data should be dirctly applied
-				$primaryData = array($this->_primary=>$value[$this->_primary]); // walk only though primary data
+				$primaryData = array($this->_primary => $value[$this->_primary]); // walk only though primary data
 				$primaryData = $this->_walk($callable, $primaryData);
 				$newData = array_pop($primaryData); // primary data lies directly inside the data
 
@@ -191,14 +196,17 @@ class CakeSenchaDataMapper {
 			unset($data[$key]);
 
 			// now walk the child data
-			if ($newKey!==false) $data[$newKey] = $this->_walk($callable, $newData);
+			if ($newKey !== false) {
+				$data[$newKey] = $this->_walk($callable, $newData);
+			}
 		}
 
 		return $data;
 	}
 
 /**
- * Helper function for {@link _walk}
+ * Helper function for {@link _walk}.
+ * 
  * @param callback $callable  PHP valid callback to be called for every 
  *                            record data found in the input data.
  * @param  array   $data      The CakePHP data of a nested set (a numeric array)
@@ -206,7 +214,6 @@ class CakeSenchaDataMapper {
  * @return array              The resulting data array.
  */
 	protected function _walkNestedSet($callable, array $data, $modelName) {
-
 		// remove original entry
 		$nestedData = $data[$modelName];
 		unset($data[$modelName]);
@@ -219,11 +226,13 @@ class CakeSenchaDataMapper {
 			list($newKey, $newData) = call_user_func($callable, $modelName, $value, false);
 
 			// now walk in nested record
-			if ($newKey!==false) array_push($newNestedData, $this->_walk($callable, $newData));
+			if ($newKey !== false) {
+				array_push($newNestedData, $this->_walk($callable, $newData));
+			}
 		}
 		$data[$newKey] = $newNestedData;
 
 		return $data;
 	}
-}
 
+}

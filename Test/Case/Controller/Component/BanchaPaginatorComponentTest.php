@@ -64,6 +64,7 @@ class TestBanchaPaginatorComponentsController extends Controller {
 
 		return $this->Paginator->paginate();
 	}
+
 }
 
 /**

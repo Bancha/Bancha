@@ -36,7 +36,7 @@ if (substr(Configure::version(), 2, 3) < 2) {
  *
  * @param CakeRequest $request CakeRequest object to mine for parameter information.
  * @param array $additionalParams An array of additional parameters to set to the request.
- *   Useful when Object::requestAction() is involved
+ *                                Useful when Object::requestAction() is involved
  * @return CakeRequest The request object with routing params set.
  */
 		public function parseParams(CakeRequest $request, $additionalParams = array()) {
@@ -45,9 +45,11 @@ if (substr(Configure::version(), 2, 3) < 2) {
 			}
 			return $request;
 		}
+
 	}
+
 } else {
-	
+
 /**
  * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
  *
@@ -58,6 +60,7 @@ if (substr(Configure::version(), 2, 3) < 2) {
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 	class BanchaSingleDispatcher extends Dispatcher {
+
 /**
  * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
  * applies the routes.
@@ -86,4 +89,5 @@ if (substr(Configure::version(), 2, 3) < 2) {
 			}
 		}
 	}
+
 }

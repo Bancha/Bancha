@@ -335,7 +335,6 @@ class BanchaControllerTest extends ControllerTestCase {
  * @return void
  */
 	public function testBanchaApiClassBeautifiedCode() {
-
 		// in debug mode expect the output to be indented
 		Configure::write('debug', 2);
 		$response = $this->testAction('/bancha-api-class.js');
@@ -464,7 +463,6 @@ class BanchaControllerTest extends ControllerTestCase {
  * @return void
  */
 	public function testLoadModelMetaDataAjaxPlugin() {
-
 		// set up - add plugin
 		App::build(array(
 			'Plugin' => array(App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
@@ -472,7 +470,7 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		// load it
 		CakePlugin::load('TestPlugin');
-		
+
 		// force the cache to renew
 		App::objects('plugin', null, false);
 

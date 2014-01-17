@@ -26,37 +26,65 @@ App::uses('BanchaException', 'Bancha.Bancha/Exception');
  */
 class BanchaRequestTransformer {
 
-/** @var array */
+/**
+ * @var array
+ */
 	protected $_data;
 
-/** @var string */
+/**
+ * @var string
+ */
 	protected $_plugin = null;
 
-/** @var string */
+/**
+ * @var string
+ */
 	protected $_controller = null;
 
-/** @var string */
+/**
+ * @var string
+ */
 	protected $_model = null;
 
-/** @var string */
+/**
+ * @var string
+ */
 	protected $_action = null;
 
-/** @var string */
+/**
+ * @var string
+ */
 	protected $_url = null;
 
-/** @var array */
+/**
+ * @var array
+ */
 	protected $_paginate = array();
 
-/** @var boolean TRUE if the given request is a form request. */
+/**
+ * True if the given request is a form request.
+ * 
+ * @var boolean
+ */
 	protected $_isFormRequest = false;
 
-/** @var boolean */
+/**
+ * @var boolean
+ */
 	protected $_tid;
 
-/** @var boolean TRUE if the given request is an upload request. */
+/**
+ * True if the given request is an upload request.
+ * 
+ * @var boolean
+ */
 	protected $_extUpload;
 
-/** @var integer Client ID is a unique ID for every client (= Instance of Ext JS) */
+/**
+ * Client ID is a unique ID for every client (= Instance of Ext JS)
+ * 
+ * @var integer
+ */
 	protected $_clientId;
 
 /**
@@ -80,7 +108,7 @@ class BanchaRequestTransformer {
  * @return boolean          True if the path is an array
  */
 	public function isArray($variable, $path) {
-		$path = substr($path, 1, strlen($path)-2); // remove first and last char
+		$path = substr($path, 1, strlen($path) - 2); // remove first and last char
 		$paths = explode('][', $path);
 
 		if ($paths[0] == '') {
@@ -115,7 +143,8 @@ class BanchaRequestTransformer {
  * Returns the name of the controller. Thus returns the pluralized value of 'action' from the Ext JS request. Also removes the
  * 'action' property from the Ext JS request.
  *
- * @return string Name of the controller.
+ * @return string Name of the controller
+ * @throws BanchaException If the data does not contain any action value
  */
 	public function getController() {
 		if (null != $this->_controller) {
@@ -143,7 +172,7 @@ class BanchaRequestTransformer {
 			$this->_plugin = 'Bancha';
 		} else {
 			// default case - remove '.' from plugin name
-			$this->_plugin = $plugin ? substr($plugin, 0, strlen($plugin)-1) : null;
+			$this->_plugin = $plugin ? substr($plugin, 0, strlen($plugin) - 1) : null;
 		}
 
 		return $this->_controller;
@@ -151,6 +180,8 @@ class BanchaRequestTransformer {
 
 /**
  * Returns true if this is a ExtJS formHandler request
+ *
+ * @return boolean True if the given request is a form request.
  */
 	public function isFormRequest() {
 		// let getController() do the work
@@ -215,9 +246,9 @@ class BanchaRequestTransformer {
 				break;
 			case 'read':
 				$this->_action = (
-					($this->isArray($this->_data, '[data][0][data]') && !empty($this->_data['data'][0]['data']['id'])) ||
-					($this->isArray($this->_data, '[data][0]')       && !empty($this->_data['data'][0]['id'])) ||
-					($this->isArray($this->_data, '')                && !empty($this->_data['id']))) ? 'view' : 'index';
+					($this->isArray($this->_data, '[data][0][data]')	&& !empty($this->_data['data'][0]['data']['id'])) ||
+					($this->isArray($this->_data, '[data][0]')			&& !empty($this->_data['data'][0]['id'])) ||
+					($this->isArray($this->_data, '')					&& !empty($this->_data['id']))) ? 'view' : 'index';
 				break;
 		}
 		return $this->_action;
@@ -226,12 +257,13 @@ class BanchaRequestTransformer {
 /**
  * Returns the extUpload request parameter.
  *
+ * @return boolean True if the given request is an upload request
  */
 	public function getExtUpload() {
 		if (null != $this->_extUpload) {
 			return $this->_extUpload;
 		}
-		$this->_extUpload = isset($this->_data['extUpload']) ? ($this->_data['extUpload']=="true") : false; // extjs sends an string
+		$this->_extUpload = isset($this->_data['extUpload']) ? ($this->_data['extUpload'] == 'true') : false; // extjs sends an string
 		unset($this->_data['extUpload']);
 		return $this->_extUpload;
 	}
@@ -293,16 +325,20 @@ class BanchaRequestTransformer {
  */
 	public function getPassParams() {
 		$pass = array();
-		// normal requests
 		if ($this->isArray($this->_data, '[data][0][data]') && isset($this->_data['data'][0]['data']['id'])) {
+			// normal requests
+
 			$pass['id'] = $this->_data['data'][0]['data']['id'];
 			//unset($this->_data['data'][0]['data']['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
-		// read requests (actually these are malformed because the ExtJS root/Sencha Touch rootProperty is not set to 'data', but we can ignore this on reads)
 		} elseif ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
+			// read requests (actually these are malformed because the ExtJS root/Sencha Touch 
+			// rootProperty is not set to 'data', but we can ignore this on reads)
+
 			$pass['id'] = $this->_data['data'][0]['id'];
 			//unset($this->_data['data'][0]['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
-		// form upload requests
 		} elseif ($this->isFormRequest() && isset($this->_data['id'])) {
+			// form upload requests
+
 			$pass['id'] = $this->_data['id'];
 			//unset($this->_data['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 			$this->_isFormRequest = true;
@@ -318,7 +354,8 @@ class BanchaRequestTransformer {
  * limit. It sets the default value for page to 1 and for limit to 25. This method also transforms the 'sort' array
  * from the Ext JS request.
  *
- * @return array Array with three elements 'page', 'limit' and 'order'.
+ * @return array Array with three elements 'page', 'limit' and 'order'
+ * @throws BanchaException If a malformed filter value is given
  */
 	public function getPaging() {
 		if (null != $this->_paginate) {
@@ -355,13 +392,13 @@ class BanchaRequestTransformer {
 
 		// find ordering and direction
 		$order = array();
-		$sort_field = '';
+		$sortField = '';
 		$direction = '';
 		if ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['sort'])) {
 			foreach ($this->_data['data'][0]['sort'] as $sort) {
 				if (isset($sort['property']) && isset($sort['direction'])) {
 					$order[$this->getModel() . '.' . $sort['property']] = strtolower($sort['direction']);
-					$sort_field = $sort['property'];
+					$sortField = $sort['property'];
 					$direction = $sort['direction'];
 				}
 			}
@@ -387,7 +424,7 @@ class BanchaRequestTransformer {
 			'page'			=> $page,
 			'limit'			=> $limit,
 			'order'			=> $order,
-			'sort'			=> $sort_field,
+			'sort'			=> $sortField,
 			'direction'		=> $direction,
 			'conditions'	=> $conditions
 		);
@@ -400,10 +437,11 @@ class BanchaRequestTransformer {
  * Transform a Bancha request with model elements to cake structure,
  * otherwise just return the original response.
  *
- * @param $modelName The model name of the current request
+ * @param string $modelName The model name of the current request
+ * @return array            The transformed data
+ * @throws BanchaException  If data is not in an expected format
  */
 	public function transformDataStructureToCake($modelName) {
-
 		// form uploads save all fields directly in the data array
 		if ($this->isFormRequest()) {
 			if (isset($this->_data['extType'])) {
@@ -420,12 +458,13 @@ class BanchaRequestTransformer {
 			// looks like someone is using the store with batchActions:true
 			if (Configure::read('Bancha.allowMultiRecordRequests') != true) {
 				throw new BanchaException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
-					'You are currently sending multiple records from ExtJS to CakePHP, this is probably because '.
-					'of an store proxy with batchActions:true. Please never batch records on the proxy level '.
-					'(Ext.Direct is batching them). So if you are using a store proxy please set the config '.
-					'batchActions to false.<br /> If you are sending multiple requests by purpose please set '.
-					'<i>Configure::write(\'Bancha.allowMultiRecordRequests\',true)</i> in core.php and you will '.
-					'no longer see this exception.');
+					'You are currently sending multiple records from ExtJS to CakePHP, this is probably because ' .
+					'of an store proxy with batchActions:true. Please never batch records on the proxy level ' .
+					'(Ext.Direct is batching them). So if you are using a store proxy please set the config ' .
+					'batchActions to false.<br /> If you are sending multiple requests by purpose please set ' .
+					'<i>Configure::write(\'Bancha.allowMultiRecordRequests\',true)</i> in core.php and you will ' .
+					'no longer see this exception.'
+				);
 			}
 			// parse multi-request
 			$result = array();
@@ -439,7 +478,7 @@ class BanchaRequestTransformer {
 			// this is standard extjs-bancha structure, transform to cake
 			$this->_data[$modelName] = $this->_data['data'][0]['data'];
 			unset($this->_data['data']);
-			
+
 			// add request doesn't have an id in cake...
 			if ($this->getAction() == 'add') {
 				// ... so delete it

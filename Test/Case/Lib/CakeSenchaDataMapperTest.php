@@ -266,8 +266,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Test isSingleRecord method
  *
- * @param  $data           The test data to use
- * @param  $expectedResult The expected result
+ * @param array $data           The test data to use
+ * @param array $expectedResult The expected result
  * @return void
  * @dataProvider isSingleRecordDataProvider
  */
@@ -405,6 +405,7 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
  *
  * @param  array $data           The input data to test
  * @param  array $expectedResult The expected transformed data
+ * @return void
  * @dataProvider isPaginatedSetDataProvider
  */
 	public function testIsPaginatedSet($data, $expectedResult) {
@@ -447,6 +448,9 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Test walk function, simply check that each record is visited
  *
+ * @param  array $data           The input data to test
+ * @param  array $expectedResult The expected transformed data
+ * @return void
  * @dataProvider walkDataProvider
  */
 	public function testWalk($data, $expectedResult) {

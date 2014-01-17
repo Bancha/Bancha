@@ -31,7 +31,7 @@ class ArticlesController extends AppController {
 		$this->Article->recursive = -1; // modified, cause we don't need associated data
 		$articles = $this->paginate();																// added
 		$this->set('articles', $articles);															// modified
-		return array_merge($this->request['paging']['Article'], array('records' => $articles)); 	// added
+		return array_merge($this->request['paging']['Article'], array('records' => $articles));		// added
 	}
 
 /**
@@ -78,8 +78,9 @@ class ArticlesController extends AppController {
 /**
  * edit method
  *
- * @param string $id
+ * @param string $id The id of the article to edit
  * @return void
+ * @throws NotFoundException If article id diesn't exist
  */
 	public function edit($id = null) {
 		$this->Article->id = $id;
@@ -126,7 +127,7 @@ class ArticlesController extends AppController {
 
 		if ($this->Article->delete()) {
 			$this->Session->setFlash(__('Article deleted'));
-			$this->redirect(array('action'=>'index'));
+			$this->redirect(array('action' => 'index'));
 		}
 		$this->Session->setFlash(__('Article was not deleted'));
 		$this->redirect(array('action' => 'index'));

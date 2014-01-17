@@ -280,8 +280,8 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$this->assertTrue(file_exists(LOGS . 'error.log'));
 		$result = file_get_contents(LOGS . 'error.log');
 		$this->assertRegExp(
-			'/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: A Bancha request to '.
-			'ThisControllerDoesNotExists::index\(\'param1\', \'param2\'\)'. // signature
+			'/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: A Bancha request to ' .
+			'ThisControllerDoesNotExists::index\(\'param1\', \'param2\'\)' . // signature
 			' resulted in the following MissingControllerException:/',
 			$result
 		);
@@ -314,6 +314,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// tear down
 		Configure::write('Bancha.logExceptions', $originalLogExceptions);
 	}
+
 }
 
 /**

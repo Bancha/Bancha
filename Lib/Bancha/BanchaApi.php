@@ -232,8 +232,8 @@ class BanchaApi {
 /**
  * Loads the model with the given name and returns an instance.
  *
- * @param  string   $modelClass Name of a model
- * @return AppModel             Instance of the model with the given class name.
+ * @param string $modelClass Name of a model
+ * @return AppModel          Instance of the model with the given class name.
  * @throws MissingModelException if the model class does not exist.
  */
 	protected function _loadModel($modelClass) {

@@ -46,9 +46,9 @@ class BanchaConsistencyProvider {
 /**
  * Checks if it is appropriate to execute this request now
  *
- * @param $clientId the client if for this request
- * @param $tid the tid of the request to execute
- * @return true to execute the request
+ * @param string $clientId The client if for this request
+ * @param string $tid      The tid of the request to execute
+ * @return boolean         True to execute the request
  */
 	public function validates($clientId, $tid) {
 		$this->_clientId = $clientId;
@@ -59,14 +59,14 @@ class BanchaConsistencyProvider {
 		$savedTid = $this->getTid();
 
 		// Check if the request was already handled
-		if ($savedTid && $savedTid>=$tid) {
+		if ($savedTid && $savedTid >= $tid) {
 			// this request was already handled, so discard it
 			$this->_tid = false;
 			return false;
 		}
 
 		// Check if another request is currently processing
-		while($savedTid == 'x') {
+		while ($savedTid == 'x') {
 			// yes, so wait for our turn
 			// Note: This is currently a super simple implementation
 			// it would be better to add the request to a ACID database
@@ -81,8 +81,8 @@ class BanchaConsistencyProvider {
 
 		// Since Ext.Direct will always send all open requests and these are ordered by tid
 		// we don't need to worry that when one request was finished (e.g. tid 1) and the new one has a higher tid
-		// (e.g. tid 4) there is a tid missing in the middle (tid 2 and 3 must have been without a clientId). 
-		// Since not all requests need to be requests with a clientId it is fine when numbers in the middle are 
+		// (e.g. tid 4) there is a tid missing in the middle (tid 2 and 3 must have been without a clientId).
+		// Since not all requests need to be requests with a clientId it is fine when numbers in the middle are
 		// missing.
 
 		// Set the tid to 'x', so that no other request can be handled in parallel
@@ -110,8 +110,6 @@ class BanchaConsistencyProvider {
 
 		// request was executed, so now the next tid can be executed
 		$this->saveTid($this->_tid);
-
-		return;
 	}
 
 	// ######################################
@@ -146,33 +144,40 @@ class BanchaConsistencyProvider {
 /**
  * Saves a tid to the client file (overwrite olds)
  * 
- * @param $tid the tid to save
- * @return in case of an error it returns false, otherwise true
+ * @param string $tid The tid to save
+ * @return boolean    False if there's an error while saving, otherwise true
  */
 	public function saveTid($tid) {
 		// if it doesn't exist, create a folder to save all the client_ids
 		if (!is_dir($this->_folder)) { // this can make problems under windows, see https://bugs.php.net/bug.php?id=39198
 			if (!@mkdir($this->_folder)) {
 				// error handling
-				return $this->handleError("Bancha was not able to create a tmp dir for saving Bancha consistency client ids, the path is: ". $client_folder);
+				return $this->handleError(
+					'Bancha was not able to create a tmp dir for saving Bancha ' .
+					'consistency client ids, the path is: '. $this->_folder
+				);
 			}
 		}
 
 		if (false === file_put_contents($this->getFileName(), $tid)) {
 			// error handling
-			return $this->handleError('Bancha could not write client tid for consistency to the file: '. $this->getFileName());
+			return $this->handleError(
+				'Bancha could not write client tid for consistency to the file: ' .
+				$this->getFileName()
+			);
 		}
 	}
 
 /**
  * Handles write errors from the filesystem
  *
- * @throws CakeException If in debug mode
+ * @param string $msg The error message to handle
  * @return false
+ * @throws CakeException If in debug mode
  */
 	public function handleError($msg) {
 		CakeLog::write('error', $msg);
-		if (Configure::read('debug')>0) {
+		if (Configure::read('debug') > 0) {
 			throw new CakeException($msg);
 		}
 		return false;

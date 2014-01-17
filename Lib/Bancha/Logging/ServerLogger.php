@@ -19,6 +19,7 @@ App::uses('PiwikTracker', 'Bancha.Bancha/Logging');
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
 class ServerLogger {
+
 /**
  * Log an error to the Bancha developers.
  *
@@ -30,10 +31,10 @@ class ServerLogger {
  *
  *     Configure::write('Bancha.ServerLogger.logIssues', false);
  *
- * @since  Bancha v 2.0.0
  * @param  string    $signature The controller invokation signature
  * @param  Exception $exception The caugth exception
  * @return void
+ * @since  Bancha v 2.0.0
  */
 	public static function logIssue($signature, Exception $exception) {
 		if (!Configure::read('Bancha.ServerLogger.logIssues')) {
@@ -56,9 +57,9 @@ class ServerLogger {
 
 		// we are not interested in any data!
 		$signature = substr($signature, 0, strpos($signature, '('));
-		$msg       = $signature . ' has caused ' . $type .
-					$exception->getMessage() . ' in file ' . $exception->getFile() .
-					' on line ' . $exception->getLine();
+		$msg = $signature . ' has caused ' . $type .
+				$exception->getMessage() . ' in file ' . $exception->getFile() .
+				' on line ' . $exception->getLine();
 
 		self::_log('exception', $msg);
 	}
@@ -89,10 +90,10 @@ class ServerLogger {
 /**
  * The underlying log function.
  *
- * @since  Bancha v 2.0.0
- * @param  string $type  The type of message to log
- * @param  string $msg   The message to send
+ * @param string $type The type of message to log
+ * @param string $msg  The message to send
  * @return void
+ * @since  Bancha v 2.0.0
  */
 	protected static function _log($type, $msg) {
 		// repress all possible exceptions
@@ -117,13 +118,13 @@ class ServerLogger {
 			}
 
 			$pos = strpos($_SERVER['REQUEST_URI'], '?_dc='); // used for cache busting
-			$path = ($pos===-1) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $pos);
+			$path = ($pos === -1) ? $_SERVER['REQUEST_URI'] : substr($_SERVER['REQUEST_URI'], 0, $pos);
 			$t->setCustomVariable(1, 'HTTP_HOST', $host);
-			$t->setCustomVariable(2, 'APP', $host.$path);
+			$t->setCustomVariable(2, 'APP', $host . $path);
 			$t->setCustomVariable(3, 'PHP_VERSION', phpversion());
 			$t->setCustomVariable(4, 'BANCHA_VERSION', Configure::read('Bancha.version'));
 			$t->setCustomVariable(5, 'CAKE_VERSION',
-				Configure::version().
+				Configure::version() .
 				', mode: ' . Configure::read('debug') .
 				' with ' . $datasource);
 
