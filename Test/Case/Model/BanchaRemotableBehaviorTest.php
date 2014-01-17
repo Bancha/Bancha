@@ -170,7 +170,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  *
  * @param array $behaviorConfig The config for the BanchaRemotableBehavior
  * @return void
- * @dataProvider getExposedFieldsDataProvider_Exceptions
+ * @dataProvider getExposedFieldsExceptionsDataProvider
  * @expectedException CakeException
  */
 	public function testGetExposedFieldsExceptions($behaviorConfig) {
@@ -190,12 +190,12 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 /**
- * Data Provider for testGetExposedFields_Exceptions
+ * Data Provider for testGetExposedFieldsExceptions
  * The field names do not exist
  * 
  * @return void
  */
-	public function getExposedFieldsDataProviderExceptions() {
+	public function getExposedFieldsExceptionsDataProvider() {
 		return array(
 			array(
 				array('exposedFields' => array('id', 'imaginary')),

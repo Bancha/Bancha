@@ -121,12 +121,12 @@ class ArticlesController extends AppController {
 		}
 
 		if (isset($this->request->params['isBancha']) && $this->request->params['isBancha']) {		// added
-			$this->Article->deleteAndReturn();														// added
+			return $this->Article->deleteAndReturn();												// added
 		}																							// added
 
 		if ($this->Article->delete()) {
 			$this->Session->setFlash(__('Article deleted'));
-			$this->redirect(array('action' => 'index'));
+			$this->redirect(array('action'=>'index'));
 		}
 		$this->Session->setFlash(__('Article was not deleted'));
 		$this->redirect(array('action' => 'index'));

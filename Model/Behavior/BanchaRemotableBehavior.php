@@ -1,6 +1,6 @@
 <?php
 /**
- * AllBehaviorsTest file
+ * BanchaRemotableBehavior file
  *
  * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
@@ -32,7 +32,7 @@ if (function_exists('lcfirst') === false) {
 }
 
 /**
- * BanchaBahavior
+ * BanchaRemotableBehavior
  *
  * The behaviour extends remotly available models with the
  * necessary functions to use Bancha.
@@ -74,9 +74,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	);
 
 /**
- * Since cakephp deletes $Model->data after a save action
+ * Since cakephp deletes $model->data after a save action
  * we keep the necessary return values here, access through
- * $Model->getLastSaveResult();
+ * $model->getLastSaveResult();
  *
  * @var array Collection of model save results
  */
@@ -89,7 +89,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		/*
 		 * If true, the model also saves and validates records with missing
 		 * fields, like Ext JS/Sencha Touch is providing for edit operations.
-		 * If you set this to false, please use $Model->saveFields($data, $options)
+		 * If you set this to false, please use $model->saveFields($data, $options)
 		 * to save edit-data from Ext JS/Sencha Touch.
 		 *
 		 * See also:
@@ -281,7 +281,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *         'fieldName2' => 'fieldValue2',
  *     )
  *
- * @param Model $Model    The model of the record
+ * @param Model $model    The model of the record
  * @param  array $recData The record data to filter
  * @return array          Returns data in the same structure as input, but filtered.
  */
@@ -429,10 +429,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 			// add a new validation rule (only during api call)
 			// in a 2.0 and 2.1 compatible way
-			if (!isset($Model->validate[$fieldName])) {
-				$Model->validate[$fieldName] = array();
+			if (!isset($model->validate[$fieldName])) {
+				$model->validate[$fieldName] = array();
 			}
-			$Model->validate[$fieldName]['inList'] = array(
+			$model->validate[$fieldName]['inList'] = array(
 				'rule' => array('inList', $enums[1])
 			);
 
@@ -446,12 +446,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$fieldSchema['default'] = '';
 		}
 
-		if (isset($Model->Behaviors->Tree) && $Model->Behaviors->Tree->settings[$Model->alias]['parent'] == $fieldName) {
+		if (isset($model->Behaviors->Tree) && $model->Behaviors->Tree->settings[$model->alias]['parent'] == $fieldName) {
 			// map CakePHP tree behavior parent to Sencha Touch/Ext JS parent
 			// the response transformation happens in the client TreeParentIdTransformedJson writer
 			return array(
 				'name' => 'parentId',
-				'mapping' => $Model->Behaviors->Tree->settings[$Model->alias]['parent'],
+				'mapping' => $model->Behaviors->Tree->settings[$model->alias]['parent'],
 				'type' => 'auto',
 				'allowNull' => true,
 				'defaultValue' => $fieldSchema['default']

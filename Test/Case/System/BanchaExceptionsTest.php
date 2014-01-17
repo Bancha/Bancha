@@ -229,8 +229,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 		$this->assertEquals('exception', $responses[2]->type);
 		$this->assertEquals('Exception', $responses[2]->exceptionType);
 		$this->assertEquals('Method specific error message, see bottom of this test', $responses[2]->message);
-		$this->assertEquals('In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
-				$responses[2]->where, 'message');
+		$this->assertEquals(
+			'In file "' . __FILE__ . '" on line ' . $GLOBALS['EXCEPTION_LINE'] . '.',
+			$responses[2]->where
+		);
 	}
 
 /**
@@ -330,8 +332,8 @@ class ArticlesExceptionsController extends ArticlesController {
  * @throws Exception Always
  */
 	public function throwExceptionMethod($id = null) {
-		// we store the current line to test it later.
-		$GLOBALS['EXCEPTION_LINE'] = __LINE__;
+		// we store the exception line to test it later.
+		$GLOBALS['EXCEPTION_LINE'] = __LINE__ + 1; // exception if trigger directly below
 		throw new Exception('Method specific error message, see bottom of this test');
 	}
 

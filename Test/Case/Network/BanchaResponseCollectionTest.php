@@ -55,7 +55,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 				'message' => 'Hello Plugin-World'),
 		);
 		$response4 = new Exception('This is an exception');
-		$exceptionLine = __LINE__;
+		$exceptionLine = __LINE__ - 1; // we care about the line above
 
 		// ResponseCollection needs additional information from the request.
 		$request1 = new CakeRequest();

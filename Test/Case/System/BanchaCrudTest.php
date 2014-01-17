@@ -306,6 +306,10 @@ class BanchaCrudTest extends CakeTestCase {
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
 		// test result
+		$this->assertTrue(
+			isset($responses[0]->result),
+			'Expected an result for first request, instead $responses is ' . print_r($responses, true)
+		);
 		$this->assertEquals(true, $responses[0]->result->success);
 
 		// general response checks (check dispatcher, collections and transformers)
