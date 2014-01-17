@@ -57,20 +57,20 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 	public function transformNonModelRecordCasesDataProvider() {
 		return array(
 			// primitive responses are the success value
-			array( true, array('success'=>true) ),
-			array( false, array('success'=>false) ),
+			array( true, array('success' => true) ),
+			array( false, array('success' => false) ),
 			// responses with an success value are passed through
-			array( array('success'=>true,'msg'=>'lala'), array('success'=>true,'msg'=>'lala') ), // there is a success, nothing to change
-			array( array('success'=>true), array('success'=>true) ), // already in ext(-like) structure
-			array( array('success'=>'true'), array('success'=>true) ), // already in ext(-like) structure, only convert property into a boolean
-			array( array('success'=>'false'), array('success'=>false) ), // already in ext(-like) structure, only convert property into a boolean
-			array( array('success'=>'true','message'=>'lala'), array('success'=>true,'message'=>'lala') ), // already in ext(-like) structure
+			array( array('success' => true,'msg' => 'lala'), array('success' => true,'msg' => 'lala') ), // there is a success, nothing to change
+			array( array('success' => true), array('success' => true) ), // already in ext(-like) structure
+			array( array('success' => 'true'), array('success' => true) ), // already in ext(-like) structure, only convert property into a boolean
+			array( array('success' => 'false'), array('success' => false) ), // already in ext(-like) structure, only convert property into a boolean
+			array( array('success' => 'true','message' => 'lala'), array('success' => true,'message' => 'lala') ), // already in ext(-like) structure
 			// arbitary data is wrapped into the data property
-			array( 'lala', array('success'=>true,'data'=>'lala') ),
-			array( -1, array('success'=>true,'data'=>-1) ),
-			array( 0, array('success'=>true,'data'=>0) ),
-			array( 1, array('success'=>true,'data'=>1) ),
-			array( array('lala','lolo'), array('success'=>true,'data' => array('lala','lolo')) ),
+			array( 'lala', array('success' => true,'data' => 'lala') ),
+			array( -1, array('success' => true,'data'=>-1) ),
+			array( 0, array('success' => true,'data'=>0) ),
+			array( 1, array('success' => true,'data'=>1) ),
+			array( array('lala','lolo'), array('success' => true,'data' => array('lala','lolo')) ),
 		);
 	}
 
@@ -341,16 +341,16 @@ class BanchaResponseTransformerTest extends CakeTestCase {
 		return array(
 			array(
 				array('count'=>0,'records'=>array()),
-				array('success'=>true,'total'=>0,'data' => array())
+				array('success' => true,'total'=>0,'data' => array())
 			),
 			array(
 				array('count'=>9,'records'=>array(
-					array('Article'=>array('id'=>5,'title'=>'whatever')),
-					array('Article'=>array('id'=>6,'title'=>'whatever2'))
+					array('Article'=>array('id'=>5,'title' => 'whatever')),
+					array('Article'=>array('id'=>6,'title' => 'whatever2'))
 				)),
-				array('success'=>true,'total'=>9,'data' => array(
-					array('id'=>5,'title'=>'whatever'),
-					array('id'=>6,'title'=>'whatever2')
+				array('success' => true,'total'=>9,'data' => array(
+					array('id'=>5,'title' => 'whatever'),
+					array('id'=>6,'title' => 'whatever2')
 				)),
 			)
 		);

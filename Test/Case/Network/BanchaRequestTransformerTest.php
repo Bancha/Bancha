@@ -14,20 +14,6 @@
 App::uses('BanchaRequestTransformer', 'Bancha.Bancha/Network');
 
 /**
- * Expose method for tests
- *
- * @package       Bancha.Test.Case.Network
- * @author        Roland Schuetz <mail@rolandschuetz.at>
- * @author        Florian Eckerstorfer <f.eckerstorfer@gmail.com>
- * @since         Bancha v 0.9.0
- */
-class TestBanchaRequestTransformerTest extends BanchaRequestTransformer {
-	public function publicIsArray($variable, $path) {
-		return $this->isArray($variable, $path);
-	}
-}
-
-/**
  * BanchaRequestTransformerTest
  *
  * @package       Bancha.Test.Case.Network
@@ -39,9 +25,11 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 
 /**
  * Test the helper function
+ *
+ * @return void
  */
 	public function testIsArray() {
-		$cls = new TestBanchaRequestTransformerTest();
+		$cls = new BanchaRequestTransformer();
 
 		// check with no path
 		$this->assertFalse($cls->publicIsArray(true, ''));
@@ -81,11 +69,13 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 				'data' => array('string')))
 		)), '[0][data][0][data]'));
 	}
+
 /**
  * Test input transformation of simple data
+ *
+ * @return void
  */
-	public function testTransformDataStructureToCake_SimpleData() {
-
+	public function testTransformDataStructureToCakeSimpleData() {
 		// test a request without argumtens
 		$expected = array();
 		$transformer = new BanchaRequestTransformer(array(
@@ -148,13 +138,14 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 			'data' => $expected, // ext writes all function arguments inside the data property
 		));
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
-
 	}
+
 /**
  * Test input transformation for form data
+ *
+ * @return void
  */
-	public function testTransformDataStructureToCake_FormInput() {
-
+	public function testTransformDataStructureToCakeFormInput() {
 		// result is a one-element cake record
 		$expected = array(
 			'Article' => array(
@@ -180,16 +171,16 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 
 /**
  * Test input transformation of one record
+ *
+ * @return void
  */
-	public function testTransformDataStructureToCake_OneRecord() {
-
+	public function testTransformDataStructureToCakeOneRecord() {
 		$expected = array(
 			'Article' => array(
 				'id' => 1,
 				'name' => 'foo',
 			),
 		);
-
 		$transformer = new BanchaRequestTransformer(array(
 			'action' => 'Test',
 			'data' => array(
@@ -205,17 +196,18 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
- * When is is a create action, delete the ext-generated id, so that cake recognizes that is a new record
+ * When is is a create action, delete the ext-generated id, so that 
+ * cake recognizes that is a new record
+ *
+ * @return void
  */
-	public function testTransformDataStructureToCake_OneRecord_CreateAction() {
-
+	public function testTransformDataStructureToCakeOneRecordCreateAction() {
 		$expected = array(
 			'Article' => array(
 				// id is issing
 				'name' => 'foo',
 			),
 		);
-
 		$transformer = new BanchaRequestTransformer(array(
 			'action' => 'Test',
 			'method' => 'create',
@@ -231,11 +223,12 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		$this->assertEquals($expected, $transformer->transformDataStructureToCake('Article'));
 	}
 
-
 /**
  * Test input transformation of multiple records
+ *
+ * @return void
  */
-	public function testTransformDataStructureToCake_MultipleRecords() {
+	public function testTransformDataStructureToCakeMultipleRecords() {
 		// currently this is only supported when following config is true
 		$currentConfig = Configure::read('Bancha.allowMultiRecordRequests');
 		Configure::write('Bancha.allowMultiRecordRequests',true);
@@ -278,8 +271,10 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
- * In the Ext JS request the name of the controller is stored as "action". We need to transform this.
+ * In the Ext JS request the name of the controller is stored as "action". 
+ * We need to transform this.
  *
+ * @return void
  */
 	public function testGetController() {
 
@@ -308,6 +303,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 /**
  * This tests is the same as {@see testGetController()} but for form requests.
  *
+ * @return void
  */
 	public function testGetControllerForm() {
 		
@@ -343,6 +339,10 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * - read -> view (if an ID is provided in the Data array).
  * - read -> index (if no ID is provided in the Data array).
  *
+ * @param  string $extAction  The action to fake
+ * @param  array  $extData    The data to fake
+ * @param  string $cakeAction The expected CakePHP action name
+ * @return void
  * @dataProvider getActionProvider
  */
 	public function testGetAction($extAction, $extData, $cakeAction) {
@@ -355,8 +355,28 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
+ * Provides the action names from Ext JS and CakePHP for use in testGetAction().
+ *
+ * @return array
+ */
+	public function getActionProvider() {
+		return array(
+			array('create',  array(),                                 'add'),
+			array('update',  array(array('data' => array('id' => 42))), 'edit'),
+			array('destroy', array(array('data' => array('id' => 42))), 'delete'),
+			array('read',    array(array('data' => array('id' => 42))), 'view'),
+			array('read',    array(),                                 'index'),
+			array('special', array(),                                 'special'), // non-standard crud actions stay the same
+		);
+	}
+
+/**
  * Same as {@see testGetAction()} but for form requests.
  *
+ * @param  string $extAction  The action to fake
+ * @param  array  $extData    The data to fake
+ * @param  string $cakeAction The expected CakePHP action name
+ * @return void
  * @dataProvider getActionFormProvider
  */
 	public function testGetActionForm($extAction, $extData, $cakeAction) {
@@ -369,8 +389,22 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
+ * Provides the action names from Ext JS and CakePHP for use in testGetActionForm().
+ *
+ * @return array
+ */
+	public function getActionFormProvider() {
+		return array(
+			array('submit',  array(), 'add'),
+			array('submit',  array('id' => 42), 'edit'),
+			array('special', array(), 'special'), // non-standard crud actions stay the same
+		);
+	}
+
+/**
  * Tests if the extUpload parameter is correctly extracted from the request.
  *
+ * @return void
  */
 	public function testGetExtUpload() {
 		$transformer = new BanchaRequestTransformer(array(
@@ -383,6 +417,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 /**
  * Tests if BanchaRequestTransformer extracts the Client ID correctly from the request.
  *
+ * @return void
  */
 	public function testGetClientId() {
 		$transformer = new BanchaRequestTransformer(array(
@@ -401,6 +436,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * If the Ext JS request contains an URL, we need to extract it from the request, because we need to pass it to the
  * Constructor of CakeRequest.
  *
+ * @return void
  */
 	public function testGetUrl() {
 		$transformer = new BanchaRequestTransformer(array(
@@ -415,6 +451,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * the 'pass' array inside the request. For the CRUD operations the only 'pass' parameter is 'id'. Therefore we extract
  * it from the normal data array and add it to the pass array.
  *
+ * @return array
  */
 	public function testGetPassParams() {
 		$input = array(
@@ -428,6 +465,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 /**
  * Same as {@see testGetPassParams()} but for form request.
  *
+ * @return array
  */
 	public function testGetPassParamsForm() {
 		$transformer = new BanchaRequestTransformer(array(
@@ -440,8 +478,10 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
- * For remotable methods the parameter which need to be passed to the method are sent a little bit different than for
- * CRUD actions.
+ * For remotable methods the parameter which need to be passed to the method 
+ * are sent a little bit different than for CRUD actions.
+ * 
+ * @return array
  */
 	public function testGetPassParamsRemotable() {
 		$input = array(
@@ -456,7 +496,10 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 /**
  * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with
  * page, limit and order. The sort in Ext looks like [property: X, direction: Y], in Cake like [Controller.X => Y].
- *
+ * 
+ * @param  array  $extData    The data to fake
+ * @param  string $cakeAction The expected CakePHP paginate value
+ * @return void
  * @dataProvider getPagingProvider
  */
 	public function testGetPaging($extData, $cakePaginate) {
@@ -480,116 +523,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	}
 
 /**
- * Tests if the Transaction ID is correctly transformed.
- *
- */
-	public function testGetTid() {
-		$data = array(
-			'tid'	=> 42,
-		);
-
-		$transformer = new BanchaRequestTransformer($data);
-		$this->assertEquals(42, $transformer->getTid());
-	}
-
-/**
- * Same as {@see testGetTid()} but for form requests.
- *
- */
-	public function testGetTidForm() {
-		$data = array(
-			'extTID'	=> 42,
-		);
-
-		$transformer = new BanchaRequestTransformer($data);
-		$this->assertEquals(42, $transformer->getTid());
-	}
-
-/**
- * The data array (which represent POST parameters) in CakePHP only contains the actual data values but not the special
- * parameters. Thus we need to clean the data array from action, controller, paginate and pass parameters. We therefore
- * use the methods described and tested above.
- *
- */
-	public function testGetCleanedDataArray() {
-		$data = array(
-			'action'	=> 'Test',
-			'method'	=> 'read',
-			'data'		=> array(array(
-				'__bcid'	=> uniqid(),
-				'id'		=> 42,
-				'page'		=> 2,
-				'limit'		=> 10,
-				'sort'		=> array(),
-				'foo'		=> 'bar'
-			)),
-			'type'		=> 'rpc',
-			'tid'		=> 1,
-		);
-
-		$transformer = new BanchaRequestTransformer($data);
-		$data = $transformer->getCleanedDataArray();
-		$this->assertFalse(isset($data['action']));
-		$this->assertFalse(isset($data['method']));
-		$this->assertFalse(isset($data['id']));
-		$this->assertFalse(isset($data['page']));
-		$this->assertFalse(isset($data['limit']));
-		$this->assertFalse(isset($data['sort']));
-		$this->assertFalse(isset($data['tid']));
-		$this->assertFalse(isset($data['__bcid']));
-		$this->assertEquals('bar', $data[0]['foo']);
-	}
-
-	public function testGetCleanedDataArrayForm() {
-		$data = array(
-			'extAction'	=> 'Test',
-			'extMethod'	=> 'submit',
-			'id'		=> 42,
-			'foo'		=> 'bar',
-			'extTID'	=> 1,
-			'extUpload'	=> '1',
-		);
-
-		$transformer = new BanchaRequestTransformer($data);
-		$data = $transformer->getCleanedDataArray();
-		$this->assertFalse(isset($data['action']));
-		$this->assertFalse(isset($data['method']));
-		$this->assertFalse(isset($data['id']));
-		$this->assertEquals('bar', $data['Test']['foo']);
-		$this->assertFalse(isset($data['extTID']));
-		$this->assertFalse(isset($data['extUpload']));
-	}
-
-/**
- * Provides the action names from Ext JS and CakePHP for use in testGetAction().
- *
- */
-	public function getActionProvider() {
-		return array(
-			array('create',  array(),                                 'add'),
-			array('update',  array(array('data' => array('id' => 42))), 'edit'),
-			array('destroy', array(array('data' => array('id' => 42))), 'delete'),
-			array('read',    array(array('data' => array('id' => 42))), 'view'),
-			array('read',    array(),                                 'index'),
-			array('special', array(),                                 'special'), // non-standard crud actions stay the same
-		);
-	}
-
-/**
- * Provides the action names from Ext JS and CakePHP for use in testGetActionForm().
- *
- */
-	public function getActionFormProvider() {
-		return array(
-			array('submit',  array(),                                 'add'),
-			array('submit',  array('id' => 42),                       'edit'),
-			array('special', array(),                                 'special'), // non-standard crud actions stay the same
-		);
-	}
-
-/**
  * Data provider for testGetRequestsPagination().
  *
+ * @return array
  */
 	public function getPagingProvider() {
 		return array(
@@ -638,4 +574,92 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 		);
 	}
 
+/**
+ * Tests if the Transaction ID is correctly transformed.
+ *
+ * @return void
+ */
+	public function testGetTid() {
+		$data = array(
+			'tid'	=> 42,
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$this->assertEquals(42, $transformer->getTid());
+	}
+
+/**
+ * Same as {@see testGetTid()} but for form requests.
+ *
+ * @return void
+ */
+	public function testGetTidForm() {
+		$data = array(
+			'extTID'	=> 42,
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$this->assertEquals(42, $transformer->getTid());
+	}
+
+/**
+ * The data array (which represent POST parameters) in CakePHP only contains the actual data values but not the special
+ * parameters. Thus we need to clean the data array from action, controller, paginate and pass parameters. We therefore
+ * use the methods described and tested above.
+ *
+ * @return void
+ */
+	public function testGetCleanedDataArray() {
+		$data = array(
+			'action'	=> 'Test',
+			'method'	=> 'read',
+			'data'		=> array(array(
+				'__bcid'	=> uniqid(),
+				'id'		=> 42,
+				'page'		=> 2,
+				'limit'		=> 10,
+				'sort'		=> array(),
+				'foo'		=> 'bar'
+			)),
+			'type'		=> 'rpc',
+			'tid'		=> 1,
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$data = $transformer->getCleanedDataArray();
+		$this->assertFalse(isset($data['action']));
+		$this->assertFalse(isset($data['method']));
+		$this->assertFalse(isset($data['id']));
+		$this->assertFalse(isset($data['page']));
+		$this->assertFalse(isset($data['limit']));
+		$this->assertFalse(isset($data['sort']));
+		$this->assertFalse(isset($data['tid']));
+		$this->assertFalse(isset($data['__bcid']));
+		$this->assertEquals('bar', $data[0]['foo']);
+	}
+
+/**
+ * Test the getCleanedDataArray method
+ * 
+ * @return void
+ */
+	public function testGetCleanedDataArrayForm() {
+		$data = array(
+			'extAction'	=> 'Test',
+			'extMethod'	=> 'submit',
+			'id'		=> 42,
+			'foo'		=> 'bar',
+			'extTID'	=> 1,
+			'extUpload'	=> '1',
+		);
+
+		$transformer = new BanchaRequestTransformer($data);
+		$data = $transformer->getCleanedDataArray();
+		$this->assertFalse(isset($data['action']));
+		$this->assertFalse(isset($data['method']));
+		$this->assertFalse(isset($data['id']));
+		$this->assertEquals('bar', $data['Test']['foo']);
+		$this->assertFalse(isset($data['extTID']));
+		$this->assertFalse(isset($data['extUpload']));
+	}
 }

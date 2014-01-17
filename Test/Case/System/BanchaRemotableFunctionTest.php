@@ -36,6 +36,10 @@ class RemotableFunctionsController extends Controller {
 
 /**
  * Return the controller method arguments to check if Bancha sets them correctly
+ * 
+ * @param  string $param1 Arbitrary content which is returned
+ * @param  string $param2 Arbitrary content which is returned
+ * @return array          Array of params
  */
 	public function returnInputParameters($param1, $param2) {
 		return array($param1, $param2);
@@ -43,6 +47,10 @@ class RemotableFunctionsController extends Controller {
 
 /**
  * Return the request data to check if Bancha sets them correctly
+ * 
+ * @param  string $param1 Arbitrary content
+ * @param  string $param2 Arbitrary content
+ * @return array          The request data
  */
 	public function returnInputRequestData($param1, $param2) {
 		if (is_null($this->request->data)) {
@@ -53,6 +61,8 @@ class RemotableFunctionsController extends Controller {
 
 /**
  * This method will redirect to a different url
+ *
+ * @return void
  */
 	public function redirectMethod() {
 		$this->redirect('redirected-page.html', 302);
@@ -71,18 +81,34 @@ class RemotableFunctionWithAuthComponentsController extends RemotableFunctionsCo
 /**
  * Add the RequestHandler here to test compability
  */
-	public $components = array('Session', 'Auth' => array(
-		// this config would normally lead to problemy, test that BanchaPagiantorComponent fixes the problem
-		'ajaxLogin' => '/users/session_expired',
-		// make sure we can check for authorizations as well
-		'authorize' => 'Controller'
-	), 'Paginator' => array('className' => 'Bancha.BanchaPaginator'));
+	public $components = array(
+		'Session',
+		'Auth' => array(
+			// this config would normally lead to problemy, test that BanchaPagiantorComponent fixes the problem
+			'ajaxLogin' => '/users/session_expired',
+			// make sure we can check for authorizations as well
+			'authorize' => 'Controller'
+		),
+		'Paginator' => array('className' => 'Bancha.BanchaPaginator')
+	);
 
+/**
+ * Returns true is the method is not prohibitMethod
+ * 
+ * @param  array  $user Not used
+ * @return boolean      Returns true if request action is not method isAuthorized
+ */
 	public function isAuthorized($user = null) {
 		return $this->request->action !== 'prohibitMethod';
 	}
 
-	public function prohibitMethod() {}
+/**
+ * A fake prohibited method for testing
+ * 
+ * @return void
+ */
+	public function prohibitMethod() {
+	}
 }
 
 /**
@@ -122,7 +148,6 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	}
 
 	public function testInputParametersAndReturnTransformation() {
-
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'RemotableFunction',
@@ -154,7 +179,6 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 	}
 
 	public function testRequestDataAndReturnTransformation() {
-
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'RemotableFunction',
@@ -200,10 +224,10 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
  * This test is exactly the same as the one above except that they are running
  * against a Controller with an activated RequestHandler.
  */
-	public function testRequestDataAndReturnTransformation_WithRequestHandler() {
+	public function testRequestDataAndReturnTransformationWithRequestHandler() {
 		// keep original values
-		$http_accept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : false;
-		$content_type = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : false;
+		$httpAccept = isset($_SERVER['HTTP_ACCEPT']) ? $_SERVER['HTTP_ACCEPT'] : false;
+		$contentType = isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : false;
 
 		// mimik the type json to trigger the RequestHandler
 		$_SERVER['HTTP_ACCEPT'] = 'application/json';
@@ -227,10 +251,22 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
-		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
-		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
-		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got ' . print_r($responses, true));
+		$this->assertTrue(
+			isset($responses[0]->result),
+			'Expected an result for first request, instead $responses is ' . print_r($responses, true)
+		);
+		$this->assertTrue(
+			isset($responses[0]->result->data),
+			'Expected that $this->request->data is not null.'
+		);
+		$this->assertFalse(
+			is_string($responses[0]->result->data),
+			'Expected the data-result to be an array, instead got a string ' . var_export($responses[0]->result->data, true)
+		);
+		$this->assertTrue(
+			is_array($responses[0]->result->data),
+			'Expected the data-result to be an array, instead got ' . print_r($responses, true)
+		);
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
 
@@ -242,15 +278,16 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$this->assertEquals(1, count($responses));
 
 		// tear down
-		$_SERVER['HTTP_ACCEPT'] = $http_accept;
-		$_SERVER['CONTENT_TYPE'] = $content_type;
+		$_SERVER['HTTP_ACCEPT'] = $httpAccept;
+		$_SERVER['CONTENT_TYPE'] = $contentType;
 	}
 
 /**
  * Returns an AuthComponent to log in and out.
+ * 
  * @return AuthComponent
  */
-	private function getAuthComponent() {
+	protected function _getAuthComponent() {
 		// setup the component collection
 		$Collection = new ComponentCollection();
 
@@ -263,6 +300,8 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 /**
  * The redirect method does not make sense when using Bancha. Therefore
  * if a redirect happens we want to throw an exception.
+ *
+ * @return void
  */
 	public function testRedirectHandling() {
 		// Build a request like it looks in Ext JS.
@@ -296,10 +335,12 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
  * Since it makes no sense to test this in a unit test, this provides an
  * integration test where we go though the Dispatcher to check if everything
  * works as expected.
+ *
+ * @return void
  */
-	public function testAuthComponent_NotLoggedIn() {
+	public function testAuthComponentNotLoggedIn() {
 		// make sure we are logged out
-		$this->getAuthComponent()->logout();
+		$this->_getAuthComponent()->logout();
 
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
@@ -330,10 +371,12 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
  * Since it makes no sense to test this in a unit test, this provides an
  * integration test where we go though the Dispatcher to check if everything
  * works as expected.
+ *
+ * @return void
  */
-	public function testAuthComponent_NotAuthorized() {
+	public function testAuthComponentNotAuthorized() {
 		// log in
-		$this->getAuthComponent()->login(array('name'=>'LoggedIn'));
+		$this->_getAuthComponent()->login(array('name' => 'LoggedIn'));
 
 		// ******************************************************
 		//       Test that allowed method works as normal
@@ -357,10 +400,22 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		// test
 		$responses = json_decode($dispatcher->dispatch($collection, $response, array('return' => true)));
 
-		$this->assertTrue(isset($responses[0]->result), 'Expected an result for first request, instead $responses is ' . print_r($responses, true));
-		$this->assertTrue(isset($responses[0]->result->data), 'Expected that $this->request->data is not null.');
-		$this->assertFalse(is_string($responses[0]->result->data), 'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data,true));
-		$this->assertTrue(is_array($responses[0]->result->data), 'Expected the data-result to be an array, instead got ' . print_r($responses, true));
+		$this->assertTrue(
+			isset($responses[0]->result),
+			'Expected an result for first request, instead $responses is ' . print_r($responses, true)
+		);
+		$this->assertTrue(
+			isset($responses[0]->result->data),
+			'Expected that $this->request->data is not null.'
+		);
+		$this->assertFalse(
+			is_string($responses[0]->result->data),
+			'Expected the data-result to be an array, instead got a string '.var_export($responses[0]->result->data, true)
+		);
+		$this->assertTrue(
+			is_array($responses[0]->result->data),
+			'Expected the data-result to be an array, instead got ' . print_r($responses, true)
+		);
 		$this->assertEquals('my param1', $responses[0]->result->data[0]);
 		$this->assertEquals('my param2', $responses[0]->result->data[1]);
 
@@ -390,6 +445,6 @@ class BanchaRemotableFunctionTest extends CakeTestCase {
 		$this->assertEquals('BanchaAuthAccessRightsException', $responses[0]->exceptionType);
 
 		// tear down
-		$this->getAuthComponent()->logout();
+		$this->_getAuthComponent()->logout();
 	}
 }

@@ -31,13 +31,14 @@ class ArticlesController extends AppController {
 		$this->Article->recursive = -1; // modified, cause we don't need associated data
 		$articles = $this->paginate();																// added
 		$this->set('articles', $articles);															// modified
-		return array_merge($this->request['paging']['Article'],array('records'=>$articles)); 		// added
+		return array_merge($this->request['paging']['Article'], array('records' => $articles)); 	// added
 	}
 
 /**
  * view method
  *
- * @param string $id
+ * @param string $id the id of the article to view
+ * @throws NotFoundException If id does not exist
  * @return void
  */
 	public function view($id = null) {
@@ -58,7 +59,9 @@ class ArticlesController extends AppController {
 		if ($this->request->is('post')) {
 			$this->Article->create();
 
-			if (isset($this->request->params['isBancha']) && $this->request->params['isBancha']) return $this->Article->saveFieldsAndReturn($this->request->data);	 // added
+			if (isset($this->request->params['isBancha']) && $this->request->params['isBancha']) {	// added
+				return $this->Article->saveFieldsAndReturn($this->request->data);					// added
+			}																						// added
 
 			if ($this->Article->save($this->request->data)) {
 				$this->Session->setFlash(__('The article has been saved'));
@@ -117,11 +120,13 @@ class ArticlesController extends AppController {
 			throw new NotFoundException(__('Invalid article'));
 		}
 
-		if (isset($this->request->params['isBancha']) && $this->request->params['isBancha']) return $this->Article->deleteAndReturn();	 // added
+		if (isset($this->request->params['isBancha']) && $this->request->params['isBancha']) {		// added
+			$this->Article->deleteAndReturn();														// added
+		}																							// added
 
 		if ($this->Article->delete()) {
 			$this->Session->setFlash(__('Article deleted'));
-			$this->redirect(array('action'=>'index'));
+			$this->redirect(array('action' => 'index'));
 		}
 		$this->Session->setFlash(__('Article was not deleted'));
 		$this->redirect(array('action' => 'index'));

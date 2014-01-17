@@ -28,12 +28,22 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 
 	protected $_originalDebugLevel;
 
+/**
+ * setUp method
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
 		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -41,7 +51,13 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 		Configure::write('debug', $this->_originalDebugLevel);
 	}
 
-	// helper method
+/**
+ * Helper method to fake an request
+ *
+ * @param string $method The method to execute on the DebugException controller
+ * @param array  $data   The data to pass
+ * @return array $responses
+ */
 	private function getResultForMethod($method, $data=array()) {
 		$rawPostData = json_encode(array(
 			'action'		=> 'DebugException',
@@ -66,9 +82,10 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 /**
  * When a controller method doesn't return anything, throw an exception.
  * This is implemented in BanchaResponseTransformer::transform()
+ *
+ * @return void
  */
 	public function testNoMethodResultException() {
-
 		$responses = $this->getResultForMethod('getNoResult');
 
 		// check exception
@@ -81,6 +98,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  * If this is happening tell the developer that he probably did an error.
  * This exception is trown in BanchaRequestTransformer::transformDataStructureToCake()
  *
+ * @return void
  * @expectedException BanchaException
  */
 	public function testMultipleRecordInputException() {
@@ -101,9 +119,10 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 /**
  * See testMultipleRecordInputException()
  * See also BanchaRequestTransformerTest::testTransformDataStructureToCake_MultipleRecords
+ *
+ * @return void
  */
 	public function testDeactivatedMultipleRecordInputException() {
-
 		// the developer can deactivate this by setting this config
 		Configure::write('Bancha.allowMultiRecordRequests',true);
 
@@ -133,15 +152,18 @@ class DebugExceptionsController extends ArticlesController {
 
 /**
  * User forgot to set a return value
+ * 
+ * @return void
  */
 	public function getNoResult() {
 	}
 
 /**
  * simple test function
+ * 
+ * @return boolean true
  */
 	public function returnTrue() {
 		return true;
 	}
 }
-

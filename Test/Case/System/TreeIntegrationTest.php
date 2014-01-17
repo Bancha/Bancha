@@ -30,6 +30,7 @@ App::uses('CategoriesController', 'Controller');
  * @since		Bancha v 2.2.0
  */
 class TreeIntegrationTest extends CakeTestCase {
+
 	public $fixtures = array('plugin.bancha.category');
 
 /**
@@ -38,14 +39,25 @@ class TreeIntegrationTest extends CakeTestCase {
  * @var Array
  */
 	protected $_originalPaths = null;
+
 	protected $_originalDebugLevel;
 
+/**
+ * setUp method
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
 		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -59,9 +71,10 @@ class TreeIntegrationTest extends CakeTestCase {
 /**
  * Test that a controller with a threaded find returns the data 
  * like Sencha Touch/Ext JS expects them.
+ * 
+ * @return void
  */
 	public function testIndex() {
-
 		// build up the test paths
 		$this->_originalPaths = App::paths();
 		App::build(array(

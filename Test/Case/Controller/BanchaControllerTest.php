@@ -40,8 +40,14 @@ class BanchaControllerTest extends ControllerTestCase {
  * @var Array
  */
 	protected $_originalPaths = null;
+
 	protected $_originalDebugLevel;
 
+/**
+ * setUp method
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
@@ -58,6 +64,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		), App::RESET);
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -71,6 +82,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		Cache::clear(false,'_bancha_api_');
 	}
 
+/**
+ * Test the Bancha configuration
+ *
+ * @return void
+ */
 	public function testBanchaApiConfiguration() {
 		$response = $this->testAction('/bancha-api.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
@@ -94,7 +110,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($api->actions->Bancha));
 	}
 
-	public function testBanchaApiConfiguration_Plugin() {
+/**
+ * Test the Bancha configuration for plugins
+ *
+ * @return void
+ */
+	public function testBanchaApiConfigurationPlugin() {
 		// set up - add plugin
 		App::build(array(
 			'Plugin' => array(App::pluginPath('Bancha') . 'Test' . DS . 'test_app' . DS . 'Plugin' . DS),
@@ -137,6 +158,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		App::objects('plugin', null, false);
 	}
 
+/**
+ * Test the Bancha configuration with one model metadata request
+ *
+ * @return void
+ */
 	public function testBanchaApiWithOneModelMetadata() {
 		$response = $this->testAction('/bancha-api/models/User.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
@@ -174,6 +200,11 @@ class BanchaControllerTest extends ControllerTestCase {
 
 	}
 
+/**
+ * Test the Bancha configuration with a request for multiple model metadata
+ *
+ * @return void
+ */
 	public function testBanchaApiWithMultipleMetadata() {
 		$response = $this->testAction('/bancha-api/models/[Article,User].js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
@@ -202,6 +233,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha));
 	}
 
+/**
+ * Test the Bancha configuration with a request for all model metadata
+ *
+ * @return void
+ */
 	public function testBanchaApiWithAllMetadata() {
 		$response = $this->testAction('/bancha-api/models/all.js');
 		$api = json_decode(substr($response, strpos($response, '=')+1));
@@ -230,6 +266,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+/**
+ * Test the Bancha configuration with a request for no model metadata as class
+ *
+ * @return void
+ */
 	public function testBanchaApiClassWithNoMetaData() {
 		// get response without models
 		$response = $this->testAction('/bancha-api-class.js');
@@ -257,6 +298,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+/**
+ * Test the Bancha configuration with a request for multiple model metadata as class
+ *
+ * @return void
+ */
 	public function testBanchaApiClassWithAllMetaData() {
 		// get response with models
 		$response = $this->testAction('/bancha-api-class/models/all.js');
@@ -284,6 +330,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($api->metadata->Bancha)); // there is no exposed model, so no meta data
 	}
 
+/**
+ * Test the Bancha configuration with beautified code
+ *
+ * @return void
+ */
 	public function testBanchaApiClassBeautifiedCode() {
 
 		// in debug mode expect the output to be indented
@@ -299,6 +350,11 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertEquals(0, preg_match('/  /', $response), 'Remote API output should be minified code, instead find beautified code.');
 	}
 
+/**
+ * Test the Bancha configuration packaged
+ *
+ * @return void
+ */
 	public function testBanchaApiPackaged() {
 		// get response with models, packaged
 		$response = $this->testAction('/bancha-api-packaged/models/all.js');
@@ -355,7 +411,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertFalse(isset($classes->Bancha)); // there is no exposed model
 	}
 
-	public function testLoadModelMetaData_Ajax_One() {
+/**
+ * Test the Bancha configuration as ajax request
+ *
+ * @return void
+ */
+	public function testLoadModelMetaDataAjaxOne() {
 		$response = $this->testAction('/bancha-load-metadata/User.js');
 		$data = json_decode($response);
 
@@ -366,7 +427,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($data->User)); // <-- this should be available
 	}
 
-	public function testLoadModelMetaData_Ajax_Multiple() {
+/**
+ * Test the Bancha configuration as ajax request
+ *
+ * @return void
+ */
+	public function testLoadModelMetaDataAjaxMultiple() {
 		$response = $this->testAction('/bancha-load-metadata/[User,Article].js');
 		$data = json_decode($response);
 
@@ -377,7 +443,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($data->User)); // <-- this should be available
 	}
 
-	public function testLoadModelMetaData_Ajax_All() {
+/**
+ * Test the Bancha configuration as ajax request
+ *
+ * @return void
+ */
+	public function testLoadModelMetaDataAjaxAll() {
 		$response = $this->testAction('/bancha-load-metadata/all.js');
 		$data = json_decode($response);
 
@@ -388,7 +459,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(isset($data->User));
 	}
 
-	public function testLoadModelMetaData_Ajax_Plugin() {
+/**
+ * Test the Bancha configuration as ajax request
+ *
+ * @return void
+ */
+	public function testLoadModelMetaDataAjaxPlugin() {
 
 		// set up - add plugin
 		App::build(array(
@@ -437,17 +513,20 @@ class BanchaControllerTest extends ControllerTestCase {
  * AJAX requests to invalid models should throw an exception,
  * so that Ext.Ajax triggers the failure routine.
  *
+ * @return void
  * @expectedException MissingModelException
  */
-	public function testLoadModelMetaData_Ajax_Error() {
+	public function testLoadModelMetaDataAjaxError() {
 		$this->testAction('/bancha-load-metadata/[Imaginary].js');
 	}
 
 /**
  * Bancha via Ext.Direct requests send the data in a different peroperty
  * and also expects the result in a different format, check this.
+ *
+ * @return void
  */
-	public function testLoadModelMetaData_ExtDirect_Multiple() {
+	public function testLoadModelMetaDataExtDirectMultiple() {
 		// we can't fake an Bancha request that easily,
 		// (We would need to set $this->params['isBancha'])
 		// therefore we make a system test here
@@ -484,8 +563,10 @@ class BanchaControllerTest extends ControllerTestCase {
  * a result with success false, but should not throw a client-side
  * exception, because Ext.loader.Models should be able to handle
  * the error.
+ *
+ * @return void
  */
-	public function testLoadModelMetaData_ExtDirect_Error() {
+	public function testLoadModelMetaDataExtDirectError() {
 		// we can't fake an Bancha request that easily,
 		// (We would need to set $this->params['isBancha'])
 		// therefore we make a system test here
@@ -511,7 +592,12 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertEquals('Model Imaginary could not be found.', $responses[0]->result->message);
 	}
 
-	public function testBanchaApiServerErrorProperty_NoError() {
+/**
+ * testBanchaApiServerErrorPropertyNoError
+ *
+ * @return void
+ */
+	public function testBanchaApiServerErrorPropertyNoError() {
 		$debugLevel = Configure::read('debug');
 
 		// build up the app folders
@@ -547,6 +633,8 @@ class BanchaControllerTest extends ControllerTestCase {
  * We will not need a separate test_app model folder here anymore
  * after we have refactored the static App::objects out of the
  * BanchaApi library class.
+ *
+ * @return void
  */
 	public function testBanchaApiServerErrorProperty_MissingControllerError() {
 		$debugLevel = Configure::read('debug');

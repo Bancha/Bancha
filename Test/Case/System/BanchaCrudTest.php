@@ -42,12 +42,22 @@ class BanchaCrudTest extends CakeTestCase {
 
 	protected $_originalDebugLevel;
 
+/**
+ * setUp method
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
 		$this->_originalDebugLevel = Configure::read('debug');
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -58,6 +68,11 @@ class BanchaCrudTest extends CakeTestCase {
 		ClassRegistry::flush();
 	}
 
+/**
+ * Test add
+ * 
+ * @return void
+ */
 	public function testAdd() {
 		$config = ConnectionManager::enumConnectionObjects();
 		$this->skipIf(
@@ -110,6 +125,11 @@ class BanchaCrudTest extends CakeTestCase {
 		$article->delete();
 	}
 
+/**
+ * Test edit
+ * 
+ * @return void
+ */
 	public function testEdit() {
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'published' => true, ...)
@@ -153,7 +173,8 @@ class BanchaCrudTest extends CakeTestCase {
 	}
 
 /**
- * test form submission including the different request form of ext.direct
+ * Test the form submission including the different request form of Ext.Direct
+ * @return void
  */
 	public function testSubmit() {
 		// used fixture:
@@ -196,11 +217,16 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test if the data really got changed
 		$article = ClassRegistry::init('Article');
-		$article->read(null,1001);
+		$article->read(null, 1001);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
 
-	public function testSubmit_WithUpload() {
+/**
+ * Test form submit with an upload
+ * 
+ * @return void
+ */
+	public function testSubmitWithUpload() {
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', 'body' => 'Text 3, ...)
 
@@ -215,7 +241,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'extAction'		=> 'Article',
 			'extMethod'		=> 'submit',
 			'extType'		=> 'rpc',
-			'extUpload'		=> true,  // <----------------- this time it's an upload
+			'extUpload'		=> true, // <----------------- this time it's an upload
 		);
 
 		// setup
@@ -228,10 +254,10 @@ class BanchaCrudTest extends CakeTestCase {
 		$result = $dispatcher->dispatch($collection, $response, array('return' => true));
 
 		// the response should be surounded by some html (because of the upload)
-		$this->assertEquals(1,preg_match("/\<html\>\<body\>\<textarea\>(.*)\<\/textarea\>\<\/body\>\<\/html\>/", $result));
+		$this->assertEquals(1, preg_match("/\<html\>\<body\>\<textarea\>(.*)\<\/textarea\>\<\/body\>\<\/html\>/", $result));
 
 		// decode by excluding the html part
-		$responses = json_decode(substr($result,22,-25));
+		$responses = json_decode(substr($result, 22, -25));
 
 		// verify data (expected in default ext structure)
 		$this->assertEquals(1001, $responses[0]->result->data->id);
@@ -247,12 +273,16 @@ class BanchaCrudTest extends CakeTestCase {
 
 		// test if the data really got changed
 		$article = ClassRegistry::init('Article');
-		$article->read(null,1001);
+		$article->read(null, 1001);
 		$this->assertEquals('changed', $article->data['Article']['body']);
 	}
 
+/**
+ * Test delete
+ * 
+ * @return void
+ */
 	public function testDelete() {
-		// Preparation: create article
 		// used fixture:
 		// array('id' => 1001, 'title' => 'Title 1', ...)
 
@@ -290,9 +320,12 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(false, $article->exists());
 	}
 
-
+/**
+ * Test index
+ * 
+ * @return void
+ */
 	public function testIndex() {
-
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -372,18 +405,20 @@ class BanchaCrudTest extends CakeTestCase {
 
 /**
  * Test if the whole stack also works if no results for index exist
+ *
+ * @return void
  */
-	public function testIndex_Empty() {
+	public function testIndexEmpty() {
 		// delete all fixture entries
 		$article = ClassRegistry::init('Article');
 		$config = ConnectionManager::enumConnectionObjects();
 		if ($config['default']['datasource'] == 'Database/Postgres') {
 			// postgres requires this, because it doesn't support implizit conversion
-			$article->deleteAll(array("1"=>"true"));
+			$article->deleteAll(array('1' => 'true'));
 		} else {
 			// while mysql understands both versions,
 			// sqlilite requires this version
-			$article->deleteAll(array("1"=>"1"));
+			$article->deleteAll(array('1' => '1'));
 		}
 
 		// Build a request like it looks in Ext JS.
@@ -427,9 +462,10 @@ class BanchaCrudTest extends CakeTestCase {
 
 /**
  * Make sure that filtering id's works strict.
+ * 
+ * @return void
  */
-	public function testIndex_FilterIds() {
-
+	public function testIndexFilterIds() {
 		// Build a request like it looks in Ext JS.
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
@@ -440,8 +476,8 @@ class BanchaCrudTest extends CakeTestCase {
 				'page'			=> 1,
 				'limit'			=> 2,
 				'filter'		=> array(array(
-						'property'=>'id',  // this should not match 1001
-						'value'=>'100'
+						'property'	=> 'id', // this should not match 1001
+						'value'		=> '100'
 				))
 			)),
 		)));
@@ -459,6 +495,11 @@ class BanchaCrudTest extends CakeTestCase {
 		$this->assertEquals(0, count($responses[0]->result->data));
 	}
 
+/**
+ * Test view
+ * 
+ * @return void
+ */
 	public function testView() {
 		// used fixtures:
 		// array('id' => 1001, 'title' => 'Title 1', ...)
@@ -525,7 +566,8 @@ class BanchaCrudTest extends CakeTestCase {
 
 /**
  * Test the bancha stack, especially the dispatching with a multi-request
- *
+ * 
+ * @return void
  */
 	public function testMultiRequest() {
 		// used fixture:

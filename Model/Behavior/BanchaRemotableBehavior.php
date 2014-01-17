@@ -41,16 +41,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @var array
  */
 	protected $_types = array(
-		'enum'      => array('type'=>'string'),
-		'integer'   => array('type'=>'int'),
-		'string'    => array('type'=>'string'),
-		'datetime'  => array('type'=>'date', 'dateFormat' =>'Y-m-d H:i:s'),
-		'date'      => array('type'=>'date', 'dateFormat' =>'Y-m-d'),
-		'time'      => array('type'=>'date', 'dateFormat' =>'H:i:s'),
-		'float'     => array('type'=>'float'),
-		'text'      => array('type'=>'string'),
-		'boolean'   => array('type'=>'boolean'),
-		'timestamp' => array('type'=>'date', 'dateFormat' =>'timestamp')
+		'enum'      => array('type' => 'string'),
+		'integer'   => array('type' => 'int'),
+		'string'    => array('type' => 'string'),
+		'datetime'  => array('type' => 'date', 'dateFormat' =>'Y-m-d H:i:s'),
+		'date'      => array('type' => 'date', 'dateFormat' =>'Y-m-d'),
+		'time'      => array('type' => 'date', 'dateFormat' =>'H:i:s'),
+		'float'     => array('type' => 'float'),
+		'text'      => array('type' => 'string'),
+		'boolean'   => array('type' => 'boolean'),
+		'timestamp' => array('type' => 'date', 'dateFormat' =>'timestamp')
 
 	);
 
@@ -78,10 +78,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * Default behavoir configuration
  */
 	protected $_defaults = array(
-		/**
+		/*
 		 * If true, the model also saves and validates records with missing
 		 * fields, like Ext JS/Sencha Touch is providing for edit operations.
-		 * If you set this to false, please use $Model->saveFields($data,$options)
+		 * If you set this to false, please use $Model->saveFields($data, $options)
 		 * to save edit-data from Ext JS/Sencha Touch.
 		 *
 		 * See also:
@@ -90,7 +90,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 * @var boolean
 		 */
 		'useOnlyDefinedFields' => true,
-		/**
+		/*
 		 * Defined which field should be exposed. If defined, these fields
 		 * will be taken as a base of fields to expose, the excludeFields
 		 * config will still be applied.
@@ -101,7 +101,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 * @var string[]|null
 		 */
 		'exposedFields' => null,
-		/**
+		/*
 		 * Defined which fields should never be exposed. This config overrules
 		 * exposedFields.
 		 *
@@ -169,7 +169,6 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 *	binary 			blob
 		 *	boolean 		tinyint(1)
 		 */
-
 
 		$fields = $this->getColumnTypes($Model);
 		$validations = $this->getValidations($Model);
@@ -429,7 +428,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// handle mysql timestamp default value
-		if ($type=='timestamp' && $fieldSchema['default']=='CURRENT_TIMESTAMP') {
+		if ($type=='timestamp' && $fieldSchema['default'] == 'CURRENT_TIMESTAMP') {
 			$fieldSchema['null'] = true;
 			$fieldSchema['default'] = '';
 		}
@@ -454,7 +453,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default']===null) ?
 									'' : $fieldSchema['default'] // if null is not allowed fall back to ''
 				),
-			isset($this->_types[$type]) ? $this->_types[$type] : array('type'=>'auto'));
+			isset($this->_types[$type]) ? $this->_types[$type] : array('type' => 'auto'));
 	}
 
 /**
@@ -951,7 +950,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		} else {
 			// set result with saved record
-			$this->_result[$Model->alias] = $Model->save($Model->data,$options);
+			$this->_result[$Model->alias] = $Model->save($Model->data, $options);
 			$success = !empty($this->_result[$Model->alias]);
 		}
 
@@ -972,7 +971,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  */
 	public function saveFieldsAndReturn(Model $Model, $data=null) {
 		// save
-		$this->saveFields($Model,$data);
+		$this->saveFields($Model, $data);
 
 		// return ext-formated result
 		return $this->getLastSaveResult($Model);
@@ -1022,7 +1021,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				$fieldName = $order;
 				$direction = 'ASC';
 
-			} else if (strpos($order, ' ') === false) {
+			} elseif (strpos($order, ' ') === false) {
 				// this has a model name and a field name, but no direction
 				$modelName = strtok($order, ".");
 				$fieldName = strtok(" ");
@@ -1035,7 +1034,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
 
-		} else if (is_array($Model->order)) {
+		} elseif (is_array($Model->order)) {
 			foreach ($Model->order as $key => $direction) {
 				$modelName = strtok($key, ".");
 				$fieldName = strtok(".");

@@ -22,15 +22,27 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  * @since         Bancha v 0.9.0
  */
 class BanchaApiTest extends CakeTestCase {
-    public $fixtures = array('plugin.bancha.article','plugin.bancha.articles_tag','plugin.bancha.user','plugin.bancha.tag');
+
+    public $fixtures = array(
+    	'plugin.bancha.article',
+    	'plugin.bancha.articles_tag',
+    	'plugin.bancha.user',
+    	'plugin.bancha.tag'
+    );
 
 /**
  * Keeps a reference to the default paths, since
- * we need to change them in the setUp method
- * @var Array
+ * we need to change them in the setUp method.
+ * 
+ * @var array
  */
 	protected $_originalPaths = null;
 
+/**
+ * setUp method
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
@@ -50,6 +62,11 @@ class BanchaApiTest extends CakeTestCase {
 		App::objects('plugin', null, false);
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -63,6 +80,11 @@ class BanchaApiTest extends CakeTestCase {
 		App::objects('plugin', null, false);
 	}
 
+/**
+ * Test retrieving the remotable models
+ *
+ * @return void
+ */
 	public function testGetRemotableModels() {
 		// prepare
 		$api = new BanchaApi();
@@ -78,8 +100,13 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertContains('TestPlugin.Comment', $remotableModels);
 	}
 
+/**
+ * Test filtering the remotable models
+ *
+ * @return void
+ */
 	public function testFilterRemotableModels() {
-
+		// prepare
 		$api = new BanchaApi();
 		$remotableModels = array('Article', 'User', 'Tag', 'ArticlesTag', 'TestPlugin.Comment');
 
@@ -139,6 +166,8 @@ class BanchaApiTest extends CakeTestCase {
 /**
  * filterRemotableModels() should throw a MissingModelException when a model is provided in $filter which is not
  * remotable model.
+ *
+ * @return void
  * @expectedException MissingModelException
  */
 	public function testFilterRemotableModels_MissingModel() {
@@ -148,6 +177,8 @@ class BanchaApiTest extends CakeTestCase {
 
 /**
  * Tests if getMetadata returns meta data for all given models.
+ *
+ * @return void
  */
 	public function testGetMetadata() {
 		$api = new BanchaApi();
@@ -164,12 +195,22 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertTrue(strlen($metadata['_UID']) > 0);
 	}
 
+/**
+ * Test getControllerClassByModelClass
+ *
+ * @return void
+ */
 	public function testGetControllerClassByModelClass() {
 		$api = new BanchaApi();
 		$this->assertEquals('UsersController', $api->getControllerClassByModelClass('User'));
 		$this->assertEquals('TestPlugin.CommentsController', $api->getControllerClassByModelClass('TestPlugin.Comment'));
 	}
 
+/**
+ * Test getCrudActionsOfController
+ *
+ * @return void
+ */
 	public function testGetCrudActionsOfController() {
 		$api = new BanchaApi();
 
@@ -201,7 +242,13 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertCount(0, $crudActions);
 	}
 
+/**
+ * Test getRemotableMethods
+ *
+ * @return void
+ */
 	public function testGetRemotableMethods() {
+		// prepare
 		$api = new BanchaApi();
 		$remotableMethods = $api->getRemotableMethods();
 		$this->assertCount(2, $remotableMethods);
@@ -221,6 +268,11 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertEquals(0, $remotableMethods['HelloWorld'][0]['len']);
 	}
 
+/**
+ * Test getRemotableModelActions
+ *
+ * @return void
+ */
 	public function testGetRemotableModelActions() {
 		$api = new BanchaApi();
 

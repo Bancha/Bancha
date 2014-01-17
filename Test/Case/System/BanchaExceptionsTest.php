@@ -32,11 +32,15 @@ class BanchaExceptionsTest extends CakeTestCase {
 
 	protected $_originalDebugLevel;
 
+/**
+ * tearDown setUp
+ *
+ * @return void
+ */
 	public function setUp() {
 		parent::setUp();
 
 		$this->_originalDebugLevel = Configure::read('debug');
-		
 
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
 		// first check if stream exists, because if run from the browser it doesn't
@@ -50,6 +54,11 @@ class BanchaExceptionsTest extends CakeTestCase {
 		}
 	}
 
+/**
+ * tearDown method
+ *
+ * @return void
+ */
 	public function tearDown() {
 		parent::tearDown();
 
@@ -65,9 +74,9 @@ class BanchaExceptionsTest extends CakeTestCase {
 /**
  * Tests exception handling with debug mode 2.
  *
+ * @return void
  */
 	public function testExceptionDebugMode() {
-
 		Configure::write('debug', 2);
 
 		$rawPostData = json_encode(array(
@@ -104,7 +113,6 @@ class BanchaExceptionsTest extends CakeTestCase {
  * @author Florian Eckerstorfer
  */
 	public function testExceptionProductionMode() {
-
 		Configure::write('debug', 0);
 
 		$rawPostData = json_encode(array(
@@ -163,9 +171,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 /**
  * That that different exceptions are catched correctly and
  * also the response contains the correct exceptions.
+ *
+ * @return void
  */
-	public function testExceptionDebugMode_Exceptions() {
-
+	public function testExceptionDebugModeExceptions() {
 		Configure::write('debug', 2);
 
 		// Create some requests.
@@ -224,10 +233,10 @@ class BanchaExceptionsTest extends CakeTestCase {
 				$responses[2]->where, 'message');
 	}
 
-
 /**
  * Tests the exception logging.
  *
+ * @return void
  */
 	public function testExceptionLogging() {
 		$originalLogExceptions = Configure::read('Bancha.logExceptions');
@@ -320,6 +329,14 @@ class ArticlesExceptionsController extends ArticlesController {
 		// we store the current line to test it later.
 		$GLOBALS['EXCEPTION_LINE'] = __LINE__; throw new Exception('Method specific error message, see bottom of this test');
 	}
+
+/**
+ * Throws a exception for testing purposes.
+ * 
+ * @param  string $id will be ignored
+ * @return void
+ * @throws throwNotFoundExceptionMethod always
+ */
 	public function throwNotFoundExceptionMethod($id = null) {
 		throw new NotFoundException('Invalid article');
 	}
