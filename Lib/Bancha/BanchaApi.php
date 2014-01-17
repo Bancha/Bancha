@@ -50,20 +50,20 @@ class BanchaApi {
 		foreach ($namespaces as $namespace) {
 
 			// get all models from current namespace
-			$models = App::objects(($namespace ? $namespace."." : "").'Model');
+			$models = App::objects(($namespace ? $namespace . '.' : '') . 'Model');
 
 			// load all Models and add those with Banchas BanchaRemotableBehavior into $remotableModels
 			foreach ($models as $modelClass) {
-				$modelClass = ($namespace ? $namespace."." : "").$modelClass;
+				$modelClass = ($namespace ? $namespace . '.' : '') . $modelClass;
 				$model = $this->_loadModel($modelClass);
 				if (isset($model->actsAs) && is_array($model->actsAs)) {
 					// check if it is remotable (first when a AppModel behavior is also defined, second when not)
 					if (array_key_exists('Bancha.BanchaRemotable', $model->actsAs) || in_array('Bancha.BanchaRemotable', $model->actsAs)) {
 						$remotableModels[] = $modelClass;
 					}
-				}
-				// alternatively (for newer cake releases) check if the BehaviorCollection has the Remotable Behavior
-				else if (isset($model->Behaviors->_enabled) && is_array($model->Behaviors->_enabled)) {
+				} elseif (isset($model->Behaviors->_enabled) && is_array($model->Behaviors->_enabled)) {
+					// alternatively (for newer cake releases) check if the BehaviorCollection has the Remotable Behavior
+
 					// check if the behavior is attached
 					if (array_key_exists('Bancha.BanchaRemotable', $model->Behaviors->_enabled)) {
 						$remotableModels[] = $modelClass;
@@ -82,9 +82,10 @@ class BanchaApi {
  * @param  array  $models List of remotable models
  * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without
  *                        quotes). Or an array of models.
- * @return array          Filtered list of remotable models.
+ * @return array          Filtered list of remotable models
+ * @throws MissingModelException if the model can't be found
  */
-	public function filterRemotableModels(array $models, $filter){
+	public function filterRemotableModels(array $models, $filter) {
 		if (!$filter) {
 			return array();
 		}
@@ -93,8 +94,7 @@ class BanchaApi {
 		}
 
 		// First remove the [ and ], then split by comma and trim each element.
-		if (is_string($filter) && false !== strpos($filter, '[') && false !== strpos($filter, ']'))
-		{
+		if (is_string($filter) && false !== strpos($filter, '[') && false !== strpos($filter, ']')) {
 			$filter = substr($filter, 1, -1);
 		}
 
@@ -105,10 +105,8 @@ class BanchaApi {
 		$filteredModels = array_map('trim', $filteredModels);
 
 		// check if they really exist
-		foreach ($filteredModels as $filteredModel)
-		{
-			if (!in_array($filteredModel, $models))
-			{
+		foreach ($filteredModels as $filteredModel) {
+			if (!in_array($filteredModel, $models)) {
 				throw new MissingModelException(array('class' => $filteredModel));
 			}
 		}
@@ -171,7 +169,7 @@ class BanchaApi {
 		if ($addFormHandler) {
 			$crudActions[] = array(
 				'name'			=> 'submit',
-				'len' 			=> 1,
+				'len'			=> 1,
 				'formHandler'	=> true,
 			);
 		}
@@ -194,9 +192,9 @@ class BanchaApi {
 		foreach ($namespaces as $namespace) {
 
 			// get all models from current namespace
-			$controllers = App::objects(($namespace ? $namespace."." : "").'Controller');
+			$controllers = App::objects(($namespace ? $namespace . '.' : '') . 'Controller');
 			foreach ($controllers as $controllerClass) {
-				$controllerClass = ($namespace ? $namespace."." : "").$controllerClass;
+				$controllerClass = ($namespace ? $namespace . '.' : '') . $controllerClass;
 				$this->_loadController($controllerClass);
 				$modelClass = Inflector::singularize(str_replace('Controller', '', $controllerClass));
 
@@ -217,8 +215,9 @@ class BanchaApi {
 
 /**
  * Iterate through all remotable models and get all the available crud actions.
- * @param  array $remotableModels List of remotable models
- * @return array                  Array of controller actions
+ * 
+ * @param array $remotableModels List of remotable models
+ * @return array                 Array of controller actions
  */
 	public function getRemotableModelActions(array $remotableModels) {
 		$actions = array();
@@ -241,9 +240,9 @@ class BanchaApi {
 		list($plugin, $modelClass) = pluginSplit($modelClass, true);
 
 		// make sure the AppModel and plugin AppModel are available
-		App::uses('AppModel' , 'Model');
-		if (strlen($plugin)>0) {
-			App::uses(substr($plugin,0,strlen($plugin)-1).'AppModel' , $plugin . 'Model');
+		App::uses('AppModel', 'Model');
+		if (strlen($plugin) > 0) {
+			App::uses(substr($plugin, 0, strlen($plugin) - 1) . 'AppModel', $plugin . 'Model');
 		}
 
 		// load the model
@@ -263,18 +262,19 @@ class BanchaApi {
  *
  * @param  string $controllerClass Name of the controller to load.
  * @return void
+ * @throws MissingControllerException If the controller can't be found
  */
 	protected function _loadController($controllerClass) {
 		list($plugin, $controllerClass) = pluginSplit($controllerClass, true);
 
 		// make sure the AppController and plugin AppController is available
 		App::uses('AppController', 'Controller');
-		if (strlen($plugin)>0) {
-			App::uses(substr($plugin,0,strlen($plugin)-1).'AppController', $plugin . 'Controller');
+		if (strlen($plugin) > 0) {
+			App::uses(substr($plugin, 0, strlen($plugin) - 1) . 'AppController', $plugin . 'Controller');
 		}
 
 		// load the controller
-		App::uses($controllerClass, $plugin.'Controller');
+		App::uses($controllerClass, $plugin . 'Controller');
 
 		// if the ClassRegistry can't find the correct controller it returns
 		// the AppController, so explicitly check for the model here
@@ -285,6 +285,7 @@ class BanchaApi {
 
 /**
  * Gets all the public methods from the given controller.
+ * 
  * @param  string $class The controller class name
  * @return array         Array of methods
  */

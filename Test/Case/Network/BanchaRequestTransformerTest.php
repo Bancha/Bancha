@@ -231,7 +231,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
 	public function testTransformDataStructureToCakeMultipleRecords() {
 		// currently this is only supported when following config is true
 		$currentConfig = Configure::read('Bancha.allowMultiRecordRequests');
-		Configure::write('Bancha.allowMultiRecordRequests',true);
+		Configure::write('Bancha.allowMultiRecordRequests', true);
 
 		$expected = array(
 			'0' => array(
@@ -277,7 +277,6 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * @return void
  */
 	public function testGetController() {
-
 		// very simply use case, transform the plugin-free controller name
 		$transformer = new BanchaRequestTransformer(array(
 			'action' => 'Test',
@@ -306,10 +305,9 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * @return void
  */
 	public function testGetControllerForm() {
-		
 		// very simply use case, transform the plugin-free controller name
 		$transformer = new BanchaRequestTransformer(array(
-			'extAction'		=> 'Test',
+			'extAction'	=> 'Test',
 		));
 		$this->assertEquals('Tests', $transformer->getController());
 		$this->assertNull($transformer->getPlugin());
@@ -361,7 +359,7 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  */
 	public function getActionProvider() {
 		return array(
-			array('create',	array(),'add'),
+			array('create',	array(), 'add'),
 			array('update',	array(array('data' => array('id' => 42))), 'edit'),
 			array('destroy', array(array('data' => array('id' => 42))), 'delete'),
 			array('read', array(array('data' => array('id' => 42))), 'view'),
@@ -497,8 +495,8 @@ class BanchaRequestTransformerTest extends CakeTestCase {
  * Ext JS uses page, offset, limit and sort in the data array for pagination. CakePHP needs a paging array with
  * page, limit and order. The sort in Ext looks like [property: X, direction: Y], in Cake like [Controller.X => Y].
  * 
- * @param  array  $extData    The data to fake
- * @param  string $cakeAction The expected CakePHP paginate value
+ * @param  array  $extData      The data to fake
+ * @param  string $cakePaginate The expected CakePHP paginate value
  * @return void
  * @dataProvider getPagingProvider
  */

@@ -95,8 +95,11 @@ class TestArticle extends CakeTestModel {
  * @since         Bancha v 2.0.0
  */
 class TestArticleNoValidationRules extends CakeTestModel {
+
 	public $name = 'ArticleNoValidationRules';
+
 	public $useTable = false;
+
 	public $order = array('name.order' => 'ASC');
 
 	protected $_schema = array(

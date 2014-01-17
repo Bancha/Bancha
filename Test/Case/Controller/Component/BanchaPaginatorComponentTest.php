@@ -123,7 +123,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 			'vendors' => $this->_paths['vendors']
 		), true);
 		*/
-	
+
 		// keep debug level
 		$this->_originalDebugLevel = Configure::read('debug');
 	}
@@ -329,7 +329,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 				'allowedFilters' => 'associations'
 			),
 			array(
-				'Article.user_id' =>2
+				'Article.user_id' => 2
 			)
 		);
 		$this->assertTrue(isset($this->Controller->request['named']['conditions']['Article.user_id']));

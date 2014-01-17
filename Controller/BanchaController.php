@@ -269,7 +269,6 @@ class BanchaController extends BanchaAppController {
  * @return string Indented version of the original JSON string.
  */
 	protected function _beautifyJson($json) {
-
 		$result = '';
 		$pos = 0;
 		$strLen = strlen($json);

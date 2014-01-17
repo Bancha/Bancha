@@ -58,7 +58,7 @@ class ConsistentModelTest extends CakeTestCase {
  *
  * @return void
  */
-	function tearDown() {
+	public function tearDown() {
 		parent::tearDown();
 		ClassRegistry::flush();
 	}
@@ -87,11 +87,11 @@ class ConsistentModelTest extends CakeTestCase {
 		$this->assertTrue(unlink($clientFile));
 
 		// check if we can run a background task
-	  	$disabled = explode(', ', ini_get('disable_functions'));
+		$disabled = explode(', ', ini_get('disable_functions'));
 		$fn = (substr(php_uname(), 0, 7) == 'Windows') ? 'popen' : 'exec';
 		$this->assertFalse(
-			in_array($fn, $disabled), 
-			'Test Suite is not able to run tasks in the background using '.$fn.
+			in_array($fn, $disabled),
+			'Test Suite is not able to run tasks in the background using ' . $fn .
 			', therefore this these tasks can\'t be run.'
 		);
 	}
@@ -122,7 +122,7 @@ class ConsistentModelTest extends CakeTestCase {
 			pclose(popen('start /B ' . $cmd, 'r')); // not sure how to get the response on windows.
 		} else {
 			$resultFile = $resultFile ? dirname(__FILE__) . DS . $resultFile : '/dev/null';
-			exec($cmd . ' > ' . $resultFile . ' &');   
+			exec($cmd . ' > ' . $resultFile . ' &');
 		}
 	}
 
@@ -135,12 +135,12 @@ class ConsistentModelTest extends CakeTestCase {
  * @param  string  $clientId   The clients uuid
  * @param  string  $tid        The tid
  * @param  string  $articleId  The article id to edit
- * @param  string  $newTitle  The new article title
- * @param  integer $sleepTime The time to wait before the execute is fiished, fake processing time
- * @param  integer $resultFile The filename the result should be written to, if this is a background task
+ * @param  string  $newTitle   The new article title
+ * @param  integer $sleepTime  The time to wait before the execute is fiished, fake processing time
+ * @param  string  $saveResult The filename the result should be written to, if this is a background task
  * @return string              The responses array, if $sleepTime==0
  */
-	protected function _fakeRequest($clientId, $tid, $articleId, $newTitle, $sleepTime=0, $saveResult=false) {
+	protected function _fakeRequest($clientId, $tid, $articleId, $newTitle, $sleepTime = 0, $saveResult = false) {
 		// The syntax of the fake_request script is
 		// php _fake_request.php client_id article_id tid newTitle sleepTime
 		// These processes are executed in the background and we do not need the output.
@@ -161,11 +161,11 @@ class ConsistentModelTest extends CakeTestCase {
 /**
  * Retrieves the result from an async face request
  * 
- * @param  string  $clientId   The clients uuid
- * @param  string  $tid        The tid
- * @return array               The response as decoded array
+ * @param  string $clientId The clients uuid
+ * @param  string $tid      The tid
+ * @return array            The response as decoded array
  */
-	private function getAsyncResponse($clientId, $tid) {
+	protected function _getAsyncResponse($clientId, $tid) {
 		$filename = dirname(__FILE__) . DS . $clientId . '-' . $tid . '.txt';
 		$result = json_decode(file_get_contents($filename));
 		unlink($filename);
@@ -296,7 +296,7 @@ class ConsistentModelTest extends CakeTestCase {
 
 		$this->_fakeRequest($clientId, 1, 1001, 'foobar', 5, true); // should take longer then then when the second one is called
 		sleep(2);
-		// user edit again before first change is finished, 
+		// user edit again before first change is finished,
 		// because of the sleep time this would be executed BEFORE the first one and therefore the first one would overwrite it.
 		// This test should ensure that this isn't happening
 		$this->_fakeRequest($clientId, 2, 1001, 'barfoo', 1, true);
@@ -306,24 +306,30 @@ class ConsistentModelTest extends CakeTestCase {
 
 		// first retrieve both requests
 		// (therefore no files are left behind if a test fails)
-		$responses1 = $this->getAsyncResponse($clientId, 1);
-		$responses2 = $this->getAsyncResponse($clientId, 2);
+		$responses1 = $this->_getAsyncResponse($clientId, 1);
+		$responses2 = $this->_getAsyncResponse($clientId, 2);
 
 		// Check that the first response returned a result
-		$this->asserttrue(is_array($responses1), 'Expected result to be an array '.print_r($responses1,true));
+		$this->assertTrue(
+			is_array($responses1),
+			'Expected result to be an array ' . print_r($responses1, true)
+		);
 		$this->assertCount(1, $responses1);
 		$this->assertTrue(
 			isset($responses1[0]->result->data),
-			'Expected an result for first request, instead $responses1 is '.print_r($responses1,true)
+			'Expected an result for first request, instead $responses1 is ' . print_r($responses1, true)
 		);
 		$this->assertEquals('foobar', $responses1[0]->result->data->title); // first request should change it to foobar
 
 		// Check that the second response returned a result
-		$this->asserttrue(is_array($responses2), 'Expected result to be an array '.print_r($responses1,true));
+		$this->assertTrue(
+			is_array($responses2),
+			'Expected result to be an array ' . print_r($responses1, true)
+		);
 		$this->assertCount(1, $responses2);
 		$this->assertTrue(
 			isset($responses2[0]->result->data),
-			'Expected an result for first request, instead $responses2 is '.print_r($responses2,true)
+			'Expected an result for first request, instead $responses2 is ' . print_r($responses2, true)
 		);
 		$this->assertEquals('barfoo', $responses2[0]->result->data->title); // second request should change it to barfoo
 

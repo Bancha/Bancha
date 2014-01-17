@@ -153,14 +153,14 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// show that there was an exception, but with no information!
 		$this->assertEquals('exception', $responses[0]->type);
 		$this->assertFalse(isset($responses[0]->exceptionType)); // don't send exception info
-		$this->assertEquals(__('Unknown error.',true), $responses[0]->message); // don't give usefull info to possible hackers
+		$this->assertEquals(__('Unknown error.', true), $responses[0]->message); // don't give usefull info to possible hackers
 		$this->assertFalse(isset($responses[0]->where));
 		$this->assertFalse(isset($responses[0]->trace));
 
 		// show that there was an exception, but with no information!
 		$this->assertEquals('exception', $responses[1]->type);
 		$this->assertTrue(isset($responses[1]->exceptionType)); // send exception info
-		$this->assertEquals(__('Invalid article',true), $responses[1]->message); // send exception message
+		$this->assertEquals(__('Invalid article', true), $responses[1]->message); // send exception message
 		$this->assertFalse(isset($responses[1]->where)); // don't give usefull info to possible hackers
 		$this->assertFalse(isset($responses[1]->trace));
 
@@ -257,7 +257,7 @@ class BanchaExceptionsTest extends CakeTestCase {
 				'method'		=> 'index',
 				'tid'			=> 1,
 				'type'			=> 'rpc',
-				'data'			=> array('param1','param2'),
+				'data'			=> array('param1', 'param2'),
 			)
 		));
 
@@ -277,9 +277,12 @@ class BanchaExceptionsTest extends CakeTestCase {
 		// Expect a missing conroller exception in the logs
 		$this->assertTrue(file_exists(LOGS . 'error.log'));
 		$result = file_get_contents(LOGS . 'error.log');
-		$this->assertRegExp('/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: A Bancha request to '.
-							'ThisControllerDoesNotExists::index\(\'param1\', \'param2\'\)'. // signature
-							' resulted in the following MissingControllerException:/', $result);
+		$this->assertRegExp(
+			'/^2[0-9]{3}-[0-9]+-[0-9]+ [0-9]+:[0-9]+:[0-9]+ Error: A Bancha request to '.
+			'ThisControllerDoesNotExists::index\(\'param1\', \'param2\'\)'. // signature
+			' resulted in the following MissingControllerException:/',
+			$result
+		);
 		unlink(LOGS . 'error.log');
 
 		// this should not log
@@ -322,12 +325,14 @@ class ArticlesExceptionsController extends ArticlesController {
 /**
  * throwExceptionMethod method
  *
- * @param string $id
+ * @param string $id ignored
  * @return void
+ * @throws Exception Always
  */
 	public function throwExceptionMethod($id = null) {
 		// we store the current line to test it later.
-		$GLOBALS['EXCEPTION_LINE'] = __LINE__; throw new Exception('Method specific error message, see bottom of this test');
+		$GLOBALS['EXCEPTION_LINE'] = __LINE__;
+		throw new Exception('Method specific error message, see bottom of this test');
 	}
 
 /**
@@ -335,7 +340,7 @@ class ArticlesExceptionsController extends ArticlesController {
  * 
  * @param  string $id will be ignored
  * @return void
- * @throws throwNotFoundExceptionMethod always
+ * @throws NotFoundException always
  */
 	public function throwNotFoundExceptionMethod($id = null) {
 		throw new NotFoundException('Invalid article');

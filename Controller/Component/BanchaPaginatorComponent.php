@@ -283,7 +283,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 				// in debug mode check if the field are really existing
 				if (Configure::read('debug') == 2) {
-					foreach ($allowedFilters as $key=>$value) {
+					foreach ($allowedFilters as $key => $value) {
 						$parts = explode('.', $value);
 						if (count($parts) != 2) {
 							throw new BanchaException('The BanchaPaginatorComponents allowedFilters configuration could not be recognized at array position ' . $key . ', value: ' . $value);
@@ -325,6 +325,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 	}
 
 	//<bancha-pro>
+
 /**
  * This functions loops through all filter conditions and check if the are valid
  * according to the allowedFilters configuration.
@@ -393,6 +394,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 
 		return $conditions;
 	}
+
 	//</bancha-pro>
 
 }

@@ -54,7 +54,7 @@ class BanchaBasicTest extends CakeTestCase {
 
 		$this->_originalDebugLevel = Configure::read('debug');
 		$this->_originalIsPro = Configure::read('Bancha.isPro');
-		
+
 		// disable/drop stderr stream, to hide test's intentional errors in console and Travis
 		// first check if stream exists, because if run from the browser it doesn't
 		if (in_array('stderr', CakeLog::configured())) {
@@ -213,7 +213,6 @@ class BanchaBasicTest extends CakeTestCase {
  * @expectedExceptionMessage  Bancha Basic does not support remote filtering of data,
  */
 	public function testPaginationAllowedFilters() {
-
 		Configure::write('Bancha.isPro', false);
 
 		// Setting allowed filters should result in an an exception

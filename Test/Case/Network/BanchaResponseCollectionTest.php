@@ -128,7 +128,7 @@ class BanchaResponseCollectionTest extends CakeTestCase {
 		$collection = new BanchaResponseCollection($response);
 		$collection->addResponse(2, new CakeResponse($response1), $request);
 
-		$expected = '<html><body><textarea>[{"type":"rpc","tid":2,"action":"foo","method":"bar",'.
+		$expected = '<html><body><textarea>[{"type":"rpc","tid":2,"action":"foo","method":"bar",' .
 					'"result":' . json_encode($response1['body']) . ',"extUpload":true}]</textarea></body></html>';
 
 		$this->assertEquals($expected, $collection->getResponses()->body());

@@ -58,7 +58,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  * @param array  $data   The data to pass
  * @return array $responses
  */
-	private function getResultForMethod($method, $data=array()) {
+	protected function _getResultForMethod($method, $data = array()) {
 		$rawPostData = json_encode(array(
 			'action'		=> 'DebugException',
 			'method'		=> $method,
@@ -86,7 +86,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  * @return void
  */
 	public function testNoMethodResultException() {
-		$responses = $this->getResultForMethod('getNoResult');
+		$responses = $this->_getResultForMethod('getNoResult');
 
 		// check exception
 		$this->assertEquals('exception', $responses[0]->type);
@@ -102,7 +102,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  * @expectedException BanchaException
  */
 	public function testMultipleRecordInputException() {
-		$this->getResultForMethod('returnTrue', array(array(
+		$this->_getResultForMethod('returnTrue', array(array(
 			'data' => array(
 				array( // first
 					'id' => 1,
@@ -124,10 +124,10 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
  */
 	public function testDeactivatedMultipleRecordInputException() {
 		// the developer can deactivate this by setting this config
-		Configure::write('Bancha.allowMultiRecordRequests',true);
+		Configure::write('Bancha.allowMultiRecordRequests', true);
 
 		// we expect no exception
-		$this->getResultForMethod('returnTrue', array(array(
+		$this->_getResultForMethod('returnTrue', array(array(
 			'data' => array(
 				array( // first
 					'id' => 1,
@@ -140,6 +140,7 @@ class BanchaDebugExceptionsTest extends CakeTestCase {
 			)
 		)));
 	}
+
 }
 
 /**

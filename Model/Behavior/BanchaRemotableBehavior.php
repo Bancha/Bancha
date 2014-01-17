@@ -20,11 +20,12 @@ App::uses('CakeSenchaDataMapper', 'Bancha.Bancha');
 
 // backwards compability with 5.2
 if (function_exists('lcfirst') === false) {
-	/**
-	 * Make a string's first character lowercase
-	 * @param string $str The string to transform
-	 * @return string     The transformed string
-	 */
+/**
+ * Make a string's first character lowercase.
+ * 
+ * @param string $str The string to transform
+ * @return string     The transformed string
+ */
 	function lcfirst($str) {
 		return (string)(strtolower(substr($str, 0, 1)) . substr($str, 1));
 	}
@@ -48,16 +49,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @var array
  */
 	protected $_types = array(
-		'enum'      => array('type' => 'string'),
-		'integer'   => array('type' => 'int'),
-		'string'    => array('type' => 'string'),
-		'datetime'  => array('type' => 'date', 'dateFormat' =>'Y-m-d H:i:s'),
-		'date'      => array('type' => 'date', 'dateFormat' =>'Y-m-d'),
-		'time'      => array('type' => 'date', 'dateFormat' =>'H:i:s'),
-		'float'     => array('type' => 'float'),
-		'text'      => array('type' => 'string'),
-		'boolean'   => array('type' => 'boolean'),
-		'timestamp' => array('type' => 'date', 'dateFormat' =>'timestamp')
+		'enum'		=> array('type' => 'string'),
+		'integer'	=> array('type' => 'int'),
+		'string'	=> array('type' => 'string'),
+		'datetime'	=> array('type' => 'date', 'dateFormat' => 'Y-m-d H:i:s'),
+		'date'		=> array('type' => 'date', 'dateFormat' => 'Y-m-d'),
+		'time'		=> array('type' => 'date', 'dateFormat' => 'H:i:s'),
+		'float'		=> array('type' => 'float'),
+		'text'		=> array('type' => 'string'),
+		'boolean'	=> array('type' => 'boolean'),
+		'timestamp'	=> array('type' => 'date', 'dateFormat' => 'timestamp')
 
 	);
 
@@ -128,34 +129,33 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * Sets up the BanchaRemotable behavior. For config options see above.
  *
- * @param Model $Model instance of model
- * @param array $config array of configuration settings.
+ * @param Model $model    Model using this behavior
+ * @param array $settings Array of configuration settings.
  * @return void
+ * @throws CakeException If malformed settings are given
  */
-	public function setup(Model $Model, $settings = array()) {
+	public function setup(Model $model, $settings = array()) {
 		// apply configs
 		if (!is_array($settings)) {
-			throw new CakeException("Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration");
+			throw new CakeException('Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration');
 		}
 		$settings = array_merge($this->_defaults, $settings);
-		$this->_settings[$Model->alias] = $settings;
+		$this->_settings[$model->alias] = $settings;
 	}
 
 /**
  * Extracts all metadata which should be shared with the ExtJS frontend
  *
- * @param Model $Model instance of model
- * @return array all the metadata as array
+ * @param Model $model Model using this behavior
+ * @return array       All the metadata as array
  */
-	public function extractBanchaMetaData(Model $Model) {
-
+	public function extractBanchaMetaData(Model $model) {
 		//<bancha-basic>
 		if (Configure::read('Bancha.isPro') == false) {
 			return array();
 		}
 		//</bancha-basic>
 		//<bancha-pro>
-		//TODO persist: persist is for generated values true
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
 		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
 
@@ -177,14 +177,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 *	boolean 		tinyint(1)
 		 */
 
-		$fields = $this->getColumnTypes($Model);
-		$validations = $this->getValidations($Model);
-		$associations = $this->getAssociated($Model);
-		$sorters = $this->getSorters($Model);
+		$fields = $this->getColumnTypes($model);
+		$validations = $this->getValidations($model);
+		$associations = $this->getAssociated($model);
+		$sorters = $this->getSorters($model);
 
 		$ExtMetaData = array (
 			'idProperty' => 'id',
-			'displayField' => $Model->displayField ? $Model->displayField : null,
+			'displayField' => $model->displayField ? $model->displayField : null,
 			'fields' => $fields,
 			'validations' => $validations,
 			'associations' => $associations,
@@ -197,11 +197,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
  * Calculates an array of all exposed model fields.
- * @param Model $Model The model of the field to check
+ * 
+ * @param Model $model Model using this behavior
+ * @throws CakeException If one or more fields from $settings['exposedFields'] are not valid
  * @return string[] Array of model field names (as strings)
  */
-	public function getExposedFields(Model $Model) {
-		$settings = $this->_settings[$Model->alias];
+	public function getExposedFields(Model $model) {
+		$settings = $this->_settings[$model->alias];
 
 		// cache pattern
 		if (isset($settings['_computedExposedFields'])) {
@@ -210,9 +212,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// compute
 		$fields = array_merge(
-			array_keys($Model->schema()), // first get all model fields
-			array_keys($Model->virtualFields)); // and add all virtual fields
-
+			array_keys($model->schema()), // first get all model fields
+			array_keys($model->virtualFields)); // and add all virtual fields
 
 		// if exposedFields is an array, match
 		if (isset($settings['exposedFields']) && is_array($settings['exposedFields'])) {
@@ -220,12 +221,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$fields = array_intersect($fields, $settings['exposedFields']);
 
 			// In debug mode check if all exposed fields are valid
-			if (Configure::read('debug')>0 && (count($fields)<count($settings['exposedFields']))) {
+			if (Configure::read('debug') > 0 && (count($fields) < count($settings['exposedFields']))) {
 				$wrongNames = array_diff($settings['exposedFields'], $fields);
 				throw new CakeException(
-					"Bancha: You have configured the BanchaRemotable to expose following fields for ".$Model->name.
-					" which do not exist in the schema: ".print_r($wrongNames,true).
-					"\nPlease remove them or fix your schema.\n".
+					"Bancha: You have configured the BanchaRemotable to expose following fields for " . 
+					$model->name . " which do not exist in the schema: " . print_r($wrongNames, true) .
+					"\nPlease remove them or fix your schema.\n" .
 					"This error is only displayed in debug mode."
 				);
 			}
@@ -239,9 +240,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				$wrongNames = array_diff($settings['excludedFields'], $fields);
 				if (count($wrongNames)) {
 					throw new CakeException(
-						"Bancha: You have configured the BanchaRemotable to exclude following fields for ".$Model->name.
-						" which do not exist in the schema: ".print_r($wrongNames,true).
-						"\nPlease remove them or fix your schema.\n".
+						"Bancha: You have configured the BanchaRemotable to exclude following fields for " .
+						$model->name . " which do not exist in the schema: " . print_r($wrongNames, true) .
+						"\nPlease remove them or fix your schema.\n" .
 						"This error is only displayed in debug mode."
 					);
 				}
@@ -261,12 +262,13 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
  * Returns true if the field is visible to the ExtJS/Sencha Touch frontend.
- * @param Model $Model The model of the field to check
+ * 
+ * @param Model $model The model of the field to check
  * @param string $fieldName The name of the field (see schema)
  * @return boolean True if it is exposed
  */
-	public function isExposedField(Model $Model, $fieldName) {
-		return in_array($fieldName, $this->getExposedFields($Model));
+	public function isExposedField(Model $model, $fieldName) {
+		return in_array($fieldName, $this->getExposedFields($model));
 	}
 
 /**
@@ -279,14 +281,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *         'fieldName2' => 'fieldValue2',
  *     )
  *
+ * @param Model $Model    The model of the record
  * @param  array $recData The record data to filter
  * @return array          Returns data in the same structure as input, but filtered.
  */
-	public function filterRecord(Model $Model, array $recData) {
-
+	public function filterRecord(Model $model, array $recData) {
 		// only use the exposed fields
 		$result = array();
-		foreach ($this->getExposedFields($Model) as $fieldName) {
+		foreach ($this->getExposedFields($model) as $fieldName) {
 			if (array_key_exists($fieldName, $recData)) { // isset would ignore null value, which we want to send
 				// transforms integers to type int
 				// This is necessary when a form loads fields like user_id,
@@ -301,10 +303,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// add associated models
-		$assocTypes = $Model->associations();
+		$assocTypes = $model->associations();
 		foreach ($assocTypes as $type) { // only 3 types
-			foreach ($Model->{$type} as $modelName => $config) {
-				if ($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+			foreach ($model->{$type} as $modelName => $config) {
+				if ($type == 'belongsTo' && !$this->isExposedField($model, $config['foreignKey'])) {
 					// this field is hidden from ExtJS/Sencha Touch, so also hide the associated data
 					continue;
 				}
@@ -337,66 +339,66 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *          [conditions] => [fields] => [order] => [limit] => [offset] => [exclusive] => [finderQuery] =>
  *          [counterQuery] => ) )</code>
  *
- * @param Model $Model instance of model
- * @return Array An array of ExtJS/Sencha Touch association definitions
+ * @param Model $model Model using this behavior
+ * @return array An array of ExtJS/Sencha Touch association definitions
  */
-	public function getAssociated(Model $Model) {
-		$assocTypes = $Model->associations();
+	public function getAssociated(Model $model) {
+		$assocTypes = $model->associations();
 		$assocs = array();
 		foreach ($assocTypes as $type) { // only 3 types
 			if ($type == 'hasAndBelongsToMany') {
 				// ExtJS/Sencha Touch doesn't support hasAndBelongsToMany
 				continue;
 			}
-			foreach ($Model->{$type} as $modelName => $config) {
+			foreach ($model->{$type} as $modelName => $config) {
 
 				//generate the name to retrieve associations
 				$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
 
-				if ($type == 'belongsTo' && !$this->isExposedField($Model, $config['foreignKey'])) {
+				if ($type == 'belongsTo' && !$this->isExposedField($model, $config['foreignKey'])) {
 					// this field is hidden from ExtJS/Sencha Touch, so also hide the association
 					continue;
 				}
 
 				$assocs[] = array(
 					'type' => $type,
-					'model' => 'Bancha.model.'.$config['className'],
+					'model' => 'Bancha.model.' . $config['className'],
 					'foreignKey' => $config['foreignKey'],
-					'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get'.$name,
-					'setterName' => 'set'.$name,
+					'getterName' => ($type == 'hasMany') ? lcfirst($name) : 'get' . $name,
+					'setterName' => 'set' . $name,
 					'name' => lcfirst($name)
-					);
+				);
 			}
 		}
 		return $assocs;
 	}
 
 /**
-* Return the model column schema as ExtJS/Sencha Touch structure.
-*
-* Example:
-*     [
-*       {name: 'id', type: 'int', allowNull:true, default:''},
-*       {name: 'name', type: 'string', allowNull:true, default:''}
-*     ]
-*
-* @param Model $Model instance of model
-* @return Array An array of ExtJS/Sencha Touch model field definitions
-*/
-	public function getColumnTypes(Model $Model) {
-		$schema = $Model->schema();
+ * Return the model column schema as ExtJS/Sencha Touch structure.
+ *
+ * Example:
+ *     [
+ *       {name: 'id', type: 'int', allowNull:true, default:''},
+ *       {name: 'name', type: 'string', allowNull:true, default:''}
+ *     ]
+ *
+ * @param Model $model Model using this behavior
+ * @return array An array of ExtJS/Sencha Touch model field definitions
+ */
+	public function getColumnTypes(Model $model) {
+		$schema = $model->schema();
 		$fields = array();
 
 		// add all database fields
 		foreach ($schema as $field => $fieldSchema) {
-			if ($this->isExposedField($Model, $field)) {
-				array_push($fields, $this->getColumnType($Model, $field, $fieldSchema));
+			if ($this->isExposedField($model, $field)) {
+				array_push($fields, $this->getColumnType($model, $field, $fieldSchema));
 			}
 		}
 
 		// add virtual fields
-		foreach ($Model->virtualFields as $field => $sql) {
-			if ($this->isExposedField($Model, $field)) {
+		foreach ($model->virtualFields as $field => $sql) {
+			if ($this->isExposedField($model, $field)) {
 				array_push($fields, array(
 					'name' => $field,
 					'type' => 'auto', // we can't guess the type here
@@ -409,15 +411,19 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
+ * The $model is only used for MySQL enum support, 
  * @see #getColumnTypes
- *
- * The $Model is only used for MySQL enum support
+ * 
+ * @param Model  $model       Model using this behavior
+ * @param string $fieldName   The fieldname of the model
+ * @param array  $fieldSchema The CakePHP field schema
+ * @return array              The Sencha Touch/Ext JS column configuration
  */
-	public function getColumnType(Model $Model, $fieldName, array $fieldSchema) {
+	public function getColumnType(Model $model, $fieldName, array $fieldSchema) {
 
 		// handle mysql enum field
 		$type = $fieldSchema['type'];
-		if (substr($type,0,4) == 'enum') {
+		if (substr($type, 0, 4) == 'enum') {
 			// find all possible options
 			preg_match_all("/'(.*?)'/", $type, $enums);
 
@@ -435,7 +441,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// handle mysql timestamp default value
-		if ($type=='timestamp' && $fieldSchema['default'] == 'CURRENT_TIMESTAMP') {
+		if ($type == 'timestamp' && $fieldSchema['default'] == 'CURRENT_TIMESTAMP') {
 			$fieldSchema['null'] = true;
 			$fieldSchema['default'] = '';
 		}
@@ -457,24 +463,25 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			array(
 				'name' => $fieldName,
 				'allowNull' => $fieldSchema['null'],
-				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default']===null) ?
+				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default'] === null) ?
 									'' : $fieldSchema['default'] // if null is not allowed fall back to ''
-				),
-			isset($this->_types[$type]) ? $this->_types[$type] : array('type' => 'auto'));
+			),
+			isset($this->_types[$type]) ? $this->_types[$type] : array('type' => 'auto')
+		);
 	}
 
 /**
  * Returns an ExtJS formated array of field names, validation types and constraints.
  *
- * @param Model $Model instance of model
+ * @param Model $model Model using this behavior
  * @return array Ext.data.validations rules
  */
-	public function getValidations(Model $Model) {
+	public function getValidations(Model $model) {
 		$rules = array();
 
 		// only use validation rules for exposed fields
-		foreach ($Model->validate as $fieldName => $fieldRules) {
-			if ($this->isExposedField($Model, $fieldName)) {
+		foreach ($model->validate as $fieldName => $fieldRules) {
+			if ($this->isExposedField($model, $fieldName)) {
 				$rules[$fieldName] = $fieldRules;
 			}
 		}
@@ -494,13 +501,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * Normalizes a array to process validation rules in a backwards compatible way.
  * 
- * @param  array $rules validation rules array
- * @return array        normalized array
+ * @param  array $rules The CakePHP validation rules to normalize
+ * @return array        The normalized CakePHP validation rules
  */
 	protected function _normalizeValidationRules($rules) {
-
 		foreach ($rules as $fieldName => $fieldRules) {
-
 			$normalizedFieldRules = array();
 
 			if (is_string($fieldRules) || isset($fieldRules['rule'])) {
@@ -524,11 +529,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
  * @see #_normalizeValidationRules
- * @param  string|array $fieldRule validation rule to normalize
- * @return array                   normalized rule
+ * 
+ * @param  string|array $fieldRule The CakePHP validation rule to normalize
+ * @return array                   The normalized rule
  */
 	protected function _normalizeValidationRule($fieldRule) {
-
 		// Transform simple rules into our normalized structure
 		// http://book.cakephp.org/2.0/en/models/data-validation.html#simple-rules
 		if (is_string($fieldRule)) {
@@ -551,7 +556,12 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * @see #_normalizeValidationRules
+ * Retrieve the Sencha Touch/Ext JS validation rules from the CakePHP
+ * schema.
+ * 
+ * @param string $fieldName   The field name of the model
+ * @param array  $rules       The CakePHP rules for the field
+ * @return array              The generated Sencha Touch/Ext JS validation rules
  */
 	protected function _getValidationRulesForField($fieldName, $rules) {
 		$cols = array();
@@ -560,7 +570,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		$presence = false;
 		foreach ($rules as $rule) {
 			if ((isset($rule['required']) && $rule['required']) ||
-			   (isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
+				(isset($rule['allowEmpty']) && !$rule['allowEmpty'])) {
 				$presence = true;
 				break;
 			}
@@ -588,7 +598,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			$cols[] = array(
 				'type' => 'inclusion',
 				'field' => $fieldName,
-				'list' => array(true,false, '0', '1', 0, 1)
+				'list' => array(true, false, '0', '1', 0, 1)
 			);
 		}
 
@@ -691,7 +701,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 
 			if (isset($rules['naturalNumber'])) {
-				$numberRule['min'] = (isset($rules['naturalNumber']['rule'][1]) && $rules['naturalNumber']['rule'][1]==true) ? 0 : 1;
+				$numberRule['min'] = (isset($rules['naturalNumber']['rule'][1]) && $rules['naturalNumber']['rule'][1] == true) ? 0 : 1;
 			}
 
 			$setNumberRule = true;
@@ -708,17 +718,17 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 			if (isset($rules['numeric']['precision'])) {
 				// increment/decrease by the smallest possible value
-				$amount = 1*pow(10,-$rules['numeric']['precision']);
+				$amount = 1 * pow(10, -$rules['numeric']['precision']);
 				$min += $amount;
 				$max -= $amount;
 			} else {
 
 				// if debug tell dev about problem
-				if (Configure::read('debug')>0) {
+				if (Configure::read('debug') > 0) {
 					throw new CakeException(
-						"Bancha: You are currently using the validation rule 'range' for the model field ".$fieldName.
-						". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly ".
-						"map the validation rules. \nUsage: array('rule' => array('numeric'), 'precision'=> ? ) \n".
+						"Bancha: You are currently using the validation rule 'range' for the model field " . $fieldName .
+						". Please also define the numeric rule with the appropriate precision, otherwise Bancha can't exactly " .
+						"map the validation rules. \nUsage: array('rule' => array('numeric'), 'precision'=> ? ) \n" .
 						"This error is only displayed in debug mode."
 					);
 				}
@@ -744,15 +754,15 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
  *	Prepare an array of Model's validation error messages
- *  @param model $Model Model using this behavior
+ *  @param model $model Model using this behavior
  *	@return String
  */
-	protected function _getValidationErrors(Model $Model) {
+	protected function _getValidationErrors(Model $model) {
 		// Initialize array of validation errors
 		$list = array();
 
 		// Prepare a list of validation errors
-		foreach ($Model->validationErrors as $field => $val) {
+		foreach ($model->validationErrors as $field => $val) {
 			$list[$field] = implode(', ', $val);
 		}
 
@@ -766,23 +776,23 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *  @param Array $data CakePHP File info.
  *  @param Boolean $required Is this field required?
  *  @return Boolean
-*/
+ */
 	public function validateFile(array $data, $required = false) {
 		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
-		$upload_info = array_shift($data);
+		$uploadInfo = array_shift($data);
 
 		// No file uploaded.
-		if ($required && $upload_info['size'] == 0) {
+		if ($required && $uploadInfo['size'] == 0) {
 				return false;
 		}
 
 		// Check for Basic PHP file errors.
-		if ($upload_info['error'] !== 0) {
+		if ($uploadInfo['error'] !== 0) {
 			return false;
 		}
 
 		// Finally, use PHP's own file validation method.
-		return is_uploaded_file($upload_info['tmp_name']);
+		return is_uploaded_file($uploadInfo['tmp_name']);
 	}
 
 	// TODO remove workarround for 'file' validation
@@ -794,76 +804,79 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * After saving load the full record from the database to
  * return to the frontend
  *
- * @param model $Model Model using this behavior
- * @param boolean $created True if this save created a new record
+ * @param Model    $model   Model using this behavior
+ * @param boolean  $created True if this save created a new record
+ * @param array    $options Options passed from Model::save().
+ * @return boolean          True if saving should proceed
  */
-	public function afterSave(Model $Model, $created, $options = array()) {
+	public function afterSave(Model $model, $created, $options = array()) {
 		// get all the data bancha needs for the response
 		// and save it in the data property
 		if ($created) {
 			// just add the id
-			$this->_result[$Model->alias] = $Model->data;
-			$this->_result[$Model->alias][$Model->name]['id'] = $Model->id;
+			$this->_result[$model->alias] = $model->data;
+			$this->_result[$model->alias][$model->name]['id'] = $model->id;
 		} else {
 			// load the full record from the database
 			// Setting recursive to -1 may result in an error if the virtual field uses associated data
 			// On the other hand not setting the recursion to -1 has some negative performance impacts
-			// $currentRecursive = $Model->recursive;
-			// $Model->recursive = -1;
-			$this->_result[$Model->alias] = $Model->read();
-			// $Model->recursive = $currentRecursive;
+			// $currentRecursive = $model->recursive;
+			// $model->recursive = -1;
+			$this->_result[$model->alias] = $model->read();
+			// $model->recursive = $currentRecursive;
 		}
 
 		return true;
 	}
 
 /**
- * Returns the result record of the last save operation
- * @param Model $Model the model using this behavior
- * @return mixed $results The record data of the last saved record
+ * Returns the result record of the last save operation.
+ * 
+ * @param Model $model The model using this behavior
+ * @return mixed       The record data of the last saved record
  */
-	public function getLastSaveResult(Model $Model) {
-		if (empty($this->_result[$Model->alias])) {
+	public function getLastSaveResult(Model $model) {
+		if (empty($this->_result[$model->alias])) {
 
 			// throw an exception for empty response
 			throw new BanchaException(
-				'There was nothing saved to be returned. Probably this occures because the data '.
-				'you send from ExtJS was malformed. Please use the Bancha.model.ModelName '.
-				'model to create, load and save model records. If you really have to create '.
-				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
+				'There was nothing saved to be returned. Probably this occures because the data ' .
+				'you send from ExtJS was malformed. Please use the Bancha.model.ModelName ' .
+				'model to create, load and save model records. If you really have to create ' .
+				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" ' .
 				'(Sencha Touch) is set to "data".');
 		}
 
 		// otherwise return result, that is set in the saveFields() method
-		return $this->_result[$Model->alias];
+		return $this->_result[$model->alias];
 	}
 
 /**
- * Builds a field list with all defined fields
+ * Builds a field list with all defined fields.
  *
- * @param Model $Model the model using this behavior
+ * @param Model $model the model using this behavior
  */
-	protected function _buildFieldList(Model $Model) {
+	protected function _buildFieldList(Model $model) {
 		// Make a quick quick check if the data is in the right format
-		if (isset($Model->data[$Model->name][0]) && is_array($Model->data[$Model->name][0])) {
+		if (isset($model->data[$model->name][0]) && is_array($model->data[$model->name][0])) {
 			throw new BanchaException(
-				'The data to be saved seems malformed. Probably this occures because you send '.
-				'from your own model or you one save invokation. Please use the Bancha.model.ModelName '.
-				'model to create, load and save model records. If you really have to create '.
-				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" '.
-				'(Sencha Touch) is set to "data". <br /><br />'.
-				'Got following data to save: <br />'.print_r($Model->data,true));
+				'The data to be saved seems malformed. Probably this occures because you send ' .
+				'from your own model or you one save invokation. Please use the Bancha.model.ModelName ' .
+				'model to create, load and save model records. If you really have to create ' .
+				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" ' .
+				'(Sencha Touch) is set to "data". <br /><br />' .
+				'Got following data to save: <br />' . print_r($model->data, true));
 		}
 		// More extensive data validation
 		// For performance reasons this is just done in debug mode
 		if (Configure::read('debug') == 2) {
 			$valid = false;
-			$fields = $Model->getColumnTypes();
+			$fields = $model->getColumnTypes();
 			// check if at least one field is saved to the database
 			try {
-				if (isset($Model->data[$Model->name]) && is_array($Model->data[$Model->name])) {
+				if (isset($model->data[$model->name]) && is_array($model->data[$model->name])) {
 					foreach ($fields as $field => $type) {
-						if ($field!==$Model->primaryKey && array_key_exists($field, $Model->data[$Model->name])) {
+						if ($field!==$model->primaryKey && array_key_exists($field, $model->data[$model->name])) {
 							$valid=true;
 							break;
 						}
@@ -873,35 +886,35 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				throw new BanchaException(
 					'Caught exception: ' . $e->getMessage() . ' <br />' .
 					'Bancha couldn\'t find any fields. This is usually because the Model is incorrectly designed. ' .
-					'Check your model <br /><br /><pre>'.print_r($Model->data,true).'</pre>'
+					'Check your model <br /><br /><pre>' . print_r($model->data, true) . '</pre>'
 				);
 			}
 			if (!$valid) {
 				throw new BanchaException(
-					'You try to save a record, but Bancha is not able to find the data. Bancha could '.
-					'not find even one model field in the send data. Probably this occurs because you '.
-					'saved a record from your own model with a wrong configuration. Please use the '.
-					'Bancha.model.ModelName model to create, load and save model records. If '.
-					'you really have to create your own models, make sure that the JsonWriter property '.
-					'"root" (ExtJS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />'.
-					'Got following data to save: <br />'.print_r($Model->data,true));
+					'You try to save a record, but Bancha is not able to find the data. Bancha could ' .
+					'not find even one model field in the send data. Probably this occurs because you ' .
+					'saved a record from your own model with a wrong configuration. Please use the ' .
+					'Bancha.model.ModelName model to create, load and save model records. If ' .
+					'you really have to create your own models, make sure that the JsonWriter property ' .
+					'"root" (ExtJS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />' .
+					'Got following data to save: <br />' . print_r($model->data, true));
 			}
 		} //eo debugging checks
 
-		return array_keys(isset($Model->data[$Model->name]) ? $Model->data[$Model->name] : $data);
+		return array_keys(isset($model->data[$model->name]) ? $model->data[$model->name] : $data);
 	}
 
 /**
  * See $this->_defaults['useOnlyDefinedFields'] for an explanation
  *
- * @param Model $Model the model using this behavior
+ * @param Model $model the model using this behavior
  * @param Array $options Options passed from model::save(), see $options of model::save().
  * @return Boolean True if validate operation should continue, false to abort
  */
-	public function beforeValidate(Model $Model, $options = array()) {
-		if ($this->_settings[$Model->alias]['useOnlyDefinedFields'] && !empty($Model->data[$Model->name])) {
+	public function beforeValidate(Model $model, $options = array()) {
+		if ($this->_settings[$model->alias]['useOnlyDefinedFields'] && !empty($model->data[$model->name])) {
 			// if not yet defined, create a field list to validate only the changes (empty records will still invalidate)
-			$Model->whitelist = empty($options['fieldList']) ? $this->_buildFieldList($Model) : $options['fieldList']; // TODO how to not overwrite the whitelist?
+			$model->whitelist = empty($options['fieldList']) ? $this->_buildFieldList($model) : $options['fieldList']; // TODO how to not overwrite the whitelist?
 		}
 
 		// start validating data
@@ -911,14 +924,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * See $this->_defaults['useOnlyDefinedFields'] for an explanation
  *
- * @param Model $Model the model using this behavior
+ * @param Model $model the model using this behavior
  * @param Array $options
  * @return Boolean True if the operation should continue, false if it should abort
  */
-	public function beforeSave(Model $Model, $options = array()) {
-		if ($this->_settings[$Model->alias]['useOnlyDefinedFields']) {
+	public function beforeSave(Model $model, $options = array()) {
+		if ($this->_settings[$model->alias]['useOnlyDefinedFields']) {
 			// if not yet defined, create a field list to save only the changes
-			$options['fieldList'] = empty($options['fieldList']) ? $this->_buildFieldList($Model) : $options['fieldList'];
+			$options['fieldList'] = empty($options['fieldList']) ? $this->_buildFieldList($model) : $options['fieldList'];
 		}
 
 		// start saving data
@@ -929,43 +942,43 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * Saves a records, either add or edit.
  * See $this->_defaults['useOnlyDefinedFields'] for an explanation
  *
- * @param Model $Model the model using this behavior
+ * @param Model $model the model using this behavior
  * @param Array $data the data to save (first user argument)
  * @param Array $options the save options
  * @return Array|Boolean The result of the save operation (same as in Model->save($data))
  */
-	public function saveFields(Model $Model, $data=null, $options=array()) {
+	public function saveFields(Model $model, $data = null, $options = array()) {
 		// overwrite config for this commit
-		$config = $this->_settings[$Model->alias]['useOnlyDefinedFields'];
-		$this->_settings[$Model->alias]['useOnlyDefinedFields'] = true;
+		$config = $this->_settings[$model->alias]['useOnlyDefinedFields'];
+		$this->_settings[$model->alias]['useOnlyDefinedFields'] = true;
 
 		// this should never be the case, cause Bancha cannot handle validation errors currently
 		// We expect to automatically send validation errors to the client in the right format in version 1.1
 		if ($data) {
-			$Model->set($data);
+			$model->set($data);
 		}
 
 		// try to validate data
 		$success = true;
-		if (!$Model->validates()) {
+		if (!$model->validates()) {
 			// prepare extJs formatted response of validation errors on failure to validate
-			$this->_result[$Model->alias] = array(
+			$this->_result[$model->alias] = array(
 				'success' => false,
-				'errors' => $this->_getValidationErrors($Model)
+				'errors' => $this->_getValidationErrors($model)
 			);
 			$success = false;
 
 		} else {
 			// set result with saved record
-			$this->_result[$Model->alias] = $Model->save($Model->data, $options);
-			$success = !empty($this->_result[$Model->alias]);
+			$this->_result[$model->alias] = $model->save($model->data, $options);
+			$success = !empty($this->_result[$model->alias]);
 		}
 
 		// set back
-		$this->_settings[$Model->alias]['useOnlyDefinedFields'] = $config;
+		$this->_settings[$model->alias]['useOnlyDefinedFields'] = $config;
 
 		// return saved record data if not empty and valid, otherwise false
-		return $success ? $this->_result[$Model->alias] : false;
+		return $success ? $this->_result[$model->alias] : false;
 	}
 
 /**
@@ -973,55 +986,60 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * returns the result in an extjs format
  * for return value see also getLastSaveResult()
  *
- * @param Model $Model the model is always the first param (cake does this automatically)
- * @param $data the data to save, first function argument
+ * @param Model $model The model is always the first param (cake does this automatically)
+ * @param $data        The data to save, first function argument
+ * @return mixed       The record data of the saved record
  */
-	public function saveFieldsAndReturn(Model $Model, $data=null) {
+	public function saveFieldsAndReturn(Model $model, $data = null) {
 		// save
-		$this->saveFields($Model, $data);
+		$this->saveFields($model, $data);
 
 		// return ext-formated result
-		return $this->getLastSaveResult($Model);
+		return $this->getLastSaveResult($model);
 	}
 
 /**
- * convenience methods, just delete and then return $Model->getLastSaveResult();
+ * Convenience methods, just delete and then return $model->getLastSaveResult();
  *
- * @param Model $Model the model using this behavior
- * @®eturn Array|Boolean the latest save result
+ * @param Model $model Model using this behavior
+ * @return array|boolean The latest save result
  */
-	public function deleteAndReturn(Model $Model) {
-		if (!$Model->exists()) {
+	public function deleteAndReturn(Model $model) {
+		if (!$model->exists()) {
 			throw new NotFoundException(__('Invalid user'));
 		}
-		$Model->delete();
-		return $this->getLastSaveResult($Model);
+		$model->delete();
+		return $this->getLastSaveResult($model);
 	}
 
 /**
  * Keep the result of the delete action.
+ * 
+ * @param Model $model Model using this behavior
+ * @return void
  */
-	public function afterDelete(Model $Model) {
+	public function afterDelete(Model $model) {
 		// if no exception was thrown so far the request was successfull
-		$this->_result[$Model->alias] = true;
+		$this->_result[$model->alias] = true;
 	}
 
 /**
  * Returns an ExtJS formated array describing sortable fields
- * this is '$order' in cakephp
+ * this is '$order' in CakePHP.
  *
- * @param Model $Model the model using this behavior
- * @return array ExtJS formated  { property: 'name', direction: 'ASC'	}
+ * @param Model $model Model using this behavior
+ * @return array       The Sencha Touch/Ext JS formated sorters like
+ *                     { property: 'name', direction: 'ASC'	}
  */
-	public function getSorters(Model $Model) {
+	public function getSorters(Model $model) {
 		$sorters = array();
 
-		if (empty($Model->order)) {
+		if (empty($model->order)) {
 			return $sorters;
 		}
 
-		if (is_string($Model->order)) {
-			$order = trim($Model->order);
+		if (is_string($model->order)) {
+			$order = trim($model->order);
 
 			if (strpos($order, '.') === false) {
 				// this is just the field name
@@ -1041,15 +1059,18 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			}
 			array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
 
-		} elseif (is_array($Model->order)) {
-			foreach ($Model->order as $key => $direction) {
+		} elseif (is_array($model->order)) {
+			foreach ($model->order as $key => $direction) {
 				$modelName = strtok($key, ".");
 				$fieldName = strtok(".");
 				array_push($sorters, array( 'property' => $fieldName, 'direction' => $direction));
 			}
 
 		} else {
-			throw new CakeException("The CakePHP ".$Model->alias." model configuration for order needs to be a string or array, instead got ".gettype($Model->order));
+			throw new CakeException(
+				'The CakePHP ' . $model->alias . ' model configuration for order needs to be a string ' .
+				'or array, instead got ' . gettype($model->order)
+			);
 		}
 		return $sorters;
 	}

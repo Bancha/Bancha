@@ -23,12 +23,12 @@ App::uses('BanchaApi', 'Bancha.Bancha');
  */
 class BanchaApiTest extends CakeTestCase {
 
-    public $fixtures = array(
-    	'plugin.bancha.article',
-    	'plugin.bancha.articles_tag',
-    	'plugin.bancha.user',
-    	'plugin.bancha.tag'
-    );
+	public $fixtures = array(
+		'plugin.bancha.article',
+		'plugin.bancha.articles_tag',
+		'plugin.bancha.user',
+		'plugin.bancha.tag'
+	);
 
 /**
  * Keeps a reference to the default paths, since
@@ -57,7 +57,7 @@ class BanchaApiTest extends CakeTestCase {
 
 		// load plugin from test_app
 		CakePlugin::load('TestPlugin');
-		
+
 		// force the cache to renew
 		App::objects('plugin', null, false);
 	}
@@ -147,7 +147,7 @@ class BanchaApiTest extends CakeTestCase {
 		$this->assertContains('Article', $filteredModels);
 
 		// expose two models (alternative usage)
-		$filteredModels = $api->filterRemotableModels($remotableModels, array('User','Article'));
+		$filteredModels = $api->filterRemotableModels($remotableModels, array('User', 'Article'));
 		$this->assertCount(2, $filteredModels);
 		$this->assertContains('User', $filteredModels);
 		$this->assertContains('Article', $filteredModels);
@@ -170,7 +170,7 @@ class BanchaApiTest extends CakeTestCase {
  * @return void
  * @expectedException MissingModelException
  */
-	public function testFilterRemotableModels_MissingModel() {
+	public function testFilterRemotableModelsMissingModel() {
 		$api = new BanchaApi();
 		$api->filterRemotableModels(array(), '[InvalidModel]');
 	}

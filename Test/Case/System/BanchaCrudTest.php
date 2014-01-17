@@ -174,6 +174,7 @@ class BanchaCrudTest extends CakeTestCase {
 
 /**
  * Test the form submission including the different request form of Ext.Direct
+ * 
  * @return void
  */
 	public function testSubmit() {
@@ -544,7 +545,7 @@ class BanchaCrudTest extends CakeTestCase {
 			'tid'			=> 2,
 			'type'			=> 'rpc',
 			'data'			=> array(array(
-				'data'	=>array('id' => 1002)
+				'data'	=> array('id' => 1002)
 			))
 		)));
 
@@ -585,7 +586,7 @@ class BanchaCrudTest extends CakeTestCase {
 				'published'		=> false,
 				'user_id'		=> 1,
 			))),
-		),array(
+		), array(
 			'action'		=> 'Article',
 			'method'		=> 'update',
 			'tid'			=> 2,

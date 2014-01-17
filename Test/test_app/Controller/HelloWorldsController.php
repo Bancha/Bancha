@@ -24,22 +24,22 @@ App::uses('AppController', 'Controller');
 class HelloWorldsController extends AppController {
 
 /**
- * @banchaRemotable
  * Returns the data 'Hello World'.
  * 
  * @return String the greeting
+ * @banchaRemotable
  */
 	public function hello() {
 		return array('data' => 'Hello World');
 	}
 
 /**
- * @banchaRemotable
  * Greets two people by name.
  * 
  * @param string $name the first person
  * @param string $name2 the second person
  * @return string the greeting
+ * @banchaRemotable
  */
 	public function helloyou($name, $name2) {
 		return array('data' => sprintf('Hello %s and %s!', $name, $name2));

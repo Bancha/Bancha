@@ -30,6 +30,10 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
 
 /**
  * A public function for the protected _getValidationRulesForField.
+ * 
+ * @param string $fieldName   The field name of the model
+ * @param array  $rules       The CakePHP rules for the field
+ * @return array              The generated Sencha Touch/Ext JS validation rules
  */
 	public function getValidationRulesForField($fieldName, $rules) {
 		return $this->_getValidationRulesForField($fieldName, $rules);
@@ -37,6 +41,9 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
 
 /**
  * A public function for the protected _normalizeValidationRules.
+ * 
+ * @param  array $rules The CakePHP validation rules to normalize
+ * @return array        The normalized CakePHP validation rules
  */
 	public function normalizeValidationRules($rules) {
 		return $this->_normalizeValidationRules($rules);
@@ -166,7 +173,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @dataProvider getExposedFieldsDataProvider_Exceptions
  * @expectedException CakeException
  */
-	public function testGetExposedFields_Exceptions($behaviorConfig) {
+	public function testGetExposedFieldsExceptions($behaviorConfig) {
 		// turn debug mode on
 		$this->_standardDebugLevel = Configure::read('debug');
 		Configure::write('debug', 2);
@@ -188,7 +195,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * 
  * @return void
  */
-	public function getExposedFieldsDataProvider_Exceptions() {
+	public function getExposedFieldsDataProviderExceptions() {
 		return array(
 			array(
 				array('exposedFields' => array('id', 'imaginary')),
@@ -401,8 +408,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * 
  * @return void
  */
-	public function testFilterRecord_AssociatedRecords() {
-
+	public function testFilterRecordAssociatedRecords() {
 		// prepare
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
@@ -478,7 +484,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @return void
  */
 	public function testFilterRecord_IntegerIdFields() {
-
 		// setup
 		$TestModel = new TestArticle();
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
@@ -505,7 +510,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @return void
  */
 	public function testGetAssociated() {
-
 		// hasAndBelongsTo associations should be hidden
 		$expecedResult = array(
 			array(
@@ -538,10 +542,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array());
 
 		$result = $TestModel->Behaviors->BanchaRemotable->getAssociated($TestModel);
-		$this->assertEqual(count($result), 3, "Expected three associations, instead got ".count($result));
+		$this->assertEqual(count($result), 3, 'Expected three associations, instead got ' . count($result));
 		$this->assertEqual($result, $expecedResult);
 	}
-
 
 /**
  * Get all associations in ExtJS/Sencha Touch format.
@@ -550,7 +553,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @return void
  */
 	public function testGetAssociatedFiltered() {
-
 		// the belongsTo association should be hidden
 		// because the field user_id is hidden
 		$expecedResult = array(
@@ -576,7 +578,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', array('excludedFields' => array('user_id')));
 
 		$result = $TestModel->Behaviors->BanchaRemotable->getAssociated($TestModel);
-		$this->assertEqual(count($result), 2, "Expected three associations, instead got ".count($result));
+		$this->assertEqual(count($result), 2, 'Expected three associations, instead got ' . count($result));
 		$this->assertEqual($result, $expecedResult);
 	}
 
@@ -663,7 +665,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @dataProvider getColumnTypeDataProvider
  */
 	public function testGetColumnType($cakeFieldConfig, $expecedSenchaConfig) {
-
 		// prepare
 		$banchaRemotable = new BanchaRemotableBehavior();
 
@@ -752,7 +753,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					'type' => 'date',
-					'dateFormat' =>'Y-m-d H:i:s',
+					'dateFormat' => 'Y-m-d H:i:s',
 					'allowNull' => true,
 					'defaultValue' => '',
 					'name' => 'title',
@@ -766,7 +767,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					'type' => 'date',
-					'dateFormat' =>'Y-m-d',
+					'dateFormat' => 'Y-m-d',
 					'allowNull' => true,
 					'defaultValue' => '',
 					'name' => 'title',
@@ -780,7 +781,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					'type' => 'date',
-					'dateFormat' =>'H:i:s',
+					'dateFormat' => 'H:i:s',
 					'allowNull' => true,
 					'defaultValue' => '',
 					'name' => 'title',
@@ -794,7 +795,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					'type' => 'date',
-					'dateFormat' =>'timestamp',
+					'dateFormat' => 'timestamp',
 					'allowNull' => true,
 					'defaultValue' => '',
 					'name' => 'title',
@@ -809,7 +810,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @return void
  */
 	public function testGetColumnTypeEnum() {
-
 		// prepare
 		$model = $this->getMock('Model');
 		$banchaRemotable = new BanchaRemotableBehavior();
@@ -845,7 +845,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * @return void
  */
 	public function testGetColumnTypeTreeParentId() {
-
 		// prepare
 		$banchaRemotable = new BanchaRemotableBehavior();
 		$cakeFieldConfig = array(
@@ -874,7 +873,6 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		);
 		$result = $banchaRemotable->getColumnType(new RemotableTestTreeModel(), 'parent_id', $cakeFieldConfig);
 		$this->assertEqual($result, $expecedSenchaConfig);
-
 
 		// test with non-default parent id
 		$model = new RemotableTestTreeModelWithSpecialParentId();
@@ -1130,7 +1128,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					'id' => array(
 						'rule' => 'numeric', // rule as string
 						'precision' => 0,
-						'required'   => true,
+						'required' => true,
 						'allowEmpty' => true,
 					),
 					'avatar' => array(
@@ -1144,7 +1142,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'numeric' => array(
 							'rule' => array('numeric'), // this should always be an array
 							'precision' => 0,
-							'required'   => true,
+							'required' => true,
 							'allowEmpty' => true,
 						),
 					),
@@ -1163,7 +1161,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					'id' => array(
 						'rule' => 'numeric', // rule as string
 						'precision' => 0,
-						'required'   => true,
+						'required' => true,
 						'allowEmpty' => true,
 					),
 					'login' => 'alphaNumeric',
@@ -1178,7 +1176,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'numeric' => array(
 							'rule' => array('numeric'), // this should always be an array
 							'precision' => 0,
-							'required'   => true,
+							'required' => true,
 							'allowEmpty' => true,
 						),
 					),
@@ -1205,12 +1203,12 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 							'message' => "Login is already taken."
 						),
 						'alphaNumeric' => array(
-							'rule'	 => 'alphaNumeric',
+							'rule' => 'alphaNumeric',
 							'required' => true,
-							'message'  => 'Alphabets and numbers only'
+							'message' => 'Alphabets and numbers only'
 						),
 						'between' => array(
-							'rule'	=> array('between', 5, 15),
+							'rule' => array('between', 5, 15),
 							'message' => 'Between 5 to 15 characters'
 						)
 					),
@@ -1222,12 +1220,12 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 							'message' => "Login is already taken."
 						),
 						'alphaNumeric' => array(
-							'rule'	 => array('alphaNumeric'), // this should always be an array
+							'rule' => array('alphaNumeric'), // this should always be an array
 							'required' => true,
-							'message'  => 'Alphabets and numbers only'
+							'message' => 'Alphabets and numbers only'
 						),
 						'between' => array(
-							'rule'	=> array('between', 5, 15),
+							'rule' => array('between', 5, 15),
 							'message' => 'Between 5 to 15 characters'
 						)
 					),
@@ -1242,9 +1240,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 							'message' => "Login is already taken."
 						),
 						'loginRule-2' => array(
-							'rule'	 => 'alphaNumeric',
+							'rule' => 'alphaNumeric',
 							'required' => true,
-							'message'  => 'Alphabets and numbers only'
+							'message' => 'Alphabets and numbers only'
 						),
 					),
 				),
@@ -1255,9 +1253,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 							'message' => "Login is already taken."
 						),
 						'alphaNumeric' => array(
-							'rule'	 => array('alphaNumeric'), // this should always be an array
+							'rule' => array('alphaNumeric'), // this should always be an array
 							'required' => true,
-							'message'  => 'Alphabets and numbers only'
+							'message' => 'Alphabets and numbers only'
 						),
 					),
 				),
@@ -1268,7 +1266,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					'id' => array( // multiple rules
 						'rule' => 'numeric', // rule as string
 						'precision' => 0,
-						'required'   => true,
+						'required' => true,
 						'allowEmpty' => true,
 					),
 					'login' => array(
@@ -1277,9 +1275,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 							'message' => "Login is already taken."
 						),
 						'loginRule-2' => array(
-							'rule'	 => 'alphaNumeric',
+							'rule' => 'alphaNumeric',
 							'required' => true,
-							'message'  => 'Alphabets and numbers only'
+							'message' => 'Alphabets and numbers only'
 						),
 					),
 					'email' => 'email', // simple rule
@@ -1294,7 +1292,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'numeric' => array(
 							'rule' => array('numeric'), // this should always be an array
 							'precision' => 0,
-							'required'   => true,
+							'required' => true,
 							'allowEmpty' => true,
 						),
 					),
@@ -1304,9 +1302,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 							'message' => "Login is already taken."
 						),
 						'alphaNumeric' => array(
-							'rule'	 => array('alphaNumeric'), // this should always be an array
+							'rule' => array('alphaNumeric'), // this should always be an array
 							'required' => true,
-							'message'  => 'Alphabets and numbers only'
+							'message' => 'Alphabets and numbers only'
 						),
 					),
 					'email' => array(
@@ -1359,7 +1357,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'login',
 				array(
 					'alphaNumeric' => array(
-						'rule'	 => array('alphaNumeric'),
+						'rule' => array('alphaNumeric'),
 					),
 				),
 				array(
@@ -1375,7 +1373,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'login',
 				array(
 					'between' => array(
-						'rule'	=> array('between', 0, 15),
+						'rule' => array('between', 0, 15),
 						'message' => 'Between 0 to 15 characters'
 					)
 				),
@@ -1392,7 +1390,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'login',
 				array(
 					'between' => array(
-						'rule'	=> array('between', 5, 23),
+						'rule' => array('between', 5, 23),
 						'message' => 'Between 5 to 23 characters'
 					)
 				),
@@ -1476,7 +1474,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'name',
 				array(
 					'inList' => array(
-						'rule'    => array('inList', array('a', 'ab')),
+						'rule' => array('inList', array('a', 'ab')),
 						'message' => 'This file can only be "a" or "ab" or undefined.'
 					),
 				),
@@ -1493,7 +1491,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'name',
 				array(
 					'inList' => array(
-						'rule'    => array('inList', array('a', 'ab')),
+						'rule' => array('inList', array('a', 'ab')),
 						'message' => 'This file can only be "a" or "ab" or undefined.'
 					),
 				),
@@ -1511,7 +1509,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'login',
 				array(
 					'minLength' => array(
-						'rule'    => array('minLength', 3),
+						'rule' => array('minLength', 3),
 						'message' => 'Usernames must be nat least 3 characters long.',
 					),
 				),
@@ -1527,7 +1525,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'login',
 				array(
 					'maxLength' => array(
-						'rule'    => array('maxLength', 15),
+						'rule' => array('maxLength', 15),
 						'message' => 'Usernames must be no larger than 15 characters long.',
 					),
 				),
@@ -1544,11 +1542,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				array(
 					// min and max should be combined
 					'minLength' => array(
-						'rule'    => array('minLength', 3),
+						'rule' => array('minLength', 3),
 						'message' => 'Usernames must be at least 3 characters long.',
 					),
 					'maxLength' => array(
-						'rule'    => array('maxLength', 15),
+						'rule' => array('maxLength', 15),
 						'message' => 'Usernames must be no larger than 15 characters long.',
 					),
 				),
@@ -1566,11 +1564,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				array(
 					// min and max should be combined
 					'minLength' => array(
-						'rule'    => array('minLength', 3),
+						'rule' => array('minLength', 3),
 						'message' => 'Usernames must be at least 3 characters long.',
 					),
 					'maxLength' => array(
-						'rule'    => array('maxLength', 15),
+						'rule' => array('maxLength', 15),
 						'message' => 'Usernames must be no larger than 15 characters long.',
 					),
 				),
@@ -1588,7 +1586,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'numeric' => array(
-						'rule'    => array('numeric'),
+						'rule' => array('numeric'),
 						'message' => 'Weight must be a number.',
 					),
 				),
@@ -1603,7 +1601,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'numeric' => array(
-						'rule'    => array('numeric'),
+						'rule' => array('numeric'),
 						'message' => 'Weight must be a number.',
 						'precision' => 0,
 					),
@@ -1621,7 +1619,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'naturalNumber' => array(
-						'rule'    => array('naturalNumber'),
+						'rule' => array('naturalNumber'),
 						'message' => 'Weight must be a natural number greater zero.',
 					),
 				),
@@ -1638,7 +1636,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'naturalNumber' => array(
-						'rule'    => array('naturalNumber', true),
+						'rule' => array('naturalNumber', true),
 						'message' => 'Weight must be a natural number or zero.',
 					),
 				),
@@ -1656,11 +1654,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'numeric' => array(
-						'rule'    => array('numeric'),
+						'rule' => array('numeric'),
 						'precision' => 0,
 					),
 					'range' => array(
-						'rule'    => array('range', -1, 301),
+						'rule' => array('range', -1, 301),
 						'message' => 'Weight must be a number between 0 and 300, including 0 and 300.',
 					),
 				),
@@ -1678,11 +1676,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'numeric' => array(
-						'rule'    => array('numeric'),
+						'rule' => array('numeric'),
 						'precision' => 1, // test handling of precision
 					),
 					'range' => array(
-						'rule'    => array('range', 0, 300.5), // test handling of decimals
+						'rule' => array('range', 0, 300.5), // test handling of decimals
 						'message' => 'Weight must be a number between 1 and 300.5, including those.',
 					),
 				),
@@ -1700,11 +1698,11 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'numeric' => array(
-						'rule'    => array('numeric'),
+						'rule' => array('numeric'),
 						'precision' => 3, // test handling of precision
 					),
 					'range' => array(
-						'rule'    => array('range', 0, 300.5), // test handling of decimals
+						'rule' => array('range', 0, 300.5), // test handling of decimals
 						'message' => 'Weight must be a number between 1 and 300.5, including those.',
 					),
 				),
@@ -1723,7 +1721,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'url_field',
 				array(
 					'url' => array(
-						'rule'    => array('url'),
+						'rule' => array('url'),
 						'message' => 'Url must be a valid url',
 					),
 				),
@@ -1744,7 +1742,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'rule' => array('isUnique'),
 					),
 					'alphaNumeric' => array(
-						'rule'	 => array('alphaNumeric'),
+						'rule' => array('alphaNumeric'),
 						'required' => true, // <-- via require
 					),
 				),
@@ -1767,7 +1765,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'rule' => array('isUnique'),
 					),
 					'alphaNumeric' => array(
-						'rule'	 => array('alphaNumeric'),
+						'rule' => array('alphaNumeric'),
 						'allowEmpty' => false, // <-- via allowEmpty
 					),
 				),
@@ -1837,7 +1835,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'weight',
 				array(
 					'range' => array(
-						'rule'    => array('range', 0, 300),
+						'rule' => array('range', 0, 300),
 						'message' => 'Weight must be a number between 1 and 300, including those.',
 					),
 				),
@@ -1851,9 +1849,9 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  *
  * This is only an integration test, the individual rules are tested above
  *
- * @param string $fieldName    The model name to use for testing
- * @param array $behaviorConfig The config for the BanchaRemotableBehavior
- * @param array $expecedResult The expected result
+ * @param string $TestModelName  The model name to use for testing
+ * @param array  $behaviorConfig The config for the BanchaRemotableBehavior
+ * @param array  $expecedResult  The expected result
  * @return void
  * @dataProvider getValidationsDataProvider
  */
@@ -1933,7 +1931,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					array(
 						'type' => 'inclusion', // from boolean
 						'field' => 'published',
-						'list' => array(true,false, '0', '1',0,1),
+						'list' => array(true, false, '0', '1', 0, 1),
 					),
 					array(
 						'type' => 'presence', // from notEmpty
@@ -2109,7 +2107,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				'login' => 'Login is already taken.'
 			)
 		));
-		
+
 		// test validation with two rule violation
 		$user->create();
 		$result = $user->saveFieldsAndReturn(array(

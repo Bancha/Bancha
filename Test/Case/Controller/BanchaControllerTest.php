@@ -89,10 +89,10 @@ class BanchaControllerTest extends ControllerTestCase {
  */
 	public function testBanchaApiConfiguration() {
 		$response = $this->testAction('/bancha-api.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
@@ -123,15 +123,15 @@ class BanchaControllerTest extends ControllerTestCase {
 
 		// load it
 		CakePlugin::load('TestPlugin');
-		
+
 		// force the cache to renew
 		App::objects('plugin', null, false);
 
 		$response = $this->testAction('/bancha-api.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
@@ -165,10 +165,10 @@ class BanchaControllerTest extends ControllerTestCase {
  */
 	public function testBanchaApiWithOneModelMetadata() {
 		$response = $this->testAction('/bancha-api/models/User.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
@@ -197,7 +197,6 @@ class BanchaControllerTest extends ControllerTestCase {
 		$this->assertTrue(is_array($api->metadata->User->validations));
 		$this->assertTrue(is_array($api->metadata->User->associations));
 		$this->assertTrue(is_array($api->metadata->User->sorters));
-
 	}
 
 /**
@@ -207,10 +206,10 @@ class BanchaControllerTest extends ControllerTestCase {
  */
 	public function testBanchaApiWithMultipleMetadata() {
 		$response = $this->testAction('/bancha-api/models/[Article,User].js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
@@ -240,10 +239,10 @@ class BanchaControllerTest extends ControllerTestCase {
  */
 	public function testBanchaApiWithAllMetadata() {
 		$response = $this->testAction('/bancha-api/models/all.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 
@@ -283,7 +282,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$api = json_decode($api);
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 		$this->assertEquals(true, $api->singleton);
@@ -315,7 +314,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$api = json_decode($api);
 
 		// check Ext.Direct configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 		$this->assertEquals(true, $api->singleton);
@@ -367,7 +366,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		$api = json_decode($api);
 
 		// check basic configurations
-		$this->assertEquals('/bancha-dispatcher.php', substr($api->url,-22,22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
+		$this->assertEquals('/bancha-dispatcher.php', substr($api->url, -22, 22)); //strip the absolute path, otherwise it doesn't probably work in the terminal
 		$this->assertEquals('Bancha.RemoteStubs', $api->namespace);
 		$this->assertEquals('remoting', $api->type);
 		$this->assertEquals(true, $api->singleton);
@@ -609,7 +608,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// in production mode only expect a flag
 		Configure::write('debug', 0);
 		$response = $this->testAction('/bancha-api.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 		// test data
 		$this->assertEquals(0, $api->metadata->_ServerDebugLevel);
 		$this->assertFalse($api->metadata->_ServerError);
@@ -617,7 +616,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// in debug mode expect a error message
 		Configure::write('debug', 2);
 		$response = $this->testAction('/bancha-api.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 		// test data
 		$this->assertEquals(2, $api->metadata->_ServerDebugLevel);
 		$this->assertFalse($api->metadata->_ServerError);
@@ -636,7 +635,7 @@ class BanchaControllerTest extends ControllerTestCase {
  *
  * @return void
  */
-	public function testBanchaApiServerErrorProperty_MissingControllerError() {
+	public function testBanchaApiServerErrorPropertyMissingControllerError() {
 		$debugLevel = Configure::read('debug');
 
 		// build up the app folders to provoke an error
@@ -647,7 +646,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// in production mode only expect a flag
 		Configure::write('debug', 0);
 		$response = $this->testAction('/bancha-api.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 		// test data
 		$this->assertEquals(0, $api->metadata->_ServerDebugLevel);
 		$this->assertTrue($api->metadata->_ServerError);
@@ -655,7 +654,7 @@ class BanchaControllerTest extends ControllerTestCase {
 		// in debug mode expect a error message
 		Configure::write('debug', 2);
 		$response = $this->testAction('/bancha-api.js');
-		$api = json_decode(substr($response, strpos($response, '=')+1));
+		$api = json_decode(substr($response, strpos($response, '=') + 1));
 		// test data
 		$this->assertEquals(2, $api->metadata->_ServerDebugLevel);
 		$this->assertTrue(is_string($api->metadata->_ServerError));

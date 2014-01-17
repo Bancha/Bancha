@@ -31,7 +31,7 @@ class BanchaExtractTestTask extends BanchaExtractTask {
 /**
  * A public function for the protected _collectJsArgument.
  * 
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The arguments token
  */
 	public function collectJsArgument($code) {
@@ -41,7 +41,7 @@ class BanchaExtractTestTask extends BanchaExtractTask {
 /**
  * A public function for the protected _collectJsToken.
  * 
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The calculated token
  */
 	public function collectJsToken($code) {
@@ -51,7 +51,7 @@ class BanchaExtractTestTask extends BanchaExtractTask {
 /**
  * A public function for the protected _findString.
  * 
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The calculated token
  */
 	public function findString($code) {
@@ -61,12 +61,13 @@ class BanchaExtractTestTask extends BanchaExtractTask {
 /**
  * A public function for the protected _findVariable.
  * 
- * @param string $code            The code to process
+ * @param string $code The code to process
  * @return Bancha_JavaScriptToken The calculated token
  */
 	public function findVariable($code) {
 		return $this->_findVariable($code);
 	}
+
 }
 
 /**
