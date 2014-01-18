@@ -42,9 +42,9 @@ env:
 
 matrix:
   fast_finish: true
-  allow_failures:
-    - php: 5.5
-      env: PHPCS=1
+  #allow_failures:
+  #  - php: 5.5
+  #    env: PHPCS=1
   include:
     # Run PHPCS on the code
     - php: 5.5
@@ -212,7 +212,7 @@ script:
   - if [ $CAKEPHP_VERSION -a -z "$PHPCS" ]; then ./lib/Cake/Console/cake test Bancha AllTests --stderr  ; fi # execute all Tests
 
   # execude PHP_CodeSniffer
-  - if [ $PHPCS ]; then sh -c "phpcs -p --extensions=php --standard=CakePHP --ignore=./app/Plugin/Bancha/webroot/js/scaffold,./app/Plugin/Bancha/Lib/Bancha/Logging/PiwikTracker.php ./app/Plugin/Bancha" ; fi
+  - if [ $PHPCS ]; then sh -c "phpcs -p --extensions=php -n --standard=CakePHP --ignore=./app/Plugin/Bancha/webroot/js/scaffold,./app/Plugin/Bancha/Lib/Bancha/Logging/PiwikTracker.php ./app/Plugin/Bancha" ; fi
 
 notifications:
   email:
