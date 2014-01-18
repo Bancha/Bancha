@@ -143,7 +143,7 @@ class BanchaDispatcher {
  * Dispatches a single Bancha request and adds the result
  * to the response collection.
  * 
- * @param  CakeRequest $request The request to dispatch
+ * @param CakeRequest $request The request to dispatch
  * @return void
  */
 	protected function _singleDispatch($request) {
@@ -185,7 +185,7 @@ class BanchaDispatcher {
  * Set the appropriate CORS headers, if the *Bancha.allowedDomains* config
  * is set. Then send the response.
  *
- * @param  CakeResponse $CakeResponse The CakeResponse to send
+ * @param CakeResponse $CakeResponse The CakeResponse to send
  * @return void
  */
 	protected function _send(CakeResponse $CakeResponse) {
@@ -211,12 +211,12 @@ class BanchaDispatcher {
  * createswhich will be catched by the BanchaDispatcher::dispatch
  * and a ExtJS/Sencha Touch exception.
  *
- * @param  CakeEvent $event The event which triggered the redirect
+ * @param CakeEvent $event The event which triggered the redirect
+ * @return void
  * @throws BanchaAuthLoginException If the user is not logged in and tried to access a denied method
  * @throws BanchaAuthAccessRightsException If the user is not authorized to access this method
  * @throws BanchaRedirectException If a redirect was triggered from app code
- * @return void
- * @since  Bancha v 2.0.0
+ * @since Bancha v 2.0.0
  */
 	public function redirectHandler($event) {
 		$controller = $event->subject();
@@ -243,10 +243,10 @@ class BanchaDispatcher {
  * want to return an array with success=>false to indicate to
  * ExtJS/Sencha Touch that the request was not successfull.
  *
- * @param  CakeRequest $CakeRequest The request which caused the error
- * @param  Exception   $exception   The caugth exception
+ * @param CakeRequest $CakeRequest The request which caused the error
+ * @param Exception   $exception   The caugth exception
  * @return void
- * @since  Bancha v 2.0.0
+ * @since Bancha v 2.0.0
  */
 	public function logException(CakeRequest $CakeRequest, Exception $exception) {
 		if (Configure::read('debug') == 2 || // don't log anything in debug mode
@@ -266,9 +266,9 @@ class BanchaDispatcher {
 /**
  * Build a string representation of the invocaton signature, used for error logs.
  *
- * @param  CakeRequest $CakeRequest The request which caused the error
+ * @param CakeRequest $CakeRequest The request which caused the error
  * @return void
- * @since  Bancha v 2.0.0
+ * @since Bancha v 2.0.0
  */
 	protected function _getSignature(CakeRequest $CakeRequest) {
 		$signature = (!empty($CakeRequest->params['plugin']) ? $CakeRequest->params['plugin'] . '.' : '') .

@@ -283,9 +283,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *         'fieldName2' => 'fieldValue2',
  *     )
  *
- * @param Model $model    The model of the record
- * @param  array $recData The record data to filter
- * @return array          Returns data in the same structure as input, but filtered.
+ * @param Model $model   The model of the record
+ * @param array $recData The record data to filter
+ * @return array         Returns data in the same structure as input, but filtered.
  */
 	public function filterRecord(Model $model, array $recData) {
 		// only use the exposed fields
@@ -499,10 +499,10 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * Normalizes a array to process validation rules in a backwards compatible way.
+ * Normalizes an array to process validation rules in a backwards compatible way.
  * 
- * @param  array $rules The CakePHP validation rules to normalize
- * @return array        The normalized CakePHP validation rules
+ * @param array $rules The CakePHP validation rules to normalize
+ * @return array       The normalized CakePHP validation rules
  */
 	protected function _normalizeValidationRules($rules) {
 		foreach ($rules as $fieldName => $fieldRules) {
@@ -528,10 +528,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * @see #_normalizeValidationRules
+ * Normalizes a process validation rule in a backwards compatible 
+ * way, @see #_normalizeValidationRules
  * 
- * @param  string|array $fieldRule The CakePHP validation rule to normalize
- * @return array                   The normalized rule
+ * @param string|array $fieldRule The CakePHP validation rule to normalize
+ * @return array                  The normalized rule
  */
 	protected function _normalizeValidationRule($fieldRule) {
 		// Transform simple rules into our normalized structure
@@ -775,9 +776,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * Custom validation rule for uploaded files.
  *
- *  @param Array $data CakePHP File info.
- *  @param Boolean $required Is this field required?
- *  @return Boolean
+ * @param array   $data     CakePHP File info.
+ * @param boolean $required Is this field required?
+ * @return boolean
  */
 	public function validateFile(array $data, $required = false) {
 		// Remove first level of Array ($data['Artwork']['size'] becomes $data['size'])
@@ -800,8 +801,8 @@ class BanchaRemotableBehavior extends ModelBehavior {
 /**
  * A workaround to provide a validation rule 'file'
  *
- * @param  array $check The file to check
- * @return true         Since only validated in the frotnend, nothing to do here
+ * @param array $check The file to check
+ * @return true        Since only validated in the frotnend, nothing to do here
  */
 	public function file($check) {
 		return true;

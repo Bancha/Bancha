@@ -131,7 +131,7 @@ class CakeSenchaDataMapper {
  * 
  * @param callback $callable PHP valid callback to be called for every 
  *                           record data found in the input data.
- * @param  array   $data     The CakePHP data in any format
+ * @param array   $data      The CakePHP data in any format
  * @return array             The resulting data array.
  */
 	protected function _walk($callable, $data) {
@@ -152,7 +152,7 @@ class CakeSenchaDataMapper {
 			}
 
 			if (isset($value[0])) {
-				// this is a multi-record result of non-primary records, 
+				// this is a multi-record result of non-primary records,
 				// walk each entry
 				$data = $this->_walkNestedSet($callable, $data, $key);
 				continue;
@@ -207,11 +207,11 @@ class CakeSenchaDataMapper {
 /**
  * Helper function for {@link _walk}.
  * 
- * @param callback $callable  PHP valid callback to be called for every 
- *                            record data found in the input data.
- * @param  array   $data      The CakePHP data of a nested set (a numeric array)
- * @param  string  $modelName The name of the models in $data
- * @return array              The resulting data array.
+ * @param callback $callable PHP valid callback to be called for every 
+ *                           record data found in the input data.
+ * @param array   $data      The CakePHP data of a nested set (a numeric array)
+ * @param string  $modelName The name of the models in $data
+ * @return array             The resulting data array.
  */
 	protected function _walkNestedSet($callable, array $data, $modelName) {
 		// remove original entry

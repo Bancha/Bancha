@@ -154,7 +154,7 @@ class BanchaConsistencyProvider {
 				// error handling
 				return $this->handleError(
 					'Bancha was not able to create a tmp dir for saving Bancha ' .
-					'consistency client ids, the path is: '. $this->_folder
+					'consistency client ids, the path is: ' . $this->_folder
 				);
 			}
 		}

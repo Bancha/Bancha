@@ -26,7 +26,7 @@ if (substr(Configure::version(), 2, 3) < 2) {
  * @since         Bancha v 2.0.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
-	class BanchaSingleDispatcher extends Dispatcher {
+class BanchaSingleDispatcher extends Dispatcher {
 
 /**
  * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
@@ -39,14 +39,14 @@ if (substr(Configure::version(), 2, 3) < 2) {
  *                                Useful when Object::requestAction() is involved
  * @return CakeRequest The request object with routing params set.
  */
-		public function parseParams(CakeRequest $request, $additionalParams = array()) {
-			if (!empty($additionalParams)) {
-				$request->addParams($additionalParams);
-			}
-			return $request;
+	public function parseParams(CakeRequest $request, $additionalParams = array()) {
+		if (!empty($additionalParams)) {
+			$request->addParams($additionalParams);
 		}
-
+		return $request;
 	}
+
+}
 
 } else {
 
@@ -59,7 +59,7 @@ if (substr(Configure::version(), 2, 3) < 2) {
  * @since         Bancha v 2.0.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
-	class BanchaSingleDispatcher extends Dispatcher {
+class BanchaSingleDispatcher extends Dispatcher {
 
 /**
  * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
@@ -70,24 +70,25 @@ if (substr(Configure::version(), 2, 3) < 2) {
  * @param CakeEvent $event containing the request, response and additional params
  * @return void
  */
-		public function parseParams($event) {
-			$request = $event->data['request'];
-			Router::setRequestInfo($request);
-			// this if clause is for backwards compatibility from 2.2.0 til 2.2.8, in 2.3.0 it got removed
-			if ((substr(Configure::version(), 2, 3) == 2) && count(Router::$routes) == 0) {
-				$namedExpressions = Router::getNamedExpressions();
-				extract($namedExpressions);
-				$this->_loadRoutes();
-			}
+	public function parseParams($event) {
+		$request = $event->data['request'];
+		Router::setRequestInfo($request);
+		// this if clause is for backwards compatibility from 2.2.0 til 2.2.8, in 2.3.0 it got removed
+		if ((substr(Configure::version(), 2, 3) == 2) && count(Router::$routes) == 0) {
+			$namedExpressions = Router::getNamedExpressions();
+			extract($namedExpressions);
+			$this->_loadRoutes();
+		}
 
-			// dfault Dispatcher would not apply the routes, Bancha does not apply the routes
-			//$params = Router::parse($request->url);
-			//$request->addParams($params);
+		// dfault Dispatcher would not apply the routes, Bancha does not apply the routes
+		//$params = Router::parse($request->url);
+		//$request->addParams($params);
 
-			if (!empty($event->data['additionalParams'])) {
-				$request->addParams($event->data['additionalParams']);
-			}
+		if (!empty($event->data['additionalParams'])) {
+			$request->addParams($event->data['additionalParams']);
 		}
 	}
 
 }
+
+} // eo if-else about CakeVersion

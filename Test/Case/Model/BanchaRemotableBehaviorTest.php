@@ -42,7 +42,7 @@ class ExposedMethodsBanchaRemotable extends BanchaRemotableBehavior {
 /**
  * A public function for the protected _normalizeValidationRules.
  * 
- * @param  array $rules The CakePHP validation rules to normalize
+ * @param array $rules The CakePHP validation rules to normalize
  * @return array        The normalized CakePHP validation rules
  */
 	public function normalizeValidationRules($rules) {
@@ -586,8 +586,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 /**
  * Get all sorters in ExtJS/Sencha Touch format.
  *
- * @param  array $rules         The rules to use for testing
- * @param  array $expecedResult The expected result
+ * @param array $rules         The rules to use for testing
+ * @param array $expecedResult The expected result
  * @return void
  * @dataProvider getSorterDataProvider
  */
@@ -660,8 +660,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  * Test that getColumnType returns the correct column definitions in
  * ExtJS/Sencha Touch format for each CakePHP format
  *
- * @param  array $cakeFieldConfig     Configuration for testing
- * @param  array $expecedSenchaConfig The expected result
+ * @param array $cakeFieldConfig     Configuration for testing
+ * @param array $expecedSenchaConfig The expected result
  * @return void
  * @dataProvider getColumnTypeDataProvider
  */

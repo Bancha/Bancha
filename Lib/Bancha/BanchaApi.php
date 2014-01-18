@@ -79,10 +79,10 @@ class BanchaApi {
  * Returns the $models array if the filter is "all" or "[all]" (without quotes), else splits up the comma separated
  * list of models given in $filter. If $filter is NULL or an empty string an empty array is returned.
  *
- * @param  array  $models List of remotable models
- * @param  string/array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without
- *                        quotes). Or an array of models.
- * @return array          Filtered list of remotable models
+ * @param array        $models List of remotable models
+ * @param string|array $filter Explicit list of remotable models. Can be "all", "[all]" or "[Model1,Model2,...]" (without
+ *                             quotes). Or an array of models.
+ * @return array               Filtered list of remotable models
  * @throws MissingModelException if the model can't be found
  */
 	public function filterRemotableModels(array $models, $filter) {
@@ -116,8 +116,8 @@ class BanchaApi {
 /**
  * Returns the metadata for the given models.
  *
- * @param  array $models List of remotable models.
- * @return array         Associative array with metadata of the given models.
+ * @param array $models List of remotable models.
+ * @return array        Associative array with metadata of the given models.
  */
 	public function getMetadata(array $models) {
 		$metadata = array();
@@ -133,8 +133,8 @@ class BanchaApi {
 /**
  * Returns the name of the controller based on the given name of the model.
  *
- * @param  string $modelClass Name of the model
- * @return string             Name of the controller class.
+ * @param string $modelClass Name of the model
+ * @return string            Name of the controller class.
  */
 	public function getControllerClassByModelClass($modelClass) {
 		$controllerClass = Inflector::pluralize($modelClass) . 'Controller';
@@ -146,10 +146,10 @@ class BanchaApi {
 /**
  * Returns all CRUD actions of the given controller mapped into the ExtJS format.
  *
- * @param  string $controllerClass Name of the controller.
- * @return array                   Array with mapped CRUD actions. Each action is an array where the first element
- *                                 is the name and the second element is the number of arguments. If the method is
- *                                 a form handler, the elements are named "name", "len" and "formHandler".
+ * @param string $controllerClass Name of the controller.
+ * @return array                  Array with mapped CRUD actions. Each action is an array where the first element
+ *                                is the name and the second element is the number of arguments. If the method is
+ *                                a form handler, the elements are named "name", "len" and "formHandler".
  */
 	public function getCrudActionsOfController($controllerClass) {
 		$methods = $this->_getClassMethods($controllerClass);
@@ -260,7 +260,7 @@ class BanchaApi {
 /**
  * Loads the controller and throws an exception if it does not exist.
  *
- * @param  string $controllerClass Name of the controller to load.
+ * @param string $controllerClass Name of the controller to load.
  * @return void
  * @throws MissingControllerException If the controller can't be found
  */
@@ -286,8 +286,8 @@ class BanchaApi {
 /**
  * Gets all the public methods from the given controller.
  * 
- * @param  string $class The controller class name
- * @return array         Array of methods
+ * @param string $class The controller class name
+ * @return array        Array of methods
  */
 	protected function _getClassMethods($class) {
 		list($plugin, $class) = pluginSplit($class, true);

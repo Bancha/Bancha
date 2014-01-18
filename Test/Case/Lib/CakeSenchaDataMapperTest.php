@@ -313,8 +313,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Test isRecordSet function
  *
- * @param  array $data           The input data to test
- * @param  array $expectedResult The expected transformed data
+ * @param array $data           The input data to test
+ * @param array $expectedResult The expected transformed data
  * @return void
  * @dataProvider isRecordSetDataProvider
  */
@@ -358,8 +358,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Test isThreadedRecordSet function
  *
- * @param  array $data           The input data to test
- * @param  array $expectedResult The expected transformed data
+ * @param array $data           The input data to test
+ * @param array $expectedResult The expected transformed data
  * @return void
  * @dataProvider isThreadedRecordSetDataProvider
  */
@@ -403,8 +403,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Test isPaginatedSet function
  *
- * @param  array $data           The input data to test
- * @param  array $expectedResult The expected transformed data
+ * @param array $data           The input data to test
+ * @param array $expectedResult The expected transformed data
  * @return void
  * @dataProvider isPaginatedSetDataProvider
  */
@@ -448,8 +448,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Test walk function, simply check that each record is visited
  *
- * @param  array $data           The input data to test
- * @param  array $expectedResult The expected transformed data
+ * @param array $data           The input data to test
+ * @para array $expectedResult The expected transformed data
  * @return void
  * @dataProvider walkDataProvider
  */
@@ -466,8 +466,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * A walker method used in the test above.
  * 
- * @param  string $modelName The model name
- * @param  array  $data      The data which should be transformed by the walker
+ * @param string $modelName The model name
+ * @param array  $data      The data which should be transformed by the walker
  * @return array             The callback result
  */
 	public function walkerCallback($modelName, $data) {
@@ -542,8 +542,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * A walker function which is used below
  *
- * @param  string $modelName The model name
- * @param  array $data       The input data to transform
+ * @param string $modelName The model name
+ * @param array $data       The input data to transform
  * @return array             The result data
  * @throws Exception If walker gives fale data into this callback
  */
@@ -761,8 +761,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Helper function for above
  * 
- * @param  string $modelName The model name
- * @param  array $data       The input data to transform
+ * @param string $modelName The model name
+ * @param array $data       The input data to transform
  * @return array             The result data
  */
 	public function walkerRemoveEntriesCallback1($modelName, $data) {
@@ -772,8 +772,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Helper function for above
  * 
- * @param  string $modelName The model name
- * @param  array $data       The input data to transform
+ * @param string $modelName The model name
+ * @param array $data       The input data to transform
  * @return array             The result data
  */
 	public function walkerRemoveEntriesCallback2($modelName, $data) {
@@ -783,8 +783,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Helper function for above
  * 
- * @param  string $modelName The model name
- * @param  array $data       The input data to transform
+ * @param string $modelName The model name
+ * @param array $data       The input data to transform
  * @return array             The result data
  */
 	public function walkerRemoveEntriesCallback3($modelName, $data) {
@@ -794,8 +794,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Helper function for above
  * 
- * @param  string $modelName The model name
- * @param  array $data       The input data to transform
+ * @param string $modelName The model name
+ * @param array $data       The input data to transform
  * @return array             The result data
  */
 	public function walkerRemoveEntriesCallback4($modelName, $data) {
@@ -808,8 +808,8 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
 /**
  * Helper function for above
  * 
- * @param  string $modelName The model name
- * @param  array $data       The input data to transform
+ * @param string $modelName The model name
+ * @param array $data       The input data to transform
  * @return array             The result data
  */
 	public function walkerRemoveEntriesCallback5($modelName, $data) {

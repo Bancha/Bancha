@@ -132,13 +132,13 @@ class ConsistentModelTest extends CakeTestCase {
  * If the sleep time not zero the command if spin up in the background 
  * in a differnt process.
  * 
- * @param  string  $clientId   The clients uuid
- * @param  string  $tid        The tid
- * @param  string  $articleId  The article id to edit
- * @param  string  $newTitle   The new article title
- * @param  integer $sleepTime  The time to wait before the execute is fiished, fake processing time
- * @param  string  $saveResult The filename the result should be written to, if this is a background task
- * @return string              The responses array, if $sleepTime==0
+ * @param string  $clientId   The clients uuid
+ * @param string  $tid        The tid
+ * @param string  $articleId  The article id to edit
+ * @param string  $newTitle   The new article title
+ * @param integer $sleepTime  The time to wait before the execute is fiished, fake processing time
+ * @param string  $saveResult The filename the result should be written to, if this is a background task
+ * @return string             The responses array, if $sleepTime==0
  */
 	protected function _fakeRequest($clientId, $tid, $articleId, $newTitle, $sleepTime = 0, $saveResult = false) {
 		// The syntax of the fake_request script is
@@ -161,8 +161,8 @@ class ConsistentModelTest extends CakeTestCase {
 /**
  * Retrieves the result from an async face request
  * 
- * @param  string $clientId The clients uuid
- * @param  string $tid      The tid
+ * @param string $clientId The clients uuid
+ * @param string $tid      The tid
  * @return array            The response as decoded array
  */
 	protected function _getAsyncResponse($clientId, $tid) {

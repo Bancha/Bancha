@@ -103,9 +103,9 @@ class BanchaRequestTransformer {
  *
  * To prohibit that we need a longer check, which we have here.
  *
- * @param  Mixed  $variable The variable to look up
- * @param  string $path     A path in the style: [data][0][data]
- * @return boolean          True if the path is an array
+ * @param Mixed  $variable The variable to look up
+ * @param string $path     A path in the style: [data][0][data]
+ * @return boolean         True if the path is an array
  */
 	public function isArray($variable, $path) {
 		$path = substr($path, 1, strlen($path) - 2); // remove first and last char
@@ -165,7 +165,7 @@ class BanchaRequestTransformer {
 
 		// extract plugin and pluralize controller name
 		list($plugin, $controller) = pluginSplit($controller, true);
-		$this->_controller =  Inflector::pluralize($controller);
+		$this->_controller = Inflector::pluralize($controller);
 
 		if ($this->_controller === 'Bancha') {
 			// special case, the Bancha controller is the Bancha plugin
@@ -246,9 +246,9 @@ class BanchaRequestTransformer {
 				break;
 			case 'read':
 				$this->_action = (
-					($this->isArray($this->_data, '[data][0][data]')	&& !empty($this->_data['data'][0]['data']['id'])) ||
-					($this->isArray($this->_data, '[data][0]')			&& !empty($this->_data['data'][0]['id'])) ||
-					($this->isArray($this->_data, '')					&& !empty($this->_data['id']))) ? 'view' : 'index';
+					($this->isArray($this->_data, '[data][0][data]') && !empty($this->_data['data'][0]['data']['id'])) ||
+					($this->isArray($this->_data, '[data][0]') && !empty($this->_data['data'][0]['id'])) ||
+					($this->isArray($this->_data, '') && !empty($this->_data['id']))) ? 'view' : 'index';
 				break;
 		}
 		return $this->_action;
@@ -331,7 +331,7 @@ class BanchaRequestTransformer {
 			$pass['id'] = $this->_data['data'][0]['data']['id'];
 			//unset($this->_data['data'][0]['data']['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 		} elseif ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
-			// read requests (actually these are malformed because the ExtJS root/Sencha Touch 
+			// read requests (actually these are malformed because the ExtJS root/Sencha Touch
 			// rootProperty is not set to 'data', but we can ignore this on reads)
 
 			$pass['id'] = $this->_data['data'][0]['id'];

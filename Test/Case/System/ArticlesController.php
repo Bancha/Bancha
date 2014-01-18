@@ -112,6 +112,7 @@ class ArticlesController extends AppController {
  * @param string $id The id of the article to delete
  * @return void
  * @throws NotFoundException If article id doesn't exist
+ * @throws MethodNotAllowedException If this request is not of type post
  */
 	public function delete($id = null) {
 		if (!$this->request->is('post')) {

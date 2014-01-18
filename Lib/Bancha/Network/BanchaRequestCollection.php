@@ -70,7 +70,7 @@ class BanchaRequestCollection {
 		} elseif (strlen($this->_rawPostData)) {
 			// It is a normal Ext.Direct request, payload is read from php://input (saved in $rawPostData)
 			$data = json_decode($this->_rawPostData, true);
-			if ($data === NULL) {
+			if ($data === null) {
 				// payload could not be converted, probably misformed json
 				throw new BanchaException(
 					'Misformed Input: The Bancha Dispatcher expected a json string, instead got ' . $this->_rawPostData);
@@ -84,7 +84,7 @@ class BanchaRequestCollection {
 		} else {
 			// no data passed
 			throw new BanchaException(
-				'Missing POST Data: The Bancha Dispatcher expected to get all requests in the Ext.Direct format as POST '.
+				'Missing POST Data: The Bancha Dispatcher expected to get all requests in the Ext.Direct format as POST ' .
 				'parameter, but there is no data in this request. You can not access this site directly!');
 		}
 
@@ -102,7 +102,7 @@ class BanchaRequestCollection {
 				$requests[$i]->data = array();
 
 				// now set params for the request
-				$requests[$i]['controller'] 	= $transformer->getController();
+				$requests[$i]['controller']		= $transformer->getController();
 				$requests[$i]['action']			= $transformer->getAction();
 				$requests[$i]['named']			= $transformer->getPaging();
 				$requests[$i]['plugin']			= $transformer->getPlugin();

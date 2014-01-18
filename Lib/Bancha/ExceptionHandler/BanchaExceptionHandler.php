@@ -25,7 +25,7 @@ class BanchaExceptionHandler extends Object {
 /**
  * Handles an expection for Bancha requests.
  * 
- * @param  Exception $e The exception that occured
+ * @param Exception $e The exception that occured
  * @return void
  */
 	public function handleException(Exception $e) {

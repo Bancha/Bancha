@@ -31,8 +31,8 @@ class ServerLogger {
  *
  *     Configure::write('Bancha.ServerLogger.logIssues', false);
  *
- * @param  string    $signature The controller invokation signature
- * @param  Exception $exception The caugth exception
+ * @param string    $signature The controller invokation signature
+ * @param Exception $exception The caugth exception
  * @return void
  * @since  Bancha v 2.0.0
  */

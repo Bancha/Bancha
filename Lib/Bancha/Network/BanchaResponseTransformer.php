@@ -41,11 +41,11 @@ class BanchaResponseTransformer {
  * Performs various transformations on a request. This is required because CakePHP stores models in a different format
  * than expected from Ext JS.
  *
- * @param  array       $response    A single response.
- * @param  CakeRequest $CakeRequest Request object.
- * @return array|string             Transformed response. If this is a response to an 'extUpload' request this is a string,
- *                                  otherwise this is an array.
- * @throws BanchaException          If the response is null.
+ * @param array       $response    A single response.
+ * @param CakeRequest $CakeRequest Request object.
+ * @return array|string            Transformed response. If this is a response to an 'extUpload' request this is a string,
+ *                                 otherwise this is an array.
+ * @throws BanchaException         If the response is null.
  */
 	public static function transform($response, CakeRequest $CakeRequest) {
 		$modelName = null;
@@ -67,9 +67,9 @@ class BanchaResponseTransformer {
  * otherwise just return the original response.
  * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
  *
- * @param  object $response  The input request from Bancha
- * @param  string $modelName The model name of the current request
- * @return array             ExtJS/Sencha Touch formated data
+ * @param object $response  The input request from Bancha
+ * @param string $modelName The model name of the current request
+ * @return array            ExtJS/Sencha Touch formated data
  */
 	public static function transformDataStructureToSencha($response, $modelName) {
 		// if we only got an array with a success property we expect
@@ -193,10 +193,10 @@ class BanchaResponseTransformer {
 /**
  * This walker function is used by the transform function to re-format the output.
  * 
- * @param  string     $modelName the model name of the currently invoked model
- * @param  array|null $data      The data
- * @param  boolean    $isPrimary True if it is a primary model structure
- * @return array                 The result
+ * @param string     $modelName the model name of the currently invoked model
+ * @param array|null $data      The data
+ * @param boolean    $isPrimary True if it is a primary model structure
+ * @return array                The result
  */
 	public static function walkerDataTransformer($modelName, $data, $isPrimary) {
 		// sencha expects model collections to have plural names
