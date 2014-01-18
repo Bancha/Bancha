@@ -159,7 +159,7 @@ class ConsistentModelTest extends CakeTestCase {
 	}
 
 /**
- * Retrieves the result from an async face request
+ * Retrieves the result from an async fake request
  * 
  * @param string $clientId The clients uuid
  * @param string $tid      The tid
@@ -167,7 +167,17 @@ class ConsistentModelTest extends CakeTestCase {
  */
 	protected function _getAsyncResponse($clientId, $tid) {
 		$filename = dirname(__FILE__) . DS . $clientId . '-' . $tid . '.txt';
-		$result = json_decode(file_get_contents($filename));
+		$response = file_get_contents($filename);
+		$result = json_decode($response);
+		if(!is_array($result)) {
+			sleep(5); // try waiting another 5 seconds once
+			$response = file_get_contents($filename);
+			$result = json_decode($response);
+		}
+		$this->assertTrue(
+			is_array($result),
+			'Expected result to be an array, response is ' . print_r($response, true)
+		);
 		unlink($filename);
 		return $result;
 	}
@@ -310,10 +320,6 @@ class ConsistentModelTest extends CakeTestCase {
 		$responses2 = $this->_getAsyncResponse($clientId, 2);
 
 		// Check that the first response returned a result
-		$this->assertTrue(
-			is_array($responses1),
-			'Expected result to be an array ' . print_r($responses1, true)
-		);
 		$this->assertCount(1, $responses1);
 		$this->assertTrue(
 			isset($responses1[0]->result->data),
@@ -322,10 +328,6 @@ class ConsistentModelTest extends CakeTestCase {
 		$this->assertEquals('foobar', $responses1[0]->result->data->title); // first request should change it to foobar
 
 		// Check that the second response returned a result
-		$this->assertTrue(
-			is_array($responses2),
-			'Expected result to be an array ' . print_r($responses2, true)
-		);
 		$this->assertCount(1, $responses2);
 		$this->assertTrue(
 			isset($responses2[0]->result->data),
