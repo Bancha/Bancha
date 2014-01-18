@@ -169,7 +169,7 @@ class ConsistentModelTest extends CakeTestCase {
 		$filename = dirname(__FILE__) . DS . $clientId . '-' . $tid . '.txt';
 		$response = file_get_contents($filename);
 		$result = json_decode($response);
-		if(!is_array($result)) {
+		if (!is_array($result)) {
 			sleep(5); // try waiting another 5 seconds once
 			$response = file_get_contents($filename);
 			$result = json_decode($response);
