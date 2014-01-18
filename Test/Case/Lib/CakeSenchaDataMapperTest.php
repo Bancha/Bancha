@@ -449,7 +449,7 @@ class CakeSenchaDataMapperTest extends CakeTestCase {
  * Test walk function, simply check that each record is visited
  *
  * @param array $data           The input data to test
- * @para array $expectedResult The expected transformed data
+ * @param array $expectedResult The expected transformed data
  * @return void
  * @dataProvider walkDataProvider
  */
