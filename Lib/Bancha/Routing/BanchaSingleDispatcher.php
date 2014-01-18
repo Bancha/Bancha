@@ -17,15 +17,15 @@ App::uses('Dispatcher', 'Routing');
 // to support the old before 2.2 and the new 2.2+ signature.
 if (substr(Configure::version(), 2, 3) < 2) {
 
-	/**
-	 * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
-	 *
-	 * See the method descriptions why this is required.
-	 *
-	 * @package       Bancha.Lib.Bancha.Routing
-	 * @since         Bancha v 2.0.0
-	 * @author        Roland Schuetz <mail@rolandschuetz.at>
-	 */
+/**
+ * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
+ *
+ * See the method descriptions why this is required.
+ *
+ * @package       Bancha.Lib.Bancha.Routing
+ * @since         Bancha v 2.0.0
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ */
 	class BanchaSingleDispatcher extends Dispatcher {
 
 	/**
@@ -50,26 +50,26 @@ if (substr(Configure::version(), 2, 3) < 2) {
 
 } else {
 
-	/**
-	 * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
-	 *
-	 * See the method descriptions why this is required.
-	 * 
-	 * @package       Bancha.Lib.Bancha.Routing
-	 * @since         Bancha v 2.0.0
-	 * @author        Roland Schuetz <mail@rolandschuetz.at>
-	 */
+/**
+ * BanchaSingleDispatcher is a subclass of CakePHP's Dispatcher.
+ *
+ * See the method descriptions why this is required.
+ * 
+ * @package       Bancha.Lib.Bancha.Routing
+ * @since         Bancha v 2.0.0
+ * @author        Roland Schuetz <mail@rolandschuetz.at>
+ */
 	class BanchaSingleDispatcher extends Dispatcher {
 
-		/**
-		 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
-		 * applies the routes.
-		 *
-		 * This function will be used for CakePHP 2.2.0+
-		 *
-		 * @param CakeEvent $event containing the request, response and additional params
-		 * @return void
-		 */
+	/**
+	 * Applies additionalParameters to the request to be dispatched. Unlike Dispatcher, BanchaSingleDispatcher does not
+	 * applies the routes.
+	 *
+	 * This function will be used for CakePHP 2.2.0+
+	 *
+	 * @param CakeEvent $event containing the request, response and additional params
+	 * @return void
+	 */
 		public function parseParams($event) {
 			$request = $event->data['request'];
 			Router::setRequestInfo($request);
@@ -89,6 +89,6 @@ if (substr(Configure::version(), 2, 3) < 2) {
 			}
 		}
 
-}
+	}
 
 } // eo if-else about CakeVersion
