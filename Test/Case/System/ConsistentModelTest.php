@@ -324,7 +324,7 @@ class ConsistentModelTest extends CakeTestCase {
 		// Check that the second response returned a result
 		$this->assertTrue(
 			is_array($responses2),
-			'Expected result to be an array ' . print_r($responses1, true)
+			'Expected result to be an array ' . print_r($responses2, true)
 		);
 		$this->assertCount(1, $responses2);
 		$this->assertTrue(
