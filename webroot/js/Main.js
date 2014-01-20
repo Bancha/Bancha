@@ -358,6 +358,10 @@ Ext.define('Bancha', {
      * @return {Object} The api if already defined, otherwise undefined
      */
     getRemoteApi: function() {
+        if(!Bancha.initialized) {
+            Bancha.init();
+        }
+
         //<debug>
         if(!Ext.isString(this.remoteApi)) {
             Ext.Error.raise({
@@ -1089,13 +1093,6 @@ Ext.define('Bancha', {
      */
     getModelMetaData: function(modelName) {
         //<debug>
-        if(!this.initialized) {
-            Ext.Error.raise({
-                plugin: 'Bancha',
-                msg: 'Bancha: Please inistalize Bancha before using it\'s getModelMetaData() method.'
-            });
-        }
-
         if(!Ext.isObject(this.getRemoteApi())) {
             Ext.Error.raise({
                 plugin: 'Bancha',
