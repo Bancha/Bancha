@@ -140,9 +140,10 @@ Ext.define('Bancha.data.Model', {
                     plugin: 'Bancha',
                     modelName: modelName,
                     msg: [
-                        'Bancha: Couldn\'t create the model "'+modelName+'" ',
-                        'cause the model is not supported by the server ',
-                        '(no remote model).'
+                        'To use the model "'+modelName+'" in the frontend, ',
+                        'you need to add the BanchaRemotable behavior to your ',
+                        'CakePHP model. <br><br>Details can be found ',
+                        '<a href="http://bancha.io/documentation-pro-models-cakephp.html" target="_blank">in the Bancha docs</a>.'
                     ].join('')
                 });
                 //</bancha-pro>
