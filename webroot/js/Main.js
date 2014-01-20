@@ -384,6 +384,30 @@ Ext.define('Bancha', {
         //</debug>
         return this.objectFromPath(this.remoteApi);
     },
+    /**
+     * @private
+     * Shows the first error happending and blocks the ui
+     */
+    alertError: function(err) {
+        try {
+            Ext.Msg.show({
+                title: 'Bancha Error',
+                message: err.msg || err.message, //touch
+                msg: err.msg || err.message, //extjs
+                icon: Ext.window.MessageBox.ERROR,
+                closable: false
+            });
+        } catch(e) {
+            // this migh have been triggered before domready
+            // so it's possible that Ext.Msg fail, in these
+            // cases show an simply alert and let the
+            // exception bubble up
+            Ext.global.alert(err.msg);
+        }
+
+        // there already happend an error, don't override message
+        this.alertError = Ext.emptyFn;
+    },
     /* jshint maxstatements: 50, maxcomplexity: 20 */ /* don't optimize this anymore, it's already deprecated */
     /**
      * Inits Bancha with the RemotingProvider, always init before using Bancha.
@@ -402,17 +426,7 @@ Ext.define('Bancha', {
 
         // show all initialize errors as message
         defaultErrorHandle = Ext.Error.handle;
-        Ext.Error.handle = function(err) {
-            try {
-                Ext.Msg.alert('Bancha Error', err.msg);
-            } catch(e) {
-                // this migh have been triggered before domready
-                // so it's possible that Ext.Msg fail, in these
-                // cases show an simply alert and let the
-                // exception bubble up
-                Ext.global.alert(err.msg);
-            }
-        };
+        Ext.Error.handle = this.alertError;
 
         if(!Ext.isObject(this.objectFromPath(this.remoteApi))) {
 
@@ -618,9 +632,7 @@ Ext.define('Bancha', {
 
         //<debug>
         // catch every debug exception thrown from either ExtJS or Bancha
-        Ext.Error.handle = function(err) {
-            Ext.Msg.alert('Error', err.msg);
-        };
+        Ext.Error.handle = this.alertError;
 
         // catch server-side errors
         Ext.direct.Manager.on('exception', function(err){
