@@ -214,7 +214,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// compute
 		$fields = array_merge(
-			array_keys($model->schema()), // first get all model fields
+			array_keys(is_array($model->schema()) ? $model->schema() : array()), // first get all model fields
 			array_keys($model->virtualFields)); // and add all virtual fields
 
 		// if exposedFields is an array, match
@@ -388,7 +388,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  * @return array An array of ExtJS/Sencha Touch model field definitions
  */
 	public function getColumnTypes(Model $model) {
-		$schema = $model->schema();
+		$schema = is_array($model->schema()) ? $model->schema() : array();
 		$fields = array();
 
 		// add all database fields
