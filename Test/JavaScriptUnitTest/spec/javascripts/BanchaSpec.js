@@ -102,6 +102,8 @@ describe("Bancha Singleton - basic retrieval functions on the stubs and model me
         // The RemoteApi to was already set during the startup to correctly load dependencies
         // so unset it first
         Bancha.REMOTE_API = undefined;
+        // Fake that Bancha is already initialized
+        Bancha.initialized = true;
         // now test
         if(Bancha.debugVersion) {
             expect(function() {
