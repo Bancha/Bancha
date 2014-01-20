@@ -391,7 +391,6 @@ Ext.define('Bancha', {
     init: function() {
         var remoteApi,
             defaultErrorHandle,
-            apiPath,
             response,
             result;
 
@@ -436,7 +435,8 @@ Ext.define('Bancha', {
                     plugin: 'Bancha',
                     msg: [
                         '<b>Bancha Configuration Error:</b><br />',
-                        'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please fix it:<br /><br />',
+                        'You have an error in your <a href="'+Ext.Loader.getPath('Bancha.REMOTE_API'),
+                        '">Bancha API</a>, please fix it:<br /><br />',
 
                         response.responseText.search(/<h2>Not Found<\/h2>/)!==-1 ?
                         '<b>Note: You might have to turn ob debug mode to get a useful error message!</b><br/><br/>' :
@@ -469,9 +469,9 @@ Ext.define('Bancha', {
                 plugin: 'Bancha',
                 msg: [
                     '<b>Unknown Error in Bancha API:</b><br />',
-                    'You have an error in your <a href="'+apiPath+'">Bancha API</a>, ',
-                    'please open the API for details.<br />',
-                    'Note: You might have to turn ob debug mode to get a usefull error message!<br />'
+                    'You have an error in your <a href="'+Ext.Loader.getPath('Bancha.REMOTE_API'),
+                    '">Bancha API</a>, please open the API for details.<br />',
+                    'Note: You might have to turn ob debug mode to get a useful error message!<br />'
                 ].join('')
             });
         }
