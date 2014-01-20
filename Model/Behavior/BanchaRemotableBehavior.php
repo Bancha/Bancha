@@ -141,6 +141,44 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		if (!is_array($settings)) {
 			throw new CakeException('Bancha: The BanchaRemotableBehavior currently only supports an array of options as configuration');
 		}
+
+		// Check that exposedFields is valid
+		if (isset($settings['exposedFields']) && (!is_array($settings['exposedFields']) || count($settings['exposedFields'])==0)) {
+			throw new CakeException(
+				'Bancha: The BanchaRemotableBehavior expects the exposedFields config to be null or a non-empty array, ' .
+				'instead ' . print_r($settings['exposedFields'], true) . ' given for model ' . $model->name . '.'
+			);
+		}
+		if (isset($settings['exposeFields'])) {
+			throw new CakeException(
+				'Bancha: You have set the BanchaRemotableBehavior config "exposeFields" for model ' . 
+				$model->name . ', but the config "exposedFields" (written with "d") is expected instead.'
+			);
+		}
+
+		// Check that exposedFields is valid
+		if (isset($settings['excludedFields']) && !is_array($settings['excludedFields'])) {
+			throw new CakeException(
+				'Bancha: The BanchaRemotableBehavior expects the excludedFields config to be an array, ' .
+				'instead ' . print_r($settings['excludedFields'], true) . ' given for model ' . $model->name . '.'
+			);
+		}
+		if (isset($settings['excludeFields'])) {
+			throw new CakeException(
+				'Bancha: You have set the BanchaRemotableBehavior config "excludeFields" for model ' . 
+				$model->name . ', but the config "excludedFields" (written with "d") is expected instead.'
+			);
+		}
+
+		// Check if id is correctly defined
+		if($model->primaryKey !== 'id') {
+			throw new CakeException(
+				'Bancha currently only supports exposing models with a primary key "id" as primary models.' . 
+				'The model "' . $model->name . ' can still be loaded as associated data.'
+			);
+		}
+
+		// setup the data
 		$settings = array_merge($this->_defaults, $settings);
 		$this->_settings[$model->alias] = $settings;
 	}
@@ -158,6 +196,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 		//</bancha-basic>
 		//<bancha-pro>
+
+		// Check that the id property is always exposed
+		// Edge case, if the model is a hasAndBelongsToMany and doesn't have an id don't throw a warning
+		if (!$this->isExposedField($model, 'id') && !!$model->schema('id')) {
+			throw new CakeException(
+				'Bancha: The ' . $model->name . ' models "id" field must always be exposed, for Sencha Touch/Ext JS ' . 
+				' to edit and delete data, but your BanchaRemotableBehavior config hides it.'
+			);
+		}
+
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
 		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
 

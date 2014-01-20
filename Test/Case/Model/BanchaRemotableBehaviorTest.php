@@ -82,7 +82,8 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		'plugin.bancha.article',
 		'plugin.bancha.article_for_testing_save_behavior',
 		'plugin.bancha.user',
-		'plugin.bancha.user_for_testing_last_save_result'
+		'plugin.bancha.user_for_testing_last_save_result',
+		'plugin.bancha.tag',
 	);
 
 	protected $_standardDebugLevel;
@@ -108,6 +109,46 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
  */
 	public function tearDown() {
 		ClassRegistry::flush();
+	}
+
+/**
+ * Test that BanchaRemotable detects a variety of wrong configurations and
+ * throws according errors.
+ *
+ * @param array $behaviorConfig The config for the BanchaRemotableBehavior
+ * @return void
+ * @dataProvider testSetupDataProvider
+ * @expectedException CakeException
+ * @expectedExceptionMessage Bancha: 
+ */
+	public function testSetup($behaviorConfig) {
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+	}
+
+/**
+ * Data Provider for testSetup
+ * 
+ * @return array
+ */
+	public function testSetupDataProvider() {
+		return array(
+			array(
+				array('exposedFields' => array()), // nothing exposed
+			),
+			array(
+				array('exposedFields' => false), // false type
+			),
+			array(
+				array('excludedFields' => false), // false type
+			),
+			array(
+				array('excludeFields' => array('title')), // config typo
+			),
+			array(
+				array('exposeFields' => array('id')), // config typo
+			),
+		);
 	}
 
 /**
@@ -254,7 +295,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				true
 			),
 			array(
-				array('excludedFields' => array('id', 'title')),
+				array('excludedFields' => array('title', 'body')),
 				'title',
 				false
 			),
@@ -2021,6 +2062,41 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 		$this->assertEqual(count($result['validations']), 3);
 		$this->assertEqual(count($result['associations']), 3);
 		$this->assertEqual(count($result['sorters']), 1);
+	}
+
+/**
+ * Test that BanchaRemotable detects a variety of wrong configurations and
+ * throws according errors.
+ *
+ * @param array $behaviorConfig The config for the BanchaRemotableBehavior
+ * @return void
+ * @dataProvider testExtractBanchaMetaDataErrorsDataProvider
+ * @expectedException CakeException
+ * @expectedExceptionMessage Bancha: 
+ */
+	public function testExtractBanchaMetaDataErrors($behaviorConfig) {
+		$TestModel = new TestArticle();
+		$TestModel->Behaviors->attach('Bancha.BanchaRemotable', $behaviorConfig);
+		$result = $TestModel->Behaviors->BanchaRemotable->extractBanchaMetaData($TestModel);
+	}
+
+/**
+ * Data Provider for testExtractBanchaMetaDataErrors
+ * 
+ * @return array
+ */
+	public function testExtractBanchaMetaDataErrorsDataProvider() {
+		return array(
+			array(
+				array('exposedFields' => array('id', 'non-existing-field')), // non-existing field
+			),
+			array(
+				array('exposedFields' => array('title')), // missing id
+			),
+			array(
+				array('excludedFields' => array('id')), // missing id
+			),
+		);
 	}
 
 /**

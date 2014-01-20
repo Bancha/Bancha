@@ -32,4 +32,12 @@ class ModelWithoutControllerBanchaApiTest extends AppModel {
  */
 	public $actsAs = array('Bancha.BanchaRemotable');
 
+/**
+ * We never save or ready anything, so don't setup a 
+ * database table via fixture.
+ * 
+ * @var boolean
+ */
+	public $useTable = false;
+
 }

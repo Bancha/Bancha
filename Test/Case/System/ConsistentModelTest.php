@@ -151,9 +151,14 @@ class ConsistentModelTest extends CakeTestCase {
 				$articleId . ' ' . $tid . ' ' . $newTitle . ' ' . $sleepTime;
 
 		if ($sleepTime == 0) {
-			$result = array();
-			exec($cmd, $result);
-			return json_decode(implode('', $result));
+			$response = array();
+			exec($cmd, $response);
+			$result = json_decode(implode('', $response));
+			$this->assertTrue(
+				is_array($result),
+				'Expected result to be an array, response is ' . print_r($response, true)
+			);
+			return $result;
 		}
 
 		// run it in the background
