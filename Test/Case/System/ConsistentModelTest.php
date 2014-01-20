@@ -41,7 +41,9 @@ class ConsistentModelTest extends CakeTestCase {
 
 	public $fixtures = array(
 		'plugin.bancha.article',
-		'plugin.bancha.articles_tag'
+		'plugin.bancha.articles_tag',
+		'plugin.bancha.user',
+		'plugin.bancha.tag',
 	);
 
 /**
