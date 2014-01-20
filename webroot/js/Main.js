@@ -439,7 +439,7 @@ Ext.define('Bancha', {
                         'You have an error in your <a href="'+apiPath+'">Bancha API</a>, please fix it:<br /><br />',
 
                         response.responseText.search(/<h2>Not Found<\/h2>/)!==-1 ?
-                        '<b>Note: You might have to turn ob debug mode to get a usefull error message!</b><br/><br/>' :
+                        '<b>Note: You might have to turn ob debug mode to get a useful error message!</b><br/><br/>' :
                         '',
 
                         response.responseText.substr(0,31) === '<script type="text/javascript">' ? // remove script tags
@@ -715,7 +715,7 @@ Ext.define('Bancha', {
      *
      * __Attention:__ In most cases it's best to load all model metadata on startup
      * when the api is loaded, please see the Bancha CakePHP install guide for more
-     * information. This is mostly usefull if you can guess that a user will need a
+     * information. This is mostly usefulf if you can guess that a user will need a
      * model soon which wasn't loaded at startup or if you want to load all needed
      * models right after startup with something like:
      *     Ext.onReady(
