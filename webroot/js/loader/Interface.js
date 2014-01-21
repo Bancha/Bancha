@@ -43,6 +43,7 @@ Ext.define('Bancha.loader.Interface', {
          */
         parentLoader: null
     },
+
     /**
      * This function will be called to find the correct loader
      * for handling the class loading. Return true to handle
@@ -55,6 +56,7 @@ Ext.define('Bancha.loader.Interface', {
     handles: function(className) {
         return false;
     },
+
     /**
      * This function will be called every time a class needs to be loaded
      * and the #handles(classname) returned true.
@@ -68,5 +70,7 @@ Ext.define('Bancha.loader.Interface', {
 	 * @param  {Object}   scope       The scope to use for onLoad and onError
 	 * @param  {Boolean}  syncEnabled True is the file should be loaded synchronous.
      */
-    loadClass: function(className, onLoad, onError, scope, syncEnabled) {}
+    loadClass: function(className, onLoad, onError, scope, syncEnabled) {
+    }
+
 });

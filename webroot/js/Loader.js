@@ -80,7 +80,6 @@ Ext.define('Bancha.Loader', {
             return this.defaultLoader;
         },
 
-
         /**
          * @private // the override is private
          * @member Bancha.Loader

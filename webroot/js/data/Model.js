@@ -365,7 +365,7 @@ Ext.define('Bancha.data.Model', {
                 }, configWithRootPropertySet),
                 writer: Ext.apply({
                     type: 'consitentjson',
-                    writeAllFields: false
+                    writeAllFields: false // false to optimize data transfer
                 }, configWithRootPropertySet),
                 listeners: {
                     exception: Bancha.Remoting.getFacade('onRemoteException')

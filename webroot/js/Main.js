@@ -409,7 +409,7 @@ Ext.define('Bancha', {
                 title: 'Bancha Error',
                 message: err.msg || err.message, //touch
                 msg: err.msg || err.message, //extjs
-                icon: Ext.window.MessageBox.ERROR,
+                icon: Ext.MessageBox.ERROR,
                 closable: false
             });
         } catch(e) {
