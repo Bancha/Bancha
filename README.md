@@ -1,4 +1,4 @@
-[![Bancha logo](http://docs.banchaproject.org/wiki/images/github-logo.png)](http://banchaproject.com)
+[![Bancha logo](http://docs.banchaproject.org/wiki/images/github-logo.png)](http://bancha.io)
 
 [![Build Status](https://travis-ci.org/Bancha/Bancha.png)](https://travis-ci.org/Bancha/Bancha)
 
@@ -27,7 +27,7 @@ Compatibility
 Licensing
 ---------
 
-Bancha comes in two flavors. We have an open source version of Bancha Basic and commercial version Bancha Pro. For complete details see the [Bancha Licensing Overview](http://banchaproject.com/licensing.html). To purchase a commercial license or premium support please visit the [Bancha Store](http://banchaproject.com/store.html).
+Bancha comes in two flavors. We have an open source version of Bancha Basic and commercial version Bancha Pro. For complete details see the [Bancha Licensing Overview](http://bancha.io/licensing.html). To purchase a commercial license or premium support please visit the [Bancha Store](http://bancha.io/store.html).
 
 To download either our free or commercial version go to the [Bancha website](http://bancha.io/download.html).
 
