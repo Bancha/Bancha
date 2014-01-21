@@ -342,9 +342,24 @@ Ext.define('Bancha', {
         //<debug>
         if(!Ext.isObject(this.getStubsNamespace()[stubName]) && // Sencha Touch
            !Ext.isObject(this.objectFromPath(stubName, this.getStubsNamespace()))) { // Ext JS
+            if(stubName[stubName.length - 1] === 's') {
+                // this is probably a plural form, if the singular form exist
+                // give a better error message
+                var singularStubName = stubName.substr(0, stubName.length - 1);
+                if(Ext.isObject(this.getStubsNamespace()[singularStubName]) || // Sencha Touch
+                   Ext.isObject(this.objectFromPath(singularStubName, this.getStubsNamespace()))) { // Ext JS
+                    Ext.Error.raise({
+                        plugin: 'Bancha',
+                        msg: [
+                            'Bancha: The Stub "'+stubName+'" doesn\'t exist, ',
+                            'you probably meant the singular name "' + singularStubName + '".'
+                        ].join('')
+                    });
+                }
+            }
             Ext.Error.raise({
                 plugin: 'Bancha',
-                msg: 'Bancha: The Stub '+stubName+' doesn\'t exist'
+                msg: 'Bancha: The Stub "'+stubName+'" doesn\'t exist.'
             });
         }
         //</debug>
