@@ -154,7 +154,12 @@ Ext.define('Bancha.Remoting', {
      * @param {Ext.data.Operation} operation The operation that triggered request
      * @since Bancha v 2.0.0
      */
-    onRemoteException: function(proxy, response, operation){
+    onRemoteException: function(proxy, response, operation) {
+        if(response.method === 'create' || response.method === 'update' && Ext.isArray((response.result || {}).errors)) {
+            // these are just record validation errors, don't throw an alert here
+            return;
+        }
+
         Ext.Msg.show({
             title: 'REMOTE EXCEPTION',
             message: operation.getError(), //touch
