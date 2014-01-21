@@ -204,7 +204,7 @@ before_script:
 script:
   # execute the jasmine tests for Sencha Touch and Ext JS
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
-  - if [ $EXTJS_VERSION -o $EXTJS_VERSION_LEGACY ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
+  - if [ $EXTJS_VERSION || $EXTJS_VERSION_LEGACY ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
 
   # execute the PHPUnti tests for CakePHP
   - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
