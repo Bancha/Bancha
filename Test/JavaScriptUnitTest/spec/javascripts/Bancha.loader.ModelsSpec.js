@@ -72,6 +72,9 @@ describe("Bancha.loader.Models", function() {
             onLoad = spyOn(scope, 'onLoad').andCallThrough(),
             onError = spyOn(scope, 'onError').andCallThrough();
 
+        // Fake that Bancha is already initialized, but the model is not loaded yet
+        Bancha.initialized = true;
+
         // test
         loader.loadClass('Bancha.model.ModelLoaderTestModel2', onLoad, onError, scope, false);
 
