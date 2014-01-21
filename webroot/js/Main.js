@@ -447,7 +447,13 @@ Ext.define('Bancha', {
 
             // the remote api is not available, check if this is because of
             // an error on the bancha-api.js or because it is not included
-            Ext.syncRequire('Bancha.REMOTE_API');
+            try {
+                Ext.syncRequire('Bancha.REMOTE_API');
+            } catch(e) {
+                // there's a parsing error in the Remote API,
+                // the exception will be thrown a few lines below
+                // after the ajax response was tried to be parsed
+            }
 
             if(Ext.isObject(this.objectFromPath(this.remoteApi)) && Ext.Logger && typeof Ext.Logger.warn==='function') {
                 Ext.Logger.warn([
