@@ -3,11 +3,11 @@
  * BanchaRemotableBehavior file
  *
  * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 codeQ e.U.
+ * Copyright 2011-2014 codeQ e.U.
  *
  * @package       Bancha.Model.Behavior
- * @copyright     Copyright 2011-2013 codeQ e.U.
- * @link          http://banchaproject.org Bancha Project
+ * @copyright     Copyright 2011-2014 codeQ e.U.
+ * @link          http://bancha.io Bancha
  * @since         Bancha v 0.9.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @author        Andreas Kern <andreas.kern@gmail.com>
@@ -95,7 +95,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 * to save edit-data from Ext JS/Sencha Touch.
 		 *
 		 * See also:
-		 * http://banchaproject.org/documentation-pro-models-validation-rules.html#useOnlyDefinedFields
+		 * http://bancha.io/documentation-pro-models-validation-rules.html#useOnlyDefinedFields
 		 *
 		 * @var boolean
 		 */
@@ -106,7 +106,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 * config will still be applied.
 		 *
 		 * See also:
-		 * http://banchaproject.org/documentation-pro-models-exposed-and-hidden-fields.htmls
+		 * http://bancha.io/documentation-pro-models-exposed-and-hidden-fields.html
 		 *
 		 * @var string[]|null
 		 */
@@ -116,7 +116,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		 * exposedFields.
 		 *
 		 * See also:
-		 * http://banchaproject.org/documentation-pro-models-exposed-and-hidden-fields.htmls
+		 * http://bancha.io/documentation-pro-models-exposed-and-hidden-fields.html
 		 *
 		 * @var string[]
 		 */

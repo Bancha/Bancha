@@ -1,16 +1,16 @@
 Bancha Project
-Copyright 2011-2013 codeQ e.U.
+Copyright 2011-2014 codeQ e.U.
 All rights reserved.
 licensing@banchaproject.org
 
-http://banchaproject.org/licensing.html
+http://bancha.io/licensing.html
 
 Commercial License (this version)
 ------------------------------------------------------------------------------------------
 This version of Bancha is licensed commercially. It requires you to get a license.
 Bancha Pro provides additional features and has a commercial-friendly license
 allowing private forks and modifications of Bancha Pro.
-Please visit http://banchaproject.org/licensing.html for more details.
+Please visit http://bancha.io/licensing.html for more details.
 
 Free Version
 ------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@ You are allowed to use Bancha Basic without sharing your code. You can not
 re-distribute it as part of your own commercially licensed SDK, framework
 or web application builder.
 Please see <http://www.gnu.org/licenses/lgpl-3.0.html> for license text.
-To download Bancha Basic, please visit: http://banchaproject.org/download.html.
+To download Bancha Basic, please visit: http://bancha.io/download.html.
 
 --
 

@@ -1,11 +1,11 @@
 /*!
  *
  * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 codeQ e.U.
+ * Copyright 2011-2014 codeQ e.U.
  *
  * @package       Bancha
- * @copyright     Copyright 2011-2013 codeQ e.U.
- * @link          http://banchaproject.org Bancha Project
+ * @copyright     Copyright 2011-2014 codeQ e.U.
+ * @link          http://bancha.io Bancha
  * @since         Bancha v 2.0.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
@@ -30,7 +30,7 @@
  * This class now simply extends {@class Ext.Loader} to allow the usage of custom
  * loaders, while the actual Bancha loading logic lies in {@Bancha.loader.Models}.
  *
- * See also http://banchaproject.org/blog-entry/items/building-a-customer-class-loader-for-sencha.html
+ * See also http://bancha.io/blog-entry/building-a-customer-class-loader-for-sencha.html
  *
  * @since Bancha v 2.0.0
  * @author Roland Schuetz <mail@rolandschuetz.at>

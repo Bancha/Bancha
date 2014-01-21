@@ -6,11 +6,11 @@
  * This file should load/create any application wide configuration settings.
  *
  * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
- * Copyright 2011-2013 codeQ e.U.
+ * Copyright 2011-2014 codeQ e.U.
  *
  * @package       Bancha.Config
- * @copyright     Copyright 2011-2013 codeQ e.U.
- * @link          http://banchaproject.org Bancha Project
+ * @copyright     Copyright 2011-2014 codeQ e.U.
+ * @link          http://bancha.io Bancha
  * @since         Bancha v 0.9.3
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  */
@@ -33,7 +33,7 @@ Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
  *
  * Please also set the Bancha.allowedDomains config from below.
  *
- * See also http://banchaproject.org/documentation-cross-domain-requests.html
+ * See also http://bancha.io/documentation-pro-cross-domain-requests.html
  */
 //Configure::write('Bancha.Api.domain', 'http://example.org');
 
@@ -48,7 +48,7 @@ Configure::write('Bancha.version', 'PRECOMPILER_ADD_RELEASE_VERSION');
  *           'http://trusted-domain-two.org',
  *       ));
  *
- * See also http://banchaproject.org/documentation-cross-domain-requests.html
+ * See also http://bancha.io/documentation-pro-cross-domain-requests.html
  */
 if (Configure::read('Bancha.allowedDomains') === null) { // conditionals are needed because of loading order
 	Configure::write('Bancha.allowedDomains', false);
