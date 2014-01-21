@@ -143,7 +143,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// Check that exposedFields is valid
-		if (isset($settings['exposedFields']) && (!is_array($settings['exposedFields']) || count($settings['exposedFields'])==0)) {
+		if (isset($settings['exposedFields']) && (!is_array($settings['exposedFields']) || count($settings['exposedFields']) == 0)) {
 			throw new CakeException(
 				'Bancha: The BanchaRemotableBehavior expects the exposedFields config to be null or a non-empty array, ' .
 				'instead ' . print_r($settings['exposedFields'], true) . ' given for model ' . $model->name . '.'
@@ -151,7 +151,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 		if (isset($settings['exposeFields'])) {
 			throw new CakeException(
-				'Bancha: You have set the BanchaRemotableBehavior config "exposeFields" for model ' . 
+				'Bancha: You have set the BanchaRemotableBehavior config "exposeFields" for model ' .
 				$model->name . ', but the config "exposedFields" (written with "d") is expected instead.'
 			);
 		}
@@ -165,15 +165,15 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 		if (isset($settings['excludeFields'])) {
 			throw new CakeException(
-				'Bancha: You have set the BanchaRemotableBehavior config "excludeFields" for model ' . 
+				'Bancha: You have set the BanchaRemotableBehavior config "excludeFields" for model ' .
 				$model->name . ', but the config "excludedFields" (written with "d") is expected instead.'
 			);
 		}
 
 		// Check if id is correctly defined
-		if($model->primaryKey !== 'id') {
+		if ($model->primaryKey !== 'id') {
 			throw new CakeException(
-				'Bancha currently only supports exposing models with a primary key "id" as primary models.' . 
+				'Bancha currently only supports exposing models with a primary key "id" as primary models.' .
 				'The model "' . $model->name . ' can still be loaded as associated data.'
 			);
 		}
@@ -188,6 +188,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *
  * @param Model $model Model using this behavior
  * @return array       All the metadata as array
+ * @throws CakeException If the id field is not exposed, but exists on the model
  */
 	public function extractBanchaMetaData(Model $model) {
 		//<bancha-basic>
@@ -201,7 +202,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// Edge case, if the model is a hasAndBelongsToMany and doesn't have an id don't throw a warning
 		if (!$this->isExposedField($model, 'id') && !!$model->schema('id')) {
 			throw new CakeException(
-				'Bancha: The ' . $model->name . ' models "id" field must always be exposed, for Sencha Touch/Ext JS ' . 
+				'Bancha: The ' . $model->name . ' models "id" field must always be exposed, for Sencha Touch/Ext JS ' .
 				' to edit and delete data, but your BanchaRemotableBehavior config hides it.'
 			);
 		}
