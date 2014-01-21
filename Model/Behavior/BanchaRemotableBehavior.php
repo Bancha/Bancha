@@ -956,7 +956,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					'Bancha.model.ModelName model to create, load and save model records. If ' .
 					'you really have to create your own models, make sure that the JsonWriter property ' .
 					'"root" (Ext JS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />' .
-					'Got following data to save: <br />' . print_r($model->data, true));
+					'Got following data to save: <br />' . print_r($model->data, true) . '<br /><br />' .
+					'For support please <a href="http://bancha.io/forum/category/1.html">write us in the forum</a>.'
+				);
 			}
 		} //eo debugging checks
 
