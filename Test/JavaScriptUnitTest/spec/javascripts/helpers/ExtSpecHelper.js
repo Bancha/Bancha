@@ -1,9 +1,9 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
- * ExtJS and Sencha Touch specific helper functions
+ * Ext JS and Sencha Touch specific helper functions
  *
  * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
@@ -144,13 +144,13 @@ beforeEach(function() {
             var modelClassName = Ext.ClassManager.getName(this.actual),
                 modelExtendsClass;
 
-            // for ExtJS 4
+            // for Ext JS 4
             if(Ext.versions.extjs) {
                 modelExtendsClass = Ext.ClassManager.getName(objectFromPath('prototype.superclass',this.actual));
             } else if(Ext.versions.touch) {
                 modelExtendsClass = Ext.ClassManager.getName(objectFromPath('superclass',this.actual));
             } else {
-                alert('Could not recognize if this is ExtJS 4 or Sencha Touch 2. This comes from '+
+                alert('Could not recognize if this is Ext JS 4 or Sencha Touch 2. This comes from '+
                         'Test/JavaScriptUnitTests/spec/helpers/ExtSpecHelper.js.');
             }
 
@@ -164,11 +164,11 @@ beforeEach(function() {
 
 ExtSpecHelper = {
     /**
-     * This helps to regonize if this is a Sencha Touch or ExtJS test.
+     * This helps to regonize if this is a Sencha Touch or Ext JS test.
      */
     isTouch: !!Ext.versions.touch,
     /**
-     * This helps to regonize if this is a Sencha Touch or ExtJS test.
+     * This helps to regonize if this is a Sencha Touch or Ext JS test.
      */
     isExt: !!Ext.versions.extjs
 };

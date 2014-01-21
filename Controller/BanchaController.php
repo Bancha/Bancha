@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Controller
@@ -19,7 +19,7 @@ App::uses('BanchaApi', 'Bancha.Bancha');
 
 /**
  * Bancha Controller
- * This class exports the ExtJS API for remotable models and controller.
+ * This class exports the Ext JS API for remotable models and controller.
  * This is only internally used by the client side of Bancha.
  *
  * @package       Bancha.Controller

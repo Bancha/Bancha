@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * Tests for the bancha model
@@ -25,7 +25,7 @@ describe("Bancha.data.Model tests", function() {
         // expect the apply function to be called
         var spy = spyOn(Ext.ClassManager.get('Bancha.data.Model'), 'applyCakeSchema');
 
-        // ExtJS handles this by simply beeing registered the onClassExtended
+        // Ext JS handles this by simply beeing registered the onClassExtended
         // Sencha Touch recognizes this via the namespace
         Ext.define('Bancha.model.ModelTestCreateUser1', {extend: 'Bancha.data.Model'});
         expect(spy.callCount).toEqual(1);

@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha
@@ -21,10 +21,10 @@
  *
  * For Sencha Touch it fixes a bug inside writeDate.
  *
- * For ExtJS 4.1.1a+ it adds support date fields with
+ * For Ext JS 4.1.1a+ it adds support date fields with
  * value null.
  *
- * For ExtJS 4.1.0 and below it adds support for date
+ * For Ext JS 4.1.0 and below it adds support for date
  * conversions.
  *
  * @author Roland Schuetz <mail@rolandschuetz.at>
@@ -46,12 +46,12 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
             me = this;
 
         // Sencha Touch is augmented in the writeDate fucntion, so we are done here
-        // ExtJS doesn't have a writeDate function yet, so we need to augment below
+        // Ext JS doesn't have a writeDate function yet, so we need to augment below
         if(Ext.versions.touch) {
             return data;
         }
 
-        // for ExtJS 4.1.1+ versions add support for null
+        // for Ext JS 4.1.1+ versions add support for null
         if(parseInt(Ext.versions.extjs.shortVersion,10) >= 411) {
             Ext.each(fieldItems, function(field) {
                 var name = field[nameProperty] || field.name;
@@ -67,7 +67,7 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
                 }
             });
 
-        // for older ExtJS versions add full date conversion support
+        // for older Ext JS versions add full date conversion support
         } else {
             Ext.each(fieldItems, function(field) {
                 var name = field[nameProperty] || field.name;
@@ -84,7 +84,7 @@ Ext.define('Bancha.data.writer.JsonWithDateTime', {
      * Fix Sencha Touch 2.1.1 and below to use the
      * dateFormat and add support for null dates.
      *
-     * Since ExtJS doesn't have a function called
+     * Since Ext JS doesn't have a function called
      * writeDate but is also buggy prior to Ext 4.1.1
      * we call this function from getRecordData
      *

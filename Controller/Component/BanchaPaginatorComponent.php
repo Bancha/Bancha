@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Controller.Component
@@ -17,7 +17,7 @@ App::uses('BanchaException', 'Bancha.Bancha/Exception');
  * BanchaPaginatorComponent
  *
  * This class extends the default Paginator component to also support
- * remote filtering from inside any ExtJS/Sencha Touch store with
+ * remote filtering from inside any Ext JS/Sencha Touch store with
  * remoteFiltering:true and a Bancha model.
  *
  * @package       Bancha.Controller.Component
@@ -364,7 +364,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 				if (!$valid) {
 					if (Configure::read('debug') == 2) {
 						throw new BanchaException(
-							'The last ExtJS/Sencha Touch request tried to filter by ' . $field .
+							'The last Ext JS/Sencha Touch request tried to filter by ' . $field .
 							', which is not allowed according to the ' . $this->_Controller->name .
 							' BanchaPaginatorComponents allowedFilters configuration.');
 					} else {
@@ -382,7 +382,7 @@ class BanchaPaginatorComponent extends PaginatorComponent {
 			if (!in_array($field, $allowedFilters)) {
 				if (Configure::read('debug') == 2) {
 					throw new BanchaException(
-						'The last ExtJS/Sencha Touch request tried to filter by ' . $field .
+						'The last Ext JS/Sencha Touch request tried to filter by ' . $field .
 						', which is not allowed according to the ' . $this->_Controller->name .
 						' BanchaPaginatorComponents allowedFilters configuration.');
 				} else {

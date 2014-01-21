@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Lib.Bancha
@@ -144,7 +144,7 @@ class BanchaApi {
 	}
 
 /**
- * Returns all CRUD actions of the given controller mapped into the ExtJS format.
+ * Returns all CRUD actions of the given controller mapped into the Ext JS format.
  *
  * @param string $controllerClass Name of the controller.
  * @return array                  Array with mapped CRUD actions. Each action is an array where the first element

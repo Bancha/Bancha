@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Lib.Bancha.Network
@@ -63,13 +63,13 @@ class BanchaResponseTransformer {
 	}
 
 /**
- * Transform a CakePHP response to ExtJS/Sencha Touch structure,
+ * Transform a CakePHP response to Ext JS/Sencha Touch structure,
  * otherwise just return the original response.
  * See also http://docs.banchaproject.org/resources/Supported-Controller-Method-Results.html
  *
  * @param object $response  The input request from Bancha
  * @param string $modelName The model name of the current request
- * @return array            ExtJS/Sencha Touch formated data
+ * @return array            Ext JS/Sencha Touch formated data
  */
 	public static function transformDataStructureToSencha($response, $modelName) {
 		// if we only got an array with a success property we expect
@@ -172,7 +172,7 @@ class BanchaResponseTransformer {
 				$senchaResponse['data'] = $data;
 			} else {
 				$senchaResponse['message'] = 'Expected the response to be multiple ' . $modelName . ' records, ' .
-				'but some records were missing data, so did not convert data into ExtJS/Sencha Touch structure.';
+				'but some records were missing data, so did not convert data into Ext JS/Sencha Touch structure.';
 			}
 
 		} elseif ($mapper->isPaginatedSet()) {
@@ -228,7 +228,7 @@ class BanchaResponseTransformer {
 	}
 
 /**
- * Translates CakePHP CRUD to ExtJS CRUD method names.
+ * Translates CakePHP CRUD to Ext JS CRUD method names.
  * 
  * @param string $request The CakePHP request
  * @return string         The Sencha Touch/Ext JS method name

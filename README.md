@@ -13,7 +13,7 @@ Features
 --------
 
 *   handles all communication between server and client
-*   shares all schema and validation rules in CakePHP with ExtJS/Sencha Touch
+*   shares all schema and validation rules in CakePHP with Ext JS/Sencha Touch
 *   enables asynchronous and batched request to the server
 *   automatically implements CRUD for all remotable cake models
 *   is well-tested with PHPUnit and Jasmine
@@ -21,7 +21,7 @@ Features
 Compatibility
 -------------
 *   CakePHP 2.1.0 till latest
-*   ExtJS 4.0.7 till latest
+*   Ext JS 4.0.7 till latest
 *   Sencha Touch 2.0.1.1 till latest
 
 Licensing

@@ -70,7 +70,7 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
             ]
         };
 
-        // Sencha Touch and EXTJS have different structures here
+        // Sencha Touch and Ext JS have different structures here
         if(Ext.versions.touch) {
             config = {
                 extend: 'Ext.data.Model',
@@ -101,7 +101,7 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2012-11-30');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2012-11-30 10:00:05');
-        // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
+        // Sencha Touch (and Ext JS 4.0) returns timestamps as numbers, Ext JS 4.1+  casts them to strings.
         // But this doesn't matter, since our backend can handle both cases. So both cases are valid
         if(typeof writer.getRecordData(record).timestamp === 'number') {
             expect(writer.getRecordData(record)).property('timestamp').toEqual(1373584360);
@@ -131,7 +131,7 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         // test
         expect(writer.getRecordData(record)).property('date').toEqual('2013-07-12');
         expect(writer.getRecordData(record)).property('datetime').toEqual('2013-07-12 01:28:46');
-        // Sencha Touch (and ExtJS 4.0) returns timestamps as numbers, ExtJS 4.1+  casts them to strings.
+        // Sencha Touch (and Ext JS 4.0) returns timestamps as numbers, Ext JS 4.1+  casts them to strings.
         // But this doesn't matter, since our backend can handle both cases. So both cases are valid
         if(typeof writer.getRecordData(record).timestamp === 'number') {
             expect(writer.getRecordData(record)).property('timestamp').toEqual(1373585326);

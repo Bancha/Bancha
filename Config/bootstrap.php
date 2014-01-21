@@ -5,7 +5,7 @@
  *
  * This file should load/create any application wide configuration settings.
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Config
@@ -109,10 +109,10 @@ if (Configure::read('Bancha.Api.remoteApiNamespace') === null) {
  * If you feel like changing this, please write us an email before to
  * support@banchaproject.org, you're probably doing something wrong.
  *
- * If you want to send multiple multiple records from ExtJS to CakePHP in one
+ * If you want to send multiple multiple records from Ext JS to CakePHP in one
  * action (this is not about request batching!), you have to enable this.
  * Normally this is not needed and the according error is only triggered
- * because the ExtJS store proxy is configured with batchActions:true.
+ * because the Ext JS store proxy is configured with batchActions:true.
  *
  * Please never batch records on the proxy level (Ext.Direct is batching them).
  */

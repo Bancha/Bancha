@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha
@@ -52,7 +52,7 @@ Ext.define('Bancha.data.override.Validations', {
      * @author Roland Schuetz <mail@rolandschuetz.at>
      * @docauthor Roland Schuetz <mail@rolandschuetz.at>
      */
-    Ext.apply(Ext.data.validations, { // this is differently called in ExtJS and Sencha Touch, but work by alias just fine
+    Ext.apply(Ext.data.validations, { // this is differently called in Ext JS and Sencha Touch, but work by alias just fine
         /**
          * @property
          * The default error message used when a numberformat validation fails.

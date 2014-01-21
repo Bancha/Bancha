@@ -2,7 +2,7 @@
 /**
  * Bancha Front Controller
  *
- * The Front Controller for handling every request from Sencha Touch or ExtJS.
+ * The Front Controller for handling every request from Sencha Touch or Ext JS.
  * This file should be copied to the app/webroot directory.
  *
  * This is modified version of CakePHPs webroot/index.php

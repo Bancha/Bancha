@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha
@@ -127,7 +127,7 @@ Ext.define('Bancha.Loader', {
             var className = this.getPathLastClassName,
                 current;
 
-            // ExtJS 4.0.7 returns undefined instead of false, fix this
+            // Ext JS 4.0.7 returns undefined instead of false, fix this
             synchronous = synchronous || false;
 
             // if we have a default class loader set, use it

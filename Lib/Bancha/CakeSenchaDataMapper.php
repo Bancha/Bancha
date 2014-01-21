@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Lib.Bancha
@@ -12,7 +12,7 @@
 
 /**
  * CakeSenchaDataMapper
- * A Helper class for building the ExtJS/Sencha Touch data structures from
+ * A Helper class for building the Ext JS/Sencha Touch data structures from
  * CakePHP ones.
  *
  * @package       Bancha.Lib.Bancha

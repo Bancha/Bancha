@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Lib.Bancha.Routing
@@ -209,7 +209,7 @@ class BanchaDispatcher {
  * This handler will be called every time a redirect is triggered.
  * Instead of doing a redirect this handler with throw an exception,
  * createswhich will be catched by the BanchaDispatcher::dispatch
- * and a ExtJS/Sencha Touch exception.
+ * and a Ext JS/Sencha Touch exception.
  *
  * @param CakeEvent $event The event which triggered the redirect
  * @return void
@@ -241,7 +241,7 @@ class BanchaDispatcher {
  * When a Controller throws a exception we will write it to the error log,
  * since this is in normal cases a unwanted behavior. In most cases you
  * want to return an array with success=>false to indicate to
- * ExtJS/Sencha Touch that the request was not successfull.
+ * Ext JS/Sencha Touch that the request was not successfull.
  *
  * @param CakeRequest $CakeRequest The request which caused the error
  * @param Exception   $exception   The caugth exception

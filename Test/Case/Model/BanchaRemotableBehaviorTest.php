@@ -2,7 +2,7 @@
 /**
  * BanchaRemotableBehaviorTest file.
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Test.Case.Model
@@ -547,7 +547,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 /**
- * Get all associations in ExtJS/Sencha Touch format
+ * Get all associations in Ext JS/Sencha Touch format
  * 
  * @return void
  */
@@ -589,7 +589,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 /**
- * Get all associations in ExtJS/Sencha Touch format.
+ * Get all associations in Ext JS/Sencha Touch format.
  * Filter out belongTo associations of non-exposed fields.
  * 
  * @return void
@@ -625,7 +625,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 	}
 
 /**
- * Get all sorters in ExtJS/Sencha Touch format.
+ * Get all sorters in Ext JS/Sencha Touch format.
  *
  * @param array $rules         The rules to use for testing
  * @param array $expecedResult The expected result
@@ -699,7 +699,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 /**
  * Test that getColumnType returns the correct column definitions in
- * ExtJS/Sencha Touch format for each CakePHP format
+ * Ext JS/Sencha Touch format for each CakePHP format
  *
  * @param array $cakeFieldConfig     Configuration for testing
  * @param array $expecedSenchaConfig The expected result
@@ -943,7 +943,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 /**
  * Test that _getColumnTypes returns all column definitions in
- * ExtJS/Sencha Touch format
+ * Ext JS/Sencha Touch format
  *
  * @param array $behaviorConfig The config for the BanchaRemotableBehavior
  * @param array $expecedResult  The expected result
@@ -1368,7 +1368,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 /**
  * Test that getValidationRulesForField returns all validation definitions
- * for one model field in ExtJS/Sencha Touch format
+ * for one model field in Ext JS/Sencha Touch format
  *
  * @param string $fieldName     The field name to use for testing
  * @param array $rules         The rules to use for testing
@@ -1546,7 +1546,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 			),
 			// test cake minLength, maxLength
-			// aka: test ExtJS/Sencha Touch length rule (see also between)
+			// aka: test Ext JS/Sencha Touch length rule (see also between)
 			array(
 				'login',
 				array(
@@ -1776,7 +1776,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 			),
 			// test cake require and allowEmpty property, as well as notEmpty rule
-			// aka: test ExtJS/Sencha Touch presence rule
+			// aka: test Ext JS/Sencha Touch presence rule
 			array(
 				'login',
 				array(
@@ -1842,7 +1842,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 /**
  * Test that getValidationRulesForField returns all validation definitions
- * for one model field in ExtJS/Sencha Touch format
+ * for one model field in Ext JS/Sencha Touch format
  *
  * @param string $fieldName The field name to use for testing
  * @param array $rules      The rules to use for testing
@@ -1887,7 +1887,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 
 /**
  * Test that getValidations returns all validation definitions in
- * ExtJS/Sencha Touch format.
+ * Ext JS/Sencha Touch format.
  *
  * This is only an integration test, the individual rules are tested above
  *

@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha
@@ -631,12 +631,12 @@ Ext.define('Bancha', {
     setupDebugErrorHandler: function() {
 
         //<debug>
-        // catch every debug exception thrown from either ExtJS or Bancha
+        // catch every debug exception thrown from either Ext JS or Bancha
         Ext.Error.handle = this.alertError;
 
         // catch server-side errors
         Ext.direct.Manager.on('exception', function(err){
-            // normalize ExtJS and Sencha Touch
+            // normalize Ext JS and Sencha Touch
             var title,
                 msg,
                 data = (typeof err.getCode === 'function') ? {
@@ -1226,7 +1226,7 @@ Ext.define('Bancha', {
      * This function will be removed soon.
      * @param {String} modelName The name of the model
      * @param {Object} modelConfig A standard Ext.data.Model config object
-                                   In ExtJS this will be directly applied.
+                                   In Ext JS this will be directly applied.
                                    In Sencha Touch this iwll be applied to the config property.
      * @return {Boolean} Returns true is model was created successfully
      */
@@ -1243,7 +1243,7 @@ Ext.define('Bancha', {
         //</debug>
 
         // Sencha Touch puts all configs in a config object,
-        // ExtJS places it directly in the model.
+        // Ext JS places it directly in the model.
         // Adopt correctly.
         modelConfig = (Ext.versions.touch) ? {config:modelConfig} : modelConfig;
 

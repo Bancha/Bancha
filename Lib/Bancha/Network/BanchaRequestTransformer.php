@@ -1,6 +1,6 @@
 <?php
 /**
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Lib.Bancha.Network
@@ -179,7 +179,7 @@ class BanchaRequestTransformer {
 	}
 
 /**
- * Returns true if this is a ExtJS formHandler request
+ * Returns true if this is a Ext JS formHandler request
  *
  * @return boolean True if the given request is a form request.
  */
@@ -263,7 +263,7 @@ class BanchaRequestTransformer {
 		if (null != $this->_extUpload) {
 			return $this->_extUpload;
 		}
-		$this->_extUpload = isset($this->_data['extUpload']) ? ($this->_data['extUpload'] == 'true') : false; // extjs sends an string
+		$this->_extUpload = isset($this->_data['extUpload']) ? ($this->_data['extUpload'] == 'true') : false; // Ext JS sends an string
 		unset($this->_data['extUpload']);
 		return $this->_extUpload;
 	}
@@ -331,7 +331,7 @@ class BanchaRequestTransformer {
 			$pass['id'] = $this->_data['data'][0]['data']['id'];
 			//unset($this->_data['data'][0]['data']['id']); keep the id in the data as well (otherwise if no data is send the array might not be created)
 		} elseif ($this->isArray($this->_data, '[data][0]') && isset($this->_data['data'][0]['id'])) {
-			// read requests (actually these are malformed because the ExtJS root/Sencha Touch
+			// read requests (actually these are malformed because the Ext JS root/Sencha Touch
 			// rootProperty is not set to 'data', but we can ignore this on reads)
 
 			$pass['id'] = $this->_data['data'][0]['id'];
@@ -458,7 +458,7 @@ class BanchaRequestTransformer {
 			// looks like someone is using the store with batchActions:true
 			if (Configure::read('Bancha.allowMultiRecordRequests') != true) {
 				throw new BanchaException( // this is not very elegant, till it is not catched by the dispatcher, keep it anyway?
-					'You are currently sending multiple records from ExtJS to CakePHP, this is probably because ' .
+					'You are currently sending multiple records from Ext JS to CakePHP, this is probably because ' .
 					'of an store proxy with batchActions:true. Please never batch records on the proxy level ' .
 					'(Ext.Direct is batching them). So if you are using a store proxy please set the config ' .
 					'batchActions to false.<br /> If you are sending multiple requests by purpose please set ' .

@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha
@@ -77,7 +77,7 @@ Ext.define('Bancha.data.Model', {
         // only apply this for ExtJS, see Ext.ClassManager.registerPostprocessor below for Sencha Touch
         if(Ext.versions.extjs) {
 
-            // Support for ExtJS 4.0.7
+            // Support for Ext JS 4.0.7
             var me = this;
             if(typeof me.applyCakeSchema !== 'function') {
                 // In Ext JS 4.1+ the scope is the Bancha.data.Model,
@@ -189,11 +189,11 @@ Ext.define('Bancha.data.Model', {
 
             if(!Ext.versions.touch) {
                 // this is used for two cases:
-                // - Support for ExtJS 4.0.7
+                // - Support for Ext JS 4.0.7
                 // - Ext JS Support for ScriptTagInitializer, where we hook into Ext.data.Model extend
                 extJsOnClassExtendedData.fields = config.fields;
             }
-            // default case for ExtJS and Sencha Touch
+            // default case for Ext JS and Sencha Touch
             if(typeof modelCls.setFields === 'function') {
                 modelCls.setFields(config.fields);
             }
@@ -328,9 +328,9 @@ Ext.define('Bancha.data.Model', {
                 configWithRootPropertySet;
 
             // Sencha Touch uses the new rootProperty property for configuring the reader and writer
-            // ExtJS still uses root.
+            // Ext JS still uses root.
             // This all would be fine, but now Sencha Touch throws deprecated warning for using the old
-            // ExtJS syntax, so we can't just assign both anymore, instead we need to create a config
+            // Ext JS syntax, so we can't just assign both anymore, instead we need to create a config
             // prototype here
             if(Ext.versions.touch) {
                 configWithRootPropertySet = {

@@ -1,9 +1,9 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
- * ExtJS and Sencha Touch specific extension of the jasmin Mock helper
+ * Ext JS and Sencha Touch specific extension of the jasmin Mock helper
  *
  * @copyright     Copyright 2011-2013 codeQ e.U.
  * @link          http://banchaproject.org Bancha Project
@@ -23,7 +23,7 @@ Ext.define('Ext.data.proxy.override.Direct', {
 
 /**
  * Mock.Proxy extends the Mock object and provides
- * an easier interface for ExtJS testing
+ * an easier interface for Ext JS testing
  */
 Mock.Proxy = (function() {
 

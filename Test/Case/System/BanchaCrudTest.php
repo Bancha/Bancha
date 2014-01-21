@@ -2,7 +2,7 @@
 /**
  * BanchaCrudTest file.
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Test.Case.System
@@ -510,7 +510,7 @@ class BanchaCrudTest extends CakeTestCase {
 		// array('id' => 1001, 'title' => 'Title 1', ...)
 		// array('id' => 1002, 'title' => 'Title 2', ...)
 
-		// load one record, in ExtJS syntax
+		// load one record, in Ext JS syntax
 		$rawPostData = json_encode(array(array(
 			'action'		=> 'Article',
 			'method'		=> 'read',

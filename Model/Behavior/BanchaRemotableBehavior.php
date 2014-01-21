@@ -2,7 +2,7 @@
 /**
  * BanchaRemotableBehavior file
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Model.Behavior
@@ -47,7 +47,7 @@ if (function_exists('lcfirst') === false) {
 class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
- * A mapping table from cake to extjs data types
+ * A mapping table from cake to Sencha data types
  * @var array
  */
 	protected $_types = array(
@@ -65,7 +65,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	);
 
 /**
- * A mapping table from cake to extjs validation rules
+ * A mapping table from cake to Sencha validation rules
  * @var array
  */
 	protected $_formater = array(
@@ -184,7 +184,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * Extracts all metadata which should be shared with the ExtJS frontend
+ * Extracts all metadata which should be shared with the Ext JS frontend
  *
  * @param Model $model Model using this behavior
  * @return array       All the metadata as array
@@ -207,7 +207,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		}
 
 		// TODO primary wie setzen?, $model->$primaryKey contains the name of the primary key
-		// ExtJS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
+		// Ext JS has a 'idPrimary' attribute which defaults to 'id' which IS the cakephp fieldname
 
 		$ExtMetaData = array();
 
@@ -357,7 +357,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		foreach ($assocTypes as $type) { // only 3 types
 			foreach ($model->{$type} as $modelName => $config) {
 				if ($type == 'belongsTo' && !$this->isExposedField($model, $config['foreignKey'])) {
-					// this field is hidden from ExtJS/Sencha Touch, so also hide the associated data
+					// this field is hidden from Ext JS/Sencha Touch, so also hide the associated data
 					continue;
 				}
 
@@ -372,7 +372,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * Return the Associations as ExtJS-Assoc Model
+ * Return the Associations as Sencha association config,
  * should look like this:
  * <code>
  * associations: [
@@ -390,14 +390,14 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *          [counterQuery] => ) )</code>
  *
  * @param Model $model Model using this behavior
- * @return array An array of ExtJS/Sencha Touch association definitions
+ * @return array An array of Ext JS/Sencha Touch association definitions
  */
 	public function getAssociated(Model $model) {
 		$assocTypes = $model->associations();
 		$assocs = array();
 		foreach ($assocTypes as $type) { // only 3 types
 			if ($type == 'hasAndBelongsToMany') {
-				// ExtJS/Sencha Touch doesn't support hasAndBelongsToMany
+				// Ext JS/Sencha Touch doesn't support hasAndBelongsToMany
 				continue;
 			}
 			foreach ($model->{$type} as $modelName => $config) {
@@ -406,7 +406,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				$name = ($type == 'hasMany') ? Inflector::pluralize($modelName) : $modelName;
 
 				if ($type == 'belongsTo' && !$this->isExposedField($model, $config['foreignKey'])) {
-					// this field is hidden from ExtJS/Sencha Touch, so also hide the association
+					// this field is hidden from Ext JS/Sencha Touch, so also hide the association
 					continue;
 				}
 
@@ -424,7 +424,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * Return the model column schema as ExtJS/Sencha Touch structure.
+ * Return the model column schema as Ext JS/Sencha Touch structure.
  *
  * Example:
  *     [
@@ -433,7 +433,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
  *     ]
  *
  * @param Model $model Model using this behavior
- * @return array An array of ExtJS/Sencha Touch model field definitions
+ * @return array An array of Ext JS/Sencha Touch model field definitions
  */
 	public function getColumnTypes(Model $model) {
 		$schema = is_array($model->schema()) ? $model->schema() : array();
@@ -519,7 +519,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * Returns an ExtJS formated array of field names, validation types and constraints.
+ * Returns an Ext JS formated array of field names, validation types and constraints.
  *
  * @param Model $model Model using this behavior
  * @return array Ext.data.validations rules
@@ -898,9 +898,9 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			// throw an exception for empty response
 			throw new BanchaException(
 				'There was nothing saved to be returned. Probably this occures because the data ' .
-				'you send from ExtJS was malformed. Please use the Bancha.model.ModelName ' .
+				'you send from Ext JS was malformed. Please use the Bancha.model.ModelName ' .
 				'model to create, load and save model records. If you really have to create ' .
-				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" ' .
+				'your own models, make sure that the JsonWriter "root" (Ext JS) / "rootProperty" ' .
 				'(Sencha Touch) is set to "data".');
 		}
 
@@ -922,7 +922,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 				'The data to be saved seems malformed. Probably this occures because you send ' .
 				'from your own model or you one save invokation. Please use the Bancha.model.ModelName ' .
 				'model to create, load and save model records. If you really have to create ' .
-				'your own models, make sure that the JsonWriter "root" (ExtJS) / "rootProperty" ' .
+				'your own models, make sure that the JsonWriter "root" (Ext JS) / "rootProperty" ' .
 				'(Sencha Touch) is set to "data". <br /><br />' .
 				'Got following data to save: <br />' . print_r($model->data, true));
 		}
@@ -955,7 +955,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 					'saved a record from your own model with a wrong configuration. Please use the ' .
 					'Bancha.model.ModelName model to create, load and save model records. If ' .
 					'you really have to create your own models, make sure that the JsonWriter property ' .
-					'"root" (ExtJS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />' .
+					'"root" (Ext JS) / "rootProperty" (Sencha Touch) is set to "data". <br /><br />' .
 					'Got following data to save: <br />' . print_r($model->data, true));
 			}
 		} //eo debugging checks
@@ -1020,7 +1020,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// try to validate data
 		$success = true;
 		if (!$model->validates()) {
-			// prepare extJs formatted response of validation errors on failure to validate
+			// prepare Sencha formatted response of validation errors on failure to validate
 			$this->_result[$model->alias] = array(
 				'success' => false,
 				'errors' => $this->_getValidationErrors($model)
@@ -1042,7 +1042,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 /**
  * Commits a save operation for all changed data and
- * returns the result in an extjs format
+ * returns the result in an Sencha format
  * for return value see also getLastSaveResult()
  *
  * @param Model $model The model is always the first param (cake does this automatically)
@@ -1084,7 +1084,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	}
 
 /**
- * Returns an ExtJS formated array describing sortable fields
+ * Returns an Ext JS formated array describing sortable fields
  * this is '$order' in CakePHP.
  *
  * @param Model $model Model using this behavior

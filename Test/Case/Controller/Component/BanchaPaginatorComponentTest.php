@@ -2,7 +2,7 @@
 /**
  * BanchaPaginatorComponentTest file.
  *
- * Bancha Project : Seamlessly integrates CakePHP with ExtJS and Sencha Touch (http://banchaproject.org)
+ * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
  * Copyright 2011-2013 codeQ e.U.
  *
  * @package       Bancha.Test.Case.Controller.Component
@@ -229,7 +229,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		$this->setUpComponent(array('allowedFilters' => 'none'), array('Article.title' => 'Titel 01'));
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last Ext JS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate('Article');
 	}
 
@@ -244,7 +244,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		$this->setUpComponent(array('allowedFilters' => 'none'), array('Article.imaginary_field' => 'Titel 01'));
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.imaginary_field, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last Ext JS/Sencha Touch request tried to filter by Article.imaginary_field, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate('Article');
 	}
 
@@ -266,7 +266,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		);
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.published, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last Ext JS/Sencha Touch request tried to filter by Article.published, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate('Article');
 	}
 
@@ -314,7 +314,7 @@ class BanchaPaginatorComponentTest extends ControllerTestCase {
 		);
 
 		// if should trown an error when paginating
-		$this->setExpectedException('BanchaException', 'The last ExtJS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
+		$this->setExpectedException('BanchaException', 'The last Ext JS/Sencha Touch request tried to filter by Article.title, which is not allowed according to the TestBanchaPaginatorComponents BanchaPaginatorComponents allowedFilters configuration.');
 		$this->BanchaPaginatorComponent->paginate('Article');
 	}
 
