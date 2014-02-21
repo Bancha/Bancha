@@ -87,6 +87,14 @@ class BanchaResponseCollection {
 				'where'			=> 'In file "' . $e->getFile() . '" on line ' . $e->getLine() . '.',
 				'trace'			=> $e->getTraceAsString(),
 			);
+		} else if(in_array(get_class($e), Configure::read('Bancha.passExceptions'))) {
+			// this exception is explicitly marked to be forwarded to the user
+			// since we are not in debug mode, don't send the trace or exception source
+			$response = array(
+				'type'			=> 'exception',
+				'exceptionType'	=> get_class($e), // added by Bancha
+				'message'		=> $e->getMessage()
+			);
 		} else {
 			$response = array(
 				'type'			=> 'exception',

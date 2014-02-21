@@ -215,16 +215,19 @@ class BanchaDispatcher {
 	 * @param  Exception   $exception The caugth exception
 	 * @return void
 	 */
-	public function logException(CakeRequest $CakeRequest, Exception $Exception) {
+	public function logException(CakeRequest $CakeRequest, Exception $exception) {
 
-		if(!Configure::read('Bancha.logExceptions') || Configure::read('debug')==2) {
+		if(Configure::read('debug')==2 || // don't log anything in debug mode
+		   !Configure::read('Bancha.logExceptions') || // dev disabled logging
+		   in_array(get_class($exception), Configure::read('Bancha.passExceptions')) // this is an expected exception
+			) {
 			return; // don't log
 		}
 
 		// log the error
 		CakeLog::write(LOG_ERR, 
-			'A Bancha request to '.$this->_getSignature($CakeRequest).' resulted in the following '.get_class($Exception).':'.
-			"\n".$Exception."\n\n");
+			'A Bancha request to '.$this->_getSignature($CakeRequest).' resulted in the following '.get_class($exception).':'.
+			"\n".$exception."\n\n");
 	}
 
 	/**

@@ -55,6 +55,31 @@ if(Configure::read('Bancha.allowedDomains') === null) { // conditionals are need
 }
 
 /**
+ * Most exceptions thrown from a controller action are not expected to happen
+ * and to give away to much information to possible hackers only that an 
+ * exception happend is send to the client, but not further information.
+ *
+ * Some exceptions are thought to be handled in the user interface, e.g. a
+ * login exception, these can be defined here. For these exceptions Bancha
+ * will send the type and the message to the user.
+ *
+ * An example for handling authentification and wuthorization errors in the
+ * frontend:
+ * 
+ *       Configure::write('Bancha.passExceptions', array(
+ *           'MyFrontendException',
+ *           'BanchaAuthLoginException',
+ *           'BanchaAuthAccessRightsException'
+ *       ));
+ */
+if(Configure::read('Bancha.passExceptions') === null) { // conditionals are needed because of loading order
+	Configure::write('Bancha.passExceptions', array(
+		'BanchaAuthLoginException',
+		'BanchaAuthAccessRightsException'
+	));
+}
+
+/**
  * If you want to use exposed controller methods to a different namespace
  * then 'Bancha.RemoteStubs', you can override this in your core.php.
  *

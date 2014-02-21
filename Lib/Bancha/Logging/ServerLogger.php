@@ -49,6 +49,7 @@ class ServerLogger {
 			$type=='BanchaAuthLoginException' ||
 			$type=='BanchaException' ||
 			$type=='BanchaRedirectException' ||
+			in_array(get_class($exception), Configure::read('Bancha.passExceptions')) || // this is an expected exception
 			class_exists('CakeTestSuiteDispatcher')) {
 			return; // exception seem to be legit and not a Bancha error
 		}
