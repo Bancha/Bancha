@@ -46,6 +46,23 @@
            </condition>
        </fail>
        
+       <if>
+            <!-- 
+                Sencha Architect 3.0.1+ ignores any app.classpath set inside sencha.cfg.
+                Therefore we need to enforce adding this property to the classpath.
+                Since you can't override a property, we need to first unset it.
+            -->
+            <not>
+                <matches pattern="Bancha\/webroot\/js" string="${app.classpath}"/>
+            </not>
+            <then>
+                <property name="app.classpath-original" value="${app.classpath}"/>
+                <var name="app.classpath" unset="true"/>
+                <property name="app.classpath" value="${app.classpath-original},${bancha.folder}/webroot/js"/>
+                <var name="app.classpath-original" unset="true"/>
+                <echo message="Extended app.classpath to ${app.classpath}"/>
+            </then>
+       </if>
         <fail message="Missing property: Please add a path to Bancha's webroot/js folder in your app.classpath property inside sencha.cfg, current app.classpath value: ${app.classpath}">
             <condition>
                 <not>
