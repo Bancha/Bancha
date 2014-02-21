@@ -21,7 +21,7 @@
  */
 class User extends AppModel {
 	/**
-	 * Bancha behaviour
+	 * Bancha behavior
 	 */
 	public $actsAs = array('Bancha.BanchaRemotable');
 	
