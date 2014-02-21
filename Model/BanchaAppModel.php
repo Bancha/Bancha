@@ -22,5 +22,3 @@
 class BanchaAppModel extends AppModel {
 
 }
-
-?>
