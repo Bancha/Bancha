@@ -44,6 +44,7 @@ Ext.define('Bancha.loader.Models', {
     handles: function(className) {
         return className.substr(0,13) === 'Bancha.model.';
     },
+
     /**
      * Handle loading of Bancha models.
      *
