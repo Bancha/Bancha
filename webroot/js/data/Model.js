@@ -31,7 +31,6 @@ Ext.define('Bancha.data.Model', {
         'Bancha.Main',
         'Ext.direct.Manager',
         'Bancha.data.override.NodeInterface',
-        'Bancha.data.writer.JsonWithDateTime',
         'Bancha.data.writer.ConsistentJson',
         'Bancha.Remoting'
     ],
