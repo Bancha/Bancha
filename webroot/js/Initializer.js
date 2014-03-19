@@ -57,65 +57,64 @@ Ext.define('Bancha.Initializer', {
         'Bancha.data.Model'
     ]
 }, function() {
-        // initialize the Bancha model loader.
-        Ext.Loader.setDefaultLoader(Bancha.loader.Models);
+    // initialize the Bancha model loader.
+    Ext.Loader.setDefaultLoader(Bancha.loader.Models);
 
-        // For Sencha Architect support
-        // now that we are initialized, we want to inject Bancha schema in
-        // all models with a config 'bancha' set to true
-        if(Ext.versions.touch) {
+    // For Sencha Architect support
+    // now that we are initialized, we want to inject Bancha schema in
+    // all models with a config 'bancha' set to true
+    if(Ext.versions.touch) {
 
-            /*
-             * For Sencha Touch:
-             *
-             * Every time a new subclass is created, this function will apply all Bancha
-             * model configurations.
-             *
-             * In the debug version it will raise an Ext.Error if the model can't be
-             * or is already created, in production it will only return false.
-             */
-            Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
-                var prototype = cls.prototype;
-                if(!prototype || !prototype.isModel) {
-                    return; // this is not a model instance
-                }
-                if(!prototype.getBancha || (!prototype.getBancha() || prototype.getBancha()==='false')) {
-                    return; // there is no bancha config set to true
+        /*
+         * For Sencha Touch:
+         *
+         * Every time a new subclass is created, this function will apply all Bancha
+         * model configurations.
+         *
+         * In the debug version it will raise an Ext.Error if the model can't be
+         * or is already created, in production it will only return false.
+         */
+        Ext.ClassManager.registerPostprocessor('banchamodel', function(name, cls, data) {
+            var prototype = cls.prototype;
+            if(!prototype || !prototype.isModel) {
+                return; // this is not a model instance
+            }
+            if(!prototype.getBancha || (!prototype.getBancha() || prototype.getBancha()==='false')) {
+                return; // there is no bancha config set to true
+            }
+
+            // if bancha property is the model name, enforce it
+            var modelName = (typeof prototype.getBancha()==='string' && prototype.getBancha()!=='true') ?
+                            prototype.getBancha() : undefined;
+
+            // inject schema
+            Bancha.data.Model.applyCakeSchema(cls, undefined, modelName);
+        }, true);
+
+    } else {
+
+        /*
+         * For Ext JS:
+         *
+         * Hook into Ext.data.Model.
+         * We can't use the #onExtended method, since we need to be the first
+         * preprocessor.
+         *
+         * In the debug version it will raise an Ext.Error if the model can't be
+         * or is already created, in production it will only return false.
+         */
+        Ext.data.Model.$onExtended.unshift({
+            fn: function(cls, data, hooks) {
+                if(!data.bancha || data.bancha === 'false') {
+                    return; // not a Bancha model
                 }
 
                 // if bancha property is the model name, enforce it
-                var modelName = (typeof prototype.getBancha()==='string' && prototype.getBancha()!=='true') ?
-                                prototype.getBancha() : undefined;
+                var modelName = (typeof data.bancha==='string' && data.bancha!=='true') ? data.bancha : undefined;
 
-                // inject schema
-                Bancha.data.Model.applyCakeSchema(cls, undefined, modelName);
-            }, true);
-
-        } else {
-
-            /*
-             * For Ext JS:
-             *
-             * Hook into Ext.data.Model.
-             * We can't use the #onExtended method, since we need to be the first
-             * preprocessor.
-             *
-             * In the debug version it will raise an Ext.Error if the model can't be
-             * or is already created, in production it will only return false.
-             */
-            Ext.data.Model.$onExtended.unshift({
-                fn: function(cls, data, hooks) {
-                    if(!data.bancha || data.bancha === 'false') {
-                        return; // not a Bancha model
-                    }
-
-                    // if bancha property is the model name, enforce it
-                    var modelName = (typeof data.bancha==='string' && data.bancha!=='true') ? data.bancha : undefined;
-
-                    Bancha.data.Model.applyCakeSchema(cls, data, modelName);
-                },
-                scope: this
-            });
-        }
+                Bancha.data.Model.applyCakeSchema(cls, data, modelName);
+            },
+            scope: this
+        });
     }
-); //eo define
+}); //eo define
