@@ -941,14 +941,14 @@ Ext.define('Bancha', {
         this.decodeMetadata(Bancha.getRemoteApi());
 
         //<debug>
-        if(!Ext.isFunction(callback) && !Ext.isNull(callback)) {
+        if(!Ext.isFunction(callback) && callback !== null) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 callback: callback,
                 msg: 'Bancha: The for Bancha.loadModelMetaData supplied callback is not a function.'
             });
         }
-        if(!Ext.isObject(scope) && !Ext.isNull(scope)) {
+        if(!Ext.isObject(scope) && scope !== null) {
             Ext.Error.raise({
                 plugin: 'Bancha',
                 scope: scope,
