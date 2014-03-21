@@ -322,32 +322,51 @@ Ext.define('Bancha', {
         return this.objectFromPath(this.namespace);
     },
     /**
-     * Returns remote stubs for a given cake controller name in singular. 
+     * Returns true if a remote stubs for a given cake controller name in singular
+     * exists. 
      * You may add a plugin namespace in dot notation, e.g. 'MyPlugin.MyController'
      * 
      * @param {String} stubName the cakephp controller name in singular
-     * @return {Object} The stub if already defined, otherwise undefined
+     * @return {boolean} True if already defined
      */
-    getStub: function(stubName) {
-        if(!Bancha.initialized) {
-            Bancha.init();
-        }
+    hasStub: function(stubName) {
+        var ns = this.getStubsNamespace() || {};
 
         // Another happy place where Ext JS and Sencha Touch implementation differs
         // Ext JS creates a new namespace, which Sencha Touch keep all as model name
         // For TestPlugin.PluginTest this would be
         // in Ext JS (since 4.2)         : TestPlugin: {PluginTest: {...}}
         // in Sencha Touch and Ext JS<4.2: 'TestPlugin.PluginTest': {...}
+        return Ext.isObject(ns[stubName]) || Ext.isObject(this.objectFromPath(stubName, ns));
+    },
+
+    /**
+     * Returns remote stubs for a given cake controller name in singular. 
+     * You may add a plugin namespace in dot notation, e.g. 'MyPlugin.MyController'
+     * 
+     * @param {String} stubName the cakephp controller name in singular
+     * @return {Object} The stub if already defined, otherwise undefined
+     */
+    getStub: function(stubName) { // TODO When refactoring, make sure that getStub requires 'Bancha.REMOTE_API'
+        if(!Bancha.initialized) {
+            Bancha.init();
+        }
+        var ns = this.getStubsNamespace() || {};
 
         //<debug>
-        if(!Ext.isObject(this.getStubsNamespace()[stubName]) && // Sencha Touch
-           !Ext.isObject(this.objectFromPath(stubName, this.getStubsNamespace()))) { // Ext JS
+        if(Ext.Object.getSize(ns) === 0) {
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: 'Bancha: There is no stub exposed.'
+            });
+        }
+        if(!this.hasStub(stubName)) { // Ext JS
             if(stubName[stubName.length - 1] === 's') {
                 // this is probably a plural form, if the singular form exist
                 // give a better error message
                 var singularStubName = stubName.substr(0, stubName.length - 1);
-                if(Ext.isObject(this.getStubsNamespace()[singularStubName]) || // Sencha Touch
-                   Ext.isObject(this.objectFromPath(singularStubName, this.getStubsNamespace()))) { // Ext JS
+                if(Ext.isObject(ns[singularStubName]) || // Sencha Touch
+                   Ext.isObject(this.objectFromPath(singularStubName, ns))) { // Ext JS
                     Ext.Error.raise({
                         plugin: 'Bancha',
                         msg: [
@@ -363,8 +382,8 @@ Ext.define('Bancha', {
             });
         }
         //</debug>
-        return this.getStubsNamespace()[stubName] || // Sencha Touch
-               this.objectFromPath(stubName, this.getStubsNamespace()) || // Ext JS
+        return ns[stubName] || // Sencha Touch
+               this.objectFromPath(stubName, ns) || // Ext JS
                undefined;
     },
     /**
