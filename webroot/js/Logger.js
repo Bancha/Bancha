@@ -76,9 +76,11 @@ Ext.define('Bancha.Logger', {
             }
 
             // ok, now log it to the server
-            var serverType = type==='missing_translation' ? type : 'js_error';
-            message = (type==='warn' ? 'WARNING: ' : '') + message;
-            Bancha.getStub('Bancha').logError(message, serverType);
+            if(Bancha.hasStub('Bancha')) {
+                var serverType = type==='missing_translation' ? type : 'js_error';
+                message = (type==='warn' ? 'WARNING: ' : '') + message;
+                Bancha.getStub('Bancha').logError(message, serverType);
+            }
             return;
         }
 
