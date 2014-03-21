@@ -164,7 +164,7 @@ Ext.define('Bancha.Main', {
         //<if ext>
         'Ext.window.MessageBox',
         //</if>
-        'Bancha.data.override.Validations'
+        'Bancha.data.override.Validations' // only for Sencha Touch and Ext JS 4
     ],
 
     // If you want to include Bancha using the Microloader use this class name
