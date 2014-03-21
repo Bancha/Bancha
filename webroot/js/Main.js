@@ -208,6 +208,7 @@ Ext.define('Bancha', {
      * Bancha Project version
      */
     version: 'PRECOMPILER_ADD_RELEASE_VERSION',
+
     /**
      * @property
      * The local path to the Bancha remote api (Default: 'Bancha.REMOTE_API')
@@ -216,6 +217,7 @@ Ext.define('Bancha', {
      * config, never change after {@link Bancha#init}
      */
     remoteApi: 'Bancha.REMOTE_API',
+
     /**
      * @private
      * @property
@@ -226,12 +228,14 @@ Ext.define('Bancha', {
      * without the namespace. (Default: 'Bancha.loadMetaData')
      */
     metaDataLoadFunction: 'Bancha.loadMetaData',
+
     /**
      * @private
      * @property
      * The name of uid property in the metadata array
      */
     uidPropertyName: '_UID',
+
     /**
      * @property {null|String}
      * The namespace of Ext.Direct stubs, will be loaded from the REMOTE_API
@@ -242,6 +246,7 @@ Ext.define('Bancha', {
      *     Configure:write('Bancha.namespace','Bancha.RemoteStubs');
      */
     namespace: null,
+
     /**
      * @private
      * @property
@@ -250,12 +255,14 @@ Ext.define('Bancha', {
      * There's normally no need to change this. (Default: 'Bancha.model')
      */
     modelNamespace: 'Bancha.model',
+
     /**
      * @private
      * @property
      * Indicates that Bancha is initialized. Used for debugging.
      */
     initialized: false,
+
     /**
      * @private
      * Safely finds an object, used internally for getStubsNamespace and
@@ -305,6 +312,7 @@ Ext.define('Bancha', {
             }
         }, lookIn);
     },
+
     /**
      * @private
      * Returns the namespace of the remote stubs
@@ -321,6 +329,7 @@ Ext.define('Bancha', {
         //</debug>
         return this.objectFromPath(this.namespace);
     },
+
     /**
      * Returns true if a remote stubs for a given cake controller name in singular
      * exists. 
@@ -386,6 +395,7 @@ Ext.define('Bancha', {
                this.objectFromPath(stubName, ns) || // Ext JS
                undefined;
     },
+
     /**
      * @private
      * Returns the remote api definition of Ext.direct
@@ -418,6 +428,7 @@ Ext.define('Bancha', {
         //</debug>
         return this.objectFromPath(this.remoteApi);
     },
+
     /**
      * @private
      * Shows the first error happending and blocks the ui
@@ -442,6 +453,7 @@ Ext.define('Bancha', {
         // there already happend an error, don't override message
         this.alertError = Ext.emptyFn;
     },
+
     /* jshint maxstatements: 50, maxcomplexity: 20 */ /* don't optimize this anymore, it's already deprecated */
     /**
      * Inits Bancha with the RemotingProvider, always init before using Bancha.
@@ -657,6 +669,7 @@ Ext.define('Bancha', {
             this.setupDebugErrorHandler();
         }
     },
+
     /* jshint maxstatements: 25, maxcomplexity: 10 */
     /**
      * @private
@@ -731,6 +744,7 @@ Ext.define('Bancha', {
         });
         //</debug>
     },
+
     /**
      * @private
      * @method
@@ -802,6 +816,7 @@ Ext.define('Bancha', {
 
         this.loadModelMetaData(modelNames,callback,scope,false);
     },
+
     /**
      * @private
      * Returns the url to load the metadata. Simple separation of concerns for
@@ -826,6 +841,7 @@ Ext.define('Bancha', {
         baseUrl = baseUrl || '/'; // if the direct url does not contain an slash
         return baseUrl+'bancha-load-metadata/['+modelNames+'].js';
     },
+
     /**
      * @private
      * This function loads model metadata from the server to create a new model definition.
@@ -919,6 +935,7 @@ Ext.define('Bancha', {
             fn(modelNames,cb,Bancha);
         }
     },
+
     /**
      * @private
      * This function is triggered when the server returned the metadata, loaded via #loadModelMetaData.
@@ -1050,6 +1067,7 @@ Ext.define('Bancha', {
             },this);
         }
     },
+
     /**
      * @private
      * Helper, Bancha.onModelReady will call this function in an Ext.onReady
@@ -1136,6 +1154,7 @@ Ext.define('Bancha', {
             },me);
         }
     },
+
     /**
      * @private
      * Get the metadata of an model
@@ -1206,6 +1225,7 @@ Ext.define('Bancha', {
 
         return (api && api.metadata && api.metadata[this.uidPropertyName]) ? api.metadata[this.uidPropertyName] : false;
     },
+
     /**
      * Returns the current CakePHP debug level
      *
@@ -1220,6 +1240,7 @@ Ext.define('Bancha', {
         var api = this.getRemoteApi();
         return (api && api.metadata && Ext.isDefined(api.metadata._ServerDebugLevel)) ? api.metadata._ServerDebugLevel : defaultValue;
     },
+
     /**
      * This is a synonym for {Bancha.Logger.log}
      *
@@ -1291,6 +1312,7 @@ Ext.define('Bancha', {
 
         return true;
     },
+
     /**
      * @private
      * This function simply defines a Bancha model.
@@ -1305,6 +1327,7 @@ Ext.define('Bancha', {
             extend: 'Bancha.data.Model'
         }));
     },
+
     /**
      * Get a Bancha model by name.
      * If it isn't already defined this function will define the model.
@@ -1331,6 +1354,7 @@ Ext.define('Bancha', {
         Ext.syncRequire(Bancha.modelNamespace+'.'+modelName);
         return Ext.ClassManager.get(Bancha.modelNamespace+'.'+modelName);
     },
+
     /**
      * @private
      * Get a Bancha model by name.
@@ -1364,6 +1388,7 @@ Ext.define('Bancha', {
          * (Default: 'eng')
          */
         currentLang: 'eng',
+
         /**
          * Returns the default language for {@link Bancha.Localizer#getLocalizedString},
          * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}.
@@ -1373,6 +1398,7 @@ Ext.define('Bancha', {
         getCurrentLanguage: function() {
             return this.currentLang;
         },
+
         /**
          * Sets a new default language for {@link Bancha.Localizer#getLocalizedString},
          * {@link Bancha.Localizer#getLocalizedStringWithReplacements} and {@link Bancha#t}.
@@ -1382,6 +1408,7 @@ Ext.define('Bancha', {
         setCurrentLanguage: function(lang) {
             this.currentLang = lang;
         },
+
         /**
          * You can use this function to preload translations.
          * @param {String} langCode A three letter language code, same as in cakephp
@@ -1393,6 +1420,7 @@ Ext.define('Bancha', {
             }
             this.loadLocaleStrings(langCode || this.currentLang, true);
         },
+
         /**
          * @private
          * @param {String} langCode A three letter language code, same as in cakephp
@@ -1419,6 +1447,7 @@ Ext.define('Bancha', {
             });
             return localeStrings;
         },
+
         /**
          * @private
          * @param {String} langCode A three letter language code, same as in cakephp
@@ -1442,6 +1471,7 @@ Ext.define('Bancha', {
             }
             return localeStrings;
         },
+
         /**
          * Translates an given string to the given language.
          *
@@ -1473,6 +1503,7 @@ Ext.define('Bancha', {
             }
             return localized;
         },
+
         /**
          * Translates an given string the current language
          * (see {@link #currentLang}).
@@ -1529,6 +1560,7 @@ Ext.define('Bancha', {
             return result;
         }
     },
+
     /**
      * Translates an given string the current language
      * (see {@link Bancha.Localizer#currentLang}).
