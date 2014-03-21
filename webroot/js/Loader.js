@@ -263,7 +263,9 @@ Ext.define('Bancha.Loader', {
                         function() {  // success callback
                             //<debug>
                             // the classname is enclosed, that's why we create the function inside the loop
-                            Ext.Array.remove(me.classesLoading, className);
+                            if(me.classesLoading) { // guard against that Ext JS production version is used with Bancha debug version
+                                Ext.Array.remove(me.classesLoading, className);
+                            }
                             //</debug>
 
                             me.onLoadSuccess.apply(me, arguments);
