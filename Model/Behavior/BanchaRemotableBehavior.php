@@ -751,11 +751,11 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// numberformat = precision, min, max
 		if (isset($rules['numeric']) || isset($rules['naturalNumber'])) {
-			if (isset($rules['numeric']['precision'])) {
-				$numberRule['precision'] = $rules['numeric']['precision'];
-			}
 			if (isset($rules['naturalNumber'])) {
 				$numberRule['precision'] = 0;
+			}
+			if (isset($rules['numeric']['precision'])) {
+				$numberRule['precision'] = $rules['numeric']['precision'];
 			}
 
 			if (isset($rules['naturalNumber'])) {
