@@ -507,13 +507,20 @@ class BanchaRemotableBehavior extends ModelBehavior {
 			);
 		}
 
-		// handle normal fields
+		// handle normal fields:
+
+		// if default value null is not allowed fall back to empty string
+		$defaultValue = (!$fieldSchema['null'] && $fieldSchema['default'] === null) ? '' : $fieldSchema['default'];
+
+		// if default value is SQL empty string, transform
+		$defaultValue = $defaultValue==='""' ? '' : $defaultValue;
+
+		// return config 
 		return array_merge(
 			array(
 				'name' => $fieldName,
 				'allowNull' => $fieldSchema['null'],
-				'defaultValue' => (!$fieldSchema['null'] && $fieldSchema['default'] === null) ?
-									'' : $fieldSchema['default'] // if null is not allowed fall back to ''
+				'defaultValue' => $defaultValue
 			),
 			isset($this->_types[$type]) ? $this->_types[$type] : array('type' => 'auto')
 		);

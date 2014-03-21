@@ -748,6 +748,19 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 					'name' => 'title',
 				),
 			),
+			array( // test that default value SQL empty string is transformed
+				array(
+					'type' => 'text',
+					'null' => false,
+					'default' => '""'
+				),
+				array(
+					'type' => 'string',
+					'allowNull' => false,
+					'defaultValue' => '',
+					'name' => 'title',
+				),
+			),
 			array( // test type integer, and different null value
 				array(
 					'type' => 'integer',
