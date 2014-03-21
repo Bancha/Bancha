@@ -52,11 +52,19 @@ if (!Array.prototype.reduce) {
 
 
 //<debug>
+// In debug mode Ext JS and Sencha Touch both need to load the MessageBox class
+// but the have different names, so set up aliases
 if(Ext.versions.touch) {
     Ext.ClassManager.setAlias('Ext.MessageBox', 'Ext.window.MessageBox');
 }
 if(Ext.versions.extjs) {
-    Ext.ClassManager.setAlias('Ext.window.MessageBox', 'Ext.MessageBox');
+    if(Ext.ClassManager.setAlias) {
+        // Ext JS 4
+        Ext.ClassManager.setAlias('Ext.window.MessageBox', 'Ext.MessageBox');
+    } else {
+        // Ext JS 5
+        Ext.ClassManager.addNameAliasMappings({'Ext.window.MessageBox': ['Ext.MessageBox']});
+    }
 }
 //</debug>
 
@@ -135,7 +143,7 @@ if ('function' !== typeof Array.prototype.reduce) {
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>
  */
-Ext.define('Bancha', {
+Ext.define('Bancha.Main', {
 
     /* Begin Definitions */
     singleton: true,
@@ -162,7 +170,7 @@ Ext.define('Bancha', {
     // If you want to include Bancha using the Microloader use this class name
     // instead of simply 'Bancha', sine this is also a namespace
     alternateClassName: [
-        'Bancha.Main'
+        'Bancha'
     ],
 
     // hacky solution to keep references in all possible loading orders
