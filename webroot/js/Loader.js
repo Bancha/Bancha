@@ -101,6 +101,8 @@ Ext.define('Bancha.Loader', {
          * @private
          * @member Bancha.Loader
          *
+         * For Sencha Touch and Ext JS 4.
+         * 
          * The original method Loads a script file, supports both asynchronous and
          * synchronous approaches.
          *
@@ -116,6 +118,19 @@ Ext.define('Bancha.Loader', {
         loadScriptFile: Ext.Function.createInterceptor(Ext.Loader.loadScriptFile,
             function(url, onLoad, onError, scope, synchronous) {
 
+            //<debug>
+            if(Ext.versions.extjs && Ext.versions.extjs.major===5) {
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        'Bancha Internal Error: Ext.Loader.loadScriptFile was called in a Ext JS 5 application. ',
+                        'This should never happen, please report this on https://github.com/Bancha/Bancha/issues. ',
+                        'Thanks a lot!'
+                    ].join()
+                });
+            }
+            //</debug>
+
             // from original function
             if (this.isFileLoaded[url]) {
                 return this;
@@ -124,7 +139,7 @@ Ext.define('Bancha.Loader', {
 
             // see getPath override
             var className = this.getPathLastClassName,
-                current;
+                customClassLoader;
 
             // Ext JS 4.0.7 returns undefined instead of false, fix this
             synchronous = synchronous || false;
@@ -132,22 +147,164 @@ Ext.define('Bancha.Loader', {
             // if we have a default class loader set, use it
             if(this.getDefaultLoader()) {
                 // see if the child class loader wants to handle this
-                current = this.getDefaultLoader();
-                if(current.handles(className)) {
-                    current.loadClass(className, onLoad, onError, scope, synchronous);
+                customClassLoader = this.getCustomClassLoaderForClassName(className);
+
+                if(customClassLoader) {
+                    customClassLoader.loadClass(className, onLoad, onError, scope, synchronous);
                     return false; // don't call the original fn
-                }
-                while(current.getParentLoader()) {
-                    current = current.getParentLoader();
-                    if(current.handles(className)) {
-                        current.loadClass(className, onLoad, onError, scope, synchronous);
-                        return false; // don't call the original fn
-                    }
                 }
             }
 
             //ok, delegate to the original fn
             return true;
-        }, Ext.Loader) //eo loadScriptFile
+        }, Ext.Loader), //eo loadScriptFile
+
+
+        /**
+         * @private
+         * @member Bancha.Loader
+         * 
+         * Returns the classloader which can handle loading of the class,
+         * or null if it should be delegated to the Sencha one.
+         *
+         * @param {string} className The class name to load
+         * @return {Bancha.loader.Interface|null} The loader handling this class name
+         */
+        getCustomClassLoaderForClassName: function(className) {
+            // see if the child class loader wants to handle this
+            var current = this.getDefaultLoader();
+            if(current.handles(className)) {
+                return current;
+            }
+            while(current.getParentLoader()) {
+                current = current.getParentLoader();
+                if(current.handles(className)) {
+                    return current;
+                }
+            }
+
+            return null;
+        },
+
+        /**
+         * @private
+         * @member Bancha.Loader
+         *
+         * For Ext JS 5.
+         * 
+         * The original method Loads a script file, supports both asynchronous and
+         * synchronous approaches.
+         *
+         * Bancha.Loader adds the logic to also use other loaders, which are set
+         * using #setDefaultLoader.
+         *
+         * 
+         * This is an internal method that delegate content loading to the 
+         * bootstrap layer.
+         * @private
+         * @param params
+         */
+        loadScripts: Ext.Function.createInterceptor(Ext.Loader.loadScripts,
+            function(params) {
+
+            //<debug>
+            if(Ext.versions.extjs && Ext.versions.extjs.major===4) {
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        'Bancha Internal Error: Ext.Loader.loadScripts was called in a Ext JS 4 application. ',
+                        'This should never happen, please report this on https://github.com/Bancha/Bancha/issues. ',
+                        'Thanks a lot!'
+                    ].join()
+                });
+            }
+            if(Ext.versions.touch) {
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: [
+                        'Bancha Internal Error: Ext.Loader.loadScripts was called in a Sencha Touch application. ',
+                        'This should never happen, please report this on https://github.com/Bancha/Bancha/issues. ',
+                        'Thanks a lot!'
+                    ].join()
+                });
+            }
+            //</debug>
+
+            var me = this,
+                i = 0,
+                className,
+                customClassLoader;
+
+            // if we don't have a default class loader set, nothing to do
+            if(!this.getDefaultLoader()) {
+                return true;
+            }
+
+            // check for each class
+            while(i < params._classNames.length) { // always re-evaluate the array size
+                className = params._classNames[i];
+
+                // see if the child class loader wants to handle this
+                customClassLoader = this.getCustomClassLoaderForClassName(className);
+
+                if(customClassLoader) {
+
+                    // update the counter
+                    ++me.scriptsLoading;
+
+                    // verify the loading state, as this may have transitioned us from
+                    // not loading to loading
+                    me.checkReady();
+
+                    // handle the loading
+                    // the callbacks will then decrease Loader.scriptsLoading
+                    customClassLoader.loadClass(
+                        className, // class
+                        function() {  // success callback
+                            //<debug>
+                            // the classname is enclosed, that's why we create the function inside the loop
+                            Ext.Array.remove(me.classesLoading, className);
+                            //</debug>
+
+                            me.onLoadSuccess.apply(me, arguments);
+                        },
+                        me.extjs5LoadScriptsErrorHandlerWrapper, // failure callback
+                        me, // scope
+                        me.syncModeEnabled // sync mode
+                    );
+
+                    // remove this class from loading,
+                    // therefore "i" will point to the next element
+                    params._classNames.splice(i, 1);
+                    params.url.splice(i, 1);
+                } else {
+                    // this class is handled by Ext.Loader,
+                    // check next class name
+                    i++;
+                }
+            }
+
+            //ok, delegate to the original fn, if there are still classes to load
+            return !!params._classNames.length;
+        }, Ext.Loader), //eo loadScripts
+
+        /**
+         * @private
+         * @member Bancha.Loader
+         *
+         * Output a custom error message with additional information,
+         * before propagating the error to Ext.Loader
+         *
+         * @param {string} errorMsg The error message create by Bancha.loader.Models
+         * @return {void}
+         */
+        extjs5LoadScriptsErrorHandlerWrapper: function(errorMsg) {
+            // log what exactly failed to load
+            //<debug>
+            Ext.Logger.error(errorMsg);
+            //</debug>
+
+            this.onLoadFailure();
+        }
     });
 });
