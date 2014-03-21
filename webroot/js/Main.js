@@ -1536,12 +1536,12 @@ Ext.define('Bancha', {
 
     // Ext.Logger might not be available
     var markDeprecated = function(msg) {
-        if(Ext.Logger) {
+        if(Ext.Logger && Ext.Logger.deprecate !== Ext.emptyFn) {
             Ext.Logger.deprecate(msg);
         } else if(Bancha.Logger) {
-            Bancha.Logger.warn('[DEPRECATE]'+msg);
+            Bancha.Logger.warn('[DEPRECATE] '+msg);
         } else if(Ext.global.console && Ext.global.console.warn) {
-            Ext.global.console.warn('[DEPRECATE]'+msg);
+            Ext.global.console.warn('[DEPRECATE] '+msg);
         }
     };
 
@@ -1560,7 +1560,7 @@ Ext.define('Bancha', {
      * @inheritdoc Bancha.Logger#info
      */
     Bancha.log.info = function(msg) {
-        markDeprecated('Bancha.log.info is deprecated in favor of Bancha.Logger.info', 1);
+        markDeprecated('Bancha.log.info is deprecated in favor of Bancha.Logger.info');
         if(Bancha.Logger) {
             Bancha.Logger.info.apply(Bancha.Logger, arguments);
         } else {
@@ -1574,7 +1574,7 @@ Ext.define('Bancha', {
      * @inheritdoc Bancha.Logger#warn
      */
     Bancha.log.warn = function(msg) {
-        markDeprecated('Bancha.log.warn is deprecated in favor of Bancha.Logger.warn', 1);
+        markDeprecated('Bancha.log.warn is deprecated in favor of Bancha.Logger.warn');
         if(Bancha.Logger) {
             Bancha.Logger.warn.apply(Bancha.Logger, arguments);
         } else {
@@ -1588,7 +1588,7 @@ Ext.define('Bancha', {
      * @inheritdoc Bancha.Logger#error
      */
     Bancha.log.error = function(msg) {
-        markDeprecated('Bancha.log.error is deprecated in favor of Bancha.Logger.error', 1);
+        markDeprecated('Bancha.log.error is deprecated in favor of Bancha.Logger.error');
         if(Bancha.Logger) {
             Bancha.Logger.error.apply(Bancha.Logger, arguments);
         } else {

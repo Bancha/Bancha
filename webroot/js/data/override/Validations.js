@@ -13,6 +13,12 @@
  * For more information go to http://banchaproject.org
  */
 
+if(Ext.versions.extjs && Ext.versions.extjs.major===5) {
+    // Ext JS 5 doesn't have a validations class anymore, simply force to not load anything
+    Ext.define('Ext.data.validations', {
+    });
+}
+
 /**
  * @private
  * @class Bancha.data.override.Validations
@@ -43,7 +49,7 @@ Ext.define('Bancha.data.override.Validations', {
 
     // Ext.Logger might not be available
     var markDeprecated = function(msg) {
-        if(Ext.Logger) {
+        if(Ext.Logger && Ext.Logger.deprecate !== Ext.emptyFn) {
             Ext.Logger.deprecate(msg);
         } else if(Bancha.Logger) {
             Bancha.Logger.warn('[DEPRECATE]'+msg);
@@ -97,7 +103,7 @@ Ext.define('Bancha.data.override.Validations', {
          *     {type: 'numberformat', field: 'euro', precision:2, min:0, max: 1000}
          */
         numberformat: function(config, value) {
-            markDeprecated('Bancha.log.info is deprecated in favor of Bancha.Logger.info', 1);
+            markDeprecated('Bancha: Validation rules "numberformat" is deprecated in favor of "range" for Ext JS 5 compatibility.');
             if(typeof value !== 'number') {
                 value = (config.precision===0) ? parseInt(value, 10) : parseFloat(value);
                 if(typeof value !== 'number') {
