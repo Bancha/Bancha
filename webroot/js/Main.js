@@ -762,8 +762,13 @@ Ext.define('Bancha', {
         };
 
         return function(remoteApi) {
-            Ext.Object.each(remoteApi.metadata, function(key,model) {
-                Ext.Object.each(model.validations, function(key,rule) {
+            Ext.Object.each(remoteApi.metadata, function(key, model) {
+                if(typeof model !== 'object') {
+                    return; // these are Bancha meta data values
+                }
+
+                // adopt all validations
+                Ext.Object.each(model.validations, function(key, rule) {
                     if(rule.type==='format' &&
                         Ext.isString(rule.matcher) &&
                         rule.matcher.substr(0,6)==='bancha' &&
@@ -772,6 +777,20 @@ Ext.define('Bancha', {
                         rule.matcher = regex[rule.matcher.substr(6)];
                     }
                 });
+
+                if(Ext.versions.extjs && Ext.versions.extjs.major === 5) {
+                    // Ext JS 5 has a new Schema class and therefore defining
+                    // hasMany is not necessary, because the other side already
+                    // defines it.
+                    var i = 0;
+                    while (i < model.associations.length) {
+                        if(model.associations[i].type === 'hasMany') {
+                            model.associations.splice(i, 1);
+                        } else {
+                            i++;
+                        }
+                    }
+                }
             });
         };
     }()), //eo decodeMetadata
