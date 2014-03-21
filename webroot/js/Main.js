@@ -962,6 +962,7 @@ Ext.define('Bancha', {
         scope = scope || Ext.global;
         callback.call(scope, true, 'Successfully loaded '+modelNames.toString());
     },
+
     /**
      * Checks if the model is supported by the server
      * Todo: This currently doesn't check if the exposed Object is an Controller method or an exposed model
@@ -969,13 +970,11 @@ Ext.define('Bancha', {
      * @return {Boolean} True is the model is remotable
      */
     isRemoteModel: function(modelName) { // TODO refactor to isRemotableModel
-        return (
-                Ext.isObject(this.getStubsNamespace()) &&
-                (
-                    Ext.isObject(this.getStubsNamespace()[modelName]) || // For Sencha Touch, see getStub
-                    Ext.isObject(this.objectFromPath(modelName, this.getStubsNamespace())) // for Ext JS
-                )
-                ) ? true : false;
+        if (!Ext.isObject(this.getStubsNamespace())) {
+            return false;
+        }
+        return Ext.isObject(this.getStubsNamespace()[modelName]) || // For Sencha Touch, see getStub
+               Ext.isObject(this.objectFromPath(modelName, this.getStubsNamespace())); // for Ext JS
     },
 
     /**
@@ -1567,6 +1566,7 @@ Ext.define('Bancha', {
             Ext.Logger.info(msg);
         }
     };
+
     /**
      * {@link Bancha.log#warn} is an alias for {@link Bancha.Logger#warn}
      *
@@ -1581,6 +1581,7 @@ Ext.define('Bancha', {
             Ext.Logger.warn(msg);
         }
     };
+
     /**
      * {@link Bancha.log#error} is an alias for {@link Bancha.Logger#error}
      *
