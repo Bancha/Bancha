@@ -66,7 +66,7 @@ BanchaSpecHelper.SampleData.remoteApiDefinition = {
                 {type:'belongsTo', model:'Bancha.test.model.Country', name:'country'}
             ],
             validations: [
-                { type:'numberformat', field:'id', precision:0},
+                { type:'range', field:'id', precision:0},
                 { type:'presence',     field:'name'},
                 { type:'length',       field:'name', min: 2},
                 { type:'length',       field:'name', max:64},

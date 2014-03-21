@@ -745,15 +745,16 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// number validation rules
 		$setNumberRule = false; // collect all together
 		$numberRule = array(
-			'type' => 'numberformat',
+			'type' => 'range',
 			'field' => $fieldName,
 		);
 
-		// numberformat = precision, min, max
+		// range = precision, min, max
 		if (isset($rules['numeric']) || isset($rules['naturalNumber'])) {
 			if (isset($rules['naturalNumber'])) {
 				$numberRule['precision'] = 0;
 			}
+
 			if (isset($rules['numeric']['precision'])) {
 				$numberRule['precision'] = $rules['numeric']['precision'];
 			}

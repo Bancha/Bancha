@@ -24,6 +24,36 @@ describe("Ext.data.validations tests", function() {
         expect(validations.file(config,'user.doc')).toBeFalsy();
     });
 
+    it("should pass ranges with no configs when they are numbers", function() {
+        var config = {type: 'range', field: 'euro'};
+        expect(validations.range(config,34)).toBeTruthy();
+        expect(validations.range(config,3.4)).toBeTruthy();
+        expect(validations.range(config,'3.4')).toBeTruthy();
+    });
+
+    it("should validate min of ranges", function() {
+        var config = {type: 'range', field: 'euro', min:0};
+        expect(validations.range(config,3.4)).toBeTruthy();
+        expect(validations.range(config,0)).toBeTruthy();
+        expect(validations.range(config,-3.4)).toBeFalsy();
+    });
+
+    it("should validate max of ranges", function() {
+        var config = {type: 'range', field: 'euro', max: 10};
+        expect(validations.range(config,2)).toBeTruthy();
+        expect(validations.range(config,10)).toBeTruthy();
+        expect(validations.range(config,11)).toBeFalsy();
+    });
+
+    it("should validate min and max of ranges", function() {
+        var config = {type: 'range', field: 'euro', min:0, max: 10};
+        expect(validations.range(config,-3.4)).toBeFalsy();
+        expect(validations.range(config,0)).toBeTruthy();
+        expect(validations.range(config,10)).toBeTruthy();
+        expect(validations.range(config,11)).toBeFalsy();
+    });
+
+    // Tests below are for deprecated numberformat
     it("should pass numberformats with no configs when they are numbers", function() {
         var config = {type: 'numberformat', field: 'euro'};
         expect(validations.numberformat(config,34)).toBeTruthy();

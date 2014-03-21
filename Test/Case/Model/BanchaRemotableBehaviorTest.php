@@ -1647,7 +1647,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 					),
 				),
@@ -1663,7 +1663,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 						'precision' => 0,
 					),
@@ -1680,7 +1680,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 						'precision' => 0,
 						'min' => 1,
@@ -1697,7 +1697,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 						'precision' => 0,
 						'min' => 0,
@@ -1719,7 +1719,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 						'precision' => 0,
 						'min' => 0,
@@ -1741,7 +1741,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 						'precision' => 1,
 						'min' => 0.1,
@@ -1763,7 +1763,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				),
 				array(
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'weight',
 						'precision' => 3,
 						'min' => 0.001,
@@ -1945,7 +1945,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'field' => 'id',
 					),
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'id',
 						'precision' => 0
 					),
@@ -1965,7 +1965,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 				array(), // default behavior config
 				array( // expect all rules
 					array(
-						'type' => 'numberformat', // from naturalNumber
+						'type' => 'range', // from naturalNumber
 						'field' => 'id'
 					),
 					array(
@@ -2032,7 +2032,7 @@ class BanchaRemotableBehaviorTest extends CakeTestCase {
 						'field' => 'id',
 					),
 					array(
-						'type' => 'numberformat',
+						'type' => 'range',
 						'field' => 'id',
 						'precision' => 0
 					),
