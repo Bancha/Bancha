@@ -54,7 +54,11 @@ describe("Ext.data.validations tests", function() {
     });
 
     // Tests below are for deprecated numberformat
-    BanchaSpecHelper.init();
+    if(Ext.versions.touch) {
+        BanchaSpecHelper.initialized = true; // just prevent an initialization
+    } else {
+        BanchaSpecHelper.init();
+    }
     Ext.Logger = Ext.Logger || {};
     var deprecate = Ext.Logger.deprecate;
     Ext.Logger.deprecate = function() {};
