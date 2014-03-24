@@ -230,10 +230,23 @@ class BanchaDispatcher {
 			throw new BanchaAuthAccessRightsException('You are not allowed to see this page.');
 		}
 
+		// beautify url name
+		if (!is_string($url)) {
+			if (count($url) == 1 && isset($url['action'])) {
+				$url = $controller->name . '::' . $url['action'];
+			} else if (count($url) == 2 && isset($url['controller']) && isset($url['action'])) {
+				$url = $url['controller'] . '::' . $url['action'];
+			} else if (count($url) == 3 && isset($url['plugin']) && isset($url['controller']) && isset($url['action'])) {
+				$url = $url['controller'] . '.' . $url['plugin'] . '::' . $url['action'];
+			} else {
+				$url = print_r($url, true);
+			}
+		}
+
 		// general redirect handling, will trigger an exception
 		throw new BanchaRedirectException(
 			$event->subject()->name . 'Controller forced a redirect to ' . $url .
-			(empty($status) ? '' : ' with status ' . $status)
+			(empty($status) ? '' : ' with status ' . $status) . '.'
 		);
 	}
 
