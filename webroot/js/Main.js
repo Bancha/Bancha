@@ -170,7 +170,7 @@ Ext.define('Bancha.Main', {
     // If you want to include Bancha using the Microloader use this class name
     // instead of simply 'Bancha', sine this is also a namespace
     alternateClassName: [
-        'Bancha'
+        'Bancha' // shortcuts
     ],
 
     // hacky solution to keep references in all possible loading orders
