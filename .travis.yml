@@ -207,7 +207,7 @@ before_script:
   - cd ../../../../../../
 
   # get pahntomjs for jasmine
-  - if [[ $TOUCH_VERSION || $EXTJS_VERSION || $EXTJS_VERSION_LEGACY || $EXTJS_VERSION_WITHOUT_COMMENTS]]; then wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js ; fi
+  - if [[ $TOUCH_VERSION || $EXTJS_VERSION || $EXTJS_VERSION_LEGACY || $EXTJS_VERSION_WITHOUT_COMMENTS]]; then sh -c "wget https://raw.github.com/mark-rushakoff/OpenPhantomScripts/master/phantom-jasmine.js" ; fi
 
 script:
   # execute the jasmine tests for Sencha Touch and Ext JS
