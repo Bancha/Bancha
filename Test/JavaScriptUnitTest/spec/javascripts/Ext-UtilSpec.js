@@ -54,6 +54,11 @@ describe("Ext.data.validations tests", function() {
     });
 
     // Tests below are for deprecated numberformat
+    BanchaSpecHelper.init();
+    Ext.Logger = Ext.Logger || {};
+    var deprecate = Ext.Logger.deprecate;
+    Ext.Logger.deprecate = function() {};
+
     it("should pass numberformats with no configs when they are numbers", function() {
         var config = {type: 'numberformat', field: 'euro'};
         expect(validations.numberformat(config,34)).toBeTruthy();
@@ -82,4 +87,5 @@ describe("Ext.data.validations tests", function() {
         expect(validations.numberformat(config,10)).toBeTruthy();
         expect(validations.numberformat(config,11)).toBeFalsy();
     });
+    Ext.Logger.deprecate = deprecate || Ext.emptyFn;
 });
