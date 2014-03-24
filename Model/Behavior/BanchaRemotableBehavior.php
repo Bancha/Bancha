@@ -515,7 +515,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 		// if default value is SQL empty string, transform
 		$defaultValue = ($defaultValue === '""') ? '' : $defaultValue;
 
-		// return config 
+		// return config
 		return array_merge(
 			array(
 				'name' => $fieldName,
