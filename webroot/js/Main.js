@@ -19,7 +19,7 @@
  * Currently used in Bancha.objectFromPath
  * From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
  */
- /*jsl:ignore*/
+/*jsl:ignore*/
 /*jshint bitwise:false, curly:false, maxcomplexity:20 */
 if (!Array.prototype.reduce) {
     Array.prototype.reduce = function reduce(accumulator){
@@ -49,24 +49,6 @@ if (!Array.prototype.reduce) {
 }
 /*jshint bitwise:true, curly:true, maxcomplexity:6 */
 /*jsl:end*/
-
-
-//<debug>
-// In debug mode Ext JS and Sencha Touch both need to load the MessageBox class
-// but the have different names, so set up aliases
-if(Ext.versions.touch) {
-    Ext.ClassManager.setAlias('Ext.MessageBox', 'Ext.window.MessageBox');
-}
-if(Ext.versions.extjs) {
-    if(Ext.ClassManager.setAlias) {
-        // Ext JS 4
-        Ext.ClassManager.setAlias('Ext.window.MessageBox', 'Ext.MessageBox');
-    } else {
-        // Ext JS 5
-        Ext.ClassManager.addNameAliasMappings({'Ext.window.MessageBox': ['Ext.MessageBox']});
-    }
-}
-//</debug>
 
 /**
  * Add Array.reduce for ES3 implementations (IE 6-8)
@@ -112,6 +94,15 @@ if ('function' !== typeof Array.prototype.reduce) {
     };
 }
 /* jshint bitwise:true, maxcomplexity:10 */
+
+//<debug>
+// In debug mode Ext JS and Sencha Touch both need to load the MessageBox class
+// but the have different names, so set up aliases
+if(Ext.versions.touch) {
+    Ext.ClassManager.setAlias('Ext.MessageBox', 'Ext.window.MessageBox');
+}
+//</debug>
+
 /**
  * @class Bancha
  *
@@ -164,7 +155,7 @@ Ext.define('Bancha.Main', {
         //<if ext>
         'Ext.window.MessageBox',
         //</if>
-        'Bancha.data.override.Validations' // only for Sencha Touch and Ext JS 4
+        'Bancha.data.Validators'
     ],
 
     // If you want to include Bancha using the Microloader use this class name
@@ -568,6 +559,23 @@ Ext.define('Bancha.Main', {
         remoteApi = this.getRemoteApi();
 
         //<debug>
+        if(!remoteApi.type) {
+            try {
+                remoteApi = Ext.encode(remoteApi);
+            } catch(e) {
+                remoteApi = remoteApi + ' of type ' + (typeof remoteApi);
+            }
+            Ext.Error.raise({
+                plugin: 'Bancha',
+                msg: [
+                    '<b>Bancha Error:</b><br />',
+                    'The Bancha Remote API seems wrong, for some reasons the API is defined without a type property.<br /><br />',
+                    'This is a Bug in Bancha, we are sorry. Please report this on https://github.com/Bancha/Bancha/issues ',
+                    'including the data below. Thanks! <br /><br />',
+                    'The Bancha Remote API:' + remoteApi
+                ].join('')
+            });
+        }
         if(remoteApi && remoteApi.metadata && remoteApi.metadata._ServerError) {
             // there is an cake error
             Ext.Error.raise({
@@ -791,7 +799,7 @@ Ext.define('Bancha.Main', {
                     // hasMany is not necessary, because the other side already
                     // defines it.
                     var i = 0;
-                    while (i < model.associations.length) {
+                    while (i < (model.associations || []).length) {
                         if(model.associations[i].type === 'hasMany') {
                             model.associations.splice(i, 1);
                         } else {

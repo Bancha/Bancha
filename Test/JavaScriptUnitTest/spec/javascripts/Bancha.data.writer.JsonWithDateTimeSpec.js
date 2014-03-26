@@ -84,7 +84,9 @@ describe("Test that Bancha handles all date marshalling correctly", function() {
         Ext.define('Bancha.test.model.JsonWithDateTimeTestModel', config);
 
         // create a writer for testing
-        var writer = Ext.create('Bancha.data.writer.JsonWithDateTime');
+        var writer = Ext.create('Bancha.data.writer.JsonWithDateTime', {
+            writeAllFields: true
+        });
 
         // sample record
         var record = Ext.create('Bancha.test.model.JsonWithDateTimeTestModel', {

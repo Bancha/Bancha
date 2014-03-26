@@ -41,6 +41,20 @@ Mock.Proxy = (function() {
         if(model.setUseCache) { model.setUseCache(false); }
     };
 
+    // getModel is called by Ext JS 5 when creating
+    // an Proxy from model/store, totally unimportant for us
+    proxyPrototype.getModel = function() {
+        return false; // returning false prevents cloning, see src/data/Model.js:2008
+    };
+
+    // getModel is called by Ext JS 5 when creating
+    // an Proxy from model/store, totally unimportant for us
+    proxyPrototype.createOperation = function(action, options) {
+        var operation = Ext.createByAlias("data.operation."+action, options);
+        operation.setProxy(this);
+        return operation; // see src/data/Model.js:1801
+    };
+
     // provide a destroy function if the mock is replace by another proxy
     proxyPrototype.destroy = Ext.emptyFn;
 

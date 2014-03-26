@@ -11,10 +11,18 @@
   <script type="text/javascript" src="lib/ext-all-debug-w-comments.js"></script>
   <script type="text/javascript">
     if(!window.Ext) {
-      alert('Please copy the Ext JS 4 library into Bancha/Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments.js');
+      alert('Please copy the Ext JS 4 or 5 library into Bancha/Test/JavaScriptUnitTest/lib/ext-all-debug-w-comments.js');
     }
     Bancha = {};
     Bancha.REMOTE_API = {}; // set this to not load the api as requirement
+
+
+    // for Ext JS fake Ext.data.validator.Validator
+    if(Ext.versions.extjs.major === 5) {
+      Ext.define('Ext.data.validations', {});
+    } else {
+      Ext.define('Ext.data.validator.Validator', {});
+    }
   </script>
 
   <script type="text/javascript" src="../../webroot/js/Loader.js"></script>
@@ -24,6 +32,8 @@
   <script type="text/javascript" src="../../webroot/js/Remoting.js"></script>
   <script type="text/javascript" src="../../webroot/js/data/override/NodeInterface.js"></script>
   <script type="text/javascript" src="../../webroot/js/data/override/Validations.js"></script>
+  <script type="text/javascript" src="../../webroot/js/data/validator/File.js"></script>
+  <script type="text/javascript" src="../../webroot/js/data/Validators.js"></script>
   <script type="text/javascript" src="../../webroot/js/Main.js"></script>
   <script type="text/javascript" src="../../webroot/js/data/Model.js"></script>
   <script type="text/javascript" src="../../webroot/js/loader/Interface.js"></script>

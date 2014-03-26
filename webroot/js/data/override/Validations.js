@@ -13,17 +13,12 @@
  * For more information go to http://banchaproject.org
  */
 
-if(Ext.versions.extjs && Ext.versions.extjs.major===5) {
-    // Ext JS 5 doesn't have a validations class anymore, simply force to not load anything
-    Ext.define('Ext.data.validations', {
-    });
-}
-
 /**
  * @private
  * @class Bancha.data.override.Validations
  *
- * Add custom validators to Ext.data.validations.
+ * Ext JS 4 and Sencha Touch range and file 
+ * validation rules.
  *
  * @author Roland Schuetz <mail@rolandschuetz.at>
  * @docauthor Roland Schuetz <mail@rolandschuetz.at>

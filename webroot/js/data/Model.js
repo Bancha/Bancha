@@ -28,8 +28,8 @@ Ext.define('Bancha.data.Model', {
     extend: 'Ext.data.Model',
 
     requires: [
-        'Bancha.Main',
         'Ext.direct.Manager',
+        'Bancha.Main',
         'Bancha.data.override.NodeInterface',
         'Bancha.data.writer.ConsistentJson',
         'Bancha.Remoting'
@@ -51,10 +51,12 @@ Ext.define('Bancha.data.Model', {
      */
     getDisplayField: function() {
         // to access the value from a record directly
-        if(Ext.versions.touch) {
-            return this.self.displayField;
-        } else {
+        if(Ext.versions.extjs && Ext.versions.extjs.major === 4) {
+            // For Ext JS 4
             return this.displayField;
+        } else {
+            // For Ext JS 5 and Sencha Touch
+            return this.self.displayField;
         }
     },
 
@@ -73,19 +75,22 @@ Ext.define('Bancha.data.Model', {
      */
     onClassExtended: function(cls, data, hooks) {
 
-        // only apply this for ExtJS, see Ext.ClassManager.registerPostprocessor below for Sencha Touch
-        if(Ext.versions.extjs) {
-
-            // Support for Ext JS 4.0.7
-            var me = this;
-            if(typeof me.applyCakeSchema !== 'function') {
-                // In Ext JS 4.1+ the scope is the Bancha.data.Model,
-                // In Ext JS 4.0 the scope is the newly created class, fix this
-                me = Ext.ClassManager.get('Bancha.data.Model');
-            }
-
-            me.applyCakeSchema(cls, data);
+        // only apply this for Ext JS,
+        // see Ext.ClassManager.registerPostprocessor below for Sencha Touch
+        if(Ext.versions.touch) {
+            return;
         }
+
+        // Support for Ext JS 4.0.7
+        var me = this;
+        if(typeof me.applyCakeSchema !== 'function') {
+            // In Ext JS 4.1+ the scope is the Bancha.data.Model,
+            // In Ext JS 4.0 the scope is the newly created class, fix this
+            me = Ext.ClassManager.get('Bancha.data.Model');
+        }
+
+        // Apply the schema for Ext JS 4 and 5
+        me.applyCakeSchema(cls, data);
 
         // Legacy Support for Ext JS 4.0
         // Ext JS 4.1+ applies onClassExtended methods of superclasses and super-superclasses and so on,
@@ -186,27 +191,32 @@ Ext.define('Bancha.data.Model', {
             // configure the new model
             config = Bancha.getModelMetaData(modelName);
 
-            if(!Ext.versions.touch) {
-                // this is used for two cases:
+            // default case for Ext JS 4 and Sencha Touch
+            if(typeof modelCls.setFields === 'function') {
+                modelCls.setFields(config.fields);
+            } else if(Ext.versions.extjs && Ext.versions.extjs.major === 4) {
+                // this is used for three cases:
                 // - Support for Ext JS 4.0.7
                 // - Ext JS Support for ScriptTagInitializer, where we hook into Ext.data.Model extend
                 extJsOnClassExtendedData.fields = config.fields;
             }
-            // default case for Ext JS and Sencha Touch
-            if(typeof modelCls.setFields === 'function') {
-                modelCls.setFields(config.fields);
-            }
+            // Ext JS 5 fields are handled in a seperate function at the end of the file
 
             if(Ext.versions.touch) {
                 modelCls.setAssociations(config.associations);
                 modelCls.setIdProperty(config.idProperty);
-                modelCls.setDisplayField(config.displayField);
                 modelCls.setValidations(config.validations);
+                modelCls.setDisplayField(config.displayField);
             } else {
                 extJsOnClassExtendedData.associations = config.associations;
+                extJsOnClassExtendedData.associations = config.associations;
                 extJsOnClassExtendedData.idProperty = config.idProperty;
-                extJsOnClassExtendedData.displayField = config.displayField;
                 extJsOnClassExtendedData.validations = config.validations;
+                if(Ext.versions.extjs.major === 4 ) {
+                    extJsOnClassExtendedData.displayField = config.displayField;
+                } else {
+                    modelCls.displayField = config.displayField;
+                }
             }
 
             // set the Bancha proxy
@@ -232,7 +242,7 @@ Ext.define('Bancha.data.Model', {
              * @return {Boolean} True to enforce consistency
              */
             getForceConsistency: function() {
-                // this function exists for support of all Ext JS versions
+                // this function exists for support of all Ext JS 4 versions
                 return this.forceConsistency;
             },
             /**
@@ -240,7 +250,7 @@ Ext.define('Bancha.data.Model', {
              * @param {Boolean} forceConsistency True to enforce consistency
              */
             setForceConsistency: function(forceConsistency) {
-                // this function exists for support of all Ext JS versions
+                // this function exists for support of all Ext JS 4 versions
                 this.forceConsistency = forceConsistency;
             },
             /**
@@ -255,7 +265,7 @@ Ext.define('Bancha.data.Model', {
              * @param {String|Null} The current display field value
              */
             getDisplayField: function() {
-                // this function exists for support of all Ext JS versions
+                // this function exists for support of all Ext JS 4 versions
                 return this.displayField;
             },
             /**
@@ -263,7 +273,7 @@ Ext.define('Bancha.data.Model', {
              * @param {String|Null} displayField The new display field value
              */
             setDisplayField: function(displayField) {
-                // this function exists for support of all Ext JS versions
+                // this function exists for support of all Ext JS 4 versions
                 this.displayField = displayField;
             }
         },
@@ -327,11 +337,12 @@ Ext.define('Bancha.data.Model', {
                 configWithRootPropertySet;
 
             // Sencha Touch uses the new rootProperty property for configuring the reader and writer
-            // Ext JS still uses root.
+            // Ext JS 5 used the rootProperty as well.
+            // Ext JS 4 still uses root.
             // This all would be fine, but now Sencha Touch throws deprecated warning for using the old
             // Ext JS syntax, so we can't just assign both anymore, instead we need to create a config
             // prototype here
-            if(Ext.versions.touch) {
+            if(Ext.versions.touch || (Ext.versions.extjs && Ext.versions.extjs.major >= 5)) {
                 configWithRootPropertySet = {
                     rootProperty: 'data'
                 };
@@ -374,6 +385,61 @@ Ext.define('Bancha.data.Model', {
     } //eo statics
 }, function() {
     var me = this;
+
+    if(Ext.versions.extjs && Ext.versions.extjs.major === 5) {
+        // For Ext JS 5 it's important that we are the first applied onExtended function
+        var onExtendedFn = me.$onExtended.pop(); // see onClassExtended
+        me.$onExtended.unshift(onExtendedFn); // add as first element
+
+        // Since Ext JS 5 has already automatically created an id field
+        // replace it with our fields
+        me.onExtended(function (cls, data) {
+            var modelName = false,
+                modelCls = cls,
+                config;
+            if(!modelName && Bancha.modelNamespace+'.'===modelCls.getName().substr(0, Bancha.modelNamespace.length+1)) {
+                // this is a default Bancha integration (not Sencha Architect)
+                // get the CakePHP model name by removing the namespace, e.g. "User"
+                modelName = modelCls.getName().substr(Bancha.modelNamespace.length+1);
+            }
+            if(!modelName) {
+                // since the namespace don't match, this is a Sencha Architect integration
+                // with a plugin-free model name
+                modelName = modelCls.getName().split('.').pop();
+            }
+
+            if(!Bancha.isRemoteModel(modelName)) {
+                //<debug>
+                //<bancha-pro>
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    modelName: modelName,
+                    msg: [
+                        'To use the model "'+modelName+'" in the frontend, ',
+                        'you need to add the BanchaRemotable behavior to your ',
+                        'CakePHP model. <br><br>Details can be found ',
+                        '<a href="http://bancha.io/documentation-pro-models-cakephp.html" target="_blank">in the Bancha docs</a>.'
+                    ].join('')
+                });
+                //</bancha-pro>
+                //<bancha-basic>
+                Ext.Error.raise({
+                    plugin: 'Bancha',
+                    msg: 'Bancha Basic does not allow to expose models, please use Bancha Pro.'
+                });
+                //</bancha-basic>
+                //</debug>
+                return false;
+            }
+
+            // configure the new model
+            config = Bancha.getModelMetaData(modelName);
+            modelCls.replaceFields(config.fields, true);
+            
+            // fixes strange bug that fieldsMap is not set correctly
+            modelCls.prototype.fieldsMap = modelCls.fieldsMap;
+        });
+    }
 
     if(!Ext.versions.touch) {
         return; // nothing to do for Ext JS, see onClassExtended
