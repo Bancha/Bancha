@@ -435,7 +435,7 @@ Ext.define('Bancha.Main', {
     alertError: function(err) {
         try {
             Ext.Msg.show({
-                title: 'Bancha Error',
+                title: err.plugin==='Bancha' ? 'Bancha Error' : (Ext.versions.extjs ? 'Ext JS Error' : 'Sencha Touch Error'),
                 message: err.msg || err.message, //touch
                 msg: err.msg || err.message, //extjs
                 icon: Ext.MessageBox.ERROR,
@@ -487,8 +487,8 @@ Ext.define('Bancha.Main', {
 
             if(Ext.isObject(this.objectFromPath(this.remoteApi)) && Ext.Logger && typeof Ext.Logger.warn==='function') {
                 Ext.Logger.warn([
-                    '[Bancha.init] Synchronously loading \'Bancha.REMOTE_API\'; This is a Bug in Bancha, please ',
-                    'report this on https://github.com/Bancha/Bancha/issues. Thanks!'
+                    '[Bancha.init] Synchronously loading \'Bancha.REMOTE_API\'; This is a Bug in Bancha, we are sorry. ',
+                    'Please report this on https://github.com/Bancha/Bancha/issues. Thanks!'
                 ].join());
             }
 
