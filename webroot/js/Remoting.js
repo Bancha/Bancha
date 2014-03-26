@@ -148,16 +148,26 @@ Ext.define('Bancha.Remoting', {
      *  - {Ext.data.proxy.Proxy} proxy Bancha Model Proxy
      *  - {Object} response The response from the Bancha request
      *  - {Ext.data.Operation} operation The operation that triggered request
+     *  - {Object} eOpts The options object passed to Ext.util.Observable.addListener.
      *
      * @param {Ext.data.proxy.Proxy} proxy Bancha Model Proxy
      * @param {Object} response The response from the Bancha request
      * @param {Ext.data.Operation} operation The operation that triggered request
      * @since Bancha v 2.0.0
      */
-    onRemoteException: function(proxy, response, operation) {
-        if(response.method === 'create' || response.method === 'update' && Ext.isArray((response.result || {}).errors)) {
-            // these are just record validation errors, don't throw an alert here
-            return;
+    onRemoteException: function(proxy, response, operation, eOpts) {
+        if((response.method === 'create' || response.method === 'update') && (response.result || {}).errors) {
+            // these are just record validation errors
+            var errors = '';
+            Ext.Object.each(response.result.errors, function(field, error) {
+                var name = (Bancha.scaffold || {}).Util ? Bancha.scaffold.Util.humanize(field) : field;
+                errors += '<br>' + name + ': ' + error;
+            });
+            // set an error message, which will be retrieved for the msg box below
+            operation.error = [
+                response.method === 'create' ? 'Creating ' : 'Updating ',
+                'a record failed: ' + errors
+            ].join('');
         }
 
         Ext.Msg.show({
