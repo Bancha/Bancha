@@ -203,7 +203,7 @@ before_script:
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
   - if [ $TOUCH_VERSION ]; then wget http://cdn.sencha.io/touch/sencha-touch-$TOUCH_VERSION/sencha-touch-all-debug.js ; fi
-  - if [ $EXTJS_VERSION_WITHOUT_COMMENTS ]; then wget http://cdn.sencha.io/ext/gpl/$EXTJS_VERSION/build/ext-all-debug.js -o ext-all-debug-w-comments.js ; fi
+  - if [ $EXTJS_VERSION_WITHOUT_COMMENTS ]; then wget http://cdn.sencha.io/ext/gpl/$EXTJS_VERSION_WITHOUT_COMMENTS/build/ext-all-debug.js -o ext-all-debug-w-comments.js ; fi
   - if [ $EXTJS_VERSION ]; then wget http://cdn.sencha.io/ext/gpl/$EXTJS_VERSION/ext-all-debug-w-comments.js ; fi
   - if [ $EXTJS_VERSION_LEGACY ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION_LEGACY-gpl/ext-all-debug-w-comments.js ; fi
   - cd ../../../../../../
