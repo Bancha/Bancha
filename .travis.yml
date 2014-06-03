@@ -13,6 +13,7 @@ env:
   - TOUCH_VERSION=2.1.0
   - TOUCH_VERSION=2.0.1.1
 
+  - EXTJS_VERSION_WITHOUT_COMMENTS=5.0.0
   - EXTJS_VERSION=4.2.1
   - EXTJS_VERSION=4.2.0
   - EXTJS_VERSION_LEGACY=4.1.1a
@@ -202,6 +203,7 @@ before_script:
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
   - if [ $TOUCH_VERSION ]; then wget http://cdn.sencha.io/touch/sencha-touch-$TOUCH_VERSION/sencha-touch-all-debug.js ; fi
+  - if [ $EXTJS_VERSION_WITHOUT_COMMENTS ]; then wget http://cdn.sencha.io/ext/gpl/$EXTJS_VERSION/build/ext-all-debug.js -o ext-all-debug-w-comments.js ; fi
   - if [ $EXTJS_VERSION ]; then wget http://cdn.sencha.io/ext/gpl/$EXTJS_VERSION/ext-all-debug-w-comments.js ; fi
   - if [ $EXTJS_VERSION_LEGACY ]; then wget http://cdn.sencha.io/ext-$EXTJS_VERSION_LEGACY-gpl/ext-all-debug-w-comments.js ; fi
   - cd ../../../../../../
@@ -212,7 +214,7 @@ before_script:
 script:
   # execute the jasmine tests for Sencha Touch and Ext JS
   - if [ $TOUCH_VERSION ]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/TouchSpecRunner.html ; fi
-  - if [[ $EXTJS_VERSION || $EXTJS_VERSION_LEGACY ]]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
+  - if [[ $EXTJS_VERSION || $EXTJS_VERSION_LEGACY || $EXTJS_VERSION_WITHOUT_COMMENTS]]; then phantomjs phantom-jasmine.js app/Plugin/Bancha/Test/JavaScriptUnitTest/SpecRunner.html ; fi
 
   # execute the PHPUnti tests for CakePHP
   - if [ $CAKEPHP_VERSION ]; then chmod a+x ./lib/Cake/Console/cake; fi # make sure to execute it
