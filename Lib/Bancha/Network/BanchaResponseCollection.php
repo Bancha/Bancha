@@ -163,8 +163,8 @@ class BanchaResponseCollection {
 
 		// If this is an formHandler request with an upload, so wrap the response in a valid HTML body.
 		if (isset($this->_responses['0']['extUpload']) && $this->_responses['0']['extUpload']) {
+			// see http://www.sencha.com/forum/showthread.php?156689
 			$this->_CakeResponse->type('text/html');
-			// TODO Is this right implemented? http://www.sencha.com/forum/showthread.php?156689
 			$this->_CakeResponse->body('<html><body><textarea>' . json_encode($this->_responses) . '</textarea></body></html>');
 		} else {
 			$this->_CakeResponse->type('json');
