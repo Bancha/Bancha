@@ -183,9 +183,9 @@ before_script:
   - sh -c "if [ $CAKEPHP_VERSION -a '$TRAVIS_PHP_VERSION' != '5.2' ]; then ln -s ~/.composer/vendor/phpunit/phpunit/PHPUnit ./vendors/PHPUnit; fi"
 
   # install PHPCS
-  - if [ '$PHPCS' == '1' ]; then pear channel-discover pear.cakephp.org ; fi
-  - if [ '$PHPCS' == '1' ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer ; fi
-  - if [ '$PHPCS' == '1' ]; then phpenv rehash ;fi
+  - if [ $PHPCS ]; then pear channel-discover pear.cakephp.org ; fi
+  - if [ $PHPCS ]; then pear install --alldeps cakephp/CakePHP_CodeSniffer ; fi
+  - if [ $PHPCS ]; then phpenv rehash ;fi
 
   # now prepare the jasmine tests
   - cd app/Plugin/Bancha/Test/JavaScriptUnitTest/lib
