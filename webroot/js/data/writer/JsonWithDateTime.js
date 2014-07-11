@@ -16,6 +16,7 @@
 /**
  * @private
  * @class Bancha.data.writer.JsonWithDateTime
+ * @extends Ext.data.writer.Json
  *
  * This should only be used by Bancha internally.
  *

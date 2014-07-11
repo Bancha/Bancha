@@ -19,12 +19,10 @@
  *
  * This class encalpsulates some logging features.
  *
- * For more see {@link Bancha.Logger#log}
+ * For more see the {@link Bancha.Logger#log} method.
  *
  * example usage:
  *
- *     Bancha.log('My error message');
- *     Bancha.log('My info message','info');
  *     Bancha.Logger.info('My info message');
  *     Bancha.Logger.warn('My warning message');
  *     Bancha.Logger.error('My error message');

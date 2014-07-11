@@ -16,6 +16,7 @@
 /**
  * @private
  * @class Bancha.data.writer.TreeParentIdTransformedJson
+ * @extends Bancha.data.writer.JsonWithDateTime
  *
  * This should only be used by Bancha internally,
  * it transforms the Sencha Touch/Ext JS tree parentId into

@@ -56,10 +56,13 @@ Ext.define('Bancha.data.override.Validations', {
     /**
      * @class Ext.data.validations
      *
+     * For Sencha Touch and Ext JS 4:
      * Bancha extends Ext.data.validations with two new validation rules:
      * *range* and *file*.
      *
      * These custom validations are mapped from CakePHP.
+     *
+     * For Ext JS 5 see {@class Bancha.data.validator.File}
      *
      * @author Roland Schuetz <mail@rolandschuetz.at>
      * @docauthor Roland Schuetz <mail@rolandschuetz.at>

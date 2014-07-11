@@ -14,7 +14,6 @@
  */
 
 /**
- * @private
  * @class Bancha.data.Model
  * @extends Ext.data.Model
  *
@@ -61,6 +60,7 @@ Ext.define('Bancha.data.Model', {
     },
 
     /**
+     * @private
      * For Ext JS:
      * Every time a new subclass is created, this function will apply all Bancha model configurations.
      *
@@ -224,6 +224,7 @@ Ext.define('Bancha.data.Model', {
         },
 
         /**
+         * @private
          * The following configs should be available on a per-model basis,
          * therefore these statics are added to each extended class
          */
@@ -279,7 +280,8 @@ Ext.define('Bancha.data.Model', {
         },
 
         /**
-         * To display nicer debugging messages, i debug mode this returns
+         * @private
+         * To display nicer debugging messages, in debug mode this returns
          * a fake function if the stub method doesn't exist.
          *
          * In production mode it simply returns the original function or null.

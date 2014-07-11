@@ -14,7 +14,13 @@
  */
 
 /**
+ * @class Bancha.data.validator.File
+ * @extends Ext.data.validator.Validator
+ *
+ * For Ext JS 5:
  * Validates that the filename is one of given {@link #extension}.
+ *
+ * For Ext JS 4 see {@class Ext.data.validations}
  */
 Ext.define('Bancha.data.validator.File', {
     extend: 'Ext.data.validator.Validator',

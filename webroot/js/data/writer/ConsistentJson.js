@@ -16,6 +16,7 @@
 /**
  * @private
  * @class Bancha.data.writer.ConsistentJson
+ * @extends Bancha.data.writer.TreeParentIdTransformedJson
  *
  * This should only be used by Bancha internally,
  * it adds the consistent uid to all requests.
