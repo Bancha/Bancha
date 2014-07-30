@@ -1,0 +1,21 @@
+
+ - auto data reset der samples
+
+
+
+vor release:
+ - Samples online ohne unique-login haben
+
+
+add tag:
+git tag -a v2.3.0 -m 'Bancha 2.3.0 Stable Release'
+git push --tags
+
+git tag -a v2.0.1 -m 'Bancha Scaffold 2.0.1 Stable Release'
+git push --tags
+-> Händisch analytics zur Docu hinzufügen:
+<script type="text/javascript">if(document.location.href.substr(0,16)!=="http://localhost" && document.location.href.substr(0,17)!=="https://localhost") {var _gaq=_gaq||[];_gaq.push(["_setAccount","UA-10118336-4"]);_gaq.push(["_trackPageview"]);(function(){var b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=("https:"==document.location.protocol?"https://ssl":"http://www")+".google-analytics.com/ga.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a)})();}</script>
+
+
+git tag -a v1.1.1 -m '1.1.1 Stable Release for Bancha 2.1+'
+git push --tags

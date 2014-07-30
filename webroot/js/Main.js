@@ -778,6 +778,9 @@ Ext.define('Bancha.Main', {
         };
 
         return function(remoteApi) {
+            var i = 0,
+                assoc;
+
             Ext.Object.each(remoteApi.metadata, function(key, model) {
                 if(typeof model !== 'object') {
                     return; // these are Bancha meta data values
@@ -794,11 +797,21 @@ Ext.define('Bancha.Main', {
                     }
                 });
 
+                // adopt namespace for Sencha Architect
+                if(Bancha.modelNamespace !== 'Bancha.model') {
+                    i = 0;
+                    while (i < (model.associations || []).length) {
+                        assoc = model.associations[i];
+                        assoc.model = assoc.model.replace('Bancha.model', Bancha.modelNamespace);
+                        i++;
+                    }
+                }
+
                 if(Ext.versions.extjs && Ext.versions.extjs.major === 5) {
                     // Ext JS 5 has a new Schema class and therefore defining
                     // hasMany is not necessary, because the other side already
                     // defines it.
-                    var i = 0;
+                    i = 0;
                     while (i < (model.associations || []).length) {
                         if(model.associations[i].type === 'hasMany') {
                             model.associations.splice(i, 1);
