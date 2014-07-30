@@ -188,6 +188,11 @@ Ext.define('Bancha.data.Model', {
             // add all class statics for Bancha models
             modelCls.addStatics(this.extendedClassStatics);
 
+            // for Ext JS configure the schema namespace
+            if(Ext.versions.extjs && Ext.versions.extjs.major===5 && modelCls.schema) {
+                modelCls.schema.setNamespace(Bancha.modelNamespace);
+            }
+
             // configure the new model
             config = Bancha.getModelMetaData(modelName);
 
