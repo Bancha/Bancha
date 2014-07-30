@@ -6,7 +6,7 @@
  * php _fake_request.php client_id article_id tid title sleep_time
  *
  *
- * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
+ * Bancha : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://bancha.io)
  * Copyright 2011, Roland Schuetz, Kung Wong, Andreas Kern, Florian Eckerstorfer
  *
  * @package       Bancha.Test.Case.System

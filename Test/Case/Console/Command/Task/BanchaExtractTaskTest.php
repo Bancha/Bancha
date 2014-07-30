@@ -4,7 +4,7 @@
  *
  * Test Case for Bancha's js i18n extraction shell task
  *
- * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
+ * Bancha : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://bancha.io)
  * Copyright 2011-2014 codeQ e.U.
  *
  * @package       Bancha.Test.Case.Console.Command.Task

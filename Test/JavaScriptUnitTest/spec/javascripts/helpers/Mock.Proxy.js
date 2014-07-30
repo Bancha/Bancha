@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
+ * Bancha : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://bancha.io)
  * Copyright 2011-2014 codeQ e.U.
  *
  * Ext JS and Sencha Touch specific extension of the jasmin Mock helper
@@ -10,7 +10,7 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
- * For more information go to http://banchaproject.org
+ * For more information go to http://bancha.io
  */
 
 // Replacing proxies makes problems, it sure why

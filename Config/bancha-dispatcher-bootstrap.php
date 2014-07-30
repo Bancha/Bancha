@@ -4,7 +4,7 @@
  *
  * This file should load/create any application wide configuration settings.
  *
- * Bancha Project : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://banchaproject.org)
+ * Bancha : Seamlessly integrates CakePHP with Ext JS and Sencha Touch (http://bancha.io)
  * Copyright 2011-2014 codeQ e.U.
  *
  * @package       Bancha.Config

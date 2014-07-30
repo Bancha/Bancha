@@ -11,7 +11,7 @@
  * PHP 5
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Bancha : Ext JS and Cake PHP (http://banchaproject.org)
+ * Bancha : Ext JS and Cake PHP (http://bancha.io)
  * Copyright 2005-2013 Cake Software Foundation, Inc. (http://cakefoundation.org)
  * Copyright 2011-2014 codeQ e.U.
  *

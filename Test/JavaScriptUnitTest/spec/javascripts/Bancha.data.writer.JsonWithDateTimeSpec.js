@@ -1,6 +1,6 @@
 /*!
  *
- * Bancha Project : Combining Ext JS and CakePHP (http://banchaproject.org)
+ * Bancha Project : Combining Ext JS and CakePHP (http://bancha.io)
  * Copyright 2011-2014 codeQ e.U.
  *
  * Tests for the main Bancha class
@@ -10,7 +10,7 @@
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
- * For more information go to http://banchaproject.org
+ * For more information go to http://bancha.io
  */
 
 describe("Test that Bancha handles all date marshalling correctly", function() {
