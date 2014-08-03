@@ -124,7 +124,8 @@ before_script:
   #- sudo node ./app/tmp/socket.js &
 
   # Setup the database config
-  - if [ -z "$CAKEPHP_VERSION" ]; then set +H ; fi# needed for pasting the following config file
+  - if [ -z "$CAKEPHP_VERSION" ]; then mkdir ./cakephp/app/Plugin/Bancha2 ; fi
+  - if [ -z "$CAKEPHP_VERSION" ]; then set +H ; fi # needed for pasting the following config file
   - if [ -z "$CAKEPHP_VERSION" ]; then echo "<?php
     class DATABASE_CONFIG {
     private \$identities = array(
