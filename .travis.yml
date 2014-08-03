@@ -124,7 +124,7 @@ before_script:
   #- sudo node ./app/tmp/socket.js &
 
   # Setup the database config
-  - if [ $CAKEPHP_VERSION ]; then touch ./cakephp/app/Config/database.php
+  - if [ $CAKEPHP_VERSION ];
   - set +H # needed for pasting the following config file
   - echo "<?php
     class DATABASE_CONFIG {
