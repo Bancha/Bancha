@@ -129,7 +129,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 	protected $_settings = array();
 
 /**
- * Sets up the BanchaRemotable behavior. For config options see above.
+ * Sets up the BanchaRemotable behavior. For config options see $_defaults.
  *
  * @param Model $model    Model using this behavior
  * @param array $settings Array of configuration settings.
