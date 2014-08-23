@@ -14,7 +14,7 @@
  */
 
 // Fake missing classes for production
-if(Ext.versions.extjs.major === 5) {
+if(Ext.versions.extjs && Ext.versions.extjs.major === 5) {
     Ext.define('Ext.data.validations', {});
 }
 
