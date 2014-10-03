@@ -13,11 +13,6 @@
  * For more information go to http://bancha.io
  */
 
-// Fake missing classes for production
-if(Ext.versions.extjs && Ext.versions.extjs.major === 5) {
-    Ext.define('Ext.data.validations', {});
-}
-
 /**
  * @private
  * @class Bancha.data.override.Validations
