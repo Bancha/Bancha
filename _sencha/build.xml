@@ -101,7 +101,7 @@
             </else>
         </if>
 
-        <!-- exclude unnecessary scaffold files -->
+        <!-- exclude unnecessary shims & scaffold files -->
         <x-ant-call>
             <target name="-bancha-remove-files-for-build"/>
         </x-ant-call>
@@ -112,7 +112,7 @@
         <!-- Remove the file again -->
         <delete file="${app.dir}/app/REMOTE_API.js"/>
 
-        <!-- exclude restore all scaffold files -->
+        <!-- exclude restore all schims & scaffold files -->
         <x-ant-call>
             <target name="-bancha-restore-files-after-build"/>
         </x-ant-call>
@@ -127,7 +127,7 @@
     ###################################################################
     ###################################################################
     ###                                                             ###
-    ###   Helper targets, neede bcause Sencha Cmd does not allow    ###
+    ###   Helper targets, needed because Sencha Cmd does not allow  ###
     ###   to simply exclude files.                                  ###
     ###                                                             ###
     ###   Simply excluding the files from the set does not work,    ###
@@ -142,6 +142,7 @@
         <!-- Bancha Scaffold sould only by included in Ext JS builds -->
         <available file="${bancha.folder}/webroot/js/scaffold" type="dir" property="touch.scaffoldnotmoved"/>
         <available file="${bancha.folder}/webroot/js/scaffold/builder" type="dir" property="ext.scaffoldnotmoved"/>
+        <available file="${bancha.folder}/webroot/js/data/validations.js" type="file" property="ext.validationshimforextjs5notmoved"/>
         <if>
             <and>
                 <equals arg1="${app.framework}" arg2="touch"/>
@@ -175,12 +176,31 @@
                     todir="${bancha.folder}/webroot/scaffold-tmp"/>
             </then>
         </if>
+        <if>
+            <and>
+                <not>
+                    <and>
+                        <equals arg1="${app.framework}" arg2="ext"/>
+                        <contains string="${app.framework.version}" substring="5."/>
+                    </and>
+                </not>
+                <equals arg1="${ext.validationshimforextjs5notmoved}" arg2="true"/>
+            </and>
+            <then>
+                <!-- don't include the Ext JS 5 shim in Ext JS 4 and Sencha Touch applications -->
+                <mkdir dir="${bancha.folder}/webroot/data-tmp" />
+                <move
+                    file="${bancha.folder}/webroot/js/data/validations.js"
+                    todir="${bancha.folder}/webroot/data-tmp"/>
+            </then>
+        </if>
     </target>
 
     <target name="-bancha-restore-files-after-build">
 
         <available file="${bancha.folder}/webroot/scaffold" type="dir" property="touch.scaffoldmoved"/>
         <available file="${bancha.folder}/webroot/scaffold-tmp/builder" type="dir" property="ext.scaffoldmoved"/>
+        <available file="${bancha.folder}/webroot/data-tmp/validations.js" type="file" property="ext.validationshimforextjs5moved"/>
 
         <!-- Move Bancha Scaffold to default folder again -->
         <if>
@@ -212,5 +232,18 @@
                 <delete dir="${bancha.folder}/webroot/scaffold-tmp"/>
             </then>
         </if>
+
+        <!-- Move Ext JS 5 fake class back -->
+        <if>
+            <equals arg1="${ext.validationshimforextjs5moved}" arg2="true"/>
+            <then>
+                <move
+                    file="${bancha.folder}/webroot/data-tmp/validations.js"
+                    todir="${bancha.folder}/webroot/js/data"/>
+                <!-- remove tmp folder -->
+                <delete dir="${bancha.folder}/webroot/data-tmp"/>
+            </then>
+        </if>
+
     </target>
 </project>
