@@ -100,6 +100,8 @@ if ('function' !== typeof Array.prototype.reduce) {
 // but the have different names, so set up aliases
 if(Ext.versions.touch) {
     Ext.ClassManager.setAlias('Ext.MessageBox', 'Ext.window.MessageBox');
+} else if(Ext.ClassManager.setAlias) {
+    Ext.ClassManager.setAlias('Ext.window.MessageBox', 'Ext.MessageBox');
 }
 //</debug>
 

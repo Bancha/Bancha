@@ -199,7 +199,8 @@ Ext.define('Bancha.data.Model', {
             // default case for Ext JS 4 and Sencha Touch
             if(typeof modelCls.setFields === 'function') {
                 modelCls.setFields(config.fields);
-            } else if(Ext.versions.extjs && Ext.versions.extjs.major === 4) {
+            }
+            if(Ext.versions.extjs && Ext.versions.extjs.major === 4) {
                 // this is used for three cases:
                 // - Support for Ext JS 4.0.7
                 // - Ext JS Support for ScriptTagInitializer, where we hook into Ext.data.Model extend
@@ -213,7 +214,6 @@ Ext.define('Bancha.data.Model', {
                 modelCls.setValidations(config.validations);
                 modelCls.setDisplayField(config.displayField);
             } else {
-                extJsOnClassExtendedData.associations = config.associations;
                 extJsOnClassExtendedData.associations = config.associations;
                 extJsOnClassExtendedData.idProperty = config.idProperty;
                 extJsOnClassExtendedData.validations = config.validations;

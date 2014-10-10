@@ -142,7 +142,8 @@
         <!-- Bancha Scaffold sould only by included in Ext JS builds -->
         <available file="${bancha.folder}/webroot/js/scaffold" type="dir" property="touch.scaffoldnotmoved"/>
         <available file="${bancha.folder}/webroot/js/scaffold/builder" type="dir" property="ext.scaffoldnotmoved"/>
-        <available file="${bancha.folder}/webroot/js/data/validations.js" type="file" property="ext.validationshimforextjs5notmoved"/>
+        <available file="${bancha.folder}/webroot/js/data/validations.js" type="file" property="ext.extjs5classesnotmoved"/>
+        <available file="${bancha.folder}/webroot/js/data/validator/Validator.js" type="file" property="ext.extjs4classesnotmoved"/>
         <if>
             <and>
                 <equals arg1="${app.framework}" arg2="touch"/>
@@ -174,8 +175,32 @@
                 <move
                     file="${bancha.folder}/webroot/js/scaffold/tests"
                     todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                <!-- move duplicate classes -->
+                <move
+                    file="${bancha.folder}/webroot/js/scaffold/src/data"
+                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
             </then>
         </if>
+
+        <if>
+            <and>
+                <not>
+                    <and>
+                        <equals arg1="${app.framework}" arg2="ext"/>
+                        <contains string="${app.framework.version}" substring="4."/>
+                    </and>
+                </not>
+                <equals arg1="${ext.extjs4classesnotmoved}" arg2="true"/>
+            </and>
+            <then>
+                <!-- don't include the Ext JS 4 shim in Ext JS 5 and Sencha Touch applications ??????????? WHAT ABOUT SENCHA TOUCH ?????? -->
+                <mkdir dir="${bancha.folder}/webroot/data-tmp4" />
+                <move
+                    file="${bancha.folder}/webroot/js/data/validator/Validator.js"
+                    todir="${bancha.folder}/webroot/data-tmp4"/>
+            </then>
+        </if>
+
         <if>
             <and>
                 <not>
@@ -184,14 +209,14 @@
                         <contains string="${app.framework.version}" substring="5."/>
                     </and>
                 </not>
-                <equals arg1="${ext.validationshimforextjs5notmoved}" arg2="true"/>
+                <equals arg1="${ext.extjs5classesnotmoved}" arg2="true"/>
             </and>
             <then>
                 <!-- don't include the Ext JS 5 shim in Ext JS 4 and Sencha Touch applications -->
-                <mkdir dir="${bancha.folder}/webroot/data-tmp" />
+                <mkdir dir="${bancha.folder}/webroot/data-tmp5" />
                 <move
                     file="${bancha.folder}/webroot/js/data/validations.js"
-                    todir="${bancha.folder}/webroot/data-tmp"/>
+                    todir="${bancha.folder}/webroot/data-tmp5"/>
             </then>
         </if>
     </target>
@@ -200,7 +225,8 @@
 
         <available file="${bancha.folder}/webroot/scaffold" type="dir" property="touch.scaffoldmoved"/>
         <available file="${bancha.folder}/webroot/scaffold-tmp/builder" type="dir" property="ext.scaffoldmoved"/>
-        <available file="${bancha.folder}/webroot/data-tmp/validations.js" type="file" property="ext.validationshimforextjs5moved"/>
+        <available file="${bancha.folder}/webroot/data-tmp4/Validator.js" type="file" property="ext.validationshimforextjs5moved"/>
+        <available file="${bancha.folder}/webroot/data-tmp5/validations.js" type="file" property="ext.validationshimforextjs5moved"/>
 
         <!-- Move Bancha Scaffold to default folder again -->
         <if>
@@ -228,8 +254,24 @@
                 <move
                     file="${bancha.folder}/webroot/scaffold-tmp/tests"
                     todir="${bancha.folder}/webroot/js/scaffold"/>
+                <!-- move duplicate classes -->
+                <move
+                    file="${bancha.folder}/webroot/scaffold-tmp/data"
+                    todir="${bancha.folder}/webroot/js/scaffold/src"/>
                 <!-- remove tmp folder -->
                 <delete dir="${bancha.folder}/webroot/scaffold-tmp"/>
+            </then>
+        </if>
+
+        <!-- Move Ext JS 4 fake class back -->
+        <if>
+            <equals arg1="${ext.validationshimforextjs4moved}" arg2="true"/>
+            <then>
+                <move
+                    file="${bancha.folder}/webroot/data-tmp4/Validator.js"
+                    todir="${bancha.folder}/webroot/js/data/validator/Validator.js"/>
+                <!-- remove tmp folder -->
+                <delete dir="${bancha.folder}/webroot/data-tmp4"/>
             </then>
         </if>
 
@@ -238,10 +280,10 @@
             <equals arg1="${ext.validationshimforextjs5moved}" arg2="true"/>
             <then>
                 <move
-                    file="${bancha.folder}/webroot/data-tmp/validations.js"
+                    file="${bancha.folder}/webroot/data-tmp5/validations.js"
                     todir="${bancha.folder}/webroot/js/data"/>
                 <!-- remove tmp folder -->
-                <delete dir="${bancha.folder}/webroot/data-tmp"/>
+                <delete dir="${bancha.folder}/webroot/data-tmp5"/>
             </then>
         </if>
 
