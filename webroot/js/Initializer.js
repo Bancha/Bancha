@@ -50,8 +50,12 @@ if(Ext.Loader) {
     if(Ext.versions.extjs.major===5) {
         paths['Ext.data.validations'] = Ext.Loader.getPath('Bancha') + '/data/validations.js';
         delete paths['Ext.data.validator.Validator'];
+        delete paths['Ext.data.validator.Bound'];
+        delete paths['Ext.data.validator.Range'];
     } else {
         paths['Ext.data.validator.Validator'] = Ext.Loader.getPath('Bancha') + '/data/validator/Validator.js';
+        paths['Ext.data.validator.Bound'] = Ext.Loader.getPath('Bancha') + '/data/validator/Bound.js';
+        paths['Ext.data.validator.Range'] = Ext.Loader.getPath('Bancha') + '/data/validator/Range.js';
         delete paths['Ext.data.validations'];
     }
 }

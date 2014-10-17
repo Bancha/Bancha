@@ -6,7 +6,7 @@
  * @package       Bancha
  * @copyright     Copyright 2011-2014 codeQ e.U.
  * @link          http://bancha.io Bancha
- * @since         Bancha v 0.0.2
+ * @since         Bancha v 2.4.0
  * @author        Roland Schuetz <mail@rolandschuetz.at>
  * @version       Bancha v PRECOMPILER_ADD_RELEASE_VERSION
  *
@@ -15,7 +15,7 @@
 
 /**
  * @private
- * @class Bancha.data.validations
+ * @class Bancha.data.validator.Bound
  * 
  * Sencha CMD is looking for a Ext.data.validations class since
  * it is required in a a class which Ext JS 5 would actually never 
@@ -24,4 +24,9 @@
  * To fake this class for Ext JS 5 and make Sencha CMD happy this
  * is the useless Ext JS 5 Ext.data.validations class.
  */
-Ext.define('Ext.data.validations', {});
+Ext.define('Ext.data.validator.Bound', {
+    config: {
+        nanMessage: 'placeholder'
+    },
+	validate: function(value) {}
+});

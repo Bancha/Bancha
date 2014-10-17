@@ -195,9 +195,16 @@
             <then>
                 <!-- don't include the Ext JS 4 shim in Ext JS 5 and Sencha Touch applications ??????????? WHAT ABOUT SENCHA TOUCH ?????? -->
                 <mkdir dir="${bancha.folder}/webroot/data-tmp4" />
+                <mkdir dir="${bancha.folder}/webroot/data-tmp4/validator" />
                 <move
                     file="${bancha.folder}/webroot/js/data/validator/Validator.js"
                     todir="${bancha.folder}/webroot/data-tmp4"/>
+                <move
+                    file="${bancha.folder}/webroot/js/data/validator/Bound.js"
+                    todir="${bancha.folder}/webroot/data-tmp4/validator"/>
+                <move
+                    file="${bancha.folder}/webroot/js/data/validator/Range.js"
+                    todir="${bancha.folder}/webroot/data-tmp4/validator"/>
             </then>
         </if>
 
@@ -270,6 +277,12 @@
                 <move
                     file="${bancha.folder}/webroot/data-tmp4/Validator.js"
                     todir="${bancha.folder}/webroot/js/data/validator/Validator.js"/>
+                <move
+                    file="${bancha.folder}/webroot/data-tmp4/validator/Bound.js"
+                    todir="${bancha.folder}/webroot/js/data/validator"/>
+                <move
+                    file="${bancha.folder}/webroot/data-tmp4/validator/Range.js"
+                    todir="${bancha.folder}/webroot/js/data/validator"/>
                 <!-- remove tmp folder -->
                 <delete dir="${bancha.folder}/webroot/data-tmp4"/>
             </then>

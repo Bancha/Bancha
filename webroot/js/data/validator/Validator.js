@@ -14,6 +14,9 @@
  */
 
 /**
+ * @private
+ * @class Bancha.data.validator.Validator
+ * 
  * Sencha CMD is looking for a Ext.data.validations class since
  * it is required in a a class which Ext JS 5 would actually never 
  * touch.
