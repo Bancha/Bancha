@@ -35,6 +35,14 @@
            </condition>
         </fail>
 
+        <fail message="Missing property: Please change the bancha.api.url property inside sencha.cfg">
+            <condition>
+                <or>
+                    <equals arg1="${bancha.api.url}" arg2="http://my-local-host.com/bancha-api-packaged/models/all.js"/>
+               </or>
+           </condition>
+       </fail>
+
         <fail message="Missing property: Please define the bancha.folder property inside sencha.cfg">
             <condition>
                 <or>
