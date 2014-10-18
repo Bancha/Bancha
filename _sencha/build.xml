@@ -24,12 +24,12 @@
     <target name="-bancha-check-setup">
 
         <!-- check sencha.cfg variables -->
-        <fail message="Missing property: Please define the bancha.api.url property inside sencha.cfg">
+        <fail message="Missing property: Please define the bancha.baseUrl property inside sencha.cfg">
             <condition>
                 <or>
-                    <equals arg1="${bancha.api.url}" arg2=""/>
+                    <equals arg1="${bancha.baseUrl}" arg2=""/>
                     <not>
-                        <isset property="bancha.api.url"/>
+                        <isset property="bancha.baseUrl"/>
                     </not>
                </or>
            </condition>
@@ -41,24 +41,60 @@
                     <equals arg1="${bancha.api.url}" arg2="http://my-local-host.com/bancha-api-packaged/models/all.js"/>
                </or>
            </condition>
-       </fail>
+        </fail>
 
-        <fail message="Missing property: Please define the bancha.folder property inside sencha.cfg">
+        <fail message="Bancha Error: The Sencha CMD configuration needs to be updated. Please define bancha.folder.relative instead of bancha.folder inside sencha.cfg">
+            <condition>
+                <isset property="bancha.folder"/>
+           </condition>
+        </fail>
+
+        <fail message="Missing property: Please define the bancha.folder.relative property inside sencha.cfg">
             <condition>
                 <or>
-                    <equals arg1="${bancha.folder}" arg2=""/>
+                    <equals arg1="${bancha.folder.relative}" arg2=""/>
                     <not>
-                        <isset property="bancha.folder"/>
+                        <isset property="bancha.folder.relative"/>
                     </not>
                </or>
            </condition>
-       </fail>
+        </fail>
        
-       <if>
+        <!-- Add optional properties if not defined yet -->
+        <if>
+            <not>
+                <isset property="bancha.folder.absolute"/>
+            </not>
+            <then>
+                <property name="bancha.folder.absolute" value="${app.dir}/${bancha.folder.relative}"/>
+            </then>
+       </if>
+        <if>
+            <not>
+                <isset property="bancha.script.url"/>
+            </not>
+            <then>
+                <property name="bancha.script.url" value="${bancha.baseUrl}/bancha"/>
+            </then>
+       </if>
+        <if>
+            <not>
+                <isset property="bancha.api.url"/>
+            </not>
+            <then>
+                <property name="bancha.api.url" value="${bancha.baseUrl}/bancha-api-packaged/models/all.js"/>
+            </then>
+       </if>
+
+        <if>
             <!-- 
                 Sencha Architect 3.0.1+ ignores any app.classpath set inside sencha.cfg.
                 Therefore we need to enforce adding this property to the classpath.
                 Since you can't override a property, we need to first unset it.
+
+                The new integration now always add the path here. But since there might be 
+                old configuration which already include it, in these cases don't add it a 
+                second time.
             -->
             <not>
                 <matches pattern="Bancha\/webroot\/js" string="${app.classpath}"/>
@@ -66,7 +102,7 @@
             <then>
                 <property name="app.classpath-original" value="${app.classpath}"/>
                 <var name="app.classpath" unset="true"/>
-                <property name="app.classpath" value="${app.classpath-original},${bancha.folder}/webroot/js"/>
+                <property name="app.classpath" value="${app.classpath-original},${bancha.folder.absolute}/webroot/js"/>
                 <var name="app.classpath-original" unset="true"/>
                 <echo message="Extended app.classpath to ${app.classpath}"/>
             </then>
@@ -124,6 +160,11 @@
         <x-ant-call>
             <target name="-bancha-restore-files-after-build"/>
         </x-ant-call>
+
+        <!-- Fix the microloader pathes for development mode -->
+        <echo message="Updated bootstrap.json" />
+        <replace file="${app.dir}/bootstrap.json" token="../../Plugin/Bancha/webroot" value="${bancha.script.url}" />
+        <replace file="${app.dir}/bootstrap.json" token="app/REMOTE_API.js" value="${bancha.api.url}" />
     </target>
 
 
@@ -148,10 +189,10 @@
     <target name="-bancha-remove-files-for-build">
 
         <!-- Bancha Scaffold sould only by included in Ext JS builds -->
-        <available file="${bancha.folder}/webroot/js/scaffold" type="dir" property="touch.scaffoldnotmoved"/>
-        <available file="${bancha.folder}/webroot/js/scaffold/builder" type="dir" property="ext.scaffoldnotmoved"/>
-        <available file="${bancha.folder}/webroot/js/data/validations.js" type="file" property="ext.extjs5classesnotmoved"/>
-        <available file="${bancha.folder}/webroot/js/data/validator/Validator.js" type="file" property="ext.extjs4classesnotmoved"/>
+        <available file="${bancha.folder.absolute}/webroot/js/scaffold" type="dir" property="touch.scaffoldnotmoved"/>
+        <available file="${bancha.folder.absolute}/webroot/js/scaffold/builder" type="dir" property="ext.scaffoldnotmoved"/>
+        <available file="${bancha.folder.absolute}/webroot/js/data/validations.js" type="file" property="ext.extjs5classesnotmoved"/>
+        <available file="${bancha.folder.absolute}/webroot/js/data/validator/Validator.js" type="file" property="ext.extjs4classesnotmoved"/>
         <if>
             <and>
                 <equals arg1="${app.framework}" arg2="touch"/>
@@ -159,8 +200,8 @@
             </and>
             <then>
                 <move
-                    file="${bancha.folder}/webroot/js/scaffold"
-                    todir="${bancha.folder}/webroot"/>
+                    file="${bancha.folder.absolute}/webroot/js/scaffold"
+                    todir="${bancha.folder.absolute}/webroot"/>
             </then>
         </if>
         <if>
@@ -170,23 +211,23 @@
             </and>
             <then>
                 <!-- don't include conflicting builder and latest-build folders -->
-                <mkdir dir="${bancha.folder}/webroot/scaffold-tmp" />
+                <mkdir dir="${bancha.folder.absolute}/webroot/scaffold-tmp" />
                 <move
-                    file="${bancha.folder}/webroot/js/scaffold/builder"
-                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                    file="${bancha.folder.absolute}/webroot/js/scaffold/builder"
+                    todir="${bancha.folder.absolute}/webroot/scaffold-tmp"/>
                 <move
-                    file="${bancha.folder}/webroot/js/scaffold/latest-build"
-                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                    file="${bancha.folder.absolute}/webroot/js/scaffold/latest-build"
+                    todir="${bancha.folder.absolute}/webroot/scaffold-tmp"/>
                 <move
-                    file="${bancha.folder}/webroot/js/scaffold/samples"
-                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                    file="${bancha.folder.absolute}/webroot/js/scaffold/samples"
+                    todir="${bancha.folder.absolute}/webroot/scaffold-tmp"/>
                 <move
-                    file="${bancha.folder}/webroot/js/scaffold/tests"
-                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                    file="${bancha.folder.absolute}/webroot/js/scaffold/tests"
+                    todir="${bancha.folder.absolute}/webroot/scaffold-tmp"/>
                 <!-- move duplicate classes -->
                 <move
-                    file="${bancha.folder}/webroot/js/scaffold/src/data"
-                    todir="${bancha.folder}/webroot/scaffold-tmp"/>
+                    file="${bancha.folder.absolute}/webroot/js/scaffold/src/data"
+                    todir="${bancha.folder.absolute}/webroot/scaffold-tmp"/>
             </then>
         </if>
 
@@ -201,18 +242,18 @@
                 <equals arg1="${ext.extjs4classesnotmoved}" arg2="true"/>
             </and>
             <then>
-                <!-- don't include the Ext JS 4 shim in Ext JS 5 and Sencha Touch applications ??????????? WHAT ABOUT SENCHA TOUCH ?????? -->
-                <mkdir dir="${bancha.folder}/webroot/data-tmp4" />
-                <mkdir dir="${bancha.folder}/webroot/data-tmp4/validator" />
+                <!-- don't include the Ext JS 4 shim in Ext JS 5 and Sencha Touch applications ????????? WHAT ABOUT SENCHA TOUCH ?????? -->
+                <mkdir dir="${bancha.folder.absolute}/webroot/data-tmp4" />
+                <mkdir dir="${bancha.folder.absolute}/webroot/data-tmp4/validator" />
                 <move
-                    file="${bancha.folder}/webroot/js/data/validator/Validator.js"
-                    todir="${bancha.folder}/webroot/data-tmp4"/>
+                    file="${bancha.folder.absolute}/webroot/js/data/validator/Validator.js"
+                    todir="${bancha.folder.absolute}/webroot/data-tmp4/validator"/>
                 <move
-                    file="${bancha.folder}/webroot/js/data/validator/Bound.js"
-                    todir="${bancha.folder}/webroot/data-tmp4/validator"/>
+                    file="${bancha.folder.absolute}/webroot/js/data/validator/Bound.js"
+                    todir="${bancha.folder.absolute}/webroot/data-tmp4/validator"/>
                 <move
-                    file="${bancha.folder}/webroot/js/data/validator/Range.js"
-                    todir="${bancha.folder}/webroot/data-tmp4/validator"/>
+                    file="${bancha.folder.absolute}/webroot/js/data/validator/Range.js"
+                    todir="${bancha.folder.absolute}/webroot/data-tmp4/validator"/>
             </then>
         </if>
 
@@ -228,28 +269,28 @@
             </and>
             <then>
                 <!-- don't include the Ext JS 5 shim in Ext JS 4 and Sencha Touch applications -->
-                <mkdir dir="${bancha.folder}/webroot/data-tmp5" />
+                <mkdir dir="${bancha.folder.absolute}/webroot/data-tmp5" />
                 <move
-                    file="${bancha.folder}/webroot/js/data/validations.js"
-                    todir="${bancha.folder}/webroot/data-tmp5"/>
+                    file="${bancha.folder.absolute}/webroot/js/data/validations.js"
+                    todir="${bancha.folder.absolute}/webroot/data-tmp5"/>
             </then>
         </if>
     </target>
 
     <target name="-bancha-restore-files-after-build">
 
-        <available file="${bancha.folder}/webroot/scaffold" type="dir" property="touch.scaffoldmoved"/>
-        <available file="${bancha.folder}/webroot/scaffold-tmp/builder" type="dir" property="ext.scaffoldmoved"/>
-        <available file="${bancha.folder}/webroot/data-tmp4/Validator.js" type="file" property="ext.validationshimforextjs5moved"/>
-        <available file="${bancha.folder}/webroot/data-tmp5/validations.js" type="file" property="ext.validationshimforextjs5moved"/>
+        <available file="${bancha.folder.absolute}/webroot/scaffold" type="dir" property="touch.scaffoldmoved"/>
+        <available file="${bancha.folder.absolute}/webroot/scaffold-tmp/builder" type="dir" property="ext.scaffoldmoved"/>
+        <available file="${bancha.folder.absolute}/webroot/data-tmp4/validator/Validator.js" type="file" property="ext.validationshimforextjs4moved"/>
+        <available file="${bancha.folder.absolute}/webroot/data-tmp5/validations.js" type="file" property="ext.validationshimforextjs5moved"/>
 
         <!-- Move Bancha Scaffold to default folder again -->
         <if>
             <equals arg1="${touch.scaffoldmoved}" arg2="true"/>
             <then>
                 <move
-                    file="${bancha.folder}/webroot/scaffold"
-                    todir="${bancha.folder}/webroot/js"/>
+                    file="${bancha.folder.absolute}/webroot/scaffold"
+                    todir="${bancha.folder.absolute}/webroot/js"/>
             </then>
         </if>
 
@@ -258,23 +299,23 @@
             <then>
                 <!-- Move Bancha Scaffold folders to default folder again -->
                 <move
-                    file="${bancha.folder}/webroot/scaffold-tmp/builder"
-                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                    file="${bancha.folder.absolute}/webroot/scaffold-tmp/builder"
+                    todir="${bancha.folder.absolute}/webroot/js/scaffold"/>
                 <move
-                    file="${bancha.folder}/webroot/scaffold-tmp/latest-build"
-                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                    file="${bancha.folder.absolute}/webroot/scaffold-tmp/latest-build"
+                    todir="${bancha.folder.absolute}/webroot/js/scaffold"/>
                 <move
-                    file="${bancha.folder}/webroot/scaffold-tmp/samples"
-                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                    file="${bancha.folder.absolute}/webroot/scaffold-tmp/samples"
+                    todir="${bancha.folder.absolute}/webroot/js/scaffold"/>
                 <move
-                    file="${bancha.folder}/webroot/scaffold-tmp/tests"
-                    todir="${bancha.folder}/webroot/js/scaffold"/>
+                    file="${bancha.folder.absolute}/webroot/scaffold-tmp/tests"
+                    todir="${bancha.folder.absolute}/webroot/js/scaffold"/>
                 <!-- move duplicate classes -->
                 <move
-                    file="${bancha.folder}/webroot/scaffold-tmp/data"
-                    todir="${bancha.folder}/webroot/js/scaffold/src"/>
+                    file="${bancha.folder.absolute}/webroot/scaffold-tmp/data"
+                    todir="${bancha.folder.absolute}/webroot/js/scaffold/src"/>
                 <!-- remove tmp folder -->
-                <delete dir="${bancha.folder}/webroot/scaffold-tmp"/>
+                <delete dir="${bancha.folder.absolute}/webroot/scaffold-tmp"/>
             </then>
         </if>
 
@@ -283,16 +324,16 @@
             <equals arg1="${ext.validationshimforextjs4moved}" arg2="true"/>
             <then>
                 <move
-                    file="${bancha.folder}/webroot/data-tmp4/Validator.js"
-                    todir="${bancha.folder}/webroot/js/data/validator/Validator.js"/>
+                    file="${bancha.folder.absolute}/webroot/data-tmp4/validator/Validator.js"
+                    todir="${bancha.folder.absolute}/webroot/js/data/validator"/>
                 <move
-                    file="${bancha.folder}/webroot/data-tmp4/validator/Bound.js"
-                    todir="${bancha.folder}/webroot/js/data/validator"/>
+                    file="${bancha.folder.absolute}/webroot/data-tmp4/validator/Bound.js"
+                    todir="${bancha.folder.absolute}/webroot/js/data/validator"/>
                 <move
-                    file="${bancha.folder}/webroot/data-tmp4/validator/Range.js"
-                    todir="${bancha.folder}/webroot/js/data/validator"/>
+                    file="${bancha.folder.absolute}/webroot/data-tmp4/validator/Range.js"
+                    todir="${bancha.folder.absolute}/webroot/js/data/validator"/>
                 <!-- remove tmp folder -->
-                <delete dir="${bancha.folder}/webroot/data-tmp4"/>
+                <delete dir="${bancha.folder.absolute}/webroot/data-tmp4"/>
             </then>
         </if>
 
@@ -301,10 +342,10 @@
             <equals arg1="${ext.validationshimforextjs5moved}" arg2="true"/>
             <then>
                 <move
-                    file="${bancha.folder}/webroot/data-tmp5/validations.js"
-                    todir="${bancha.folder}/webroot/js/data"/>
+                    file="${bancha.folder.absolute}/webroot/data-tmp5/validations.js"
+                    todir="${bancha.folder.absolute}/webroot/js/data"/>
                 <!-- remove tmp folder -->
-                <delete dir="${bancha.folder}/webroot/data-tmp5"/>
+                <delete dir="${bancha.folder.absolute}/webroot/data-tmp5"/>
             </then>
         </if>
 

@@ -46,6 +46,10 @@
         return;
     }
 
+    if(Ext.versions.extjs.shortVersion>=500) {
+        throw 'The Bancha ScriptTagInitializer.js is only designed for Ext JS 4 with legacy Sencha Architect versions.';
+    }
+
     if(!Ext.Loader) {
         throw 'Bancha expects the Ext.Loaded to be loaded when starting the ScriptTagInitializer.js';
     }

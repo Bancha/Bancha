@@ -200,10 +200,11 @@ Ext.define('Bancha.data.Model', {
             if(typeof modelCls.setFields === 'function') {
                 modelCls.setFields(config.fields);
             }
-            if(Ext.versions.extjs && Ext.versions.extjs.major === 4) {
+            if(Ext.versions.extjs) {
                 // this is used for three cases:
                 // - Support for Ext JS 4.0.7
                 // - Ext JS Support for ScriptTagInitializer, where we hook into Ext.data.Model extend
+                // - Ext JS 5 support with the microloader
                 extJsOnClassExtendedData.fields = config.fields;
             }
             // Ext JS 5 fields are handled in a seperate function at the end of the file

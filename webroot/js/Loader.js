@@ -240,6 +240,10 @@ Ext.define('Bancha.Loader', {
                 return true;
             }
 
+            if(!params._classNames) {
+                return true; // the microloader is used, pathes are fixed by Sencha CMD script
+            }
+
             // check for each class
             while(i < params._classNames.length) { // always re-evaluate the array size
                 className = params._classNames[i];
