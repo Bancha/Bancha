@@ -166,11 +166,13 @@ Ext.define('Bancha.Main', {
         'Bancha' // shortcuts
     ],
 
+    // This works for Sencha Touch and Ext JS 4:
     // hacky solution to keep references in all possible loading orders
     // this should be removed after the Bancha singleton is refactored into
     // multiple, independent classes
     // To hinder Sencha Cmd from detecting dpendencies we son't use the dot
     // notation here
+    // For Ext JS 5 the solution can be found in the class callback at the bottom
     /* jshint sub:true */
     data       : window.Bancha ? Bancha['data'] : undefined,
     loader     : window.Bancha ? Bancha['loader'] : undefined,
@@ -1631,7 +1633,8 @@ Ext.define('Bancha.Main', {
 }, function() {
     /*
      * The Bancha class callback
-     * Create deprecated warnings for old Bancha.log.*
+     *  - Create deprecated warnings for old Bancha.log.*
+     *  - Fix class initialization with Namespace collision
      */
 
     // Ext.Logger might not be available
@@ -1697,4 +1700,31 @@ Ext.define('Bancha.Main', {
             Ext.Logger.error(msg);
         }
     };
+
+    // In Ext JS 5 if this class is loaded before the Bancha.REMOTE_API 
+    // it is already set to undefined and will not be overriden
+    // So we need to do this manually in that case
+    /**
+     * Sets a path to the given value, if the class is defined
+     * and the path is still undefined or of value undefined
+     */
+    var setValueIf = function(path, value) {
+        if(Bancha.objectFromPath(path)!==undefined || !value) {
+            return;
+        }
+        var nsName = path.substr(0,path.lastIndexOf('.')),
+            ns = Bancha.objectFromPath(nsName);
+        ns[path.substr(nsName.length+1)] = value;
+    };
+
+    // setup the Bancha REMOTE API
+    setValueIf(Bancha.remoteApi, Ext.ClassManager.get('Bancha.REMOTE_API'));
+
+    // go though all sub-namspaces / sub-classes
+    setValueIf('Bancha.data', Ext.ClassManager.get('Bancha.data'));
+    setValueIf('Bancha.loader', Ext.ClassManager.get('Bancha.loader'));
+    setValueIf('Bancha.Loader', Ext.ClassManager.get('Bancha.Loader'));
+    setValueIf('Bancha.Logger', Ext.ClassManager.get('Bancha.Logger'));
+    setValueIf('Bancha.Initializer', Ext.ClassManager.get('Bancha.Initializer'));
+    setValueIf('Bancha.Remoting', Ext.ClassManager.get('Bancha.Remoting'));
 });

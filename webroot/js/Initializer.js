@@ -43,21 +43,6 @@ if(Ext.Loader) {
         // Since CakePHP does not follow symlinks we need to setup a second path for Bancha Scaffold
         Ext.Loader.setPath('Bancha.scaffold', Ext.Loader.getPath('Bancha')+'/scaffold/src');
     }
-
-    // Fix the Ext pathes for make classes, not privided by the framework (depending which classes are shimed)
-    var paths = Ext.Loader.getConfig('paths');
-    delete paths['Ext.data.validator'];
-    if(Ext.versions.extjs.major===5) {
-        paths['Ext.data.validations'] = Ext.Loader.getPath('Bancha') + '/data/validations.js';
-        delete paths['Ext.data.validator.Validator'];
-        delete paths['Ext.data.validator.Bound'];
-        delete paths['Ext.data.validator.Range'];
-    } else {
-        paths['Ext.data.validator.Validator'] = Ext.Loader.getPath('Bancha') + '/data/validator/Validator.js';
-        paths['Ext.data.validator.Bound'] = Ext.Loader.getPath('Bancha') + '/data/validator/Bound.js';
-        paths['Ext.data.validator.Range'] = Ext.Loader.getPath('Bancha') + '/data/validator/Range.js';
-        delete paths['Ext.data.validations'];
-    }
 }
 //</debug>
 

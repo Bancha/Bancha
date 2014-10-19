@@ -161,10 +161,25 @@
             <target name="-bancha-restore-files-after-build"/>
         </x-ant-call>
 
-        <!-- Fix the microloader pathes for development mode -->
-        <echo message="Updated bootstrap.json" />
-        <replace file="${app.dir}/bootstrap.json" token="../../Plugin/Bancha/webroot" value="${bancha.script.url}" />
-        <replace file="${app.dir}/bootstrap.json" token="app/REMOTE_API.js" value="${bancha.api.url}" />
+        <!-- Fix the microloader pathes for development mode (use for Sencha Architect projects with Ext JS 4 and 5) -->
+        <if>
+            <available file="${app.dir}/bootstrap.json"/>
+            <then>
+                <echo message="Updated bootstrap.json" />
+                <replace file="${app.dir}/bootstrap.json" token="../../Plugin/Bancha/webroot" value="${bancha.script.url}" />
+                <replace file="${app.dir}/bootstrap.json" token="app/REMOTE_API.js" value="${bancha.api.url}" />
+            </then>
+        </if>
+
+        <!-- Fix the microloader pathes for development mode (use for Sencha Architect projects with Sencha Touch) -->
+        <if>
+            <available file="${app.dir}/bootstrap.json"/>
+            <then>
+                <echo message="Updated bootstrap.js" />
+                <replace file="${app.dir}/bootstrap.js" token="../../Plugin/Bancha/webroot" value="${bancha.script.url}" />
+                <replace file="${app.dir}/bootstrap.js" token="app/REMOTE_API.js" value="${bancha.api.url}" />
+            </then>
+        </if>
     </target>
 
 
@@ -233,16 +248,14 @@
 
         <if>
             <and>
-                <not>
-                    <and>
-                        <equals arg1="${app.framework}" arg2="ext"/>
-                        <contains string="${app.framework.version}" substring="4."/>
-                    </and>
-                </not>
+                <and>
+                    <equals arg1="${app.framework}" arg2="ext"/>
+                    <contains string="${app.framework.version}" substring="5."/>
+                </and>
                 <equals arg1="${ext.extjs4classesnotmoved}" arg2="true"/>
             </and>
             <then>
-                <!-- don't include the Ext JS 4 shim in Ext JS 5 and Sencha Touch applications ????????? WHAT ABOUT SENCHA TOUCH ?????? -->
+                <!-- don't include the Ext JS 4 & Sencha Touch shims in Ext JS 5 projects-->
                 <mkdir dir="${bancha.folder.absolute}/webroot/data-tmp4" />
                 <mkdir dir="${bancha.folder.absolute}/webroot/data-tmp4/validator" />
                 <move
