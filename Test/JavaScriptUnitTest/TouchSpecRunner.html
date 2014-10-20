@@ -16,6 +16,11 @@
     }
     Bancha = {};
     Bancha.REMOTE_API = {}; // set this to not load the api as requirement
+
+    // fake some shim classes
+    Ext.define('Ext.data.validator.Validator', {});
+    Ext.define('Ext.data.validator.Bound', {});
+    Ext.define('Ext.data.validator.Range', {});
   </script>
 
   <script type="text/javascript" src="../../webroot/js/Loader.js"></script>
