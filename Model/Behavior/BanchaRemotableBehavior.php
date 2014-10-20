@@ -200,7 +200,7 @@ class BanchaRemotableBehavior extends ModelBehavior {
 
 		// Check that the id property is always exposed
 		// Edge case, if the model is a hasAndBelongsToMany and doesn't have an id don't throw a warning
-		if (!$this->isExposedField($model, 'id') && (bool) $model->schema('id')) {
+		if (!$this->isExposedField($model, 'id') && (bool)$model->schema('id')) {
 			throw new CakeException(
 				'Bancha: The ' . $model->name . ' models "id" field must always be exposed, for Sencha Touch/Ext JS ' .
 				' to edit and delete data, but your BanchaRemotableBehavior config hides it.'
