@@ -112,7 +112,7 @@ class BanchaController extends BanchaAppController {
 			'type'		=> 'remoting',
 			'metadata'	=> array_merge(
 								$this->_getMetadata($banchaApi, $remotableModels, $metadataFilter),
-								array('_ServerError' => Configure::read('debug') == 0 ? !!$error : $error)), // send the text only in debug mode
+								array('_ServerError' => Configure::read('debug') == 0 ? (bool) $error : $error)), // send the text only in debug mode
 			'actions'	=> $actions
 		);
 
