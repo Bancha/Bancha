@@ -1,6 +1,14 @@
 Bancha Update Info
 ==================
 
+Upgrading from 2.3 to 2.4
+-------------------------
+
+The Sencha CMD and Sencha Architect integration is improved, please update your condifurations:
+ - [Sencha Architect](http://bancha.io/documentation-pro-sencha-architect-3.html)
+ - [Sencha CMD](http://bancha.io/documentation-pro-sencha-cmd.html)
+
+
 Upgrading from 1.3 to 2.0
 -------------------------
 
